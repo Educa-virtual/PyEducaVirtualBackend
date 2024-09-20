@@ -56,6 +56,7 @@ class BancoPreguntasController extends ApiController
 
         try {
             foreach ($preguntas as $pregunta) {
+                $pregunta['datosJson']['bPreguntaEstado'] = 1;
                 $datosJson = json_encode($pregunta['datosJson']);
 
                 $condiciones = [
@@ -97,8 +98,19 @@ class BancoPreguntasController extends ApiController
 
         $campos = 'iPreguntaId,iCompentenciaId,iCapacidadId,iDesempenoId,cPregunta,cPreguntaTextoAyuda,iPreguntaNivel,iPreguntaPeso,dtPreguntaTiempo,bPreguntaEstado,cPreguntaClave';
 
-        $bPreguntaEstado = $request->bPreguntaEstado ?? 0;
-        $where = "bPreguntaEstado = {$bPreguntaEstado}";
+        $where = '1=1 ';
+
+        $iCompentenciaId = $request->iCompentenciaId ?? 0;
+        $bPreguntaEstado = (int) $request->bPreguntaEstado ?? 0;
+
+
+        if ($iCompentenciaId !== 0) {
+            $where .= " AND $iCompentenciaId = {$iCompentenciaId}";
+        }
+
+        if ($bPreguntaEstado !== -1) {
+            $where .= " AND bPreguntaEstado = {$bPreguntaEstado}";
+        }
 
         $params = [
             'ere',
@@ -106,7 +118,6 @@ class BancoPreguntasController extends ApiController
             $campos,
             $where
         ];
-
 
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
