@@ -100,12 +100,12 @@ class BancoPreguntasController extends ApiController
 
         $where = '1=1 ';
 
-        $iCompentenciaId = $request->iCompentenciaId ?? 0;
+        $iCompentenciaId = (int) $request->iCompentenciaId ?? 0;
         $bPreguntaEstado = (int) $request->bPreguntaEstado ?? 0;
 
 
         if ($iCompentenciaId !== 0) {
-            $where .= " AND $iCompentenciaId = {$iCompentenciaId}";
+            $where .= " AND iCompentenciaId = {$iCompentenciaId}";
         }
 
         if ($bPreguntaEstado !== -1) {

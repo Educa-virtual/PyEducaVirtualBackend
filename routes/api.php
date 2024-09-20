@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CredencialController;
 use App\Http\Controllers\Ere\BancoPreguntasController;
+use App\Http\Controllers\Ere\CapacidadesController;
 use App\Http\Controllers\Ere\CompetenciasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +15,11 @@ Route::post('/login', [CredencialController::class, 'login']);
 
 Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'competencias'], function () {
-        Route::get('getCompetenciasByAreaId', [CompetenciasController::class, 'getCompetenciasByAreaId']);
+        Route::get('obtenerCompetencias', [CompetenciasController::class, 'obtenerCompetencias']);
+    });
+
+    Route::group(['prefix' => 'capacidades'], function () {
+        Route::get('obtenerCapacidades', [CapacidadesController::class, 'obtenerCapacidades']);
     });
 
     Route::group(['prefix' => 'banco-preguntas'], function () {
