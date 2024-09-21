@@ -7,7 +7,7 @@
 ```shell
 composer install
 ```
-3.Renonmbrar el archivo `.env.example` a `.env`
+3.Crear un archivo con el nombre `.env` y copiar el contenido del arhivo `.env.example` 
 4. Generar Keys
 ```shell
 php artisan  key:generate
