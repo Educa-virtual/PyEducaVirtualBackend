@@ -5,6 +5,7 @@ use App\Http\Controllers\Ere\CapacidadesController;
 use App\Http\Controllers\Ere\CompetenciasController;
 use App\Http\Controllers\api\seg\sel\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\api\seg\sel\ListarCursosController;
+use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\MailController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,10 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('guardarPreguntaConAlternativas', [BancoPreguntasController::class, 'guardarPreguntaConAlternativas']);
         Route::patch('actualizarMatrizPreguntas', [BancoPreguntasController::class, 'actualizarMatrizPreguntas']);
         Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
+    });
+
+    Route::group(['prefix' => 'desempenos'], function () {
+        Route::get('obtenerDesempenos', [DesempenosController::class, 'obtenerDesempenos']);
     });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);

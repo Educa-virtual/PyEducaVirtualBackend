@@ -42,7 +42,7 @@ class BancoPreguntasController extends ApiController
                 'Datos guardados correctamente'
             );
         } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al obtener los datos');
+            return $this->errorResponse($e, 'Error al guardar los datos');
         }
     }
     public function actualizarMatrizPreguntas(Request $request)
@@ -96,7 +96,7 @@ class BancoPreguntasController extends ApiController
     public function obtenerBancoPreguntas(Request $request)
     {
 
-        $campos = 'iPreguntaId,iCompentenciaId,iCapacidadId,iDesempenoId,cPregunta,cPreguntaTextoAyuda,iPreguntaNivel,iPreguntaPeso,dtPreguntaTiempo,bPreguntaEstado,cPreguntaClave';
+        $campos = 'iPreguntaId,iDesempenoId,cPregunta,cPreguntaTextoAyuda,iPreguntaNivel,iPreguntaPeso,dtPreguntaTiempo,bPreguntaEstado,cPreguntaClave';
 
         $where = '1=1 ';
 
@@ -113,19 +113,17 @@ class BancoPreguntasController extends ApiController
         }
 
         $params = [
-            'ere',
-            'preguntas',
-            $campos,
-            $where
+            $request->iCursoId,
+            $request->iTipoPregId,
+            $request->iDesempenioId,
+            $request->bPreguntaEstado
         ];
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
-                @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
-                @condicionWhere = ?
+            $preguntas = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
+                @_iTipoPregId = ?, @_iDesempenoId = ?, @_bPreguntaEstado = ?
             ', $params);
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

@@ -11,6 +11,7 @@ class CompetenciasController extends ApiController
 
     public function obtenerCompetencias()
     {
+
         $campos = 'iCompentenciaId,cCompetenciaDescripcion';
         $where = '';
         $params = [
