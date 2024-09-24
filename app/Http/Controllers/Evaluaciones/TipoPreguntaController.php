@@ -1,25 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\Ere;
+namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CompetenciasController extends ApiController
+class TipoPreguntaController extends ApiController
 {
-
-    public function obtenerCompetencias()
+    public function obtenerTipoPreguntas(Request $request)
     {
 
-        $campos = 'iCompentenciaId,cCompetenciaDescripcion';
+        $campos = 'iTipoPregId, cTipoPregDescripcion';
         $where = '';
         $params = [
-            'ere',
-            'competencias',
+            'eval',
+            'tipo_preguntas',
             $campos,
             $where
         ];
+
 
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
