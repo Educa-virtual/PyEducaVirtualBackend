@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
-Route::post('/login', [CredencialescCredUsuariocClaveController::class,'login']);
+Route::get('/login', [CredencialescCredUsuariocClaveController::class,'login']);
 Route::post('/verificar', [MailController::class,'index']);
 Route::post('/verificar_codigo', [MailController::class,'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class,'cursos']);
