@@ -25,7 +25,6 @@ Route::group(['prefix' => 'ere'], function () {
     });
 
     Route::group(['prefix' => 'banco-preguntas'], function () {
-        Route::post('guardarPreguntaConAlternativas', [BancoPreguntasController::class, 'guardarPreguntaConAlternativas']);
         Route::patch('actualizarMatrizPreguntas', [BancoPreguntasController::class, 'actualizarMatrizPreguntas']);
         Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
     });
