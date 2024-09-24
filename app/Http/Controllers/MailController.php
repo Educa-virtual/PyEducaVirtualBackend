@@ -26,7 +26,7 @@ class MailController extends Controller
 
         Mail::to($correo)->send(new CodigoMail($mailData)); //Verificar que se envie para poder actualizar
 
-        DB::update('update seg.credenciales set cCodeVerif = ? where iPersId = ?', [$cCodeVerif,$iPersId]);
+        DB::update('update seg.credenciales set cCredCodigoVerif = ? where iPersId = ?', [$cCodeVerif,$iPersId]);
         try{
             $response = [
                 'validated' => true, 
@@ -51,8 +51,8 @@ class MailController extends Controller
         $cCodeVerif = $request->cCodeVerif;
         $iPersId = $request->iPersId;
         $data = DB::update("UPDATE seg.credenciales
-                            SET bCodeVerif = 1
-                            WHERE iPersId = ? AND cCodeVerif = ?",[$iPersId,$cCodeVerif]);
+                            SET bCredVerificado = 1
+                            WHERE iPersId = ? AND cCredCodigoVerif = ?",[$iPersId,$cCodeVerif]);
 
         try{
             $response = [
