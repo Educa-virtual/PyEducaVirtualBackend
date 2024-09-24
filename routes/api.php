@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Ere\InstitucionesEducativasController;
 use App\Http\Controllers\Ere\BancoPreguntasController;
 use App\Http\Controllers\Ere\CapacidadesController;
 use App\Http\Controllers\Ere\CompetenciasController;
@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'ere'], function () {
+
+    Route::group(['prefix' => 'ie'], function () {
+        Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
+    });
+
     Route::group(['prefix' => 'competencias'], function () {
         Route::get('obtenerCompetencias', [CompetenciasController::class, 'obtenerCompetencias']);
     });

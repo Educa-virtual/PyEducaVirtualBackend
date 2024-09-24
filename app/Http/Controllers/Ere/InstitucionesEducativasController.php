@@ -2,24 +2,24 @@
 
 namespace App\Http\Controllers\Ere;
 
-
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-class EvaluacionesController extends ApiController
+class InstitucionesEducativasController extends ApiController
 {
-    public function obtenerEvaluaciones()
+    //
+    public function obtenerInstitucionesEducativas()
     {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
+        $campos = 'iIieeId,cIieeCodigoModular,cIieeNombre';
         $where = '';
        
 
         $params = [
-            'ere',
-            'evaluacion',
+            'acad',
+            'institucion_educativas',
             $campos,
             $where
 
