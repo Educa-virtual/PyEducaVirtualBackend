@@ -35,13 +35,13 @@ class CredencialescCredUsuariocClaveController extends Controller
 	WHERE c.iCredId=?",[1]);
         */
         $conctactar = json_decode($sel_query[0]->contactar,true);
-        
+        $patron = "/^[[:digit:]]+$/";
         foreach($conctactar as $key => $correo){
-            
-            $separar = explode("@",$correo["cPersConNombre"]);
-            $conctactar[$key]["iPersConId"] = bcrypt($correo["iPersConId"]);
-            $conctactar[$key]["cPersConNombre"] = $separar[0][0].$separar[0][1]."******"."@".$separar[1];
-          
+            if (!preg_match($patron, $correo["cPersConNombre"])) {
+                $separar = explode("@",$correo["cPersConNombre"]);
+                $conctactar[$key]["iPersConId"] = bcrypt($correo["iPersConId"]);
+                $conctactar[$key]["cPersConNombre"] = $separar[0][0].$separar[0][1]."******"."@".$separar[1];
+            }
         }
         
         $sel_query[0]->contactar = $conctactar;
