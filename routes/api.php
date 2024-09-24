@@ -7,6 +7,8 @@ use App\Http\Controllers\api\seg\sel\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\api\seg\sel\ListarCursosController;
 use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\Ere\cursoController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -27,9 +29,11 @@ Route::group(['prefix' => 'ere'], function () {
         Route::patch('actualizarMatrizPreguntas', [BancoPreguntasController::class, 'actualizarMatrizPreguntas']);
         Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
     });
-
     Route::group(['prefix' => 'desempenos'], function () {
         Route::get('obtenerDesempenos', [DesempenosController::class, 'obtenerDesempenos']);
+    });
+    Route::group(['prefix' => 'curso'], function () {
+        Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
