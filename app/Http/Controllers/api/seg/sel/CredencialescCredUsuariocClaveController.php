@@ -64,7 +64,7 @@ class CredencialescCredUsuariocClaveController extends Controller
             $estado = 500;
         }
         
-        return new JsonResponse($sel_query,200);
+        return new JsonResponse($response,$estado);
         
     }
 }
