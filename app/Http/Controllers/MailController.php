@@ -13,6 +13,7 @@ class MailController extends Controller
 {
     public function index(Request $request)
     {
+        
         $iPersId = $request->iPersId;
         $correo = 'jhoand60@gmail.com';
         $cCodeVerif = mt_rand(100000,999999);
