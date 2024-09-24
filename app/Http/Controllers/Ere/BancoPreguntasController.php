@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Ere;
 
 use App\Http\Controllers\ApiController;
+use DateTime;
+use Error;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +14,25 @@ class BancoPreguntasController extends ApiController
 
     public function guardarPreguntaConAlternativas(Request $request)
     {
-        $datosPreguntaJson = json_encode($request->datosPregunta);
+        $fechaActual = new DateTime();
+        $fechaActual->setTime(0, 0, 0);
+        $hora = $request->iHoras;
+        $minutos = $request->iMinutos;
+        $segundos = $request->iSegundos;
+        $fechaActual->setTime($hora, $minutos, $segundos);
+
+
+        $datosPreguntaJson = json_encode([
+            'iTipoPregId' => $request->iTipoPregId,
+            'iPreguntaPeso' => $request->iPreguntaPeso,
+            'iPreguntaNivel' => $request->iPreguntaNivel,
+            'iPreguntaId' => $request->iPreguntaId,
+            'iCursoId_' => $request->iCursoId,
+            'cPreguntaTextoAyuda' => $request->cPreguntaTextoAyuda,
+            'cPreguntaClave' => $request->cPreguntaClave,
+            'cPregunta' => $request->cPregunta,
+            'dtPreguntaTiempo' => $fechaActual,
+        ]);
         $datosAlternativasJson = json_encode($request->datosAlternativas);
         $params = [
             'ere',
@@ -130,6 +150,78 @@ class BancoPreguntasController extends ApiController
             );
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
+
+    public function actualizarBancoPreguntas(Request $request)
+    {
+        $fechaActual = new DateTime();
+        $fechaActual->setTime(0, 0, 0);
+        $hora = $request->iHoras;
+        $minutos = $request->iMinutos;
+        $segundos = $request->iSegundos;
+        $fechaActual->setTime($hora, $minutos, $segundos);
+
+        $datosJson = json_encode([
+            'iTipoPregId' => $request->iTipoPregId,
+            'cPregunta' => $request->cPregunta,
+            'cPreguntaTextoAyuda' => $request->cPreguntaTextoAyuda,
+            'iPreguntaNivel' => $request->iPreguntaNivel,
+            'iPreguntaPeso' => $request->iPreguntaPeso,
+            'dtPreguntaPeso' => $request->$fechaActual,
+            'cPreguntaClave' => $request->cPreguntaClave
+        ]);
+
+        $condiciones = [
+            [
+                'COLUMN_NAME' => "iPreguntaId",
+                'VALUE' => $request->iPreguntaId
+            ]
+        ];
+
+        $condicionesJson = json_encode($condiciones);
+
+        $params = [
+            'ere',
+            'preguntas',
+            $datosJson,
+            $condicionesJson
+        ];
+        try {
+            $resp = DB::statement('exec grl.SP_UPD_EnTablaConJSON 
+                @Esquema = ?,
+                @Tabla = ?,
+                @DatosJSON = ?,
+                @CondicionesJSON = ?
+            ', $params);
+
+            return $this->successResponse($resp, 'Cambios guardados correctamente');
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Error al guardar los cambios');
+        }
+    }
+
+
+    public function eliminarBancoPreguntasById(Request $request, $id)
+    {
+        $params = [
+            $id
+        ];
+
+        try {
+
+            $resp = DB::select('exec ere.Sp_DEL_pregunta @_iPreguntaId = ?', $params);
+
+            if (count($resp) === 0) {
+                return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
+            }
+
+            $resp = $resp[0];
+
+            return $this->successResponse($resp, $resp->mensaje);
+        } catch (Exception $e) {
+            $message = $this->returnError($e, 'Error al eliminar la pregunta');
+            return $this->errorResponse($e, $message);
         }
     }
 }
