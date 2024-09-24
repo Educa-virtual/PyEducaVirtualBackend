@@ -17,7 +17,7 @@ class CredSecurityCodeController extends Controller
         $session = 1;
 
         $upd_query = DB::select('Sp_UPD_cCredSecurityCode_credencialesXiCredId ?,?,?',[$id, $codigo, $session]);
-        $sel_query = DB::select('EXECUTE seg.Sp_SEL_credencialesXiCredId ?,?',[$id]);
+        //$sel_query = DB::select('EXECUTE seg.Sp_SEL_credencialesXiCredId ?,?',[$id]);
 
         try{
             $response = [

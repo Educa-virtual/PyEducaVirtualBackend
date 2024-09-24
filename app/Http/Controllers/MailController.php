@@ -7,71 +7,89 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 class MailController extends Controller
 {
     public function index(Request $request)
     {
+
         $iPersId = $request->iPersId;
-        $correo = 'jhoand60@gmail.com';
-        $cCodeVerif = mt_rand(100000,999999);
-        
+
+        $correo = $request->correo;
+        $cCodeVerif = mt_rand(100000, 999999);
+
         $mailData = [
             'title' => 'Codigo de Verificacion',
             'body'  => $cCodeVerif
         ];
+
+        $emails = DB::select('
+            SELECT
+            iPersConId,
+            cPersConNombre
+            FROM grl.personas_contactos
+            WHERE iPersId = ' . $iPersId . '
+        ');
+
+        foreach ($emails as $key => $e) {
+            $checkBcrypt = Hash::check($e->iPersConId, $correo);
+            if ($checkBcrypt) {
+                $cCorreo = $e->cPersConNombre;
+            }
+        }
         
-        // DB::select(select bCodeVerif from seg.credenciales where iPersId = ?,[$iPersId]);
+        if($emails){
+            Mail::to($cCorreo)->send(new CodigoMail($mailData)); //Verificar que se envie para poder actualizar
+        }
+        
 
-        Mail::to($correo)->send(new CodigoMail($mailData)); //Verificar que se envie para poder actualizar
-
-        DB::update('update seg.credenciales set cCodeVerif = ? where iPersId = ?', [$cCodeVerif,$iPersId]);
-        try{
+        DB::update('update seg.credenciales set cCredCodigoVerif = ? where iPersId = ?', [$cCodeVerif, $iPersId]);
+        try {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'Email enviado..',
                 'data' => [],
             ];
 
             $estado = 200;
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
-                        
+
             $estado = 500;
         }
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
-    public function comparar(Request $request){
+    public function comparar(Request $request)
+    {
         $cCodeVerif = $request->cCodeVerif;
         $iPersId = $request->iPersId;
         $data = DB::update("UPDATE seg.credenciales
-                            SET bCodeVerif = 1
-                            WHERE iPersId = ? AND cCodeVerif = ?",[$iPersId,$cCodeVerif]);
+                            SET bCredVerificado = 1
+                            WHERE iPersId = ? AND cCredCodigoVerif = ?", [$iPersId, $cCodeVerif]);
 
-        try{
+        try {
             $response = [
-                'validated' => $data ? true : false, 
+                'validated' => $data ? true : false,
                 'message' => '',
                 'data' => [],
             ];
 
             $estado = 200;
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
-                        
+
             $estado = 500;
         }
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
 }

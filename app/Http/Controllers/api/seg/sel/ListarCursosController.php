@@ -17,8 +17,8 @@ class ListarCursosController extends Controller
                             acur.iCursoId,
                             acur.iCurrId,
                             acur.iTipoCursoId,
-                            acur.iGradoId,
-                            acur.iNivelId,
+                            --acur.iGradoId,
+                            --acur.iNivelId,
                             acur.cCursoNombre,
                             acur.nCursoCredTeoria,
                             acur.nCursoCredPractica,
@@ -31,7 +31,7 @@ class ListarCursosController extends Controller
                             from acad.docente_cursos as adoc
                             inner join acad.docentes as acdoc on acdoc.iDocenteId=adoc.iDocenteId
                             inner join acad.ies_cursos as aies on aies.iIeCursoId=adoc.iIeCursoId
-                            inner join acad.cursos as acur on acur.iCursoId=aies.iCursoId
+                            inner join acad.cursos as acur on acur.iCursoId=aies.iIeCursoId
                             where acdoc.iPersId=?',[$persona_id]);
 
         try{
