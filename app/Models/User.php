@@ -6,8 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-class User extends Authenticatable
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
@@ -16,9 +16,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $table = "seg.credenciales";
+    protected $primaryKey = "iCredId";
+    public $timestamps=false;
+    // protected $guarded = [];
     protected $fillable = [
-        'name',
-        'email',
+        'cCredUsuario',
         'password',
     ];
 
@@ -27,10 +30,10 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    // protected $hidden = [
+    //     'password',
+    //     'remember_token',
+    // ];
 
     /**
      * Get the attributes that should be cast.
@@ -40,8 +43,16 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            // 'email_verified_at' => 'datetime',
+            // 'password' => 'hashed',
         ];
+    }
+
+    public function getJWTIdentifier(){
+        return $this->getKey();
+    }
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }
