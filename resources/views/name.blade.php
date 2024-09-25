@@ -25,11 +25,9 @@
             color: white">{{ $mailData['title'] }}
             </div>
             <div style="text-align: center;">
-                @if ($_SERVER['SERVER_NAME']=="127.0.0.1")
-                <img src="{{ asset('2024/img/proteger.png') }}">
-                @else
+                
                 <img src="http://45.169.92.190:8000/storage/2024/img/proteger.png">
-                @endif
+                
             </div>
             <p style="
             font-family: Verdana, Geneva, Tahoma, sans-serif;
