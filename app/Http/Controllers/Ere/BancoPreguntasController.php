@@ -116,8 +116,6 @@ class BancoPreguntasController extends ApiController
     public function obtenerBancoPreguntas(Request $request)
     {
 
-        $campos = 'iPreguntaId,iDesempenoId,cPregunta,cPreguntaTextoAyuda,iPreguntaNivel,iPreguntaPeso,dtPreguntaTiempo,bPreguntaEstado,cPreguntaClave';
-
         $where = '1=1 ';
 
         $iCompentenciaId = (int) $request->iCompentenciaId ?? 0;
