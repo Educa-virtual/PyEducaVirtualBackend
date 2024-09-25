@@ -17,8 +17,6 @@ class ListarCursosController extends Controller
                             acur.iCursoId,
                             acur.iCurrId,
                             acur.iTipoCursoId,
-                            --acur.iGradoId,
-                            --acur.iNivelId,
                             acur.cCursoNombre,
                             acur.nCursoCredTeoria,
                             acur.nCursoCredPractica,
