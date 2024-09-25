@@ -8,6 +8,7 @@ use App\Http\Controllers\api\seg\sel\ListarCursosController;
 use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Ere\cursoController;
+use App\Http\Controllers\Ere\EvaluacionesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,9 @@ Route::group(['prefix' => 'ere'], function () {
     });
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
+    });
+    Route::group(['prefix' => 'Evaluaciones'], function () {
+        Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
     });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);

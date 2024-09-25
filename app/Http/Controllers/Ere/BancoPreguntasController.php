@@ -116,30 +116,16 @@ class BancoPreguntasController extends ApiController
     public function obtenerBancoPreguntas(Request $request)
     {
 
-        $where = '1=1 ';
-
-        $iCompentenciaId = (int) $request->iCompentenciaId ?? 0;
-        $bPreguntaEstado = (int) $request->bPreguntaEstado ?? 0;
-
-
-        if ($iCompentenciaId !== 0) {
-            $where .= " AND iCompentenciaId = {$iCompentenciaId}";
-        }
-
-        if ($bPreguntaEstado !== -1) {
-            $where .= " AND bPreguntaEstado = {$bPreguntaEstado}";
-        }
-
         $params = [
             $request->iCursoId,
+            $request->busqueda ?? '',
             $request->iTipoPregId,
-            $request->iDesempenioId,
             $request->bPreguntaEstado
         ];
 
         try {
             $preguntas = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
-                @_iTipoPregId = ?, @_iDesempenoId = ?, @_bPreguntaEstado = ?
+             @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?
             ', $params);
 
             return $this->successResponse(
@@ -160,13 +146,14 @@ class BancoPreguntasController extends ApiController
         $segundos = $request->iSegundos;
         $fechaActual->setTime($hora, $minutos, $segundos);
 
+
         $datosJson = json_encode([
             'iTipoPregId' => $request->iTipoPregId,
             'cPregunta' => $request->cPregunta,
             'cPreguntaTextoAyuda' => $request->cPreguntaTextoAyuda,
             'iPreguntaNivel' => $request->iPreguntaNivel,
             'iPreguntaPeso' => $request->iPreguntaPeso,
-            'dtPreguntaPeso' => $request->$fechaActual,
+            'dtPreguntaTiempo' => $fechaActual,
             'cPreguntaClave' => $request->cPreguntaClave
         ]);
 

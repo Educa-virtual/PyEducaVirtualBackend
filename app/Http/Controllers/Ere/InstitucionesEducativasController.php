@@ -16,7 +16,6 @@ class InstitucionesEducativasController extends ApiController
         $campos = 'iIieeId,cIieeCodigoModular,cIieeNombre';
         $where = '';
        
-
         $params = [
             'acad',
             'institucion_educativas',
@@ -24,7 +23,6 @@ class InstitucionesEducativasController extends ApiController
             $where
 
         ];
-
 
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
