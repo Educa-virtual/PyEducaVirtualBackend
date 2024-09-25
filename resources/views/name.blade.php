@@ -25,14 +25,20 @@
             color: white">{{ $mailData['title'] }}
             </div>
             <div style="text-align: center;">
+                @if ($_SERVER['SERVER_NAME']=="127.0.0.1")
                 <img src="{{ asset('2024/img/proteger.png') }}">
+                @else
+                <img src="http://45.169.92.190:8000/storage/2024/img/proteger.png">
+                @endif
             </div>
             <p style="
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             font-size: 18px;
             color: rgba(70, 70, 70, 1);
             padding: 16px;">
-                Hola,
+                Hola, 
+                    
+                
                 se te ha enviado un código que deberás introducir el código de 6 dígitos en el sistema de verificación de 2 pasos.
             </p>
             <div style="
