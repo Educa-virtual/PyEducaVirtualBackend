@@ -25,7 +25,7 @@
             color: white">{{ $mailData['title'] }}
             </div>
             <div style="text-align: center;">
-                <img src="{{ Storage::url('2024/img/proteger.png') }}">
+                <img src="{{ asset('2024/img/proteger.png') }}">
             </div>
             <p style="
             font-family: Verdana, Geneva, Tahoma, sans-serif;
