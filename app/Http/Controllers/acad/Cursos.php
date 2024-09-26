@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\DOC;
+namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,7 +16,6 @@ class Cursos extends Controller
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
-        date_default_timezone_set("America/Lima");
     }
 
     public function list(Request $request)

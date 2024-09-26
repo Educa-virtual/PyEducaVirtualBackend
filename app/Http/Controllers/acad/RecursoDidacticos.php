@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\DOC;
+namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,16 +8,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class TipoMetodologias extends Controller
+class RecursoDidacticos extends Controller
 {
     protected $hashids;
-    protected $iTipoMetId;
+    protected $iRecDidacticoId;
    
 
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
-        date_default_timezone_set("America/Lima");
     }
 
     public function list(Request $request)
@@ -30,9 +29,9 @@ class TipoMetodologias extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTipoMetId) {
-            $iTipoMetId = $this->hashids->decode($request->iTipoMetId);
-            $iTipoMetId = count($iTipoMetId) > 0 ? $iTipoMetId[0] : $iTipoMetId;
+        if ($request->iRecDidacticoId) {
+            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
+            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
 
@@ -40,19 +39,20 @@ class TipoMetodologias extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTipoMetId                         ?? NULL,
-            $request->cTipoMetNombre            ?? NULL,
+            $iRecDidacticoId                         ?? NULL,
+            $request->cRecDidacticoNombre            ?? NULL,
+            $request->cRecDidacticoDescripcion       ?? NULL,   
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_TIPO_METODOLOGIAS
-                ?,?,?,?,?', $parametros);
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_DIDACTICOS
+                ?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
-                $value->iTipoMetId = $this->hashids->encode($value->iTipoMetId);
+                $value->iRecDidacticoId = $this->hashids->encode($value->iRecDidacticoId);
             }
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];

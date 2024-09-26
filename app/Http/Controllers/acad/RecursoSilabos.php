@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\DOC;
+namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class SilaboMetodologias extends Controller
+class RecursoSilabos extends Controller
 {
     protected $hashids;
-    protected $idSilMetId;
-    protected $iTipoMetId;
+    protected $iRecSilaboId;
     protected $iSilaboId;
+    protected $iRecDidacticoId;
 
 
     public function __construct()
@@ -31,17 +31,17 @@ class SilaboMetodologias extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->idSilMetId) {
-            $idSilMetId = $this->hashids->decode($request->idSilMetId);
-            $idSilMetId = count($idSilMetId) > 0 ? $idSilMetId[0] : $idSilMetId;
-        }
-        if ($request->iTipoMetId) {
-            $iTipoMetId = $this->hashids->decode($request->iTipoMetId);
-            $iTipoMetId = count($iTipoMetId) > 0 ? $iTipoMetId[0] : $iTipoMetId;
+        if ($request->iRecSilaboId) {
+            $iRecSilaboId = $this->hashids->decode($request->iRecSilaboId);
+            $iRecSilaboId = count($iRecSilaboId) > 0 ? $iRecSilaboId[0] : $iRecSilaboId;
         }
         if ($request->iSilaboId) {
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
+        }
+        if ($request->iRecDidacticoId) {
+            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
+            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
 
@@ -49,23 +49,23 @@ class SilaboMetodologias extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $idSilMetId                     ?? NULL,
-            $iTipoMetId                     ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cSilMetDescripcion    ?? NULL,
+            $iRecSilaboId                           ?? NULL,
+            $iSilaboId                              ?? NULL,
+            $iRecDidacticoId                        ?? NULL,
+            $request->cRecSilaboDescripcion         ?? NULL,
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_METODOLOGIAS
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
                 ?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
-                $value->idSilMetId = $this->hashids->encode($value->idSilMetId);
-                $value->iTipoMetId = $this->hashids->encode($value->iTipoMetId);
+                $value->iRecSilaboId = $this->hashids->encode($value->iRecSilaboId);
                 $value->iSilaboId = $this->hashids->encode($value->iSilaboId);
+                $value->iRecDidacticoId = $this->hashids->encode($value->iRecDidacticoId);
             }
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
@@ -77,6 +77,7 @@ class SilaboMetodologias extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
     public function store(Request $request)
     {
         $request->validate(
@@ -87,17 +88,17 @@ class SilaboMetodologias extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->idSilMetId) {
-            $idSilMetId = $this->hashids->decode($request->idSilMetId);
-            $idSilMetId = count($idSilMetId) > 0 ? $idSilMetId[0] : $idSilMetId;
-        }
-        if ($request->iTipoMetId) {
-            $iTipoMetId = $this->hashids->decode($request->iTipoMetId);
-            $iTipoMetId = count($iTipoMetId) > 0 ? $iTipoMetId[0] : $iTipoMetId;
+        if ($request->iRecSilaboId) {
+            $iRecSilaboId = $this->hashids->decode($request->iRecSilaboId);
+            $iRecSilaboId = count($iRecSilaboId) > 0 ? $iRecSilaboId[0] : $iRecSilaboId;
         }
         if ($request->iSilaboId) {
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
+        }
+        if ($request->iRecDidacticoId) {
+            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
+            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
 
@@ -105,20 +106,20 @@ class SilaboMetodologias extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $idSilMetId                     ?? NULL,
-            $iTipoMetId                     ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cSilMetDescripcion    ?? NULL,
+            $iRecSilaboId                           ?? NULL,
+            $iSilaboId                              ?? NULL,
+            $iRecDidacticoId                        ?? NULL,
+            $request->cRecSilaboDescripcion         ?? NULL,
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_METODOLOGIAS
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
                 ?,?,?,?,?,?,?', $parametros);
 
-            if ($data[0]->idSilMetId > 0) {
+            if ($data[0]->iRecSilaboId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
                 $codeResponse = 200;
@@ -126,8 +127,6 @@ class SilaboMetodologias extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-
-
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
