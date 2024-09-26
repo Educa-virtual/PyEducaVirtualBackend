@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\api\acad\ActividadesAprendizajeController;
+use App\Http\Controllers\api\acad\BibliografiaController;
 use App\Http\Controllers\CredencialController;
 use App\Http\Controllers\api\seg\sel\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\api\seg\sel\ListarCursosController;
@@ -26,4 +28,11 @@ Route::post('/login', [CredencialescCredUsuariocClaveController::class,'login'])
 Route::post('/verificar', [MailController::class,'index']);
 Route::post('/verificar_codigo', [MailController::class,'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class,'cursos']);
-
+Route::post('/save_actividades',[ActividadesAprendizajeController::class,'save']);
+Route::post('/listar_actividades',[ActividadesAprendizajeController::class,'list']);
+Route::post('/del_actividades',[ActividadesAprendizajeController::class,'save']);
+Route::post('/upd_actividades',[ActividadesAprendizajeController::class,'list']);
+Route::post('/save_biblio',[BibliografiaController::class,'save']);
+Route::post('/listar_biblio',[BibliografiaController::class,'list']);
+Route::post('/del_biblio',[BibliografiaController::class,'save']);
+Route::post('/upd_biblio',[BibliografiaController::class,'list']);
