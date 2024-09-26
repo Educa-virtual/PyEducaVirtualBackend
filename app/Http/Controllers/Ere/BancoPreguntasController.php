@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ere;
 
 use App\Http\Controllers\ApiController;
+use App\Repositories\AlternativaPreguntaRespository;
 use DateTime;
 use Error;
 use Exception;
@@ -11,8 +12,14 @@ use Illuminate\Support\Facades\DB;
 
 class BancoPreguntasController extends ApiController
 {
+    protected  $alternativaPreguntaRespository;
 
-    public function guardarPreguntaConAlternativas(Request $request)
+    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository)
+    {
+        $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
+    }
+
+    public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
         $fechaActual = new DateTime();
         $fechaActual->setTime(0, 0, 0);
@@ -20,50 +27,63 @@ class BancoPreguntasController extends ApiController
         $minutos = $request->iMinutos;
         $segundos = $request->iSegundos;
         $fechaActual->setTime($hora, $minutos, $segundos);
+        $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
 
-
-        $datosPreguntaJson = json_encode([
-            'iTipoPregId' => $request->iTipoPregId,
-            'iPreguntaPeso' => $request->iPreguntaPeso,
-            'iPreguntaNivel' => $request->iPreguntaNivel,
-            'iPreguntaId' => $request->iPreguntaId,
-            'iCursoId_' => $request->iCursoId,
-            'cPreguntaTextoAyuda' => $request->cPreguntaTextoAyuda,
-            'cPreguntaClave' => $request->cPreguntaClave,
-            'cPregunta' => $request->cPregunta,
-            'dtPreguntaTiempo' => $fechaActual,
-        ]);
-        $datosAlternativasJson = json_encode($request->datosAlternativas);
         $params = [
-            'ere',
-            'preguntas',
-            $datosPreguntaJson,
-            'alternativas',
-            $datosAlternativasJson,
-            'iPreguntaId'
+            (int) $request->iPreguntaId,
+            (int)$request->iCursoId,
+            (int)$request->iTipoPregId,
+            $request->cPregunta,
+            $request->cPreguntaTextoAyuda,
+            (int)$request->iPreguntaNivel,
+            (int)$request->iPreguntaPeso,
+            $fechaConHora,
+            $request->bPreguntaEstado,
+            $request->cPreguntaClave,
         ];
+
+        DB::beginTransaction();
+        $resp = null;
+        try {
+            $resp = DB::select('exec ere.Sp_INS_UPD_pregunta 
+                @_iPreguntaId = ?
+                , @_iCursoId = ?
+                , @_iTipoPregId = ?
+                , @_cPregunta = ?
+                , @_cPreguntaTextoAyuda = ?
+                , @_iPreguntaNivel  = ?
+                , @_iPreguntaPeso = ?
+                , @_dtPreguntaTiempo = ?
+                , @_bPreguntaEstado = ?
+                , @_cPreguntaClave = ?
+            ', $params);
+            $resp = $resp[0];
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse($e, 'Error al guardar los datos');
+        }
 
         try {
 
-            $resp = DB::statement(
-                'EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON 
-                    @Esquema = ?,
-                    @TablaMaestra = ?,
-                    @DatosJSONMaestro = ?,
-                    @TablaDetalle = ?,
-                    @DatosJSONDetalles = ?,
-                    @campoFK = ?
-                ',
-                $params
-            );
-
-            return $this->successResponse(
-                $resp,
-                'Datos guardados correctamente'
-            );
+            foreach ($request->datosAlternativas as $item) {
+                $paramsAlternativa = [
+                    $item['isLocal'] ?? false ? 0 : (int) $item['iAlternativaId'],
+                    (int) $resp->id,
+                    $item['cAlternativaDescripcion'],
+                    $item['cAlternativaLetra'],
+                    $item['bAlternativaCorrecta'] ? 1 : 0,
+                    $item['cAlternativaExplicacion']
+                ];
+                $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
+            }
         } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al guardar los datos');
+            DB::rollBack();
+            $message = $this->returnError($e, 'Error al guardar los datos');
+            return $this->errorResponse($e, $message);
         }
+
+        DB::commit();
+        return $this->successResponse($resp, $resp->mensaje);
     }
     public function actualizarMatrizPreguntas(Request $request)
     {
@@ -123,6 +143,7 @@ class BancoPreguntasController extends ApiController
             $request->bPreguntaEstado
         ];
 
+
         try {
             $preguntas = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?
@@ -134,55 +155,6 @@ class BancoPreguntasController extends ApiController
             );
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al obtener los datos');
-        }
-    }
-
-    public function actualizarBancoPreguntas(Request $request)
-    {
-        $fechaActual = new DateTime();
-        $fechaActual->setTime(0, 0, 0);
-        $hora = $request->iHoras;
-        $minutos = $request->iMinutos;
-        $segundos = $request->iSegundos;
-        $fechaActual->setTime($hora, $minutos, $segundos);
-
-
-        $datosJson = json_encode([
-            'iTipoPregId' => $request->iTipoPregId,
-            'cPregunta' => $request->cPregunta,
-            'cPreguntaTextoAyuda' => $request->cPreguntaTextoAyuda,
-            'iPreguntaNivel' => $request->iPreguntaNivel,
-            'iPreguntaPeso' => $request->iPreguntaPeso,
-            'dtPreguntaTiempo' => $fechaActual,
-            'cPreguntaClave' => $request->cPreguntaClave
-        ]);
-
-        $condiciones = [
-            [
-                'COLUMN_NAME' => "iPreguntaId",
-                'VALUE' => $request->iPreguntaId
-            ]
-        ];
-
-        $condicionesJson = json_encode($condiciones);
-
-        $params = [
-            'ere',
-            'preguntas',
-            $datosJson,
-            $condicionesJson
-        ];
-        try {
-            $resp = DB::statement('exec grl.SP_UPD_EnTablaConJSON 
-                @Esquema = ?,
-                @Tabla = ?,
-                @DatosJSON = ?,
-                @CondicionesJSON = ?
-            ', $params);
-
-            return $this->successResponse($resp, 'Cambios guardados correctamente');
-        } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al guardar los cambios');
         }
     }
 
