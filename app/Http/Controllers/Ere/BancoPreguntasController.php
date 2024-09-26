@@ -2,21 +2,29 @@
 
 namespace App\Http\Controllers\Ere;
 
+use App\Repositories\BancoPreguntasRepository;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\WordController;
 use App\Repositories\AlternativaPreguntaRespository;
 use DateTime;
-use Error;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\Shared\Html;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class BancoPreguntasController extends ApiController
 {
     protected  $alternativaPreguntaRespository;
+    protected $bancoPreguntaRepository;
 
-    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository)
+    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository, BancoPreguntasRepository $bancoPreguntaRepository)
     {
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
+        $this->bancoPreguntaRepository = $bancoPreguntaRepository;
     }
 
     public function guardarActualizarPreguntaConAlternativas(Request $request)
@@ -179,6 +187,78 @@ class BancoPreguntasController extends ApiController
         } catch (Exception $e) {
             $message = $this->returnError($e, 'Error al eliminar la pregunta');
             return $this->errorResponse($e, $message);
+        }
+    }
+
+
+    public function generarWordBancoPreguntasByIds(Request $request)
+    {
+
+        $params = [
+            'iCursoId' => $request->iCursoId,
+            'busqueda' => '',
+            'iTipoPregId' => 0,
+            'bPreguntaEstado' => -1,
+            'ids' => $request->ids
+        ];
+
+        try {
+            $preguntasDB = $this->bancoPreguntaRepository->obtenerBancoPreguntasByParams($params);
+
+            $preguntas = [];
+            foreach ($preguntasDB as &$pregunta) {
+                $preguntaOutput = '';
+                $preguntaOutput .= $pregunta->cPregunta;
+                // verificar si existe textoAyuda
+                if ($pregunta->cPreguntaTextoAyuda != null && strlen($pregunta->cPreguntaTextoAyuda) > 0) {
+                    $preguntaOutput .= $pregunta->cPreguntaTextoAyuda;
+                }
+                // manejar alternativas.
+                $pregunta->alternativas  = $this->alternativaPreguntaRespository->getAllByPreguntaId($pregunta->iPreguntaId);
+                foreach ($pregunta->alternativas as &$alternativa) {
+                    $preguntaOutput .= '<p>';
+                    $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
+                    $preguntaOutput .= '</p>';
+                }
+                array_push($preguntas, $preguntaOutput);
+                $preguntaOutput = '';
+            }
+
+            $phpWord = new PhpWord;
+            $phpWord->addTitleStyle(1, ['size' => 24, 'color' => '333333', 'bold' => true]);
+            $phpWord->addTitleStyle(2, ['size' => 18, 'color' => '666666']);
+            $phpWord->addTitleStyle(3, ['size' => 14, 'color' => '999999', 'italic' => true]);
+            $section = $phpWord->addSection();
+
+            foreach ($preguntas as $index => $questionHtml) {
+                // Añadir un salto de página antes de cada pregunta (excepto la primera)
+                if ($index > 0) {
+                    $section->addPageBreak();
+                }
+                // sanitizar cierres html
+                $questionHtml =  WordController::sanitizeHtml($questionHtml);
+                // Convertir el HTML de la pregunta a contenido de PHPWord
+                Html::addHtml($section, $questionHtml, false, false);
+            }
+
+            \PhpOffice\PhpWord\Settings::setZipClass(Settings::PCLZIP);
+            $writer = IOFactory::createWriter($phpWord, 'Word2007');
+
+            $response = new Response();
+            $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+            $response->headers->set('Content-Disposition', 'attachment;filename="preguntas.docx"');
+            $response->headers->set('Cache-Control', 'max-age=0');
+
+            ob_start();
+            $writer->save('php://output');
+            $content = ob_get_contents();
+            ob_end_clean();
+
+            $response->setContent($content);
+
+            return $response;
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 'Error al generar');
         }
     }
 }
