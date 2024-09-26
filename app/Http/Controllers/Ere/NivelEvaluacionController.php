@@ -7,25 +7,31 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Support\Facades\DB;
-class InstitucionesEducativasController extends ApiController
+class NivelEvaluacionController extends ApiController
 {
     //
-    public function obtenerInstitucionesEducativas()
+    public function obtenerNivelEvaluacion()
     {
 
-        $campos = 'iIieeId,cIieeCodigoModular,cIieeNombre';
+        $campos = 'iNivelEvalId,cNivelEvalNombre';
         $where = '';
        
+
         $params = [
             'ere',
-            'vistaInstitucionEducativa',
+            'nivel_evaluaciones',
             $campos,
             $where
 
         ];
 
         try {
-            $preguntas = DB::select('EXEC ere.sp_SEL_Instituciones');
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+                @nombreEsquema = ?,
+                @nombreTabla = ?,    
+                @campos = ?,        
+                @condicionWhere = ?
+            ', $params);
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

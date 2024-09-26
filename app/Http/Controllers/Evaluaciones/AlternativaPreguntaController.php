@@ -48,11 +48,9 @@ class AlternativaPreguntaController extends ApiController
             (int) $request->iPreguntaId,
             $request->cAlternativaDescripcion,
             $request->cAlternativaLetra,
-            $request->bAlternativaCorrecto ? 1 : 0,
+            $request->bAlternativaCorrecta ? 1 : 0,
             $request->cAlternativaExplicacion
         ];
-
-        // return $params;
 
         try {
             $resp = DB::select('exec ere.Sp_INS_UPD_alternativa_pregunta

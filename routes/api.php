@@ -9,6 +9,9 @@ use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Ere\cursoController;
 use App\Http\Controllers\Ere\EvaluacionesController;
+use App\Http\Controllers\Ere\NivelEvaluacionController;
+use App\Http\Controllers\Ere\NivelTipoController;
+use App\Http\Controllers\Ere\TipoEvaluacionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +24,26 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'ie'], function () {
         Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
     });
+
+    Route::group(['prefix' => 'nivelTipo'], function () {
+        Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);
+    });
+
+    Route::group(['prefix' => 'tipoEvaluacion'], function () {
+        Route::get('obtenerTipoEvaluacion', [TipoEvaluacionController::class, 'obtenerTipoEvaluacion']);
+    });
+
+    Route::group(['prefix' => 'nivelEvaluacion'], function () {
+        Route::get('obtenerNivelEvaluacion', [NivelEvaluacionController::class, 'obtenerNivelEvaluacion']);
+    });
+
+    Route::group(['prefix' => 'evaluacion'], function () {
+        Route::get('obtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']);
+    });
+
+
+
+
 
     Route::group(['prefix' => 'competencias'], function () {
         Route::get('obtenerCompetencias', [CompetenciasController::class, 'obtenerCompetencias']);

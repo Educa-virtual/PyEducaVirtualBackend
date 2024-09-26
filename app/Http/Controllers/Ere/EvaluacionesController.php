@@ -14,12 +14,13 @@ class EvaluacionesController extends ApiController
     {
 
         $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
+        
         $where = '';
        
 
         $params = [
             'ere',
-            'evaluacion',
+            'vistaInstitucionEducativa',
             $campos,
             $where
 
@@ -27,14 +28,9 @@ class EvaluacionesController extends ApiController
 
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
-                @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
-                @condicionWhere = ?
-            ', $params);
+            $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
             return $this->successResponse(
-                $preguntas,
+                $evaluaciones,
                 'Datos obtenidos correctamente'
             );
         } catch (Exception $e) {
