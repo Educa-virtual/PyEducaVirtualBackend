@@ -26,5 +26,6 @@ Route::group(['prefix' => 'docente'], function () {
   });
   Route::group(['prefix' => 'silabo-metodologias'], function () {
     Route::post('list', [SilaboMetodologias::class, 'list']);
+    Route::post('store', [SilaboMetodologias::class, 'store']);
   });
 });
