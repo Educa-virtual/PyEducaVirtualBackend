@@ -16,7 +16,6 @@ class InstitucionesEducativasController extends ApiController
         $campos = 'iIieeId,cIieeCodigoModular,cIieeNombre';
         $where = '';
        
-
         $params = [
             'ere',
             'vistaInstitucionEducativa',
@@ -24,7 +23,6 @@ class InstitucionesEducativasController extends ApiController
             $where
 
         ];
-
 
         try {
             $preguntas = DB::select('EXEC ere.sp_SEL_Instituciones');

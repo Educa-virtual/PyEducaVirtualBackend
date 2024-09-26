@@ -63,6 +63,9 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
+    Route::group(['prefix' => 'Evaluaciones'], function () {
+        Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
+    });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
 Route::post('/verificar', [MailController::class, 'index']);
