@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\DOC\Curriculas;
-use App\Http\Controllers\DOC\Cursos;
-use App\Http\Controllers\DOC\DocenteCursos;
-use App\Http\Controllers\DOC\SilaboMetodologias;
-use App\Http\Controllers\DOC\Silabos;
-use App\Http\Controllers\DOC\TipoMetodologias;
+use App\Http\Controllers\acad\Curriculas;
+use App\Http\Controllers\acad\Cursos;
+use App\Http\Controllers\acad\DocenteCursos;
+use App\Http\Controllers\acad\RecursoDidacticos;
+use App\Http\Controllers\acad\RecursoSilabos;
+use App\Http\Controllers\acad\SilaboMetodologias;
+use App\Http\Controllers\acad\Silabos;
+use App\Http\Controllers\acad\TipoMetodologias;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'docente'], function () {
@@ -27,5 +29,12 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'silabo-metodologias'], function () {
     Route::post('list', [SilaboMetodologias::class, 'list']);
     Route::post('store', [SilaboMetodologias::class, 'store']);
+  });
+  Route::group(['prefix' => 'recurso-didactivos'], function () {
+    Route::post('list', [RecursoDidacticos::class, 'list']);
+  });
+  Route::group(['prefix' => 'recurso-silabos'], function () {
+    Route::post('list', [RecursoSilabos::class, 'list']);
+    Route::post('store', [RecursoSilabos::class, 'store']);
   });
 });
