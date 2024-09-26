@@ -62,7 +62,7 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
     });
-    Route::group(['prefix' => 'Evaluaciones'], function () {
+    Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
     });
 });
