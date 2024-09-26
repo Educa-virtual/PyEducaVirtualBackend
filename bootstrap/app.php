@@ -10,8 +10,7 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         using: function () {
-            Route::middleware('web')
-                ->prefix('')
+            Route::prefix('')
                 ->group(base_path('routes/web.php'));
             Route::middleware('api')
                 ->prefix('api')
