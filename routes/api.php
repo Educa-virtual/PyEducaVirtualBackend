@@ -12,6 +12,7 @@ use App\Http\Controllers\Ere\EvaluacionesController;
 use App\Http\Controllers\Ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelTipoController;
 use App\Http\Controllers\Ere\TipoEvaluacionController;
+use App\Http\Controllers\UgelesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,14 +38,6 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerNivelEvaluacion', [NivelEvaluacionController::class, 'obtenerNivelEvaluacion']);
     });
 
-    Route::group(['prefix' => 'evaluacion'], function () {
-        Route::get('obtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']);
-    });
-
-
-
-
-
     Route::group(['prefix' => 'competencias'], function () {
         Route::get('obtenerCompetencias', [CompetenciasController::class, 'obtenerCompetencias']);
     });
@@ -57,14 +50,20 @@ Route::group(['prefix' => 'ere'], function () {
         Route::patch('actualizarMatrizPreguntas', [BancoPreguntasController::class, 'actualizarMatrizPreguntas']);
         Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
     });
+
     Route::group(['prefix' => 'desempenos'], function () {
         Route::get('obtenerDesempenos', [DesempenosController::class, 'obtenerDesempenos']);
     });
+
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
+
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
+    });
+    Route::group(['prefix' => 'Evaluaciones'], function () {
+        Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
     });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
