@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 class BancoPreguntasRepository
 {
 
-    public function obtenerBancoPreguntasByParams($params)
+    public static function obtenerBancoPreguntasByParams($params)
     {
 
         $params = [

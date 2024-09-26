@@ -19,12 +19,10 @@ use Illuminate\Support\Facades\DB;
 class BancoPreguntasController extends ApiController
 {
     protected  $alternativaPreguntaRespository;
-    protected $bancoPreguntaRepository;
 
-    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository, BancoPreguntasRepository $bancoPreguntaRepository)
+    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository)
     {
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
-        $this->bancoPreguntaRepository = $bancoPreguntaRepository;
     }
 
     public function guardarActualizarPreguntaConAlternativas(Request $request)
@@ -145,17 +143,15 @@ class BancoPreguntasController extends ApiController
     {
 
         $params = [
-            $request->iCursoId,
-            $request->busqueda ?? '',
-            $request->iTipoPregId,
-            $request->bPreguntaEstado
+            'iCursoId' => $request->iCursoId,
+            'busqueda' => $request->busqueda ?? '',
+            'iTipoPregId' => $request->iTipoPregId,
+            'bPreguntaEstado' => $request->bPreguntaEstado
         ];
 
 
         try {
-            $preguntas = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
-             @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?
-            ', $params);
+            $preguntas = BancoPreguntasRepository::obtenerBancoPreguntasByParams($params);
 
             return $this->successResponse(
                 $preguntas,
@@ -203,7 +199,7 @@ class BancoPreguntasController extends ApiController
         ];
 
         try {
-            $preguntasDB = $this->bancoPreguntaRepository->obtenerBancoPreguntasByParams($params);
+            $preguntasDB = BancoPreguntasRepository::obtenerBancoPreguntasByParams($params);
 
             $preguntas = [];
             foreach ($preguntasDB as &$pregunta) {
