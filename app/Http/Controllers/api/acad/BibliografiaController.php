@@ -10,6 +10,49 @@ use Illuminate\Support\Facades\DB;
 
 class BibliografiaController extends Controller
 {
+    public function crud(Request $request){
+        $ocpion = $request->ocpion;
+        $iTipoBiblioId      = $request->iTipoBiblioId;
+        $iSilaboId          = $request->iSilaboId;
+        $cBiblioAutor       = $request->cBiblioAutor;
+        $cBiblioTitulo      = $request->cBiblioTitulo;
+        $cBiblioAnioEdicion = $request->cBiblioAnioEdicion;
+        $cBiblioEditorial   = $request->cBiblioEditorial;
+        $cBiblioUrl         = $request->cBiblioUrl;
+        $iEstado            = $request->iEstado;
+
+        $query = DB::select(
+            $ocpion            ,
+            $iTipoBiblioId     ,
+            $iSilaboId         ,
+            $cBiblioAutor      ,
+            $cBiblioTitulo     ,
+            $cBiblioAnioEdicion,
+            $cBiblioEditorial  ,
+            $cBiblioUrl        ,
+            $iEstado           
+        );
+
+        try{
+            $response = [
+                'validated' => true, 
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+
+        }catch(Exception $e){
+            $response = [
+                'validated' => true, 
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+        
+        return new JsonResponse($response,$estado);
+    }
     public function save(Request $request){
         
         $iTipoBiblioId      = $request->iTipoBiblioId;
@@ -193,7 +236,7 @@ class BibliografiaController extends Controller
             cBiblioAnioEdicion,
             cBiblioEditorial,
             cBiblioUrl,
-            iEstado,
+            iEstado
             FROM acad.bilbiografia".$opcion[$seleccion]);
     
         try{
