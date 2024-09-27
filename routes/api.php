@@ -11,7 +11,7 @@ use App\Http\Controllers\api\acad\BibliografiaController;
 use App\Http\Controllers\CredencialController;
 use App\Http\Controllers\api\seg\sel\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\api\seg\sel\ListarCursosController;
-use App\Http\Controllers\AutenticarUsurioController;
+use App\Http\Controllers\api\acad\AutenticarUsurioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Ere\cursoController;
@@ -19,7 +19,7 @@ use App\Http\Controllers\Ere\EvaluacionesController;
 use App\Http\Controllers\Ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelTipoController;
 use App\Http\Controllers\Ere\TipoEvaluacionController;
-use App\Http\Controllers\UgelesController;
+use App\Http\Controllers\Ere\UgelesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -73,7 +73,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
     });
 });
-Route::post(['prefix'=>'acad'],function(){
+Route::group(['prefix'=>'acad'],function(){
 
     Route::group(['prefix' => 'AutenticarU'], function () {
         Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
