@@ -43,29 +43,10 @@ class BancoPreguntasController extends ApiController
 
         // encabezado
 
-        $iEncabPregId = null;
 
-        if ($bConEncabezado) {
-            try {
-                $paramsEncabezado = [
-                    'iEncabPregId' => $request->encabezado['iEncabPregId'],
-                    'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
-                    'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
-                    'iCursoId' =>  $request->iCursoId,
-                    'iNivelGradoId' => $request->iNivelGradoId,
-                    'iEspecialistaId' => $request->iEspecialistaId
-                ];
-                $resp = BancoPreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
-                if (count($resp) < 1) {
-                    DB::rollBack();
-                    return $this->errorResponse(null, 'Error al guardar el encabezado');
-                }
-                $resp = $resp[0];
-                $iEncabPregId = $resp->id;
-            } catch (Exception $e) {
-                DB::rollBack();
-                return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
-            }
+        $iEncabPregId = $request->encabezado['iEncabPregId'];
+        if (!$bConEncabezado) {
+            $iEncabPregId = null;
         }
 
         // params pregunta
@@ -308,6 +289,30 @@ class BancoPreguntasController extends ApiController
             return $response;
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 'Error al generar');
+        }
+    }
+
+    public function guardarActualizarEncabezadoPregunta(Request $request)
+    {
+        try {
+            $paramsEncabezado = [
+                'iEncabPregId' => $request->iEncabPregId,
+                'cEncabPregTitulo' => $request->cEncabPregTitulo,
+                'cEncabPregContenido' => $request->cEncabPregContenido,
+                'iCursoId' =>  $request->iCursoId,
+                'iNivelGradoId' => $request->iNivelGradoId,
+                'iEspecialistaId' => $request->iEspecialistaId
+            ];
+            $resp = BancoPreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+            if (count($resp) < 1) {
+                DB::rollBack();
+                return $this->errorResponse(null, 'Error al guardar el encabezado');
+            }
+            $resp = $resp[0];
+            return $this->successResponse($resp, 'Datos guardados correctamente');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
         }
     }
 }
