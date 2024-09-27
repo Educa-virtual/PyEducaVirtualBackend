@@ -20,5 +20,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'banco-preguntas'], function () {
         Route::post('guardarActualizarPreguntaConAlternativas', [BancoPreguntasController::class, 'guardarActualizarPreguntaConAlternativas']);
         Route::delete('eliminarBancoPreguntasById/{id}', [BancoPreguntasController::class, 'eliminarBancoPreguntasById']);
+
+        Route::get('obtenerEncabezadosPreguntas', [BancoPreguntasController::class, 'obtenerEncabezadosPreguntas']);
     });
 });

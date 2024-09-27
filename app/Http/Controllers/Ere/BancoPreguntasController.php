@@ -27,6 +27,7 @@ class BancoPreguntasController extends ApiController
 
     public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
+        $bConEncabezado = $request->encabezado['bConEncabezado'] ? 1 : 0;
         $fechaActual = new DateTime();
         $fechaActual->setTime(0, 0, 0);
         $hora = $request->iHoras;
@@ -35,6 +36,39 @@ class BancoPreguntasController extends ApiController
         $fechaActual->setTime($hora, $minutos, $segundos);
         $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
 
+
+
+        DB::beginTransaction();
+        $resp = null;
+
+        // encabezado
+
+        $iEncabPregId = null;
+
+        if ($bConEncabezado) {
+            try {
+                $paramsEncabezado = [
+                    'iEncabPregId' => $request->encabezado['iEncabPregId'],
+                    'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
+                    'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
+                    'iCursoId' =>  $request->iCursoId,
+                    'iNivelGradoId' => $request->iNivelGradoId,
+                    'iEspecialistaId' => $request->iEspecialistaId
+                ];
+                $resp = BancoPreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+                if (count($resp) < 1) {
+                    DB::rollBack();
+                    return $this->errorResponse(null, 'Error al guardar el encabezado');
+                }
+                $resp = $resp[0];
+                $iEncabPregId = $resp->id;
+            } catch (Exception $e) {
+                DB::rollBack();
+                return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
+            }
+        }
+
+        // params pregunta
         $params = [
             (int) $request->iPreguntaId,
             (int)$request->iCursoId,
@@ -46,10 +80,10 @@ class BancoPreguntasController extends ApiController
             $fechaConHora,
             $request->bPreguntaEstado,
             $request->cPreguntaClave,
+            $iEncabPregId
         ];
 
-        DB::beginTransaction();
-        $resp = null;
+        // pregunta
         try {
             $resp = DB::select('exec ere.Sp_INS_UPD_pregunta 
                 @_iPreguntaId = ?
@@ -62,6 +96,7 @@ class BancoPreguntasController extends ApiController
                 , @_dtPreguntaTiempo = ?
                 , @_bPreguntaEstado = ?
                 , @_cPreguntaClave = ?
+                , @_iEncabPregId = ?
             ', $params);
             $resp = $resp[0];
         } catch (Exception $e) {
@@ -69,6 +104,7 @@ class BancoPreguntasController extends ApiController
             return $this->errorResponse($e, 'Error al guardar los datos');
         }
 
+        // alternativas
         try {
 
             foreach ($request->datosAlternativas as $item) {
@@ -162,6 +198,23 @@ class BancoPreguntasController extends ApiController
         }
     }
 
+
+    public function obtenerEncabezadosPreguntas(Request $request)
+    {
+        $params = [
+            'iNivelGradoId' => $request->iNivelGradoId,
+            'iCursoId' => $request->iCursoId,
+            'iEspecialistaId' => $request->iEspecialistaId
+        ];
+
+        try {
+            $cabezeras = BancoPreguntasRepository::obtenerCabecerasPregunta($params);
+            return $this->successResponse($cabezeras, 'Datos obtenidos corrctamente');
+        } catch (Exception $e) {
+
+            return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
 
     public function eliminarBancoPreguntasById(Request $request, $id)
     {
