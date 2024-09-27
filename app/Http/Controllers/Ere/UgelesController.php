@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Ere;
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 
