@@ -8,7 +8,9 @@ use App\Http\Controllers\acad\RecursoDidacticos;
 use App\Http\Controllers\acad\RecursoSilabos;
 use App\Http\Controllers\acad\SilaboMetodologias;
 use App\Http\Controllers\acad\Silabos;
+use App\Http\Controllers\acad\TipoBibliografias;
 use App\Http\Controllers\acad\TipoMetodologias;
+use App\Http\Controllers\acad\BibliografiaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'docente'], function () {
@@ -41,5 +43,16 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'detalle-evaluaciones'], function () {
     Route::post('list', [DetalleEvaluaciones::class, 'list']);
     Route::post('store', [DetalleEvaluaciones::class, 'store']);
+  });
+  Route::group(['prefix' => 'bibliografias'], function () {
+    // Route::post('/save_biblio', [BibliografiaController::class, 'save']);
+    // Route::post('/listar_biblio', [BibliografiaController::class, 'list']);
+    // Route::post('/del_biblio', [BibliografiaController::class, 'save']);
+
+    Route::post('/list', [BibliografiaController::class, 'list']);
+    Route::post('/store', [BibliografiaController::class, 'store']);
+  });
+  Route::group(['prefix' => 'tipo-bibliografias'], function () {
+    Route::post('list', [TipoBibliografias::class, 'list']);
   });
 });
