@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\acad\Curriculas;
 use App\Http\Controllers\acad\Cursos;
+use App\Http\Controllers\acad\DetalleEvaluaciones;
 use App\Http\Controllers\acad\DocenteCursos;
 use App\Http\Controllers\acad\RecursoDidacticos;
 use App\Http\Controllers\acad\RecursoSilabos;
@@ -36,5 +37,9 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'recurso-silabos'], function () {
     Route::post('list', [RecursoSilabos::class, 'list']);
     Route::post('store', [RecursoSilabos::class, 'store']);
+  });
+  Route::group(['prefix' => 'detalle-evaluaciones'], function () {
+    Route::post('list', [DetalleEvaluaciones::class, 'list']);
+    Route::post('store', [DetalleEvaluaciones::class, 'store']);
   });
 });

@@ -8,13 +8,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class RecursoSilabos extends Controller
+class DetalleEvaluaciones extends Controller
 {
     protected $hashids;
-    protected $iRecSilaboId;
+    protected $iDetEvaId;
     protected $iSilaboId;
-    protected $iRecDidacticoId;
-
 
     public function __construct()
     {
@@ -31,41 +29,34 @@ class RecursoSilabos extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iRecSilaboId) {
-            $iRecSilaboId = $this->hashids->decode($request->iRecSilaboId);
-            $iRecSilaboId = count($iRecSilaboId) > 0 ? $iRecSilaboId[0] : $iRecSilaboId;
+        if ($request->iDetEvaId) {
+            $iDetEvaId = $this->hashids->decode($request->iDetEvaId);
+            $iDetEvaId = count($iDetEvaId) > 0 ? $iDetEvaId[0] : $iDetEvaId;
         }
         if ($request->iSilaboId) {
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
-        if ($request->iRecDidacticoId) {
-            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
-            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
-        }
-
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iRecSilaboId                           ?? NULL,
+            $iDetEvaId                              ?? NULL,
             $iSilaboId                              ?? NULL,
-            $iRecDidacticoId                        ?? NULL,
-            $request->cRecSilaboDescripcion         ?? NULL,
+            $request->cDetEvalDetalles              ?? NULL,
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
-                ?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_DETALLE_EVALUACIONES
+                ?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
-                $value->iRecSilaboId = $this->hashids->encode($value->iRecSilaboId);
+                $value->iDetEvaId = $this->hashids->encode($value->iDetEvaId);
                 $value->iSilaboId = $this->hashids->encode($value->iSilaboId);
-                $value->iRecDidacticoId = $this->hashids->encode($value->iRecDidacticoId);
             }
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
@@ -88,38 +79,32 @@ class RecursoSilabos extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iRecSilaboId) {
-            $iRecSilaboId = $this->hashids->decode($request->iRecSilaboId);
-            $iRecSilaboId = count($iRecSilaboId) > 0 ? $iRecSilaboId[0] : $iRecSilaboId;
+        if ($request->iDetEvaId) {
+            $iDetEvaId = $this->hashids->decode($request->iDetEvaId);
+            $iDetEvaId = count($iDetEvaId) > 0 ? $iDetEvaId[0] : $iDetEvaId;
         }
         if ($request->iSilaboId) {
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
-        if ($request->iRecDidacticoId) {
-            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
-            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
-        }
-
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iRecSilaboId                           ?? NULL,
+            $iDetEvaId                              ?? NULL,
             $iSilaboId                              ?? NULL,
-            $iRecDidacticoId                        ?? NULL,
-            $request->cRecSilaboDescripcion         ?? NULL,
+            $request->cDetEvalDetalles              ?? NULL,
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
-                ?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_DETALLE_EVALUACIONES
+                ?,?,?,?,?,?', $parametros);
 
-            if ($data[0]->iRecSilaboId > 0) {
+            if ($data[0]->iDetEvaId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
                 $codeResponse = 200;
