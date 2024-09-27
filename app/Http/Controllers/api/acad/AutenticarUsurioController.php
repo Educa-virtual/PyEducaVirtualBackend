@@ -10,10 +10,12 @@ use Illuminate\Http\Request;
 
 class AutenticarUsurioController extends ApiController
 {
-    public function obtenerAutenticacion(){
-        $campo = 'iEspecialistaId,cPersNombre,cPersDocumento';
-        $where = '04431751';
-        dd($campo);
+    public function obtenerAutenticacion()
+    {
+        
+        $campo = 'iEspecialistaId, cPersNombre, cPersDocumento';
+        $where = '45650699';
+        
         $params =[
             'acad',
             'V_EspecialistaUgel',
@@ -22,22 +24,22 @@ class AutenticarUsurioController extends ApiController
         ];
 
         try { 
-            $pregunta = DB ::select('grl.sp_SEL_DesdeTablaOVista
+            $preguntas = DB ::select('EXEC grl.sp_SEL_DesdeTablaOVista
                 @nombreEsquema = ?,  
                 @nombreObjeto = ?,
-                @campos=?,         
+                @campos= ?,         
                 @condicionWhere = ?
         
-            ',$params);
-            /*dd($pregunta);*/
+            ', $params);
+           
             return $this->successResponse(
-                $pregunta,
+                $preguntas,
                 'Datos Obtenidos Correctamente'
             );
         }
         catch (Exception $e){
 
-            return $this->errorResponse($e,'Error Ups!');
+            return $this->errorResponse($e,'Error Upssss!');
         }
     }
 }
