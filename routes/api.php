@@ -11,6 +11,7 @@ use App\Http\Controllers\api\acad\BibliografiaController;
 use App\Http\Controllers\CredencialController;
 use App\Http\Controllers\api\seg\sel\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\api\seg\sel\ListarCursosController;
+use App\Http\Controllers\AutenticarUsurioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\Ere\cursoController;
@@ -70,6 +71,12 @@ Route::group(['prefix' => 'ere'], function () {
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
+    });
+});
+Route::post(['prefix'=>'acad'],function(){
+
+    Route::group(['prefix' => 'AutenticarU'], function () {
+        Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
     });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
