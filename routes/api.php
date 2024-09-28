@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Ere\InstitucionesEducativasController;
-use App\Http\Controllers\Ere\BancoPreguntasController;
 use App\Http\Controllers\Ere\CapacidadesController;
 use App\Http\Controllers\Ere\CompetenciasController;
 use App\Http\Controllers\Ere\DesempenosController;
@@ -53,10 +52,6 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerCapacidades', [CapacidadesController::class, 'obtenerCapacidades']);
     });
 
-    Route::group(['prefix' => 'banco-preguntas'], function () {
-        Route::patch('actualizarMatrizPreguntas', [BancoPreguntasController::class, 'actualizarMatrizPreguntas']);
-        Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
-    });
 
     Route::group(['prefix' => 'desempenos'], function () {
         Route::get('obtenerDesempenos', [DesempenosController::class, 'obtenerDesempenos']);
@@ -73,7 +68,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
     });
 });
-Route::group(['prefix'=>'acad'],function(){
+Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'AutenticarU'], function () {
         Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
@@ -94,11 +89,11 @@ Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 //     Route::post('/me', [AuthController::class, 'me'])->middleware('auth:api')->name('me');
 // });
 
-Route::post('/login', [CredencialescCredUsuariocClaveController::class,'login']);
-Route::post('/verificar', [MailController::class,'index']);
-Route::post('/verificar_codigo', [MailController::class,'comparar']);
-Route::post('/listar_cursos', [ListarCursosController::class,'cursos']);
-Route::post('/opcion_actividades',[ActividadesAprendizajeController::class,'crud']);
+Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
+Route::post('/verificar', [MailController::class, 'index']);
+Route::post('/verificar_codigo', [MailController::class, 'comparar']);
+Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
+Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
 // Route::post('/listar_actividades',[ActividadesAprendizajeController::class,'list']);
 // Route::post('/del_actividades',[ActividadesAprendizajeController::class,'save']);
 // Route::post('/upd_actividades',[ActividadesAprendizajeController::class,'list']);

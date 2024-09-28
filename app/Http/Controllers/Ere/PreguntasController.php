@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Ere;
 
-use App\Repositories\BancoPreguntasRepository;
+use App\Repositories\PreguntasRepository;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\WordController;
 use App\Repositories\AlternativaPreguntaRespository;
@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
-class BancoPreguntasController extends ApiController
+class PreguntasController extends ApiController
 {
     protected  $alternativaPreguntaRespository;
 
@@ -168,7 +168,7 @@ class BancoPreguntasController extends ApiController
 
 
         try {
-            $preguntas = BancoPreguntasRepository::obtenerBancoPreguntasByParams($params);
+            $preguntas = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
             return $this->successResponse(
                 $preguntas,
@@ -189,7 +189,7 @@ class BancoPreguntasController extends ApiController
         ];
 
         try {
-            $cabezeras = BancoPreguntasRepository::obtenerCabecerasPregunta($params);
+            $cabezeras = PreguntasRepository::obtenerCabecerasPregunta($params);
             return $this->successResponse($cabezeras, 'Datos obtenidos corrctamente');
         } catch (Exception $e) {
 
@@ -253,7 +253,7 @@ class BancoPreguntasController extends ApiController
         ];
 
         try {
-            $preguntasDB = BancoPreguntasRepository::obtenerBancoPreguntasByParams($params);
+            $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
             $preguntas = [];
             foreach ($preguntasDB as &$pregunta) {
@@ -323,7 +323,7 @@ class BancoPreguntasController extends ApiController
                 'iNivelGradoId' => $request->iNivelGradoId,
                 'iEspecialistaId' => $request->iEspecialistaId
             ];
-            $resp = BancoPreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+            $resp = PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
             if (count($resp) < 1) {
                 DB::rollBack();
                 return $this->errorResponse(null, 'Error al guardar el encabezado');
