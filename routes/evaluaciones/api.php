@@ -5,7 +5,6 @@ use App\Http\Controllers\Evaluaciones\AlternativaPreguntaController;
 use App\Http\Controllers\Evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
 
-// Route::group(['prefix' => 'ceid', 'middleware' => 'auth:api'], function () {});
 Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'tipo-preguntas'], function () {
         Route::get('obtenerTipoPreguntas', [TipoPreguntaController::class, 'obtenerTipoPreguntas']);
@@ -22,5 +21,10 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::delete('eliminarBancoPreguntasById/{id}', [BancoPreguntasController::class, 'eliminarBancoPreguntasById']);
 
         Route::get('obtenerEncabezadosPreguntas', [BancoPreguntasController::class, 'obtenerEncabezadosPreguntas']);
+    });
+
+    Route::group(['prefix' => 'encabezado-preguntas'], function () {
+        Route::post('guardarActualizarEncabezadoPregunta', [BancoPreguntasController::class, 'guardarActualizarEncabezadoPregunta']);
+        Route::delete('eliminarEncabezadoPreguntaById/{id}', [BancoPreguntasController::class, 'eliminarEncabezadoPreguntaById']);
     });
 });

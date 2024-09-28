@@ -197,6 +197,26 @@ class BancoPreguntasController extends ApiController
         }
     }
 
+
+    public  function eliminarEncabezadoPreguntaById($id)
+    {
+        $params = [
+            $id
+        ];
+
+        try {
+            $resp = DB::select('exec ere.Sp_DEL_encabezado_pregunta @_iEncabPregId = ?', $params);
+            if (count($resp) === 0) {
+                return $this->successResponse(null, 'Error al eliminar');
+            }
+            $resp = $resp[0];
+            return $this->successResponse($resp, $resp->mensaje);
+        } catch (Exception $e) {
+            $message = $this->returnError($e, 'Error al eliminar');
+            return $this->errorResponse($e, $message);
+        }
+    }
+
     public function eliminarBancoPreguntasById(Request $request, $id)
     {
         $params = [
