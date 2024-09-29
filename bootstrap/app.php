@@ -10,14 +10,17 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         using: function () {
-            Route::middleware('web')
-                ->prefix('web')
+            Route::prefix('')
                 ->group(base_path('routes/web.php'));
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
             Route::prefix('api')
                 ->group(base_path('routes/docente.php'));
+            Route::prefix('api')
+                ->group(base_path('routes/evaluaciones/api.php'));
+            Route::prefix('api')
+                ->group(base_path('routes/ere/api.php'));
         },
         commands: __DIR__ . '/../routes/console.php',
         health: '/up'

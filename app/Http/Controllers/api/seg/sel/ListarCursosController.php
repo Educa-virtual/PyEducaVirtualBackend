@@ -10,9 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class ListarCursosController extends Controller
 {
-    public function cursos(Request $request){
+    public function cursos(Request $request)
+    {
         $persona_id = $request->iPersId;
-        
+
         $sel_query = DB::select('select
                             acur.iCursoId,
                             acur.iCurrId,
@@ -30,26 +31,25 @@ class ListarCursosController extends Controller
                             inner join acad.docentes as acdoc on acdoc.iDocenteId=adoc.iDocenteId
                             inner join acad.ies_cursos as aies on aies.iIeCursoId=adoc.iIeCursoId
                             inner join acad.cursos as acur on acur.iCursoId=aies.iIeCursoId
-                            where acdoc.iPersId=?',[$persona_id]);
+                            where acdoc.iPersId=?', [$persona_id]);
 
-        try{
+        try {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'se obtuvo la información',
                 'data' => $sel_query,
             ];
 
             $estado = 200;
-
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
 }

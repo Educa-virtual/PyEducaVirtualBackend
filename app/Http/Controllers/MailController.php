@@ -40,11 +40,11 @@ class MailController extends Controller
                 $cCorreo = $e->cPersConNombre;
             }
         }
-        
-        if($emails){
+
+        if ($emails) {
             Mail::to($cCorreo)->send(new CodigoMail($mailData)); //Verificar que se envie para poder actualizar
         }
-        
+
 
         DB::update('update seg.credenciales set cCredCodigoVerif = ? where iPersId = ?', [$cCodeVerif, $iPersId]);
         try {
