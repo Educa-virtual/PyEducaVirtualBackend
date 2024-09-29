@@ -33,7 +33,9 @@ class PreguntasRepository
             $data['cEncabPregContenido'] ?? '',
             $data['iCursoId'],
             $data['iNivelGradoId'],
-            $data['iEspecialistaId']
+            $data['iColumnValue'],
+            $data['cColumnName'] ?? 'iEspecialistaId',
+            $data['cSchemaName'] ?? 'ere'
         ];
 
         $result = DB::select(
@@ -42,7 +44,7 @@ class PreguntasRepository
                 , @_cEncabPregContenido = ?
                 , @_iCursoId  = ?
                 , @_iNivelGradoId  = ?
-                , @_iEspecialistaId  = ?
+                , @_iColumnValue  = ?
                 ',
             $params
         );
@@ -58,7 +60,7 @@ class PreguntasRepository
         $where .= " AND iEspecialistaId = {$params['iEspecialistaId']}";
 
         $params = [
-            'ere',
+            $params['schema'] ?? 'ere',
             'encabezado_preguntas',
             $campos,
             $where

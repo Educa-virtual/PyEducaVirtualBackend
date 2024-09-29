@@ -182,11 +182,17 @@ class PreguntasController extends ApiController
 
     public function obtenerEncabezadosPreguntas(Request $request)
     {
+        $type = $request->type;
+
         $params = [
             'iNivelGradoId' => $request->iNivelGradoId,
             'iCursoId' => $request->iCursoId,
-            'iEspecialistaId' => $request->iEspecialistaId
+            'iEspecialistaId' => $request->iEspecialistaId,
         ];
+
+        if ($type === 'eval') {
+            $params['schema'] = 'eval';
+        }
 
         try {
             $cabezeras = PreguntasRepository::obtenerCabecerasPregunta($params);
@@ -314,6 +320,9 @@ class PreguntasController extends ApiController
 
     public function guardarActualizarEncabezadoPregunta(Request $request)
     {
+
+        $type = $request->type;
+
         try {
             $paramsEncabezado = [
                 'iEncabPregId' => $request->iEncabPregId,
@@ -321,8 +330,12 @@ class PreguntasController extends ApiController
                 'cEncabPregContenido' => $request->cEncabPregContenido,
                 'iCursoId' =>  $request->iCursoId,
                 'iNivelGradoId' => $request->iNivelGradoId,
-                'iEspecialistaId' => $request->iEspecialistaId
+                'iColumnValue' => $request->iEspecialistaId
             ];
+            if ($type === 'eval') {
+                $paramsEncabezado['cColumnName'] = 'iDocenteId';
+                $paramsEncabezado['cSchemaName'] = 'eval';
+            }
             $resp = PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
             if (count($resp) < 1) {
                 DB::rollBack();
