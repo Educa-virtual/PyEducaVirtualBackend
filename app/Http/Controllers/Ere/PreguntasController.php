@@ -346,6 +346,7 @@ class PreguntasController extends ApiController
             $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
             $preguntas = [];
+
             foreach ($preguntasDB as &$pregunta) {
                 if ($pregunta->iEncabPregId == -1) {
                     $preguntaOutput = '';
