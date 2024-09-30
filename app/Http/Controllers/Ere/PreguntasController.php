@@ -372,11 +372,12 @@ class PreguntasController extends ApiController
                         if ($subPreguntas->cPreguntaTextoAyuda != null && strlen($subPreguntas->cPreguntaTextoAyuda) > 0) {
                             $preguntaOutput .= $subPreguntas->cPreguntaTextoAyuda;
                         }
-
-                        foreach ($subPreguntas->alternativas as &$alternativa) {
-                            $preguntaOutput .= '<p>';
-                            $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
-                            $preguntaOutput .= '</p>';
+                        if (isset($subPreguntas->alternativas) && is_array($subPreguntas->alternativas)) {
+                            foreach ($subPreguntas->alternativas as &$alternativa) {
+                                $preguntaOutput .= '<p>';
+                                $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
+                                $preguntaOutput .= '</p>';
+                            }
                         }
                     }
 
