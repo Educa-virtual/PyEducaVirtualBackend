@@ -24,6 +24,9 @@ class PreguntasRepository
         $preguntas = [];
         foreach ($preguntasDB as $item) {
             $item->preguntas = json_decode($item->preguntas);
+            if (gettype($item->bPreguntaEstado) === 'string') {
+                $item->bPreguntaEstado = (bool) $item->bPreguntaEstado;
+            }
             if ($item->iEncabPregId == -1) {
                 if (is_array($item->preguntas)) {
                     $preguntas = array_merge($preguntas, $item->preguntas);

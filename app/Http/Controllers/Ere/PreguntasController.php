@@ -116,7 +116,7 @@ class PreguntasController extends ApiController
             }
 
             // alternativas
-            $alternativasActualizar  = $pregunta['alternativas'];
+            $alternativasActualizar  = $pregunta['alternativas'] ?? [];
             $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
             // eliminar alternativas
             foreach ($alternativasEliminar as $alternativa) {
@@ -259,7 +259,7 @@ class PreguntasController extends ApiController
                 'Datos obtenidos correctamente'
             );
         } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al obtener los datos');
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos');
         }
     }
 
