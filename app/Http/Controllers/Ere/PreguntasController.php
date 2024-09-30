@@ -190,7 +190,7 @@ class PreguntasController extends ApiController
         }
         DB::commit();
 
-        return $this->successResponse($resp, 'Cambion realizados correctamente');
+        return $this->successResponse(null, 'Cambion realizados correctamente');
     }
     public function actualizarMatrizPreguntas(Request $request)
     {
@@ -356,10 +356,12 @@ class PreguntasController extends ApiController
                         $preguntaOutput .= $pregunta->cPreguntaTextoAyuda;
                     }
 
-                    foreach ($pregunta->alternativas as &$alternativa) {
-                        $preguntaOutput .= '<p>';
-                        $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
-                        $preguntaOutput .= '</p>';
+                    if (isset($pregunta->alternativas) && is_array($pregunta->alternativas)) {
+                        foreach ($pregunta->alternativas as &$alternativa) {
+                            $preguntaOutput .= '<p>';
+                            $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
+                            $preguntaOutput .= '</p>';
+                        }
                     }
                     array_push($preguntas, $preguntaOutput);
                     $preguntaOutput = '';
