@@ -18,9 +18,23 @@ class PreguntasRepository
             $params['ids'] ?? ''
         ];
 
-        $preguntas = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
+        $preguntasDB = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?
             ', $params);
+        $preguntas = [];
+        foreach ($preguntasDB as $item) {
+            $item->preguntas = json_decode($item->preguntas);
+            if (gettype($item->bPreguntaEstado) === 'string') {
+                $item->bPreguntaEstado = (bool) $item->bPreguntaEstado;
+            }
+            if ($item->iEncabPregId == -1) {
+                if (is_array($item->preguntas)) {
+                    $preguntas = array_merge($preguntas, $item->preguntas);
+                }
+            } else {
+                array_push($preguntas, $item);
+            }
+        }
 
         return $preguntas;
     }

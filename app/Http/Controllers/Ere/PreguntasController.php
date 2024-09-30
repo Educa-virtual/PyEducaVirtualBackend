@@ -27,46 +27,76 @@ class PreguntasController extends ApiController
 
     public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
-        $bConEncabezado = $request->encabezado['bConEncabezado'] ? 1 : 0;
-        $fechaActual = new DateTime();
-        $fechaActual->setTime(0, 0, 0);
-        $hora = $request->iHoras;
-        $minutos = $request->iMinutos;
-        $segundos = $request->iSegundos;
-        $fechaActual->setTime($hora, $minutos, $segundos);
-        $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
+        $iEncabPregId = $request->encabezado['iEncabPregId'];
+
 
 
 
         DB::beginTransaction();
-        $resp = null;
 
         // encabezado
 
 
-        $iEncabPregId = $request->encabezado['iEncabPregId'];
-        if (!$bConEncabezado) {
+        $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
+        if ($iEncabPregId === -1) {
             $iEncabPregId = null;
+        } else {
+            $paramsEncabezado = [
+                'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
+                'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
+                'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
+                'iCursoId' => 1,
+                'iNivelGradoId' => 1,
+                'iColumnValue' => 1,
+                'cColumnName' => 'iEspecialistaId',
+                'cSchemaName'  => 'ere'
+            ];
+            try {
+                $resp =  PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+                $resp = $resp[0];
+                $iEncabPregId = $resp->id;
+            } catch (Exception $e) {
+                DB::rollBack();
+                return $this->errorResponse($e, 'Error al guardar el encabezado');
+            }
         }
 
         // params pregunta
-        $params = [
-            (int) $request->iPreguntaId,
-            (int)$request->iCursoId,
-            (int)$request->iTipoPregId,
-            $request->cPregunta,
-            $request->cPreguntaTextoAyuda,
-            (int)$request->iPreguntaNivel,
-            (int)$request->iPreguntaPeso,
-            $fechaConHora,
-            $request->bPreguntaEstado,
-            $request->cPreguntaClave,
-            $iEncabPregId
-        ];
 
-        // pregunta
-        try {
-            $resp = DB::select('exec ere.Sp_INS_UPD_pregunta 
+        $preguntas = $request->preguntas;
+        $preguntasActualizar = $preguntas;
+        $preguntasEliminar = $request->preguntasEliminar;
+
+        foreach ($preguntasActualizar as $key => $pregunta) {
+
+            $fechaActual = new DateTime();
+            $fechaActual->setTime(0, 0, 0);
+            $hora = $pregunta['iHoras'];
+            $minutos = $pregunta['iMinutos'];
+            $segundos = $pregunta['iSegundos'];
+            $fechaActual->setTime($hora, $minutos, $segundos);
+            $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
+            $iCursoId = 1;
+
+            $params = [
+                $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'],
+                (int) $iCursoId,
+                (int)$pregunta['iTipoPregId'],
+                $pregunta['cPregunta'],
+                $pregunta['cPreguntaTextoAyuda'] ?? '',
+                (int)$pregunta['iPreguntaNivel'],
+                (int)$pregunta['iPreguntaPeso'],
+                $fechaConHora,
+                $pregunta['bPreguntaEstado'],
+                $pregunta['cPreguntaClave'],
+                $iEncabPregId
+            ];
+
+
+            // pregunta
+            $respPregunta = null;
+            try {
+                $respPregunta = DB::select('exec ere.Sp_INS_UPD_pregunta 
                 @_iPreguntaId = ?
                 , @_iCursoId = ?
                 , @_iTipoPregId = ?
@@ -79,34 +109,88 @@ class PreguntasController extends ApiController
                 , @_cPreguntaClave = ?
                 , @_iEncabPregId = ?
             ', $params);
-            $resp = $resp[0];
-        } catch (Exception $e) {
-            DB::rollBack();
-            return $this->errorResponse($e, 'Error al guardar los datos');
-        }
-
-        // alternativas
-        try {
-
-            foreach ($request->datosAlternativas as $item) {
-                $paramsAlternativa = [
-                    $item['isLocal'] ?? false ? 0 : (int) $item['iAlternativaId'],
-                    (int) $resp->id,
-                    $item['cAlternativaDescripcion'],
-                    $item['cAlternativaLetra'],
-                    $item['bAlternativaCorrecta'] ? 1 : 0,
-                    $item['cAlternativaExplicacion']
-                ];
-                $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
+                $respPregunta = $respPregunta[0];
+            } catch (Exception $e) {
+                DB::rollBack();
+                return $this->errorResponse($e, 'Error al guardar los datos');
             }
-        } catch (Exception $e) {
-            DB::rollBack();
-            $message = $this->returnError($e, 'Error al guardar los datos');
-            return $this->errorResponse($e, $message);
+
+            // alternativas
+            $alternativasActualizar  = $pregunta['alternativas'] ?? [];
+            $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
+            // eliminar alternativas
+            foreach ($alternativasEliminar as $alternativa) {
+                $paramsAlternativaEliminar = [
+                    $alternativa['iAlternativaId']
+                ];
+                try {
+                    $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+
+                    // $resp = $resp[0];
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    $defaultMessage = $this->returnError($e, 'Error al eliminar');
+                    return $this->errorResponse($e, $defaultMessage);
+                }
+            }
+
+            // guardar actualizar alternativas
+            foreach ($alternativasActualizar as $alternativa) {
+
+                try {
+                    $paramsAlternativa = [
+                        $alternativa['isLocal'] ?? false ? 0 : (int) $alternativa['iAlternativaId'],
+                        (int) $respPregunta->id,
+                        $alternativa['cAlternativaDescripcion'],
+                        $alternativa['cAlternativaLetra'],
+                        $alternativa['bAlternativaCorrecta'] ? 1 : 0,
+                        $alternativa['cAlternativaExplicacion'] ?? ''
+                    ];
+                    $resp = $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
+                    return $this->errorResponse($e->getMessage(), $message);
+                }
+            }
         }
 
+        // eliminar preguntas
+        foreach ($preguntasEliminar as $pregunta) {
+            $alternativasEliminar = array_merge($pregunta['alternativas'], $pregunta['alternativasEliminadas'] ?? []);
+            foreach ($alternativasEliminar as $alternativa) {
+                $paramsAlternativaEliminar = [
+                    $alternativa['iAlternativaId']
+                ];
+                try {
+                    $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+
+                    $resp = $resp[0];
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    $defaultMessage = $this->returnError($e, 'Error al eliminar');
+                    return $this->errorResponse($e, $defaultMessage);
+                }
+            }
+
+            try {
+
+                $resp = DB::select('exec ere.Sp_DEL_pregunta @_iPreguntaId = ?', [$pregunta['iPreguntaId']]);
+
+                if (count($resp) === 0) {
+                    return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
+                }
+
+                $resp = $resp[0];
+            } catch (Exception $e) {
+                DB::rollBack();
+                $message = $this->returnError($e, 'Error al eliminar la pregunta');
+                return $this->errorResponse($e, $message);
+            }
+        }
         DB::commit();
-        return $this->successResponse($resp, $resp->mensaje);
+
+        return $this->successResponse($resp, 'Cambion realizados correctamente');
     }
     public function actualizarMatrizPreguntas(Request $request)
     {
@@ -175,7 +259,7 @@ class PreguntasController extends ApiController
                 'Datos obtenidos correctamente'
             );
         } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al obtener los datos');
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos');
         }
     }
 
@@ -262,22 +346,43 @@ class PreguntasController extends ApiController
             $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
             $preguntas = [];
+
             foreach ($preguntasDB as &$pregunta) {
-                $preguntaOutput = '';
-                $preguntaOutput .= $pregunta->cPregunta;
-                // verificar si existe textoAyuda
-                if ($pregunta->cPreguntaTextoAyuda != null && strlen($pregunta->cPreguntaTextoAyuda) > 0) {
-                    $preguntaOutput .= $pregunta->cPreguntaTextoAyuda;
+                if ($pregunta->iEncabPregId == -1) {
+                    $preguntaOutput = '';
+                    $preguntaOutput .= $pregunta->cPregunta;
+                    // verificar si existe textoAyuda
+                    if ($pregunta->cPreguntaTextoAyuda != null && strlen($pregunta->cPreguntaTextoAyuda) > 0) {
+                        $preguntaOutput .= $pregunta->cPreguntaTextoAyuda;
+                    }
+
+                    foreach ($pregunta->alternativas as &$alternativa) {
+                        $preguntaOutput .= '<p>';
+                        $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
+                        $preguntaOutput .= '</p>';
+                    }
+                    array_push($preguntas, $preguntaOutput);
+                    $preguntaOutput = '';
+                } else {
+                    $preguntaOutput = "<h1>{$pregunta->cEncabPregTitulo}</h1>";
+                    $preguntaOutput .= $pregunta->cEncabPregContenido;
+                    foreach ($pregunta->preguntas as &$subPreguntas) {
+                        $preguntaOutput .= $subPreguntas->cPregunta;
+                        // verificar si existe textoAyuda
+                        if ($subPreguntas->cPreguntaTextoAyuda != null && strlen($subPreguntas->cPreguntaTextoAyuda) > 0) {
+                            $preguntaOutput .= $subPreguntas->cPreguntaTextoAyuda;
+                        }
+
+                        foreach ($subPreguntas->alternativas as &$alternativa) {
+                            $preguntaOutput .= '<p>';
+                            $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
+                            $preguntaOutput .= '</p>';
+                        }
+                    }
+
+                    array_push($preguntas, $preguntaOutput);
+                    $preguntaOutput = '';
                 }
-                // manejar alternativas.
-                $pregunta->alternativas  = $this->alternativaPreguntaRespository->getAllByPreguntaId($pregunta->iPreguntaId);
-                foreach ($pregunta->alternativas as &$alternativa) {
-                    $preguntaOutput .= '<p>';
-                    $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
-                    $preguntaOutput .= '</p>';
-                }
-                array_push($preguntas, $preguntaOutput);
-                $preguntaOutput = '';
             }
 
             $phpWord = new PhpWord;
