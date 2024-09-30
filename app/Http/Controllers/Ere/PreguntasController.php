@@ -346,22 +346,43 @@ class PreguntasController extends ApiController
             $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
             $preguntas = [];
+
             foreach ($preguntasDB as &$pregunta) {
-                $preguntaOutput = '';
-                $preguntaOutput .= $pregunta->cPregunta;
-                // verificar si existe textoAyuda
-                if ($pregunta->cPreguntaTextoAyuda != null && strlen($pregunta->cPreguntaTextoAyuda) > 0) {
-                    $preguntaOutput .= $pregunta->cPreguntaTextoAyuda;
+                if ($pregunta->iEncabPregId == -1) {
+                    $preguntaOutput = '';
+                    $preguntaOutput .= $pregunta->cPregunta;
+                    // verificar si existe textoAyuda
+                    if ($pregunta->cPreguntaTextoAyuda != null && strlen($pregunta->cPreguntaTextoAyuda) > 0) {
+                        $preguntaOutput .= $pregunta->cPreguntaTextoAyuda;
+                    }
+
+                    foreach ($pregunta->alternativas as &$alternativa) {
+                        $preguntaOutput .= '<p>';
+                        $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
+                        $preguntaOutput .= '</p>';
+                    }
+                    array_push($preguntas, $preguntaOutput);
+                    $preguntaOutput = '';
+                } else {
+                    $preguntaOutput = "<h1>{$pregunta->cEncabPregTitulo}</h1>";
+                    $preguntaOutput .= $pregunta->cEncabPregContenido;
+                    foreach ($pregunta->preguntas as &$subPreguntas) {
+                        $preguntaOutput .= $subPreguntas->cPregunta;
+                        // verificar si existe textoAyuda
+                        if ($subPreguntas->cPreguntaTextoAyuda != null && strlen($subPreguntas->cPreguntaTextoAyuda) > 0) {
+                            $preguntaOutput .= $subPreguntas->cPreguntaTextoAyuda;
+                        }
+
+                        foreach ($subPreguntas->alternativas as &$alternativa) {
+                            $preguntaOutput .= '<p>';
+                            $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
+                            $preguntaOutput .= '</p>';
+                        }
+                    }
+
+                    array_push($preguntas, $preguntaOutput);
+                    $preguntaOutput = '';
                 }
-                // manejar alternativas.
-                $pregunta->alternativas  = $this->alternativaPreguntaRespository->getAllByPreguntaId($pregunta->iPreguntaId);
-                foreach ($pregunta->alternativas as &$alternativa) {
-                    $preguntaOutput .= '<p>';
-                    $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
-                    $preguntaOutput .= '</p>';
-                }
-                array_push($preguntas, $preguntaOutput);
-                $preguntaOutput = '';
             }
 
             $phpWord = new PhpWord;
