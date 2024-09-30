@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use Illuminate\Support\Facades\DB;
 
-class BancoPreguntasRepository
+class PreguntasRepository
 {
 
     public static function obtenerBancoPreguntasByParams($params)
@@ -18,9 +18,23 @@ class BancoPreguntasRepository
             $params['ids'] ?? ''
         ];
 
-        $preguntas = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
+        $preguntasDB = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?
             ', $params);
+        $preguntas = [];
+        foreach ($preguntasDB as $item) {
+            $item->preguntas = json_decode($item->preguntas);
+            if (gettype($item->bPreguntaEstado) === 'string') {
+                $item->bPreguntaEstado = (bool) $item->bPreguntaEstado;
+            }
+            if ($item->iEncabPregId == -1) {
+                if (is_array($item->preguntas)) {
+                    $preguntas = array_merge($preguntas, $item->preguntas);
+                }
+            } else {
+                array_push($preguntas, $item);
+            }
+        }
 
         return $preguntas;
     }
@@ -33,7 +47,9 @@ class BancoPreguntasRepository
             $data['cEncabPregContenido'] ?? '',
             $data['iCursoId'],
             $data['iNivelGradoId'],
-            $data['iEspecialistaId']
+            $data['iColumnValue'],
+            $data['cColumnName'] ?? 'iEspecialistaId',
+            $data['cSchemaName'] ?? 'ere'
         ];
 
         $result = DB::select(
@@ -42,7 +58,7 @@ class BancoPreguntasRepository
                 , @_cEncabPregContenido = ?
                 , @_iCursoId  = ?
                 , @_iNivelGradoId  = ?
-                , @_iEspecialistaId  = ?
+                , @_iColumnValue  = ?
                 ',
             $params
         );
@@ -58,7 +74,7 @@ class BancoPreguntasRepository
         $where .= " AND iEspecialistaId = {$params['iEspecialistaId']}";
 
         $params = [
-            'ere',
+            $params['schema'] ?? 'ere',
             'encabezado_preguntas',
             $campos,
             $where

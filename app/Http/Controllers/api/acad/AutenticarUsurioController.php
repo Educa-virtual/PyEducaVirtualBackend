@@ -13,23 +13,21 @@ class AutenticarUsurioController extends ApiController
     public function obtenerAutenticacion()
     {
         
-        $campo = 'iEspecialistaId, cPersNombre, cPersDocumento';
-        $where = '45650699';
+        $campo = 'iEspecialistaId,cPersNombre,cPersDocumento';
+        $where = '04431751';
         
         $params =[
             'acad',
-            'V_EspecialistaUgel',
+            'especialistas_UGEL',
             $campo,
             $where
         ];
 
         try { 
-            $preguntas = DB ::select('EXEC grl.sp_SEL_DesdeTablaOVista
-                @nombreEsquema = ?,  
-                @nombreObjeto = ?,
-                @campos= ?,         
-                @condicionWhere = ?
-        
+            $preguntas = DB ::select('EXEC acad.SP_SEL_ObtenerDni 
+               
+                @cPersDocumento= ?
+            
             ', $params);
            
             return $this->successResponse(
