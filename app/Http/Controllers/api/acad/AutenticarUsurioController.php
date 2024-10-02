@@ -28,7 +28,9 @@ class AutenticarUsurioController extends ApiController
                 $preguntas,
                 'Datos Obtenidos Correctamente'
             );
+            
         }
+        
         catch (Exception $e){
 
             return $this->errorResponse($e,'Error Upssss!');
