@@ -11,6 +11,8 @@ use App\Http\Controllers\acad\Silabos;
 use App\Http\Controllers\acad\TipoBibliografias;
 use App\Http\Controllers\acad\TipoMetodologias;
 use App\Http\Controllers\acad\BibliografiaController;
+use App\Http\Controllers\api\acad\GradoAcademicosController;
+use App\Http\Controllers\api\grl\PersonaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'docente'], function () {
@@ -54,5 +56,12 @@ Route::group(['prefix' => 'docente'], function () {
   });
   Route::group(['prefix' => 'tipo-bibliografias'], function () {
     Route::post('list', [TipoBibliografias::class, 'list']);
+  });
+
+  Route::group(['prefix' => 'grado-academico'], function () {
+    Route::post('list', [GradoAcademicosController::class, 'list']);
+  });
+  Route::group(['prefix' => 'persona'], function () {
+    Route::post('list', [PersonaController::class, 'list']);
   });
 });
