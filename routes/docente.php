@@ -64,4 +64,7 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'persona'], function () {
     Route::post('list', [PersonaController::class, 'list']);
   });
+  Route::group(['prefix' => 'asistencia'], function () {
+    Route::post('list', [PersonaController::class, 'list']);
+  });
 });
