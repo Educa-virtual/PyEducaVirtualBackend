@@ -15,6 +15,8 @@ use App\Http\Controllers\acad\ContenidoSemanas;
 use App\Http\Controllers\acad\IndicadorActividades;
 use App\Http\Controllers\acad\SilaboActividadAprendizajes;
 use App\Http\Controllers\acad\TipoIndicadorLogros;
+use App\Http\Controllers\api\acad\GradoAcademicosController;
+use App\Http\Controllers\api\grl\PersonaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'docente'], function () {
@@ -69,5 +71,14 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'contenido-semanas'], function () {
     Route::post('list', [ContenidoSemanas::class, 'list']);
     Route::post('store', [ContenidoSemanas::class, 'store']);
+  });
+  Route::group(['prefix' => 'grado-academico'], function () {
+    Route::post('list', [GradoAcademicosController::class, 'list']);
+  });
+  Route::group(['prefix' => 'persona'], function () {
+    Route::post('list', [PersonaController::class, 'list']);
+  });
+  Route::group(['prefix' => 'asistencia'], function () {
+    Route::post('list', [PersonaController::class, 'list']);
   });
 });
