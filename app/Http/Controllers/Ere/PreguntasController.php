@@ -78,8 +78,9 @@ class PreguntasController extends ApiController
             $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
             $iCursoId = 1;
 
+            $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
-                $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'],
+                $iPreguntaId,
                 (int) $iCursoId,
                 (int)$pregunta['iTipoPregId'],
                 $pregunta['cPregunta'],
@@ -87,7 +88,7 @@ class PreguntasController extends ApiController
                 (int)$pregunta['iPreguntaNivel'],
                 (int)$pregunta['iPreguntaPeso'],
                 $fechaConHora,
-                $pregunta['bPreguntaEstado'],
+                $iPreguntaId === 0 ? 0 : null,
                 $pregunta['cPreguntaClave'],
                 $iEncabPregId
             ];
@@ -112,7 +113,7 @@ class PreguntasController extends ApiController
                 $respPregunta = $respPregunta[0];
             } catch (Exception $e) {
                 DB::rollBack();
-                return $this->errorResponse($e, 'Error al guardar los datos');
+                return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
             }
 
             // alternativas

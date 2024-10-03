@@ -12,20 +12,35 @@ class BancoRepository
     {
         $params = [
             $params['iCursoId'],
+            $params['busqueda'] ?? '',
             $params['iDocenteId'],
             $params['iCurrContId'],
             $params['iNivelCicloId'],
-            $params['busqueda'] ?? '',
-            $params['iTipoPregId'] ?? 0
+            $params['iTipoPregId'] ?? 0,
+            $params['iBancoIds '] ?? ''
         ];
 
-        return DB::select('EXEC eval.Sp_SEL_banco_preguntas 
+        $preguntasDB = DB::select('EXEC eval.Sp_SEL_banco_preguntas 
             @_iCursoId   = ?
-            , @_iDocenteId = ?
+            , @_busqueda = ?
             , @_iCurrContId = ?
             , @_iNivelCicloId = ?
-            , @_busqueda = ?
+            , @_iDocenteId = ?
             , @_iTipoPregId = ?
+            , @_iBancoIds = ?
         ', $params);
+
+        $preguntas = [];
+        foreach ($preguntasDB as $item) {
+            $item->preguntas = json_decode($item->preguntas);
+            if ($item->idEncabPregId == -1) {
+                if (is_array($item->preguntas)) {
+                    $preguntas = array_merge($preguntas, $item->preguntas);
+                }
+            } else {
+                array_push($preguntas, $item);
+            }
+        }
+        return $preguntas;
     }
 }

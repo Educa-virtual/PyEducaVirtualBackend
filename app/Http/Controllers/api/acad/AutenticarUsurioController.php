@@ -14,7 +14,7 @@ class AutenticarUsurioController extends ApiController
     {
         
         /*$campo = 'iEspecialistaId,cPersNombre,cPersDocumento';*/
-        $where = '04431751';
+        $where = '45650699';
         
         /*$params =[
             $campo,
@@ -28,7 +28,9 @@ class AutenticarUsurioController extends ApiController
                 $preguntas,
                 'Datos Obtenidos Correctamente'
             );
+            
         }
+        
         catch (Exception $e){
 
             return $this->errorResponse($e,'Error Upssss!');

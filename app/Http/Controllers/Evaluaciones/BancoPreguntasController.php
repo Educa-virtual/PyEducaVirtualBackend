@@ -13,12 +13,13 @@ class BancoPreguntasController extends ApiController
 
     public function obtenerBancoPreguntas(Request $request)
     {
+
         $params = [
             'iCursoId' => $request->iCursoId,
             'iDocenteId' => $request->iDocenteId,
             'iCurrContId' => $request->iCurrContId,
             'iNivelCicloId' => $request->iNivelCicloId,
-            'busqueda' => $request->busqueda,
+            'busqueda' => $request->busqueda ?? '',
             'iTipoPregId' => $request->iTipoPregId ?? 0
         ];
 
@@ -26,7 +27,7 @@ class BancoPreguntasController extends ApiController
             $resp = BancoRepository::obtenerPreguntas($params);
             return $this->successResponse($resp, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al obtener los datos');
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos');
         }
     }
 
