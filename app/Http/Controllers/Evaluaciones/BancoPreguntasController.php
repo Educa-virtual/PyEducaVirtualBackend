@@ -55,13 +55,13 @@ class BancoPreguntasController extends ApiController
                 , @_iTipoPregId = ?
                 , @_iCurrContId = ?
                 , @_dtBancoCreacion = ?
-                , @_cBancoPregunta = ? 
+                , @_cBancoPregunta = ?
                 , @_dtBancoTiempo = ?
-                , @_cBancoTextoAyuda = ? 
-                , @_nBancoPuntaje = ? 
+                , @_cBancoTextoAyuda = ?
+                , @_nBancoPuntaje = ?
                 , @_idEncabPregId = ?
                 , @_iCursoId = ?
-                , @_iNivelCicloId = ?      
+                , @_iNivelCicloId = ?
             ');
             if (count($resp) == 0) {
                 return $this->errorResponse(null, 'Error al guardar los cambios');
