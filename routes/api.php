@@ -64,6 +64,9 @@ Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
+
+        Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
+
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
