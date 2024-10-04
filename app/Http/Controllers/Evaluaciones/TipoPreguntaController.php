@@ -29,6 +29,11 @@ class TipoPreguntaController extends ApiController
                 @campos = ?,        
                 @condicionWhere = ?
             ', $params);
+
+            foreach ($preguntas as &$pregunta) {
+                $pregunta->iTipoPregId  = (int) $pregunta->iTipoPregId;
+            }
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

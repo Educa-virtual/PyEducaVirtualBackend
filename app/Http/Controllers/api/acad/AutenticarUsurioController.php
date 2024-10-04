@@ -13,12 +13,10 @@ class AutenticarUsurioController extends ApiController
     public function obtenerAutenticacion()
     {
         
-        //$campo = 'iEspecialistaId,cPersNombre,cPersDocumento';
-        $where = '04431751';
+        /*$campo = 'iEspecialistaId,cPersNombre,cPersDocumento';*/
+        $where = '45650699';
         
         /*$params =[
-            'acad',
-            'especialistas_UGEL',
             $campo,
             $where
         ];*/
@@ -30,7 +28,9 @@ class AutenticarUsurioController extends ApiController
                 $preguntas,
                 'Datos Obtenidos Correctamente'
             );
+            
         }
+        
         catch (Exception $e){
 
             return $this->errorResponse($e,'Error Upssss!');
