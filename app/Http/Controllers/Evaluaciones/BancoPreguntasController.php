@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Evaluaciones;
 use App\Http\Controllers\ApiController;
 use App\Repositories\Evaluaciones\BancoRepository;
 use App\Repositories\PreguntasRepository;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -64,98 +65,87 @@ class BancoPreguntasController extends ApiController
 
         // params pregunta
 
-        // $preguntas = $request->preguntas;
-        // $preguntasActualizar = $preguntas;
-        // $preguntasEliminar = $request->preguntasEliminar;
+        $preguntas = $request->preguntas;
+        $preguntasActualizar = $preguntas;
+        $preguntasEliminar = $request->preguntasEliminar;
 
-        // foreach ($preguntasActualizar as $key => $pregunta) {
+        foreach ($preguntasActualizar as $key => $pregunta) {
 
-        //     $fechaActual = new DateTime();
-        //     $fechaActual->setTime(0, 0, 0);
-        //     $hora = $pregunta['iHoras'];
-        //     $minutos = $pregunta['iMinutos'];
-        //     $segundos = $pregunta['iSegundos'];
-        //     $fechaActual->setTime($hora, $minutos, $segundos);
-        //     $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
-        //     $iCursoId = 1;
+            $fechaActual = new DateTime();
+            $fechaActual->setTime(0, 0, 0);
+            $hora = $pregunta['iHoras'];
+            $minutos = $pregunta['iMinutos'];
+            $segundos = $pregunta['iSegundos'];
+            $fechaActual->setTime($hora, $minutos, $segundos);
+            $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
+            $iCursoId = 1;
 
-        //     $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
-        //     $params = [
-        //         $iPreguntaId,
-        //         (int) $iCursoId,
-        //         (int)$pregunta['iTipoPregId'],
-        //         $pregunta['cPregunta'],
-        //         $pregunta['cPreguntaTextoAyuda'] ?? '',
-        //         (int)$pregunta['iPreguntaNivel'],
-        //         (int)$pregunta['iPreguntaPeso'],
-        //         $fechaConHora,
-        //         $iPreguntaId === 0 ? 0 : null,
-        //         $pregunta['cPreguntaClave'],
-        //         $iEncabPregId
-        //     ];
+            $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
+            $params = [
+                'iBancoId' => $iPreguntaId,
+                'iDocenteId' => $request->iDocenteId,
+                'iTipoPregId' => $request->iTipoPregId,
+                'iCurrContId' => $request->iCurrContId,
+                // 'dtBancoCreacion' => $request->,
+                'cBancoPregunta' => $request->cPregunta,
+                'dtBancoTiempo' => $fechaConHora,
+                'cBancoTextoAyuda' => $request->cPreguntaTextoAyuda,
+                'nBancoPuntaje' => $request->iPreguntaPeso,
+                'idEncabPregId' => $iEncabPregId,
+                'iCursoId' => $request->iCursoId,
+                'iNivelCicloId' => $request->iNivelCicloId,
+            ];
 
 
-        //     // pregunta
-        //     $respPregunta = null;
-        //     try {
-        //         $respPregunta = DB::select('exec ere.Sp_INS_UPD_pregunta 
-        //         @_iPreguntaId = ?
-        //         , @_iCursoId = ?
-        //         , @_iTipoPregId = ?
-        //         , @_cPregunta = ?
-        //         , @_cPreguntaTextoAyuda = ?
-        //         , @_iPreguntaNivel  = ?
-        //         , @_iPreguntaPeso = ?
-        //         , @_dtPreguntaTiempo = ?
-        //         , @_bPreguntaEstado = ?
-        //         , @_cPreguntaClave = ?
-        //         , @_iEncabPregId = ?
-        //     ', $params);
-        //         $respPregunta = $respPregunta[0];
-        //     } catch (Exception $e) {
-        //         DB::rollBack();
-        //         return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
-        //     }
+            // pregunta
+            $respPregunta = null;
+            try {
+                $respPregunta = BancoRepository::guardarActualizarPregunta($params);
+                $respPregunta = $respPregunta[0];
+            } catch (Exception $e) {
+                DB::rollBack();
+                return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
+            }
 
-        //     // alternativas
-        //     $alternativasActualizar  = $pregunta['alternativas'] ?? [];
-        //     $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
-        //     // eliminar alternativas
-        //     foreach ($alternativasEliminar as $alternativa) {
-        //         $paramsAlternativaEliminar = [
-        //             $alternativa['iAlternativaId']
-        //         ];
-        //         try {
-        //             $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+            //     // alternativas
+            //     $alternativasActualizar  = $pregunta['alternativas'] ?? [];
+            //     $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
+            //     // eliminar alternativas
+            //     foreach ($alternativasEliminar as $alternativa) {
+            //         $paramsAlternativaEliminar = [
+            //             $alternativa['iAlternativaId']
+            //         ];
+            //         try {
+            //             $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
 
-        //             // $resp = $resp[0];
-        //         } catch (Exception $e) {
-        //             DB::rollBack();
-        //             $defaultMessage = $this->returnError($e, 'Error al eliminar');
-        //             return $this->errorResponse($e, $defaultMessage);
-        //         }
-        //     }
+            //             // $resp = $resp[0];
+            //         } catch (Exception $e) {
+            //             DB::rollBack();
+            //             $defaultMessage = $this->returnError($e, 'Error al eliminar');
+            //             return $this->errorResponse($e, $defaultMessage);
+            //         }
+            //     }
 
-        //     // guardar actualizar alternativas
-        //     foreach ($alternativasActualizar as $alternativa) {
+            //     // guardar actualizar alternativas
+            //     foreach ($alternativasActualizar as $alternativa) {
 
-        //         try {
-        //             $paramsAlternativa = [
-        //                 $alternativa['isLocal'] ?? false ? 0 : (int) $alternativa['iAlternativaId'],
-        //                 (int) $respPregunta->id,
-        //                 $alternativa['cAlternativaDescripcion'],
-        //                 $alternativa['cAlternativaLetra'],
-        //                 $alternativa['bAlternativaCorrecta'] ? 1 : 0,
-        //                 $alternativa['cAlternativaExplicacion'] ?? ''
-        //             ];
-        //             $resp = $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
-        //         } catch (Exception $e) {
-        //             DB::rollBack();
-        //             $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
-        //             return $this->errorResponse($e->getMessage(), $message);
-        //         }
-        //     }
-        // }
+            //         try {
+            //             $paramsAlternativa = [
+            //                 $alternativa['isLocal'] ?? false ? 0 : (int) $alternativa['iAlternativaId'],
+            //                 (int) $respPregunta->id,
+            //                 $alternativa['cAlternativaDescripcion'],
+            //                 $alternativa['cAlternativaLetra'],
+            //                 $alternativa['bAlternativaCorrecta'] ? 1 : 0,
+            //                 $alternativa['cAlternativaExplicacion'] ?? ''
+            //             ];
+            //             $resp = $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
+            //         } catch (Exception $e) {
+            //             DB::rollBack();
+            //             $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
+            //             return $this->errorResponse($e->getMessage(), $message);
+            //         }
+            //     }
+        }
 
         // // eliminar preguntas
         // foreach ($preguntasEliminar as $pregunta) {

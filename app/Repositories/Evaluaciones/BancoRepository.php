@@ -43,4 +43,38 @@ class BancoRepository
         }
         return $preguntas;
     }
+
+
+    public static function guardarActualizarPregunta($data)
+    {
+        $params = [
+            $data['iBancoId'],
+            $data['iDocenteId'],
+            $data['iTipoPregId'],
+            $data['iCurrContId'],
+            $data['dtBancoCreacion'],
+            $data['cBancoPregunta'],
+            $data['dtBancoTiempo'],
+            $data['cBancoTextoAyuda'],
+            $data['nBancoPuntaje'],
+            $data['idEncabPregId'],
+            $data['iCursoId'],
+            $data['iNivelCicloId']
+        ];
+
+        $result = DB::select('EXEC eval.Sp_INS_UPD_pregunta @_iBancoId = ?
+            , @_iDocenteId  = ?
+            , @_iTipoPregId  = ?
+            , @_iCurrContId  = ?
+            , @_dtBancoCreacion  = ?
+            , @_cBancoPregunta  = ?
+            , @_dtBancoTiempo  = ?
+            , @_cBancoTextoAyuda = ?
+            , @_nBancoPuntaje = ?
+            , @_idEncabPregId  = ?
+            , @_iCursoId  = ?
+            , @_iNivelCicloId = ?
+        ', $params);
+        return $result;
+    }
 }
