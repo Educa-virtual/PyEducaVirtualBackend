@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class CredencialModuloController extends Controller
 {
     public function list(Request $request){
+        
         $iCredEntId = $request->iCredEntId;
         $query = DB::select('seg.Sp_SEL_accesos_modulos_padresXiCredEntId ?',[$iCredEntId]);
 
