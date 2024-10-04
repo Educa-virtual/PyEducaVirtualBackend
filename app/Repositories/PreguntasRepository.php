@@ -49,16 +49,18 @@ class PreguntasRepository
             $data['iNivelGradoId'],
             $data['iColumnValue'],
             $data['cColumnName'] ?? 'iEspecialistaId',
-            $data['cSchemaName'] ?? 'ere'
+            $data['cSchemaName']
         ];
 
         $result = DB::select(
             'exec ere.Sp_INS_UPD_encabezado_pregunta @_iEncabPregId  = ?
                 , @_cEncabPregTitulo = ?
                 , @_cEncabPregContenido = ?
-                , @_iCursoId  = ?
+                , @_iCursoId = ?
                 , @_iNivelGradoId  = ?
                 , @_iColumnValue  = ?
+                , @_cColumnName = ?
+                , @_cSchemaName = ? 
                 ',
             $params
         );

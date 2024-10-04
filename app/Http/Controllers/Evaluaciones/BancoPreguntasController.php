@@ -32,47 +32,167 @@ class BancoPreguntasController extends ApiController
         }
     }
 
-    public function guardarActualizarBancoPreguntas(Request $request)
+    public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
-        $fecha = '';
-        $params = [
-            $request->iBancoId,
-            $request->iDocenteId,
-            $request->iTipoPregId,
-            $request->iCurrContId,
-            // fecha
-            $request->cBancoPregunta,
-            $fecha,
-            $request->cBancoTextoAyuda,
-            $request->nBancoPuntaje,
-            $request->idEncabPregId,
-            $request->iCursoId,
-            $request->iNivelCicloId
-        ];
 
-        try {
-            $resp = DB::select('exec ere.Sp_INS_UPD_banco_pregunta
-                @_iBancoId = ?
-                , @_iDocenteId = ?
-                , @_iTipoPregId = ?
-                , @_iCurrContId = ?
-                , @_dtBancoCreacion = ?
-                , @_cBancoPregunta = ?
-                , @_dtBancoTiempo = ?
-                , @_cBancoTextoAyuda = ?
-                , @_nBancoPuntaje = ?
-                , @_idEncabPregId = ?
-                , @_iCursoId = ?
-                , @_iNivelCicloId = ?
-            ');
-            if (count($resp) == 0) {
-                return $this->errorResponse(null, 'Error al guardar los cambios');
+
+        DB::beginTransaction();
+        $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
+        if ($iEncabPregId === -1) {
+            $iEncabPregId = null;
+        } else {
+            $paramsEncabezado = [
+                'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
+                'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
+                'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
+                'iCursoId' => 1,
+                'iNivelGradoId' => 1,
+                'iColumnValue' => 1,
+                'cColumnName' => 'iDocenteId',
+                'cSchemaName'  => 'eval'
+            ];
+            try {
+                $resp =  PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+                $resp = $resp[0];
+                $iEncabPregId = $resp->id;
+            } catch (Exception $e) {
+                DB::rollBack();
+                return $this->errorResponse($e, 'Error al guardar el encabezado');
             }
-            $resp = $resp[0];
-            return $this->successResponse($resp, $resp->mensaje);
-        } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al guardar los cambios');
         }
+
+
+        // params pregunta
+
+        // $preguntas = $request->preguntas;
+        // $preguntasActualizar = $preguntas;
+        // $preguntasEliminar = $request->preguntasEliminar;
+
+        // foreach ($preguntasActualizar as $key => $pregunta) {
+
+        //     $fechaActual = new DateTime();
+        //     $fechaActual->setTime(0, 0, 0);
+        //     $hora = $pregunta['iHoras'];
+        //     $minutos = $pregunta['iMinutos'];
+        //     $segundos = $pregunta['iSegundos'];
+        //     $fechaActual->setTime($hora, $minutos, $segundos);
+        //     $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
+        //     $iCursoId = 1;
+
+        //     $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
+        //     $params = [
+        //         $iPreguntaId,
+        //         (int) $iCursoId,
+        //         (int)$pregunta['iTipoPregId'],
+        //         $pregunta['cPregunta'],
+        //         $pregunta['cPreguntaTextoAyuda'] ?? '',
+        //         (int)$pregunta['iPreguntaNivel'],
+        //         (int)$pregunta['iPreguntaPeso'],
+        //         $fechaConHora,
+        //         $iPreguntaId === 0 ? 0 : null,
+        //         $pregunta['cPreguntaClave'],
+        //         $iEncabPregId
+        //     ];
+
+
+        //     // pregunta
+        //     $respPregunta = null;
+        //     try {
+        //         $respPregunta = DB::select('exec ere.Sp_INS_UPD_pregunta 
+        //         @_iPreguntaId = ?
+        //         , @_iCursoId = ?
+        //         , @_iTipoPregId = ?
+        //         , @_cPregunta = ?
+        //         , @_cPreguntaTextoAyuda = ?
+        //         , @_iPreguntaNivel  = ?
+        //         , @_iPreguntaPeso = ?
+        //         , @_dtPreguntaTiempo = ?
+        //         , @_bPreguntaEstado = ?
+        //         , @_cPreguntaClave = ?
+        //         , @_iEncabPregId = ?
+        //     ', $params);
+        //         $respPregunta = $respPregunta[0];
+        //     } catch (Exception $e) {
+        //         DB::rollBack();
+        //         return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
+        //     }
+
+        //     // alternativas
+        //     $alternativasActualizar  = $pregunta['alternativas'] ?? [];
+        //     $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
+        //     // eliminar alternativas
+        //     foreach ($alternativasEliminar as $alternativa) {
+        //         $paramsAlternativaEliminar = [
+        //             $alternativa['iAlternativaId']
+        //         ];
+        //         try {
+        //             $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+
+        //             // $resp = $resp[0];
+        //         } catch (Exception $e) {
+        //             DB::rollBack();
+        //             $defaultMessage = $this->returnError($e, 'Error al eliminar');
+        //             return $this->errorResponse($e, $defaultMessage);
+        //         }
+        //     }
+
+        //     // guardar actualizar alternativas
+        //     foreach ($alternativasActualizar as $alternativa) {
+
+        //         try {
+        //             $paramsAlternativa = [
+        //                 $alternativa['isLocal'] ?? false ? 0 : (int) $alternativa['iAlternativaId'],
+        //                 (int) $respPregunta->id,
+        //                 $alternativa['cAlternativaDescripcion'],
+        //                 $alternativa['cAlternativaLetra'],
+        //                 $alternativa['bAlternativaCorrecta'] ? 1 : 0,
+        //                 $alternativa['cAlternativaExplicacion'] ?? ''
+        //             ];
+        //             $resp = $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
+        //         } catch (Exception $e) {
+        //             DB::rollBack();
+        //             $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
+        //             return $this->errorResponse($e->getMessage(), $message);
+        //         }
+        //     }
+        // }
+
+        // // eliminar preguntas
+        // foreach ($preguntasEliminar as $pregunta) {
+        //     $alternativasEliminar = array_merge($pregunta['alternativas'], $pregunta['alternativasEliminadas'] ?? []);
+        //     foreach ($alternativasEliminar as $alternativa) {
+        //         $paramsAlternativaEliminar = [
+        //             $alternativa['iAlternativaId']
+        //         ];
+        //         try {
+        //             $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+
+        //             $resp = $resp[0];
+        //         } catch (Exception $e) {
+        //             DB::rollBack();
+        //             $defaultMessage = $this->returnError($e, 'Error al eliminar');
+        //             return $this->errorResponse($e, $defaultMessage);
+        //         }
+        //     }
+
+        //     try {
+
+        //         $resp = DB::select('exec ere.Sp_DEL_pregunta @_iPreguntaId = ?', [$pregunta['iPreguntaId']]);
+
+        //         if (count($resp) === 0) {
+        //             return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
+        //         }
+
+        //         $resp = $resp[0];
+        //     } catch (Exception $e) {
+        //         DB::rollBack();
+        //         $message = $this->returnError($e, 'Error al eliminar la pregunta');
+        //         return $this->errorResponse($e, $message);
+        //     }
+        // }
+        DB::commit();
+
+        return $this->successResponse(null, 'Cambion realizados correctamente');
     }
 
     public function obtenerEncabezadosPreguntas(Request $request)
