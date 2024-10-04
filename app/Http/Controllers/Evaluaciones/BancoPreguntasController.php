@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
 use App\Repositories\Evaluaciones\BancoRepository;
+use App\Repositories\PreguntasRepository;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +72,22 @@ class BancoPreguntasController extends ApiController
             return $this->successResponse($resp, $resp->mensaje);
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al guardar los cambios');
+        }
+    }
+
+    public function obtenerEncabezadosPreguntas(Request $request)
+    {
+        $params = [
+            'iCursoId' => $request['iCursoId'],
+            'iNivelCicloId' => $request['iNivelCicloId'],
+            'iDocenteId' => $request['iDocenteId'],
+            'schema' => 'eval'
+        ];
+        try {
+            $encabezados = PreguntasRepository::obtenerCabecerasPregunta($params);
+            return $this->successResponse($encabezados, 'Datos obtenidos correctamente');
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Error al obetener los datos');
         }
     }
 }

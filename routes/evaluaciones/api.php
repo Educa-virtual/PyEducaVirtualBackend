@@ -11,5 +11,6 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 
     Route::group(['prefix' => 'banco-preguntas'], function () {
         Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
+        Route::get('obtenerEncabezadosPreguntas', [BancoPreguntasController::class, 'obtenerEncabezadosPreguntas']);
     });
 });

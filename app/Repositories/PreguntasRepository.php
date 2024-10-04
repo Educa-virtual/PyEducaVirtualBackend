@@ -68,17 +68,29 @@ class PreguntasRepository
 
     public static function obtenerCabecerasPregunta($params)
     {
-        $campos = 'iEncabPregId, cEncabPregTitulo, cEncabPregContenido';
-        $where = " iNivelGradoId = {$params['iNivelGradoId']}";
+        $campos = 'cEncabPregTitulo, cEncabPregContenido';
+        $where = '1=1 ';
         $where .= " AND iCursoId = {$params['iCursoId']}";
-        $where .= " AND iEspecialistaId = {$params['iEspecialistaId']}";
+        $schema =  $params['schema'] ?? 'ere';
+        if ($schema === 'ere') {
+            $campos .= ' ,iEncabPregId';
+            $where .= " AND iNivelGradoId = {$params['iNivelGradoId']}";
+            $where .= " AND iEspecialistaId = {$params['iEspecialistaId']}";
+        }
+
+        if ($schema === 'eval') {
+            $campos .= ' ,idEncabPregId';
+            $where .= " AND iNivelCicloId = {$params['iNivelCicloId']}";
+            $where .= " AND iDocenteId = {$params['iDocenteId']}";
+        }
 
         $params = [
-            $params['schema'] ?? 'ere',
+            $schema,
             'encabezado_preguntas',
             $campos,
             $where
         ];
+
 
         return DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
                 @nombreEsquema = ?,
