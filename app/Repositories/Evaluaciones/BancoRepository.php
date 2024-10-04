@@ -62,7 +62,7 @@ class BancoRepository
             $data['iNivelCicloId']
         ];
 
-        $result = DB::select('EXEC eval.Sp_INS_UPD_pregunta @_iBancoId = ?
+        $result = DB::select('EXEC eval.Sp_INS_UPD_banco_pregunta @_iBancoId = ?
             , @_iDocenteId  = ?
             , @_iTipoPregId  = ?
             , @_iCurrContId  = ?

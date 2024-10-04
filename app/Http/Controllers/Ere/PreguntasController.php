@@ -29,13 +29,9 @@ class PreguntasController extends ApiController
     {
         $iEncabPregId = $request->encabezado['iEncabPregId'];
 
-
-
-
         DB::beginTransaction();
 
         // encabezado
-
 
         $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
         if ($iEncabPregId === -1) {
@@ -193,6 +189,7 @@ class PreguntasController extends ApiController
 
         return $this->successResponse(null, 'Cambion realizados correctamente');
     }
+
     public function actualizarMatrizPreguntas(Request $request)
     {
 
@@ -245,10 +242,11 @@ class PreguntasController extends ApiController
     {
 
         $params = [
-            'iCursoId' => $request->iCursoId,
+            'iCursoId' => $request->iCursoId ?? 0,
             'busqueda' => $request->busqueda ?? '',
-            'iTipoPregId' => $request->iTipoPregId,
-            'bPreguntaEstado' => $request->bPreguntaEstado
+            'iTipoPregId' => $request->iTipoPregId ?? 0,
+            'bPreguntaEstado' => $request->bPreguntaEstado ?? -1,
+            'iEncabPregId' => $request->iEncabPregId  ?? 0
         ];
 
 
@@ -343,10 +341,11 @@ class PreguntasController extends ApiController
             'ids' => $request->ids
         ];
 
+        $preguntas = [];
+
         try {
             $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
-            $preguntas = [];
 
             foreach ($preguntasDB as &$pregunta) {
                 if ($pregunta->iEncabPregId == -1) {
@@ -359,9 +358,9 @@ class PreguntasController extends ApiController
 
                     if (isset($pregunta->alternativas) && is_array($pregunta->alternativas)) {
                         foreach ($pregunta->alternativas as &$alternativa) {
-                            $preguntaOutput .= '<p>';
-                            $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
-                            $preguntaOutput .= '</p>';
+                            $preguntaOutput .= '<div>';
+                            $preguntaOutput .= "<p> {$alternativa->cAlternativaLetra} ) </p> {$alternativa->cAlternativaDescripcion}";
+                            $preguntaOutput .= '</div>';
                         }
                     }
                     array_push($preguntas, $preguntaOutput);
@@ -377,9 +376,9 @@ class PreguntasController extends ApiController
                         }
                         if (isset($subPreguntas->alternativas) && is_array($subPreguntas->alternativas)) {
                             foreach ($subPreguntas->alternativas as &$alternativa) {
-                                $preguntaOutput .= '<p>';
-                                $preguntaOutput .= $alternativa->cAlternativaLetra . ' ' . $alternativa->cAlternativaDescripcion;
-                                $preguntaOutput .= '</p>';
+                                $preguntaOutput .= '<div>';
+                                $preguntaOutput .= "<p> {$alternativa->cAlternativaLetra} ) </p> {$alternativa->cAlternativaDescripcion}";
+                                $preguntaOutput .= '</div>';
                             }
                         }
                     }
@@ -388,43 +387,44 @@ class PreguntasController extends ApiController
                     $preguntaOutput = '';
                 }
             }
-
-            $phpWord = new PhpWord;
-            $phpWord->addTitleStyle(1, ['size' => 24, 'color' => '333333', 'bold' => true]);
-            $phpWord->addTitleStyle(2, ['size' => 18, 'color' => '666666']);
-            $phpWord->addTitleStyle(3, ['size' => 14, 'color' => '999999', 'italic' => true]);
-            $section = $phpWord->addSection();
-
-            foreach ($preguntas as $index => $questionHtml) {
-                // Añadir un salto de página antes de cada pregunta (excepto la primera)
-                if ($index > 0) {
-                    $section->addPageBreak();
-                }
-                // sanitizar cierres html
-                $questionHtml =  WordController::sanitizeHtml($questionHtml);
-                // Convertir el HTML de la pregunta a contenido de PHPWord
-                Html::addHtml($section, $questionHtml, false, false);
-            }
-
-            \PhpOffice\PhpWord\Settings::setZipClass(Settings::PCLZIP);
-            $writer = IOFactory::createWriter($phpWord, 'Word2007');
-
-            $response = new Response();
-            $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-            $response->headers->set('Content-Disposition', 'attachment;filename="preguntas.docx"');
-            $response->headers->set('Cache-Control', 'max-age=0');
-
-            ob_start();
-            $writer->save('php://output');
-            $content = ob_get_contents();
-            ob_end_clean();
-
-            $response->setContent($content);
-
-            return $response;
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 'Error al generar');
         }
+
+
+        $phpWord = new PhpWord;
+        $phpWord->addTitleStyle(1, ['size' => 24, 'color' => '333333', 'bold' => true]);
+        $phpWord->addTitleStyle(2, ['size' => 18, 'color' => '666666']);
+        $phpWord->addTitleStyle(3, ['size' => 14, 'color' => '999999', 'italic' => true]);
+        $section = $phpWord->addSection();
+
+        foreach ($preguntas as $index => $questionHtml) {
+            // Añadir un salto de página antes de cada pregunta (excepto la primera)
+            if ($index > 0) {
+                $section->addPageBreak();
+            }
+            // sanitizar cierres html
+            $questionHtml =  WordController::sanitizeHtml($questionHtml);
+            // Convertir el HTML de la pregunta a contenido de PHPWord
+            Html::addHtml($section, $questionHtml, false, false);
+        }
+
+        \PhpOffice\PhpWord\Settings::setZipClass(Settings::PCLZIP);
+        $writer = IOFactory::createWriter($phpWord, 'Word2007');
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $response->headers->set('Content-Disposition', 'attachment;filename="preguntas.docx"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        ob_start();
+        $writer->save('php://output');
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        $response->setContent($content);
+
+        return $response;
     }
 
     public function guardarActualizarEncabezadoPregunta(Request $request)

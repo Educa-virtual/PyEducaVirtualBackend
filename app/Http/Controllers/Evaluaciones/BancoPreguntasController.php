@@ -36,7 +36,6 @@ class BancoPreguntasController extends ApiController
     public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
 
-
         DB::beginTransaction();
         $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
         if ($iEncabPregId === -1) {
