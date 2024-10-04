@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\seg\sel;
+namespace App\Http\Controllers\api\seg;
 
 use App\Http\Controllers\Controller;
 use Exception;

@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::prefix('api')
                 ->group(base_path('routes/docente.php'));
             Route::prefix('api')
+                ->group(base_path('routes/seguridad.php'));
+            Route::prefix('api')
                 ->group(base_path('routes/evaluaciones/api.php'));
             Route::prefix('api')
                 ->group(base_path('routes/ere/api.php'));
