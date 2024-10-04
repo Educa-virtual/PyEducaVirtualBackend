@@ -11,6 +11,7 @@ use App\Http\Controllers\acad\Silabos;
 use App\Http\Controllers\acad\TipoBibliografias;
 use App\Http\Controllers\acad\TipoMetodologias;
 use App\Http\Controllers\acad\BibliografiaController;
+use App\Http\Controllers\api\acad\EstudiantesController;
 use App\Http\Controllers\acad\ContenidoSemanas;
 use App\Http\Controllers\acad\IndicadorActividades;
 use App\Http\Controllers\acad\SilaboActividadAprendizajes;
@@ -81,4 +82,8 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'asistencia'], function () {
     Route::post('list', [PersonaController::class, 'list']);
   });
+  Route::group(['prefix' => 'estudiante'], function () {
+    Route::post('list', [EstudiantesController::class, 'list']);
+  });
+  
 });
