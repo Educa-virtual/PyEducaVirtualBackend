@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\asi;
+namespace App\Http\Controllers\api\acad;
 
 use App\Http\Controllers\Controller;
 use Exception;
@@ -8,22 +8,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AsistenciaController extends Controller
+class EstudiantesController extends Controller
 {
     public function list(Request $request){
         $solicitud = [
-            $request->opcion,
-            $request->iCtrlAsistenciaId ?? NULL,
-            $request->iHorarioId ?? NULL,
-            $request->iDetMatrId ?? NULL,
-            $request->iEstudianteId ?? NULL,
-            $request->iTipoAsiId ?? NULL,
-            $request->dtCtrlAsistencia ?? NULL,
-            $request->cCtrlAsistenciaObs ?? NULL,
-            $request->iEstado ?? NULL
+            $opcion  = $request->opcion,
+            $iCurrId = $request->iCurrId ?? NULL
         ];
-        
-        $query=DB::select("execute acad.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?", $solicitud);
+        $query=DB::select("execute acad.Sp_crud_estudiante ?,?",$solicitud);
         
         try{
             $response = [
@@ -43,6 +35,8 @@ class AsistenciaController extends Controller
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
+        $respuesta = new JsonResponse($response, $estado);
+
+        return $respuesta;
     }
 }
