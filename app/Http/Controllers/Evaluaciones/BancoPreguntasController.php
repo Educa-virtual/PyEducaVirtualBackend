@@ -106,44 +106,44 @@ class BancoPreguntasController extends ApiController
                 return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
             }
 
-            //     // alternativas
-            //     $alternativasActualizar  = $pregunta['alternativas'] ?? [];
-            //     $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
-            //     // eliminar alternativas
-            //     foreach ($alternativasEliminar as $alternativa) {
-            //         $paramsAlternativaEliminar = [
-            //             $alternativa['iAlternativaId']
-            //         ];
-            //         try {
-            //             $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+            // alternativas
+            $alternativasActualizar  = $pregunta['alternativas'] ?? [];
+            $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
+            // eliminar alternativas
+            foreach ($alternativasEliminar as $alternativa) {
+                $paramsAlternativaEliminar = [
+                    $alternativa['iAlternativaId']
+                ];
+                try {
+                    $resp = DB::select('exec eval.Sp_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
 
-            //             // $resp = $resp[0];
-            //         } catch (Exception $e) {
-            //             DB::rollBack();
-            //             $defaultMessage = $this->returnError($e, 'Error al eliminar');
-            //             return $this->errorResponse($e, $defaultMessage);
-            //         }
-            //     }
+                    // $resp = $resp[0];
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    $defaultMessage = $this->returnError($e, 'Error al eliminar');
+                    return $this->errorResponse($e, $defaultMessage);
+                }
+            }
 
-            //     // guardar actualizar alternativas
-            //     foreach ($alternativasActualizar as $alternativa) {
+            // guardar actualizar alternativas
+            foreach ($alternativasActualizar as $alternativa) {
 
-            //         try {
-            //             $paramsAlternativa = [
-            //                 $alternativa['isLocal'] ?? false ? 0 : (int) $alternativa['iAlternativaId'],
-            //                 (int) $respPregunta->id,
-            //                 $alternativa['cAlternativaDescripcion'],
-            //                 $alternativa['cAlternativaLetra'],
-            //                 $alternativa['bAlternativaCorrecta'] ? 1 : 0,
-            //                 $alternativa['cAlternativaExplicacion'] ?? ''
-            //             ];
-            //             $resp = $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
-            //         } catch (Exception $e) {
-            //             DB::rollBack();
-            //             $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
-            //             return $this->errorResponse($e->getMessage(), $message);
-            //         }
-            //     }
+                try {
+                    $paramsAlternativa = [
+                        'iBancoAltId' =>  $alternativa['isLocal'] ?? false ? 0 : (int) $alternativa['iAlternativaId'],
+                        'iBancoId' =>  (int) $respPregunta->id,
+                        'cBancoAltLtera' =>  $alternativa['cAlternativaLetra'],
+                        'cBancoAltDescripcion' =>  $alternativa['cAlternativaDescripcion'],
+                        'bBancoAltRptaCarrecta' =>  $alternativa['bAlternativaCorrecta'] ? 1 : 0,
+                        'cBancoAltExplicacionRpta' =>  $alternativa['cAlternativaExplicacion'] ?? ''
+                    ];
+                    $resp = BancoRepository::guardarActualizarAlternativa($paramsAlternativa);
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
+                    return $this->errorResponse($e->getMessage(), $message);
+                }
+            }
         }
 
         // // eliminar preguntas

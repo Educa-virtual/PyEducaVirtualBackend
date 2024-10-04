@@ -52,7 +52,7 @@ class BancoRepository
             $data['iDocenteId'],
             $data['iTipoPregId'],
             $data['iCurrContId'],
-            $data['dtBancoCreacion'],
+            // $data['dtBancoCreacion'],
             $data['cBancoPregunta'],
             $data['dtBancoTiempo'],
             $data['cBancoTextoAyuda'],
@@ -66,7 +66,7 @@ class BancoRepository
             , @_iDocenteId  = ?
             , @_iTipoPregId  = ?
             , @_iCurrContId  = ?
-            , @_dtBancoCreacion  = ?
+            
             , @_cBancoPregunta  = ?
             , @_dtBancoTiempo  = ?
             , @_cBancoTextoAyuda = ?
@@ -74,6 +74,28 @@ class BancoRepository
             , @_idEncabPregId  = ?
             , @_iCursoId  = ?
             , @_iNivelCicloId = ?
+        ', $params);
+        return $result;
+    }
+
+    public static function guardarActualizarAlternativa($params)
+    {
+        $params = [
+            $params['iBancoAltId'],
+            $params['iBancoId'],
+            $params['cBancoAltLtera'],
+            $params['cBancoAltDescripcion'],
+            $params['bBancoAltRptaCarrecta'],
+            $params['cBancoAltExplicacionRpta']
+        ];
+
+        $result = DB::select('exec eval.Sp_INS_UPD_alternativa_pregunta 
+            @_iBancoAltId = ?
+	        , @_iBancoId = ?
+	        , @_cBancoAltLetra = ? 
+	        , @_cBancoAltDescripcion = ?
+	        , @_bBancoAltRptaCorrecta = ?
+	        , @_cBancoAltExplicacionRpta = ?  
         ', $params);
         return $result;
     }
