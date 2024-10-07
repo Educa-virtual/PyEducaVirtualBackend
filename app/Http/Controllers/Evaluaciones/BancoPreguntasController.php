@@ -45,9 +45,9 @@ class BancoPreguntasController extends ApiController
                 'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
-                'iCursoId' => 1,
-                'iNivelGradoId' => 1,
-                'iColumnValue' => 1,
+                'iCursoId' => $request->iCursoId,
+                'iNivelGradoId' => $request->iNivelGradoId,
+                'iColumnValue' => $request->iDocenteId,
                 'cColumnName' => 'iDocenteId',
                 'cSchemaName'  => 'eval'
             ];
@@ -77,19 +77,18 @@ class BancoPreguntasController extends ApiController
             $segundos = $pregunta['iSegundos'];
             $fechaActual->setTime($hora, $minutos, $segundos);
             $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
-            $iCursoId = 1;
 
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 'iBancoId' => $iPreguntaId,
                 'iDocenteId' => $request->iDocenteId,
-                'iTipoPregId' => $request->iTipoPregId,
+                'iTipoPregId' => $pregunta['iTipoPregId'],
                 'iCurrContId' => $request->iCurrContId,
                 // 'dtBancoCreacion' => $request->,
-                'cBancoPregunta' => $request->cPregunta,
+                'cBancoPregunta' => $pregunta['cPregunta'],
                 'dtBancoTiempo' => $fechaConHora,
-                'cBancoTextoAyuda' => $request->cPreguntaTextoAyuda,
-                'nBancoPuntaje' => $request->iPreguntaPeso,
+                'cBancoTextoAyuda' => $pregunta['cPreguntaTextoAyuda'],
+                'nBancoPuntaje' => $pregunta['iPreguntaPeso'],
                 'idEncabPregId' => $iEncabPregId,
                 'iCursoId' => $request->iCursoId,
                 'iNivelCicloId' => $request->iNivelCicloId,
@@ -100,6 +99,8 @@ class BancoPreguntasController extends ApiController
             $respPregunta = null;
             try {
                 $respPregunta = BancoRepository::guardarActualizarPregunta($params);
+                // DB::rollBack();
+                // return $this->errorResponse($respPregunta);
                 $respPregunta = $respPregunta[0];
             } catch (Exception $e) {
                 DB::rollBack();
@@ -146,39 +147,39 @@ class BancoPreguntasController extends ApiController
             }
         }
 
-        // // eliminar preguntas
-        // foreach ($preguntasEliminar as $pregunta) {
-        //     $alternativasEliminar = array_merge($pregunta['alternativas'], $pregunta['alternativasEliminadas'] ?? []);
-        //     foreach ($alternativasEliminar as $alternativa) {
-        //         $paramsAlternativaEliminar = [
-        //             $alternativa['iAlternativaId']
-        //         ];
-        //         try {
-        //             $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+        // eliminar preguntas
+        foreach ($preguntasEliminar as $pregunta) {
+            $alternativasEliminar = array_merge($pregunta['alternativas'], $pregunta['alternativasEliminadas'] ?? []);
+            foreach ($alternativasEliminar as $alternativa) {
+                $paramsAlternativaEliminar = [
+                    $alternativa['iAlternativaId']
+                ];
+                try {
+                    $resp = DB::select('exec eval.Sp_DEL_alternativa_pregunta  @_iBancoAltId', $paramsAlternativaEliminar);
 
-        //             $resp = $resp[0];
-        //         } catch (Exception $e) {
-        //             DB::rollBack();
-        //             $defaultMessage = $this->returnError($e, 'Error al eliminar');
-        //             return $this->errorResponse($e, $defaultMessage);
-        //         }
-        //     }
+                    $resp = $resp[0];
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    $defaultMessage = $this->returnError($e, 'Error al eliminar');
+                    return $this->errorResponse($e, $defaultMessage);
+                }
+            }
 
-        //     try {
+            try {
 
-        //         $resp = DB::select('exec ere.Sp_DEL_pregunta @_iPreguntaId = ?', [$pregunta['iPreguntaId']]);
+                $resp = DB::select('exec eval.Sp_DEL_pregunta @_iBancoId = ?', [$pregunta['iPreguntaId']]);
 
-        //         if (count($resp) === 0) {
-        //             return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
-        //         }
+                if (count($resp) === 0) {
+                    return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
+                }
 
-        //         $resp = $resp[0];
-        //     } catch (Exception $e) {
-        //         DB::rollBack();
-        //         $message = $this->returnError($e, 'Error al eliminar la pregunta');
-        //         return $this->errorResponse($e, $message);
-        //     }
-        // }
+                $resp = $resp[0];
+            } catch (Exception $e) {
+                DB::rollBack();
+                $message = $this->returnError($e, 'Error al eliminar la pregunta');
+                return $this->errorResponse($e, $message);
+            }
+        }
         DB::commit();
 
         return $this->successResponse(null, 'Cambion realizados correctamente');
@@ -197,6 +198,29 @@ class BancoPreguntasController extends ApiController
             return $this->successResponse($encabezados, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al obetener los datos');
+        }
+    }
+
+    public function eliminarBancoPreguntasById(Request $request, $id)
+    {
+        $params = [
+            $id
+        ];
+
+        try {
+
+            $resp = DB::select('exec eval.Sp_DEL_pregunta @_iBancoId = ?', $params);
+
+            if (count($resp) === 0) {
+                return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
+            }
+
+            $resp = $resp[0];
+
+            return $this->successResponse($resp, $resp->mensaje);
+        } catch (Exception $e) {
+            $message = $this->returnError($e, 'Error al eliminar la pregunta');
+            return $this->errorResponse($e, $message);
         }
     }
 }

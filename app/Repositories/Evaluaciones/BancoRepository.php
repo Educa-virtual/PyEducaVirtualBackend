@@ -11,11 +11,11 @@ class BancoRepository
     public static function obtenerPreguntas($params)
     {
         $params = [
-            $params['iCursoId'],
+            $params['iCursoId'] ?? 0,
             $params['busqueda'] ?? '',
-            $params['iDocenteId'],
-            $params['iCurrContId'],
-            $params['iNivelCicloId'],
+            $params['iDocenteId'] ?? 0,
+            $params['iCurrContId'] ?? 0,
+            $params['iNivelCicloId'] ?? 0,
             $params['iTipoPregId'] ?? 0,
             $params['iBancoIds '] ?? ''
         ];
