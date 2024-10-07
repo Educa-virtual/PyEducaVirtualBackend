@@ -104,7 +104,7 @@ class BancoPreguntasController extends ApiController
                 $respPregunta = $respPregunta[0];
             } catch (Exception $e) {
                 DB::rollBack();
-                return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
+                return $this->errorResponse($e, 'Error al guardar los datos');
             }
 
             // alternativas
