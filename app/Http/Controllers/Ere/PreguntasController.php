@@ -41,9 +41,9 @@ class PreguntasController extends ApiController
                 'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
-                'iCursoId' => 1,
-                'iNivelGradoId' => 1,
-                'iColumnValue' => 1,
+                'iCursoId' => $request->iCursoId,
+                'iNivelGradoId' => $request->iNivelGradoId,
+                'iColumnValue' => $request->iEspecialistaId,
                 'cColumnName' => 'iEspecialistaId',
                 'cSchemaName'  => 'ere'
             ];
