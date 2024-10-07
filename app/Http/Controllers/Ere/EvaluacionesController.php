@@ -14,9 +14,9 @@ class EvaluacionesController extends ApiController
     {
 
         $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
-        
+
         $where = '';
-       
+
 
         $params = [
             'ere',
@@ -36,5 +36,14 @@ class EvaluacionesController extends ApiController
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
+    }
+    public function actualizarEvaluacion(Request $request)
+    {
+        return  $this->errorResponse(null, 'Error al obtener los datos');
+
+        /*return $this->successResponse(
+            null,
+            'Datos obtenidos correctamente'
+        );*/
     }
 }

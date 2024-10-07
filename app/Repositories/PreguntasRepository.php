@@ -11,15 +11,17 @@ class PreguntasRepository
     {
 
         $params = [
-            $params['iCursoId'],
+            $params['iCursoId'] ?? 0,
             $params['busqueda'] ?? '',
             $params['iTipoPregId'] ?? 0,
             $params['bPreguntaEstado'] ?? -1,
-            $params['ids'] ?? ''
+            $params['ids'] ?? '',
+            $params['iEncabPregId'] ?? 0
         ];
 
         $preguntasDB = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
-             @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?
+             @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
+             @_iEncabPregId = ? 
             ', $params);
         $preguntas = [];
         foreach ($preguntasDB as $item) {
@@ -49,16 +51,18 @@ class PreguntasRepository
             $data['iNivelGradoId'],
             $data['iColumnValue'],
             $data['cColumnName'] ?? 'iEspecialistaId',
-            $data['cSchemaName'] ?? 'ere'
+            $data['cSchemaName']
         ];
 
         $result = DB::select(
             'exec ere.Sp_INS_UPD_encabezado_pregunta @_iEncabPregId  = ?
                 , @_cEncabPregTitulo = ?
                 , @_cEncabPregContenido = ?
-                , @_iCursoId  = ?
+                , @_iCursoId = ?
                 , @_iNivelGradoId  = ?
                 , @_iColumnValue  = ?
+                , @_cColumnName = ?
+                , @_cSchemaName = ? 
                 ',
             $params
         );
@@ -68,17 +72,29 @@ class PreguntasRepository
 
     public static function obtenerCabecerasPregunta($params)
     {
-        $campos = 'iEncabPregId, cEncabPregTitulo, cEncabPregContenido';
-        $where = " iNivelGradoId = {$params['iNivelGradoId']}";
+        $campos = 'cEncabPregTitulo, cEncabPregContenido';
+        $where = '1=1 ';
         $where .= " AND iCursoId = {$params['iCursoId']}";
-        $where .= " AND iEspecialistaId = {$params['iEspecialistaId']}";
+        $schema =  $params['schema'] ?? 'ere';
+        if ($schema === 'ere') {
+            $campos .= ' ,iEncabPregId';
+            $where .= " AND iNivelGradoId = {$params['iNivelGradoId']}";
+            $where .= " AND iEspecialistaId = {$params['iEspecialistaId']}";
+        }
+
+        if ($schema === 'eval') {
+            $campos .= ' ,idEncabPregId';
+            $where .= " AND iNivelCicloId = {$params['iNivelCicloId']}";
+            $where .= " AND iDocenteId = {$params['iDocenteId']}";
+        }
 
         $params = [
-            $params['schema'] ?? 'ere',
+            $schema,
             'encabezado_preguntas',
             $campos,
             $where
         ];
+
 
         return DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
                 @nombreEsquema = ?,

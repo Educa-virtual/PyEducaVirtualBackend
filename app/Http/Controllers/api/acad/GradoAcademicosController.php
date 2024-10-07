@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\seg\upd;
+namespace App\Http\Controllers\api\acad;
 
 use App\Http\Controllers\Controller;
 use Exception;
@@ -8,33 +8,30 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CredSecurityCodeController extends Controller
+class GradoAcademicosController extends Controller
 {
-    public function index(Request $request){
-
-        $id = $request->id;
-        $codigo = mt_rand(100000,999999);
-        $session = 1;
-
-        $upd_query = DB::select('Sp_UPD_cCredSecurityCode_credencialesXiCredId ?,?,?',[$id, $codigo, $session]);
-        //$sel_query = DB::select('EXECUTE seg.Sp_SEL_credencialesXiCredId ?,?',[$id]);
-
+    public function list(Request $request){
+        $opcion                 = $request->opcion;
+        $iGradoAcadId           = NULL;
+        $cGradoAcadNombre       = NULL;
+        $cGradoAcadAbreviado    = NULL;
+        $query=DB::select("execute acad.Sp_crud_grado_academicos ?,?,?,?",[$opcion,$iGradoAcadId,$cGradoAcadNombre,$cGradoAcadAbreviado]);
+        
         try{
             $response = [
                 'validated' => true, 
                 'message' => 'se obtuvo la información',
-                'data' => $upd_query,
+                'data' => $query,
             ];
 
             $estado = 200;
 
-        }catch(Exception $e){
+        } catch(Exception $e){
             $response = [
                 'validated' => true, 
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
-
             $estado = 500;
         }
 

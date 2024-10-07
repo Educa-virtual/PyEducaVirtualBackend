@@ -11,6 +11,13 @@ use App\Http\Controllers\acad\Silabos;
 use App\Http\Controllers\acad\TipoBibliografias;
 use App\Http\Controllers\acad\TipoMetodologias;
 use App\Http\Controllers\acad\BibliografiaController;
+use App\Http\Controllers\api\acad\EstudiantesController;
+use App\Http\Controllers\acad\ContenidoSemanas;
+use App\Http\Controllers\acad\IndicadorActividades;
+use App\Http\Controllers\acad\SilaboActividadAprendizajes;
+use App\Http\Controllers\acad\TipoIndicadorLogros;
+use App\Http\Controllers\api\acad\GradoAcademicosController;
+use App\Http\Controllers\api\grl\PersonaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'docente'], function () {
@@ -45,14 +52,38 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('store', [DetalleEvaluaciones::class, 'store']);
   });
   Route::group(['prefix' => 'bibliografias'], function () {
-    // Route::post('/save_biblio', [BibliografiaController::class, 'save']);
-    // Route::post('/listar_biblio', [BibliografiaController::class, 'list']);
-    // Route::post('/del_biblio', [BibliografiaController::class, 'save']);
-
     Route::post('/list', [BibliografiaController::class, 'list']);
     Route::post('/store', [BibliografiaController::class, 'store']);
   });
   Route::group(['prefix' => 'tipo-bibliografias'], function () {
     Route::post('list', [TipoBibliografias::class, 'list']);
   });
+  Route::group(['prefix' => 'silabo-actividad-aprendizajes'], function () {
+    Route::post('list', [SilaboActividadAprendizajes::class, 'list']);
+    Route::post('store', [SilaboActividadAprendizajes::class, 'store']);
+  });
+  Route::group(['prefix' => 'indicador-actividades'], function () {
+    Route::post('list', [IndicadorActividades::class, 'list']);
+    Route::post('store', [IndicadorActividades::class, 'store']);
+  });
+  Route::group(['prefix' => 'tipo-indicador-logros'], function () {
+    Route::post('list', [TipoIndicadorLogros::class, 'list']);
+  });
+  Route::group(['prefix' => 'contenido-semanas'], function () {
+    Route::post('list', [ContenidoSemanas::class, 'list']);
+    Route::post('store', [ContenidoSemanas::class, 'store']);
+  });
+  Route::group(['prefix' => 'grado-academico'], function () {
+    Route::post('list', [GradoAcademicosController::class, 'list']);
+  });
+  Route::group(['prefix' => 'persona'], function () {
+    Route::post('list', [PersonaController::class, 'list']);
+  });
+  Route::group(['prefix' => 'asistencia'], function () {
+    Route::post('list', [PersonaController::class, 'list']);
+  });
+  Route::group(['prefix' => 'estudiante'], function () {
+    Route::post('list', [EstudiantesController::class, 'list']);
+  });
+  
 });
