@@ -131,12 +131,12 @@
     <div class="hojas">
         <table class="bordes">
             <caption>V. METODOLOGÍA</caption>
-            @if ($query->metodo)
+            @if (!empty($query->metodo))
                 @foreach (json_decode($query->metodo) as $tipo)
                 <tr>
                     <th class="sin_bordes">{{$tipo->cTipoMetNombre}}</th>
                 </tr>
-                @if ($tipo->metodologias)
+                @if (!empty($tipo->metodologias))
                     <tr>
                         <td class="sin_bordes">
                             @foreach ($tipo->metodologias as $met)
@@ -145,18 +145,24 @@
                         </td>
                     </tr>
                 @endif
-            
+                @endforeach
+            @else
+                <tr>
+                    <td class="sin_bordes">
+                        --
+                    </td>
+                </tr>
             @endif
             
         </table>
         <table>
             <caption>VI. RECURSOS DIDACTICOS</caption>
-            @if ($query->metodo)
+            @if (!empty($query->metodo))
             <tr>
                 <td>
                     @foreach (json_decode($query->recursos) as $rec)
                             <li>{{$rec->cRecSilaboDescripcion}}</li>
-                            @if ($query->recursos)
+                            @if (!empty($query->recursos))
                                 @foreach ($rec->recursosdidacticos as $recur)
                                 <ul>{{$recur->cRecDidacticoNombre}}:{{$recur->cRecDidacticoDescripcion}}</ul>
                                 @endforeach                            
@@ -165,7 +171,12 @@
                     @endforeach
                 </td>
             </tr>
-            
+            @else
+            <tr>
+                <td class="sin_bordes">
+                    --
+                </td>
+            </tr>
             @endif
         </table>
     </div>
@@ -179,11 +190,11 @@
                 <th>INDICADOR</th>
                 <th>CONTENIDO BÁSICOS</th>
             </tr>
-            @if ($query->actividad)
+            @if (!empty($query->actividad))
                 @foreach(json_decode($query->actividad) as $list)
-                    @if ($list->indicadores)
+                    @if (!empty($list->indicadores))
                         @foreach($list->indicadores AS $indi)
-                            @if ($indi->contenidos)
+                            @if (!empty($indi->contenidos))
                                 @foreach($indi->contenidos AS $con)
                                 <tr>
                                     <td>{{$list->cSilaboActAprendNumero}}</td>
@@ -196,7 +207,12 @@
                         @endforeach  
                     @endif
                 @endforeach
-            
+                @else
+                <tr>
+                    <td class="sin_bordes">
+                        --
+                    </td>
+                </tr>
             @endif
             
         </table>
@@ -207,9 +223,9 @@
                     <th>INDICADOR DE LOGRO</th>
                     <th>INDICADOR</th>
                 </tr>
-                @if ($query->actividad)
+                @if (!empty($query->actividad))
                     @foreach(json_decode($query->actividad) as $list)
-                        @if ($list->indicadores)
+                        @if (!empty($list->indicadores))
                             @foreach($list->indicadores AS $indi)
                             <tr>
                                 <td>{{$indi->iIndActSemanaEval}}</td>
@@ -238,7 +254,7 @@
     <div class="hojas">
         <table>
             <caption>IX. EVALUACIÓN</caption>
-            @if ($query->detalles)
+            @if (!empty($query->detalles))
                 <tr>
                     <td>
                         @foreach(json_decode($query->detalles) AS $det)
@@ -246,7 +262,12 @@
                         @endforeach
                     </td>
                 </tr>
-            
+            @else
+                <tr>
+                    <td class="sin_bordes">
+                        --
+                    </td>
+                </tr>
             @endif
         </table>
         <table>
@@ -258,7 +279,7 @@
                 <th>TÍTULO DE LA OBRA</th>
                 <th>EDITORIAL</th>
             </tr>
-            @if ($query->bibliografias)
+            @if (!empty($query->bibliografias))
                 @foreach(json_decode($query->bibliografias) AS $bib)
                 <tr>
                     <td>{{($loop->index) + 1}}</td>
@@ -268,7 +289,12 @@
                     <td>{{$bib->cBiblioEditorial}}</td>
                 </tr>
                 @endforeach
-            
+            @else
+                <tr>
+                    <td class="sin_bordes">
+                        --
+                    </td>
+                </tr>
             @endif
         </table>
     </div>
