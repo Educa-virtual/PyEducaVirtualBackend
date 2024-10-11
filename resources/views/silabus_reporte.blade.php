@@ -65,65 +65,65 @@
             <caption>I. INFORMACIÓN GENERAL</caption>
             <tr>
                 <th>PROGRAMA DE ESTUDIOS</th>
-                <th>{{$query->cProgNombre}}</th>
+                <th>{{$query->cProgNombre ?? '-'}}</th>
             </tr>
             <tr>
                 <th>MODULO FORMATIVO</th>
-                <th>{{$query->cModuloNombre}}</th>
+                <th>{{$query->cModuloNombre ?? '-'}}</th>
             </tr>
             <tr>
                 <th>COMPONENTE CURRICULAR</th>
-                <th>{{$query->cTipoCursoNombre}}</th>
+                <th>{{$query->cTipoCursoNombre ?? '-'}}</th>
             </tr>
             <tr>
                 <th>UNIDAD DIDÁCTICA</th>
-                <th>{{$query->cCursoNombre}}</th>
+                <th>{{$query->cCursoNombre ?? '-'}}</th>
             </tr>
             <tr>
                 <th>CARGA HORARIA (N° HORAS)</th>
-                <th>{{$query->iCursoTotalHoras}}</th>
+                <th>{{$query->iCursoTotalHoras ?? '-'}}</th>
             </tr>
             <tr>
                 <th>N° DE CRÉDITO</th>
-                <th>{{$query->nCursoTotalCreditos}}</th>
+                <th>{{$query->nCursoTotalCreditos ?? '-'}}</th>
             </tr>
             <tr>
                 <th>PERIODO ACADÉMICO</th>
-                <th>{{$query->cSemAcadNombre}}</th>
+                <th>{{$query->cSemAcadNombre ?? '-'}}</th>
             </tr>
             <tr>
                 <th>PERIODO LECTIVO</th>
-                <th>{{$query->cYAcadNombre}}</th>
+                <th>{{$query->cYAcadNombre ?? '-'}}</th>
             </tr>
             <tr>
                 <th>MODALIDAD</th>
-                <th>{{$query->cModalServNombre}}</th>
+                <th>{{$query->cModalServNombre ?? '-'}}</th>
             </tr>
             <tr>
                 <th>DOCENTE</th>
-                <th>{{$query->completos}}</th>
+                <th>{{$query->completos ?? '-'}}</th>
             </tr>
             <tr>
                 <th>CORREO ELECTRÓNICO</th>
-                <th>{{$query->cDocenteCorreo}}</th>
+                <th>{{$query->cDocenteCorreo ?? '-'}}</th>
             </tr>
         </table>
         <table>
             <caption>II. PERFIL DE EGRESO</caption>
             <tr>
-                <td>{{$query->cCurrPerfilEgresado}}</td>
+                <td>{{$query->cCurrPerfilEgresado ?? '-'}}</td>
             </tr>
         </table>
         <table>
             <caption>III. DESCRIPCIÓN DE UNIDAD DIDÁCTICA</caption>
             <tr>
-                <td>{{$query->cSilaboDescripcionCurso}}</td>
+                <td>{{$query->cSilaboDescripcionCurso ?? '-'}}</td>
             </tr>
         </table>
         <table>
             <caption>IV. CAPACIDAD</caption>
             <tr>
-                <td>{{$query->cSilaboCapacidad}}</td>
+                <td>{{$query->cSilaboCapacidad ?? '-'}}</td>
             </tr>
         </table>
     </div>
@@ -131,31 +131,52 @@
     <div class="hojas">
         <table class="bordes">
             <caption>V. METODOLOGÍA</caption>
-            @foreach (json_decode($query->metodo) as $tipo)
+            @if ($query->metodo)
+                @foreach (json_decode($query->metodo) as $tipo)
                 <tr>
                     <th class="sin_bordes">{{$tipo->cTipoMetNombre}}</th>
                 </tr>
+                @if ($tipo->metodologias)
+                    <tr>
+                        <td class="sin_bordes">
+                            @foreach ($tipo->metodologias as $met)
+                                <li>{{$met->cSilMetDescripcion}}</li>
+                            @endforeach
+                        </td>
+                    </tr>
+                @endif
+            @else
                 <tr>
                     <td class="sin_bordes">
-                        @foreach ($tipo->metodologias as $met)
-                            <li>{{$met->cSilMetDescripcion}}</li>
-                        @endforeach
+                        --
                     </td>
                 </tr>
-            @endforeach
+            @endif
+            
         </table>
         <table>
             <caption>VI. RECURSOS DIDACTICOS</caption>
+            @if ($query->metodo)
             <tr>
                 <td>
                     @foreach (json_decode($query->recursos) as $rec)
                             <li>{{$rec->cRecSilaboDescripcion}}</li>
-                            @foreach ($rec->recursosdidacticos as $recur)
-                            <ul>{{$recur->cRecDidacticoNombre}}:{{$recur->cRecDidacticoDescripcion}}</ul>
-                            @endforeach
+                            @if ($query->recursos)
+                                @foreach ($rec->recursosdidacticos as $recur)
+                                <ul>{{$recur->cRecDidacticoNombre}}:{{$recur->cRecDidacticoDescripcion}}</ul>
+                                @endforeach                            
+                            @endif
+                            
                     @endforeach
                 </td>
             </tr>
+            @else
+            <tr>
+                <td class="sin_bordes">
+                    --
+                </td>
+            </tr>
+            @endif
         </table>
     </div>
     @pageBreak
@@ -168,20 +189,31 @@
                 <th>INDICADOR</th>
                 <th>CONTENIDO BÁSICOS</th>
             </tr>
-            @foreach(json_decode($query->actividad) as $list)
-
-                @foreach($list->indicadores AS $indi)
-                    @foreach($indi->contenidos AS $con)
-                    <tr>
-                        <td>{{$list->cSilaboActAprendNumero}}</td>
-                        <td>{{$indi->cIndActNumero}}</td>
-                        <td>{{$con->cContenidoSemNumero}}</td>
-                        <td>{{$con->cContenidoSemTitulo}}</td>
-                    </tr>
-                    @endforeach
-                @endforeach     
-
-            @endforeach
+            @if ($query->actividad)
+                @foreach(json_decode($query->actividad) as $list)
+                    @if ($list->indicadores)
+                        @foreach($list->indicadores AS $indi)
+                            @if ($indi->contenidos)
+                                @foreach($indi->contenidos AS $con)
+                                <tr>
+                                    <td>{{$list->cSilaboActAprendNumero}}</td>
+                                    <td>{{$indi->cIndActNumero}}</td>
+                                    <td>{{$con->cContenidoSemNumero}}</td>
+                                    <td>{{$con->cContenidoSemTitulo}}</td>
+                                </tr>
+                                @endforeach
+                            @endif
+                        @endforeach  
+                    @endif
+                @endforeach
+            @else
+                <tr>
+                    <td class="sin_bordes">
+                        --
+                    </td>
+                </tr>
+            @endif
+            
         </table>
         <table>
             <caption>VIII. ACTIVIDADES DE EVALUACIÓN Y RECUPERACIÓN</caption>
@@ -190,35 +222,52 @@
                     <th>INDICADOR DE LOGRO</th>
                     <th>INDICADOR</th>
                 </tr>
-                @foreach(json_decode($query->actividad) as $list)
-                    @foreach($list->indicadores AS $indi)
-                    <tr>
-                        <td>{{$indi->iIndActSemanaEval}}</td>
-                        <td>{{$indi->cTipoIndLogNombre}}</td>
-                        <td>{{$indi->cIndActNumero}}</td>
-                    </tr>
+                @if ($query->actividad)
+                    @foreach(json_decode($query->actividad) as $list)
+                        @if ($list->indicadores)
+                            @foreach($list->indicadores AS $indi)
+                            <tr>
+                                <td>{{$indi->iIndActSemanaEval}}</td>
+                                <td>{{$indi->cTipoIndLogNombre}}</td>
+                                <td>{{$indi->cIndActNumero}}</td>
+                            </tr>
+                            @endforeach
+                        @endif
+                        <tr>
+                            <td>{{$list->iSilaboActAprendSemanaEval}}</td>
+                            <td>{{$list->cSilaboActIndLogro}}</td>
+                            <td>{{intval($list->cSilaboActAprendNumero)}}</td>
+                        </tr>
                     @endforeach
+                @else
                     <tr>
-                        <td>{{$list->iSilaboActAprendSemanaEval}}</td>
-                        <td>{{$list->cSilaboActIndLogro}}</td>
-                        <td>{{intval($list->cSilaboActAprendNumero)}}</td>
-                    </tr>
-                @endforeach
+                        <td class="sin_bordes">
+                            --
+                        </td>
+                    </tr> 
+                @endif
+                
         </table>
     </div>
     @pageBreak
     <div class="hojas">
         <table>
             <caption>IX. EVALUACIÓN</caption>
-
-            <tr>
-                <td>
-                    @foreach(json_decode($query->detalles) AS $det)
-                        <li>{{$det->cDetEvalDetalles}}</li>
-                    @endforeach
-                </td>
-            </tr>
-        
+            @if ($query->detalles)
+                <tr>
+                    <td>
+                        @foreach(json_decode($query->detalles) AS $det)
+                            <li>{{$det->cDetEvalDetalles}}</li>
+                        @endforeach
+                    </td>
+                </tr>
+            @else
+                <tr>
+                    <td class="sin_bordes">
+                        --
+                    </td>
+                </tr>
+            @endif
         </table>
         <table>
             <caption>X. BIBLIOGRAFÍA</caption>
@@ -229,17 +278,23 @@
                 <th>TÍTULO DE LA OBRA</th>
                 <th>EDITORIAL</th>
             </tr>
-            
-            @foreach(json_decode($query->bibliografias) AS $bib)
-            <tr>
-                <td>{{($loop->index) + 1}}</td>
-                <td>{{$bib->cBiblioAutor}}</td>
-                <td>{{$bib->cBiblioAnioEdicion}}</td>
-                <td>{{$bib->cBiblioTitulo}}</td>
-                <td>{{$bib->cBiblioEditorial}}</td>
-            </tr>
-            @endforeach
-            
+            @if ($query->bibliografias)
+                @foreach(json_decode($query->bibliografias) AS $bib)
+                <tr>
+                    <td>{{($loop->index) + 1}}</td>
+                    <td>{{$bib->cBiblioAutor}}</td>
+                    <td>{{$bib->cBiblioAnioEdicion}}</td>
+                    <td>{{$bib->cBiblioTitulo}}</td>
+                    <td>{{$bib->cBiblioEditorial}}</td>
+                </tr>
+                @endforeach
+            @else
+                <tr>
+                    <td class="sin_bordes">
+                        --
+                    </td>
+                </tr>
+            @endif
         </table>
     </div>
 </body>

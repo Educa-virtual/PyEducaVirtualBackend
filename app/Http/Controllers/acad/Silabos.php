@@ -88,25 +88,25 @@ class Silabos extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
-    public function report(Request $request)
+    public function report($iSilaboId)
     {
-
-        if ($request->iSilaboId) {
-            $iSilaboId = $this->hashids->decode($request->iSilaboId);
+        
+        if ($iSilaboId) {
+            $iSilaboId = $this->hashids->decode($iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
 
         $parametros = [
-            $request->opcion ?? "CONSULTAR_SILABO",
-            $request->valorBusqueda ?? '-',
-            $iSilaboId                          ?? NULL,
-            $iSemAcadId                         ?? NULL,
-            $iYAcadId                           ?? NULL,
-            $idDocCursoId                       ?? NULL,
-            $request->dtSilabo                  ?? NULL,
-            $request->cSilaboDescripcionCurso   ?? NULL,
-            $request->cSilaboCapacidad          ?? NULL,
-            $request->iCredId ?? NULL
+            "CONSULTAR_SILABO",
+            '-',
+            $iSilaboId,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL
 
         ];
 
@@ -116,17 +116,18 @@ class Silabos extends Controller
             $parametros
         );
 
+       
         $pdf = Pdf::view('silabus_reporte', ["query" => $query[0]])
             ->format('a4')
             ->name('silabus.pdf');
 
-        $content = base64_encode($pdf->stream());
-        $response = ['validated' => true, 'content' => $content, 'file' => 'RptIngMetasIndObj', 'mensaje' => 'Información obtenido exitosamente'];
-        return new JsonResponse($response);
+        // $content = base64_encode($pdf->stream());
+        // $response = ['validated' => true, 'content' => $pdf, 'file' => 'RptIngMetasIndObj', 'mensaje' => 'Información obtenido exitosamente'];
+        // return new JsonResponse($response);
         // return Pdf::view('silabus_reporte', ["query" => $query[0]])
         //     ->format('a4')
         //     ->name('silabus.pdf');
 
-        //return view("silabus_reporte",["query"=>$query[0]]);
+        return $pdf;
     }
 }
