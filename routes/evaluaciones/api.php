@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Ere\EvaluacionesController;
 use App\Http\Controllers\Evaluaciones\BancoPreguntasController;
+use App\Http\Controllers\Evaluaciones\EvaluacionController;
 use App\Http\Controllers\Evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
 use App\Http\Controllers\Evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +21,6 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     });
 
     Route::group(['prefix' => 'evaluacion'], function () {
-        Route::post('guardarActualizarEvaluacion', [EvaluacionesController::class, 'guardarActualizarEvaluacion']);
+        Route::post('guardarActualizarEvaluacion', [EvaluacionController::class, 'guardarActualizarEvaluacion']);
     });
 });
