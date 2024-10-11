@@ -19,14 +19,14 @@ class EvaluacionController extends ApiController
             $request->iInstrumentoId ?? NULL,
             $request->iEscalaCalifId ?? NULL,
             $request->iDocenteId,
-            $request->dtEvaluacionPublicacion,
+            $request->dtEvaluacionPublicacion ?? NULL,
             $request->cEvaluacionTitulo,
             $request->cEvaluacionDescripcion,
             $request->cEvaluacionObjetivo,
             $request->nEvaluacionPuntaje,
             $request->iEvaluacionNroPreguntas,
-            $request->dtEvaluacionInicio,
-            $request->dtEvaluacionFin,
+            $request->dtEvaluacionInicio ?? NULL,
+            $request->dtEvaluacionFin ?? NULL,
             $request->iEvaluacionDuracionHoras,
             $request->iEvaluacionDuracionMinutos
         ];
@@ -56,7 +56,7 @@ class EvaluacionController extends ApiController
 
             return $this->successResponse($data, $data->mensaje);
         } catch (Throwable $e) {
-            $errorMessage = $this->handleAndLogError($e);
+            $errorMessage = $this->handleAndLogError($e, 'Error al guardar la evaluación');
             return $this->errorResponse(null, $errorMessage);
         }
     }
