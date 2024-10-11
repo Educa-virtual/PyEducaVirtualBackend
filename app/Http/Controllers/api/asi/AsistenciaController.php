@@ -23,7 +23,7 @@ class AsistenciaController extends Controller
             $request->iEstado ?? NULL
         ];
         
-        $query=DB::select("execute acad.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?", $solicitud);
+        $query=DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?", $solicitud);
         
         try{
             $response = [

@@ -17,6 +17,7 @@ use App\Http\Controllers\acad\IndicadorActividades;
 use App\Http\Controllers\acad\SilaboActividadAprendizajes;
 use App\Http\Controllers\acad\TipoIndicadorLogros;
 use App\Http\Controllers\api\acad\GradoAcademicosController;
+use App\Http\Controllers\api\asi\AsistenciaController;
 use App\Http\Controllers\api\grl\PersonaController;
 use Illuminate\Support\Facades\Route;
 
@@ -80,10 +81,12 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('list', [PersonaController::class, 'list']);
   });
   Route::group(['prefix' => 'asistencia'], function () {
-    Route::post('list', [PersonaController::class, 'list']);
+    Route::post('list', [AsistenciaController::class, 'list']);
   });
   Route::group(['prefix' => 'estudiante'], function () {
     Route::post('list', [EstudiantesController::class, 'list']);
   });
-  
+  Route::group(['prefix' => 'silabus_reporte'], function () {
+    Route::post('report', [BibliografiaController::class, 'report']);
+  });
 });
