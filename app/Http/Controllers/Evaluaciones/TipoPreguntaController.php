@@ -12,8 +12,15 @@ class TipoPreguntaController extends ApiController
     public function obtenerTipoPreguntas(Request $request)
     {
 
+        $bancoTipo = $request->bancoTipo ?? 'ere';
+
+        $where = '1=1 ';
+
+        if ($bancoTipo === 'ere') {
+            $where .= ' AND iTipoPregId <> 3';
+        }
+
         $campos = 'iTipoPregId, cTipoPregDescripcion';
-        $where = '';
         $params = [
             'eval',
             'tipo_preguntas',
@@ -29,6 +36,11 @@ class TipoPreguntaController extends ApiController
                 @campos = ?,        
                 @condicionWhere = ?
             ', $params);
+
+            foreach ($preguntas as &$pregunta) {
+                $pregunta->iTipoPregId  = (int) $pregunta->iTipoPregId;
+            }
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'
