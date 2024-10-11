@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\api\acad;
 
-use App\Http\Controllers\ApiController; 
+use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
-
 use Exception;
-use Illuminate\Http\Request;
 
-class AutenticarUsurioController extends ApiController
+class SelectPerfilesController extends ApiController
 {
-    public function obtenerAutenticacion()
+    public function obtenerPerfiles()
     {
         
         /*$campo = 'iEspecialistaId,cPersNombre,cPersDocumento';*/
-        $where = '04431751';
+        $where = '2';
         
         /*$params =[
             $campo,
@@ -22,7 +20,7 @@ class AutenticarUsurioController extends ApiController
         ];*/
 
         try { 
-            $preguntas = DB ::select('EXEC acad.SP_SEL_ObtenerDni ?', [$where]);
+            $preguntas = DB ::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$where]);
            
             return $this->successResponse(
                 $preguntas,

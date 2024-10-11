@@ -11,6 +11,8 @@ use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
+use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
@@ -77,6 +79,9 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'AutenticarU'], function () {
         Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
     });
+    Route::group(['prefix' => 'Pefiles'], function () {
+        Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
+    });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
 Route::post('/verificar', [MailController::class, 'index']);
@@ -88,3 +93,5 @@ Route::post('/verificar', [MailController::class, 'index']);
 Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
+
+Route::get('/imprimir',PersonaController::class);

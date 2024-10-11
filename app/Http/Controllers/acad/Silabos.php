@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class Silabos extends Controller
 {
@@ -57,7 +58,7 @@ class Silabos extends Controller
 
             $iSilaboId                          ?? NULL,
             $iSemAcadId                         ?? NULL,
-            $iYAcadId                           ?? NULL,     
+            $iYAcadId                           ?? NULL,
             $idDocCursoId                       ?? NULL,
             $request->dtSilabo                  ?? NULL,
             $request->cSilaboDescripcionCurso   ?? NULL,
@@ -86,5 +87,47 @@ class Silabos extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
+    }
+    public function report($iSilaboId)
+    {
+        
+        if ($iSilaboId) {
+            $iSilaboId = $this->hashids->decode($iSilaboId);
+            $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
+        }
+
+        $parametros = [
+            "CONSULTAR_SILABO",
+            '-',
+            $iSilaboId,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+            NULL
+
+        ];
+
+
+        $query = DB::select(
+            "EXECUTE acad.Sp_ACAD_CRUD_SILABOS ?,?,?,?,?,?,?,?,?,?",
+            $parametros
+        );
+
+       
+        $pdf = Pdf::view('silabus_reporte', ["query" => $query[0]])
+            ->format('a4')
+            ->name('silabus.pdf');
+
+        // $content = base64_encode($pdf->stream());
+        // $response = ['validated' => true, 'content' => $pdf, 'file' => 'RptIngMetasIndObj', 'mensaje' => 'Información obtenido exitosamente'];
+        // return new JsonResponse($response);
+        // return Pdf::view('silabus_reporte', ["query" => $query[0]])
+        //     ->format('a4')
+        //     ->name('silabus.pdf');
+
+        return $pdf;
     }
 }
