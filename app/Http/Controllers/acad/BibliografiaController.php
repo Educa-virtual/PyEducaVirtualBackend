@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class BibliografiaController extends Controller
 {
@@ -155,5 +156,33 @@ class BibliografiaController extends Controller
         }
 
         return new JsonResponse($response, $estado);
+    }
+    public function report(Request $request){
+        $parametros = [
+            $request->opcion ?? "CONSULTAR_SILABO",
+            $iBiblioId                      ?? NULL,
+            $iTipoBiblioId                  ?? NULL,
+            $iSilaboId                      ?? NULL,
+            $request->cBiblioAutor          ?? NULL,
+            $request->cBiblioTitulo         ?? NULL,
+            $request->cBiblioAnioEdicion    ?? NULL,
+            $request->cBiblioEditorial      ?? NULL,
+            $request->cBiblioUrl            ?? NULL,
+            $request->iEstado               ?? NULL,
+            $request->iCredId               ?? NULL,
+
+        ];
+
+      
+        $query = DB::select(
+            "EXECUTE acad.Sp_ACAD_CRUD_SILABOS ?,?,?,?,?,?,?,?,?,?",
+            $parametros
+        );
+
+        return Pdf::view('silabus_reporte', ["query"=>$query[0]])
+        ->format('a4')
+        ->name('silabus.pdf');
+
+        //return view("silabus_reporte",["query"=>$query[0]]);
     }
 }
