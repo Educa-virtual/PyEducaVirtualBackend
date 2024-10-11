@@ -87,6 +87,6 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('list', [EstudiantesController::class, 'list']);
   });
   Route::group(['prefix' => 'silabus_reporte'], function () {
-    Route::post('report', [Silabos::class, 'report']);
+    Route::get('report/{iSilaboId}', [Silabos::class, 'report']);
   });
 });
