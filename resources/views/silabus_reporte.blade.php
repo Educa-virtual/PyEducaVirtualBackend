@@ -145,12 +145,7 @@
                         </td>
                     </tr>
                 @endif
-            @else
-                <tr>
-                    <td class="sin_bordes">
-                        --
-                    </td>
-                </tr>
+            
             @endif
             
         </table>
@@ -170,12 +165,7 @@
                     @endforeach
                 </td>
             </tr>
-            @else
-            <tr>
-                <td class="sin_bordes">
-                    --
-                </td>
-            </tr>
+            
             @endif
         </table>
     </div>
@@ -206,12 +196,7 @@
                         @endforeach  
                     @endif
                 @endforeach
-            @else
-                <tr>
-                    <td class="sin_bordes">
-                        --
-                    </td>
-                </tr>
+            
             @endif
             
         </table>
@@ -261,12 +246,7 @@
                         @endforeach
                     </td>
                 </tr>
-            @else
-                <tr>
-                    <td class="sin_bordes">
-                        --
-                    </td>
-                </tr>
+            
             @endif
         </table>
         <table>
@@ -288,12 +268,7 @@
                     <td>{{$bib->cBiblioEditorial}}</td>
                 </tr>
                 @endforeach
-            @else
-                <tr>
-                    <td class="sin_bordes">
-                        --
-                    </td>
-                </tr>
+            
             @endif
         </table>
     </div>
