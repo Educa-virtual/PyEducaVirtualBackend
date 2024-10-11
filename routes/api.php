@@ -11,6 +11,7 @@ use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
+use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\AuthController;
@@ -92,3 +93,5 @@ Route::post('/verificar', [MailController::class, 'index']);
 Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
+
+Route::get('/imprimir',PersonaController::class);
