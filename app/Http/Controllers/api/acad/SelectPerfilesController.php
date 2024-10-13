@@ -12,7 +12,7 @@ class SelectPerfilesController extends ApiController
     {
         
         /*$campo = 'iEspecialistaId,cPersNombre,cPersDocumento';*/
-        $where = '2';
+        $where = '1';
         
         /*$params =[
             $campo,
