@@ -33,7 +33,7 @@ class AulaVirtualController extends ApiController
             $request->iDocenteId,
             $request->cTareaTitulo,
             $request->cTareaDescripcion,
-            '',
+            $request->cTareaArchivoAdjunto,
             $request->cTareaIndicaciones,
             0,
             0,
