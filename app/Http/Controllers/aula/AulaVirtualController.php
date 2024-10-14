@@ -111,7 +111,8 @@ class AulaVirtualController extends ApiController
             }
 
             if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion])) {
-                $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] = json_decode($actividades, true);
+                $contenido = $actividades ? json_decode($actividades, true) : [];
+                $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] = $contenido;
             }
         }
 
