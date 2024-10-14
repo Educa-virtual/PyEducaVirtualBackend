@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\Controller;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
@@ -22,25 +23,40 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
+        $date = date('Y-m-d H:i:s');
+        $dateTime = new DateTime($date);
+        $isoDate = $dateTime->format(DateTime::ATOM);
+        $isoDateUTC = $dateTime->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s.v\Z');
+
+        // Extraer fecha y hora desde el request
+        $fechaFin = $request->input('dFechaEvaluacionPublicacion');
+        $horaFin = $request->input('tHoraEvaluacionPublicacion');
+        $date2 = new DateTime($fechaFin);
+        $dateString = $date2->format('Y-m-d');
+        $hora = new DateTime($horaFin);
+        $horaString = $hora->format('H:i:s');
+        $fechaHoraCompleta = $dateString . 'T' . $horaString . 'Z';
+
+
         $params = [
             2,
             $request->iDocenteId,
             $request->cTareaTitulo,
             $request->cTareaDescripcion,
-            '',
+            $request->cTareaArchivoAdjunto,
             $request->cTareaIndicaciones,
             0,
             0,
             0,
-            null,
-            null,
+            $isoDateUTC,
+            $fechaHoraCompleta,
             '',
             1,
             null
         ];
 
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
+            $resp = DB::statement('EXEC [aula].[SP_INS_InsertActividades]
                     @iProgActId  = ? ,
                     @iDocenteId = ? ,
                     @cTareaTitulo = ?,
