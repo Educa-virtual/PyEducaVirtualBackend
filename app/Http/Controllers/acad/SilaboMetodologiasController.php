@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class RecursoSilabos extends Controller
+class SilaboMetodologiasController extends Controller
 {
     protected $hashids;
-    protected $iRecSilaboId;
+    protected $idSilMetId;
+    protected $iTipoMetId;
     protected $iSilaboId;
-    protected $iRecDidacticoId;
 
 
     public function __construct()
@@ -31,17 +31,17 @@ class RecursoSilabos extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iRecSilaboId) {
-            $iRecSilaboId = $this->hashids->decode($request->iRecSilaboId);
-            $iRecSilaboId = count($iRecSilaboId) > 0 ? $iRecSilaboId[0] : $iRecSilaboId;
+        if ($request->idSilMetId) {
+            $idSilMetId = $this->hashids->decode($request->idSilMetId);
+            $idSilMetId = count($idSilMetId) > 0 ? $idSilMetId[0] : $idSilMetId;
+        }
+        if ($request->iTipoMetId) {
+            $iTipoMetId = $this->hashids->decode($request->iTipoMetId);
+            $iTipoMetId = count($iTipoMetId) > 0 ? $iTipoMetId[0] : $iTipoMetId;
         }
         if ($request->iSilaboId) {
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
-        }
-        if ($request->iRecDidacticoId) {
-            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
-            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
 
@@ -49,23 +49,23 @@ class RecursoSilabos extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iRecSilaboId                           ?? NULL,
-            $iSilaboId                              ?? NULL,
-            $iRecDidacticoId                        ?? NULL,
-            $request->cRecSilaboDescripcion         ?? NULL,
+            $idSilMetId                     ?? NULL,
+            $iTipoMetId                     ?? NULL,
+            $iSilaboId                      ?? NULL,
+            $request->cSilMetDescripcion    ?? NULL,
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_METODOLOGIAS
                 ?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
-                $value->iRecSilaboId = $this->hashids->encode($value->iRecSilaboId);
+                $value->idSilMetId = $this->hashids->encode($value->idSilMetId);
+                $value->iTipoMetId = $this->hashids->encode($value->iTipoMetId);
                 $value->iSilaboId = $this->hashids->encode($value->iSilaboId);
-                $value->iRecDidacticoId = $this->hashids->encode($value->iRecDidacticoId);
             }
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
@@ -77,7 +77,6 @@ class RecursoSilabos extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
-
     public function store(Request $request)
     {
         $request->validate(
@@ -88,17 +87,17 @@ class RecursoSilabos extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iRecSilaboId) {
-            $iRecSilaboId = $this->hashids->decode($request->iRecSilaboId);
-            $iRecSilaboId = count($iRecSilaboId) > 0 ? $iRecSilaboId[0] : $iRecSilaboId;
+        if ($request->idSilMetId) {
+            $idSilMetId = $this->hashids->decode($request->idSilMetId);
+            $idSilMetId = count($idSilMetId) > 0 ? $idSilMetId[0] : $idSilMetId;
+        }
+        if ($request->iTipoMetId) {
+            $iTipoMetId = $this->hashids->decode($request->iTipoMetId);
+            $iTipoMetId = count($iTipoMetId) > 0 ? $iTipoMetId[0] : $iTipoMetId;
         }
         if ($request->iSilaboId) {
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
-        }
-        if ($request->iRecDidacticoId) {
-            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
-            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
 
@@ -106,20 +105,20 @@ class RecursoSilabos extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iRecSilaboId                           ?? NULL,
-            $iSilaboId                              ?? NULL,
-            $iRecDidacticoId                        ?? NULL,
-            $request->cRecSilaboDescripcion         ?? NULL,
+            $idSilMetId                     ?? NULL,
+            $iTipoMetId                     ?? NULL,
+            $iSilaboId                      ?? NULL,
+            $request->cSilMetDescripcion    ?? NULL,
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_METODOLOGIAS
                 ?,?,?,?,?,?,?', $parametros);
 
-            if ($data[0]->iRecSilaboId > 0) {
+            if ($data[0]->idSilMetId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
                 $codeResponse = 200;

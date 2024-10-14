@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class SilaboActividadAprendizajes extends Controller
+class SilaboActividadAprendizajesController extends Controller
 {
     protected $hashids;
     protected $iSilaboActAprendId;

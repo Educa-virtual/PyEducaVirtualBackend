@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class TipoIndicadorLogros extends Controller
+class TipoIndicadorLogrosController extends Controller
 {
     protected $hashids;
     protected $iTipoIndLogId;

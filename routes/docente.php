@@ -1,21 +1,21 @@
 <?php
 
-use App\Http\Controllers\acad\Curriculas;
-use App\Http\Controllers\acad\Cursos;
-use App\Http\Controllers\acad\DetalleEvaluaciones;
-use App\Http\Controllers\acad\DocenteCursos;
-use App\Http\Controllers\acad\RecursoDidacticos;
-use App\Http\Controllers\acad\RecursoSilabos;
-use App\Http\Controllers\acad\SilaboMetodologias;
-use App\Http\Controllers\acad\Silabos;
-use App\Http\Controllers\acad\TipoBibliografias;
-use App\Http\Controllers\acad\TipoMetodologias;
+use App\Http\Controllers\acad\CurriculasController;
+use App\Http\Controllers\acad\CursosController;
+use App\Http\Controllers\acad\DetalleEvaluacionesController;
+use App\Http\Controllers\acad\DocenteCursosController;
+use App\Http\Controllers\acad\RecursoDidacticosController;
+use App\Http\Controllers\acad\RecursoSilabosController;
+use App\Http\Controllers\acad\SilaboMetodologiasController;
+use App\Http\Controllers\acad\SilabosController;
+use App\Http\Controllers\acad\TipoBibliografiasController;
+use App\Http\Controllers\acad\TipoMetodologiasController;
 use App\Http\Controllers\acad\BibliografiaController;
 use App\Http\Controllers\api\acad\EstudiantesController;
-use App\Http\Controllers\acad\ContenidoSemanas;
-use App\Http\Controllers\acad\IndicadorActividades;
-use App\Http\Controllers\acad\SilaboActividadAprendizajes;
-use App\Http\Controllers\acad\TipoIndicadorLogros;
+use App\Http\Controllers\acad\ContenidoSemanasController;
+use App\Http\Controllers\acad\IndicadorActividadesController;
+use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
+use App\Http\Controllers\acad\TipoIndicadorLogrosController;
 use App\Http\Controllers\api\acad\GradoAcademicosController;
 use App\Http\Controllers\api\asi\AsistenciaController;
 use App\Http\Controllers\api\grl\PersonaController;
@@ -23,56 +23,56 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'docente-cursos'], function () {
-    Route::post('list', [DocenteCursos::class, 'list']);
+    Route::post('list', [DocenteCursosController::class, 'list']);
   });
   Route::group(['prefix' => 'curriculas'], function () {
-    Route::post('list', [Curriculas::class, 'list']);
+    Route::post('list', [CurriculasController::class, 'list']);
   });
   Route::group(['prefix' => 'cursos'], function () {
-    Route::post('list', [Cursos::class, 'list']);
+    Route::post('list', [CursosController::class, 'list']);
   });
   Route::group(['prefix' => 'silabos'], function () {
-    Route::post('list', [Silabos::class, 'list']);
+    Route::post('list', [SilabosController::class, 'list']);
   });
   Route::group(['prefix' => 'tipo-metodologias'], function () {
-    Route::post('list', [TipoMetodologias::class, 'list']);
+    Route::post('list', [TipoMetodologiasController::class, 'list']);
   });
   Route::group(['prefix' => 'silabo-metodologias'], function () {
-    Route::post('list', [SilaboMetodologias::class, 'list']);
-    Route::post('store', [SilaboMetodologias::class, 'store']);
+    Route::post('list', [SilaboMetodologiasController::class, 'list']);
+    Route::post('store', [SilaboMetodologiasController::class, 'store']);
   });
   Route::group(['prefix' => 'recurso-didactivos'], function () {
-    Route::post('list', [RecursoDidacticos::class, 'list']);
+    Route::post('list', [RecursoDidacticosController::class, 'list']);
   });
   Route::group(['prefix' => 'recurso-silabos'], function () {
-    Route::post('list', [RecursoSilabos::class, 'list']);
-    Route::post('store', [RecursoSilabos::class, 'store']);
+    Route::post('list', [RecursoSilabosController::class, 'list']);
+    Route::post('store', [RecursoSilabosController::class, 'store']);
   });
   Route::group(['prefix' => 'detalle-evaluaciones'], function () {
-    Route::post('list', [DetalleEvaluaciones::class, 'list']);
-    Route::post('store', [DetalleEvaluaciones::class, 'store']);
+    Route::post('list', [DetalleEvaluacionesController::class, 'list']);
+    Route::post('store', [DetalleEvaluacionesController::class, 'store']);
   });
   Route::group(['prefix' => 'bibliografias'], function () {
     Route::post('/list', [BibliografiaController::class, 'list']);
     Route::post('/store', [BibliografiaController::class, 'store']);
   });
   Route::group(['prefix' => 'tipo-bibliografias'], function () {
-    Route::post('list', [TipoBibliografias::class, 'list']);
+    Route::post('list', [TipoBibliografiasController::class, 'list']);
   });
   Route::group(['prefix' => 'silabo-actividad-aprendizajes'], function () {
-    Route::post('list', [SilaboActividadAprendizajes::class, 'list']);
-    Route::post('store', [SilaboActividadAprendizajes::class, 'store']);
+    Route::post('list', [SilaboActividadAprendizajesController::class, 'list']);
+    Route::post('store', [SilaboActividadAprendizajesController::class, 'store']);
   });
   Route::group(['prefix' => 'indicador-actividades'], function () {
-    Route::post('list', [IndicadorActividades::class, 'list']);
-    Route::post('store', [IndicadorActividades::class, 'store']);
+    Route::post('list', [IndicadorActividadesController::class, 'list']);
+    Route::post('store', [IndicadorActividadesController::class, 'store']);
   });
   Route::group(['prefix' => 'tipo-indicador-logros'], function () {
-    Route::post('list', [TipoIndicadorLogros::class, 'list']);
+    Route::post('list', [TipoIndicadorLogrosController::class, 'list']);
   });
   Route::group(['prefix' => 'contenido-semanas'], function () {
-    Route::post('list', [ContenidoSemanas::class, 'list']);
-    Route::post('store', [ContenidoSemanas::class, 'store']);
+    Route::post('list', [ContenidoSemanasController::class, 'list']);
+    Route::post('store', [ContenidoSemanasController::class, 'store']);
   });
   Route::group(['prefix' => 'grado-academico'], function () {
     Route::post('list', [GradoAcademicosController::class, 'list']);
@@ -87,6 +87,6 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('list', [EstudiantesController::class, 'list']);
   });
   Route::group(['prefix' => 'silabus_reporte'], function () {
-    Route::get('report/{iSilaboId}', [Silabos::class, 'report']);
+    Route::get('report/{iSilaboId}', [SilabosController::class, 'report']);
   });
 });
