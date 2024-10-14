@@ -79,7 +79,7 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'AutenticarU'], function () {
         Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
     });
-    Route::group(['prefix' => 'Pefiles'], function () {
+    Route::group(['prefix' => 'Perfiles'], function () {
         Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
     });
 });

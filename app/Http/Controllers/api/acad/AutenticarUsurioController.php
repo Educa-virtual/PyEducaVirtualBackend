@@ -14,7 +14,7 @@ class AutenticarUsurioController extends ApiController
     {
         
         /*$campo = 'iEspecialistaId,cPersNombre,cPersDocumento';*/
-        $where = '45650699';
+        $where = '04431751';
         
         /*$params =[
             $campo,
