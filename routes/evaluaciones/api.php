@@ -22,5 +22,6 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 
     Route::group(['prefix' => 'evaluacion'], function () {
         Route::post('guardarActualizarEvaluacion', [EvaluacionController::class, 'guardarActualizarEvaluacion']);
+        Route::post('guardarActualizarPreguntasEvaluacion', [EvaluacionController::class, 'guardarActualizarPreguntasEvaluacion']);
     });
 });

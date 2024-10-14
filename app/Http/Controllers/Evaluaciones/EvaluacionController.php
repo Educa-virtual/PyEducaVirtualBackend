@@ -60,4 +60,30 @@ class EvaluacionController extends ApiController
             return $this->errorResponse(null, $errorMessage);
         }
     }
+
+    public function guardarActualizarPreguntasEvaluacion(Request $request)
+    {
+        $preguntas = $request->preguantas;
+
+        DB::transaction();
+        foreach ($preguntas  as $key => $pregunta) {
+            $composJson = json_encode(['iEvaulacionId' => $pregunta->iEvaulacionId, 'iBancoId' => $pregunta->iBancoId]);
+            try {
+                $params = [
+                    'eval',
+                    'evaluaciones_preguntas',
+                    $composJson
+                ];
+                $existePregunta = DB::select('select 1 eval.evaluacion.preguntas where iEvaluacionId = ? AND iBancoId = ?', [$pregunta->iEvaluacionId, $pregunta->iBancoId]);
+                if (count($existePregunta) === 0) {
+                    DB::select('exec grl.SP_INS_EnTablaDesdeJSON @Esquema = ?, @Tabla = ?, @DatosJSON = ?', $params);
+                }
+            } catch (Throwable $e) {
+                DB::rollBack();
+                return $this->errorResponse(null, 'Errar al guardar los datos');
+            }
+        }
+        DB::commit();
+        return $this->successResponse(null, 'Alternativas guardadas correctamente');
+    }
 }
