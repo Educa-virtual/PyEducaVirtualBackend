@@ -24,7 +24,7 @@ class CredencialescCredUsuariocClaveController extends Controller
                 $conctactar[$key]["cPersConNombre"] = $separar[0][0].$separar[0][1]."******"."@".$separar[1];
             }
         }
-        //Obtener perfiles 
+        //Obtener roles 
         $perfiles = DB ::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$sel_query[0]->iCredId]);
         $sel_query[0]->perfiles = $perfiles;
         
