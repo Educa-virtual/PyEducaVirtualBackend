@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
+use function PHPUnit\Framework\isNull;
+
 class AulaVirtualController extends ApiController
 {
 
@@ -110,13 +112,20 @@ class AulaVirtualController extends ApiController
                 ];
             }
 
-            if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion])) {
+            if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
-                $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] = $contenido;
+                $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
+                    'fecha' => $dtProgActPublicacion,
+                    'actividades' => $contenido
+                ];
             }
         }
 
         $finalResult =  array_values($result);
+        $finalResult = array_map(function ($item) {
+            $item['fechas'] = array_values($item['fechas']);
+            return $item;
+        }, $finalResult);
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
     }
