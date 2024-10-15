@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\ApiController;
+use App\Repositories\aula\ProgramacionActividadesRepository;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -39,9 +40,37 @@ class AulaVirtualController extends ApiController
         $horaString = $hora->format('H:i:s');
         $fechaHoraCompleta = $dateString . 'T' . $horaString . 'Z';
 
+        $iProgActId = (int) $request->iProgActId ?? 0;
+        $iContenidoSemId = $request->iContenidoSemId;
+        if ($request->iContenidoSemId) {
+            $iContenidoSemId = $this->hashids->decode($iContenidoSemId);
+            $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
+        }
+        $paramsProgramacionActividades = [
+            'iProgActId' => $iProgActId,
+            'iContenidoSemId' => $iContenidoSemId,
+            'iActTipoId' => $request->iActTipoId,
+            'iHorarioId' => $request->iHorarioId ?? null,
+            'dtProgActPublicacion' => $fechaHoraCompleta,
+            'cProgActTituloLeccion' => $request->cTareaTitulo,
+            'cProgActDescripcion' => $request->cTareaDescripcion
+        ];
+
+
+        DB::beginTransaction();
+        try {
+            $resp = ProgramacionActividadesRepository::guardarActualizar(json_encode($paramsProgramacionActividades));
+            if ($iProgActId === 0) {
+                $iProgActId = $resp->id;
+            }
+        } catch (Throwable $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+            return $this->errorResponse(null, $message);
+        }
 
         $params = [
-            2,
+            $iProgActId,
             $request->iDocenteId,
             $request->cTareaTitulo,
             $request->cTareaDescripcion,
@@ -77,8 +106,10 @@ class AulaVirtualController extends ApiController
                     @iEstado = ?,
                     @iSesionId = ?
             ', $params);
+            DB::commit();
             return $this->successResponse($resp, 'Datos guardados correctamente');
         } catch (Exception $e) {
+            DB::rollBack();
             return $this->errorResponse($e, 'Error al guardar la actividad');
         }
     }
