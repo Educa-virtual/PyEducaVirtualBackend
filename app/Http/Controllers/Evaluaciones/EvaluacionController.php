@@ -104,7 +104,6 @@ class EvaluacionController extends ApiController
             'iEvaluacionId' => $iEvaluacionId
         ];
 
-
         DB::commit();
         return $this->successResponse($responseData, 'Cambios realizados correctamente');
     }
