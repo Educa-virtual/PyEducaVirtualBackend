@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class ContenidoSemanas extends Controller
+class ContenidoSemanasController extends Controller
 {
     protected $hashids;
     protected $iContenidoSemId;

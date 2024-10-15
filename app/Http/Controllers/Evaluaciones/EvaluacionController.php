@@ -29,6 +29,7 @@ class EvaluacionController extends ApiController
             $iContenidoSemId = $this->hashids->decode($iContenidoSemId);
             $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
         }
+
         $paramsProgramacionActividades = [
             'iProgActId' => $iProgActId,
             'iContenidoSemId' => $iContenidoSemId,
@@ -38,7 +39,6 @@ class EvaluacionController extends ApiController
             'cProgActTituloLeccion' => $request->cEvaluacionTitulo,
             'cProgActDescripcion' => $request->cEvaluacionDescripcion
         ];
-
 
         DB::beginTransaction();
         try {

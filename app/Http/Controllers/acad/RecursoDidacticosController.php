@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class TipoBibliografias extends Controller
+class RecursoDidacticosController extends Controller
 {
     protected $hashids;
-    protected $iTipoBiblioId;
+    protected $iRecDidacticoId;
    
 
     public function __construct()
@@ -29,9 +29,9 @@ class TipoBibliografias extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTipoBiblioId) {
-            $iTipoBiblioId = $this->hashids->decode($request->iTipoBiblioId);
-            $iTipoBiblioId = count($iTipoBiblioId) > 0 ? $iTipoBiblioId[0] : $iTipoBiblioId;
+        if ($request->iRecDidacticoId) {
+            $iRecDidacticoId = $this->hashids->decode($request->iRecDidacticoId);
+            $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
 
@@ -39,19 +39,20 @@ class TipoBibliografias extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTipoBiblioId                         ?? NULL,
-            $request->cTipoBiblioNombre            ?? NULL,
+            $iRecDidacticoId                         ?? NULL,
+            $request->cRecDidacticoNombre            ?? NULL,
+            $request->cRecDidacticoDescripcion       ?? NULL,   
 
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_TIPO_BIBLIOGRAFIAS
-                ?,?,?,?,?', $parametros);
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_DIDACTICOS
+                ?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
-                $value->iTipoBiblioId = $this->hashids->encode($value->iTipoBiblioId);
+                $value->iRecDidacticoId = $this->hashids->encode($value->iRecDidacticoId);
             }
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
