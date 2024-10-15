@@ -14,6 +14,12 @@ class ProgramacionActividadesRepository
 
         $esquema = 'aula';
         $tabla = 'programacion_actividades';
+        $condiciones = [
+            [
+                'COLUMN_NAME' => "iProgActId",
+                'VALUE' => $params->iProgActId
+            ]
+        ];
 
         $paramsDB = [
             $esquema,
@@ -33,12 +39,15 @@ class ProgramacionActividadesRepository
             );
             return $resp[0];
         } else {
+
+            array_push($paramsDB, $condiciones);
             // actualizar
             $resp = DB::select(
-                'exec grl.SP_INS_EnTablaDesdeJSON 
+                'exec grl.SP_UPD_EnTablaConJSON 
                     @Esquema = ?
                     ,@Tabla = ?
                     ,@DatosJSON = ?
+                    ,@CondicionesJSON = ?
             ',
                 $paramsDB
             );
