@@ -26,6 +26,14 @@ trait handleErrorDb
         $logMessage = '';
         $returnMessage = '';
 
+        $context = [
+            'exception' => get_class($e),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => array_slice($e->getTrace(), 0, 5)
+        ];
+
+
         if ($e instanceof QueryException) {
             // Errores de base de datos
             $errorInfo = $e->errorInfo;
@@ -35,6 +43,8 @@ trait handleErrorDb
             } else {
                 $returnMessage = $defaultMessage;
             }
+            $context['sql'] = $e->getSql();
+            $context['bindings'] = $e->getBindings();
             $logMessage = "Error de base de datos: " . $e->getMessage();
         } elseif ($e instanceof ValidationException) {
             // Errores de validación
@@ -44,6 +54,7 @@ trait handleErrorDb
             // Errores HTTP
             $returnMessage = $e->getMessage() ?: $defaultMessage;
             $logMessage = "Error HTTP " . $e->getStatusCode() . ": " . $e->getMessage();
+            $context['status_code'] = $e->getStatusCode();
         } elseif (method_exists($e, 'getMessage')) {
             // Otros tipos de excepciones
             $returnMessage = $e->getMessage() ?: $defaultMessage;
@@ -55,12 +66,8 @@ trait handleErrorDb
         }
 
         // Registrar el error en el log
-        Log::error($logMessage, [
-            'exception' => get_class($e),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString()
-        ]);
+        Log::error($logMessage, $context);
+
 
         return $returnMessage;
     }
