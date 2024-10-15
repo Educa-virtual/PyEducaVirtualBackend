@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class IndicadorActividades extends Controller
+class IndicadorActividadesController extends Controller
 {
     protected $hashids;
     protected $iIndActId;

@@ -157,12 +157,12 @@
         </table>
         <table>
             <caption>VI. RECURSOS DIDACTICOS</caption>
-            @if (!empty($query->metodo))
+            @if (!empty($query->recursos))
             <tr>
                 <td>
                     @foreach (json_decode($query->recursos) as $rec)
                             <li>{{$rec->cRecSilaboDescripcion}}</li>
-                            @if (!empty($query->recursos))
+                            @if (!empty($rec->recursosdidacticos))
                                 @foreach ($rec->recursosdidacticos as $recur)
                                 <ul>{{$recur->cRecDidacticoNombre}}:{{$recur->cRecDidacticoDescripcion}}</ul>
                                 @endforeach                            

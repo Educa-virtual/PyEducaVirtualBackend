@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Spatie\LaravelPdf\Facades\Pdf;
 
-class Silabos extends Controller
+class SilabosController extends Controller
 {
     protected $hashids;
     protected $iSilaboId;

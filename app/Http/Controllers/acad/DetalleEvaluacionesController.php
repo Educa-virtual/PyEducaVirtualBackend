@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class DetalleEvaluaciones extends Controller
+class DetalleEvaluacionesController extends Controller
 {
     protected $hashids;
     protected $iDetEvaId;
