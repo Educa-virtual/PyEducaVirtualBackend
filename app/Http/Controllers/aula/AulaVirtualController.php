@@ -53,7 +53,8 @@ class AulaVirtualController extends ApiController
             'iHorarioId' => $request->iHorarioId ?? null,
             'dtProgActPublicacion' => $fechaHoraCompleta,
             'cProgActTituloLeccion' => $request->cTareaTitulo,
-            'cProgActDescripcion' => $request->cTareaDescripcion
+            'cProgActDescripcion' => $request->cTareaDescripcion,
+            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
 
