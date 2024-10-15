@@ -47,14 +47,17 @@ class AulaVirtualController extends ApiController
             $request->cTareaDescripcion,
             $request->cTareaArchivoAdjunto,
             $request->cTareaIndicaciones,
-            0,
+            $request->bTareaEsEvaluado,
             0,
             0,
             $isoDateUTC,
             $fechaHoraCompleta,
-            '',
+            null,
             1,
             null
+
+
+
         ];
 
         try {
