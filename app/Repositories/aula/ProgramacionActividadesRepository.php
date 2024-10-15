@@ -2,6 +2,7 @@
 
 namespace App\Repositories\aula;
 
+use App\Repositories\Evaluaciones\BancoRepository;
 use Illuminate\Support\Facades\DB;
 
 class ProgramacionActividadesRepository
@@ -55,7 +56,6 @@ class ProgramacionActividadesRepository
             $resp->id = $params->iProgActId;
             return $resp;
         }
-
 
         $actividades = DB::select('exec ');
     }
