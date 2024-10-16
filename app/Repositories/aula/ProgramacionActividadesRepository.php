@@ -59,4 +59,35 @@ class ProgramacionActividadesRepository
 
         $actividades = DB::select('exec ');
     }
+
+    public static function eliminar($params)
+    {
+        $parametrosDB = [
+            'aula',
+            'programacion_actividades',
+            'iProgActId',
+            $params['iProgActId']
+        ];
+        $resp = DB::select('exec grl.SP_DEL_RegistroConTransaccion  
+            @Esquema = ?
+            ,@NombreTabla = ?
+            ,@CampoID = ? 
+            ,@ValorID = ?', $parametrosDB);
+        return $resp;
+    }
+
+    public static function obtenerActividadEvaluacion($params)
+    {
+        $iProgActId = $params['iProgActId'];
+        $iActTipoId = $params['iActTipoId'];
+        $ixActividadId = $params['ixActividadId'];
+
+
+        $resp = DB::select('exec ');
+    }
+
+    public static function obtenerPreguntasEvaluacion($iEvalPregId)
+    {
+        DB::select('exec ');
+    }
 }

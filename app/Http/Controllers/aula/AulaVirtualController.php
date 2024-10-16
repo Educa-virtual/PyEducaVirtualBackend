@@ -201,4 +201,57 @@ class AulaVirtualController extends ApiController
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
     }
+
+    public function eliminarActividad(Request $request)
+    {
+        $iProgActId = (int) $request->iProgActId;
+        $iActTipoId = (int) $request->iActTipoId;
+
+        DB::beginTransaction();
+        // evaluacion
+        if ($iActTipoId === 3) {
+            $iEvaluacionId = (int) $request->ixActivadadId;
+            try {
+                $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
+            } catch (Throwable $e) {
+                DB::rollBack();
+                $message = $this->handleAndLogError($e, 'Error al eliminar');
+                return $this->errorResponse(null, $message);
+            }
+        }
+
+        // eliminar programacion actividades
+        try {
+            $resp = ProgramacionActividadesRepository::eliminar(['iProgActId' => $iProgActId]);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al eliminar');
+            return $this->errorResponse(null, $message);
+        }
+        DB::commit();
+        return $this->successResponse(null, 'Eliminado correctamente');
+        // eliminar archivos
+    }
+
+
+    public function obtenerActividad(Request $request)
+    {
+        $iProgActId = (int) $request->iProgActId;
+        $iActTipoId = (int) $request->iActTipoId;
+
+        if ($iActTipoId === 3) {
+            $iEvaluacionId = (int) $request->ixActivadadId;
+            try {
+                $params = [
+                    'iActTipoId' => $iActTipoId,
+                    'iProgActId' => $iActTipoId,
+                    'ixActividadId' => $iEvaluacionId
+                ];
+                // ProgramacionActividadesRepository::obtenerActividad($params);
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+        }
+    }
 }
