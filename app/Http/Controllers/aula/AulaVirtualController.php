@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 use function PHPUnit\Framework\isNull;
+use Illuminate\Http\JsonResponse;
 
 class AulaVirtualController extends ApiController
 {
@@ -27,16 +28,16 @@ class AulaVirtualController extends ApiController
     public function guardarActividad(Request $request)
     {
 
-        var_dump($request->input('cTareaArchivoAdjunto'));
-        if($request->hasFile('cTareaArchivoAdjunto')){
-            $archivo = $request->file('cTareaArchivoAdjunto');
-            $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
+        // var_dump($request->input('cTareaArchivoAdjunto'));
+        // if($request->hasFile('cTareaArchivoAdjunto')){
+        //     $archivo = $request->file('cTareaArchivoAdjunto');
+        //     $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
 
-            $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
-            $nombreArchivoGuardado = $nombreArchivo;
-        }else{
-            $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
-        }
+        //     $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
+        //     $nombreArchivoGuardado = $nombreArchivo;
+        // }else{
+        //     $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
+        // }
 
         // Extraer fecha y hora desde el request FECHA DE INICIO
         $fechaInicio = $request->input('dFechaEvaluacionPublicacionInicio');
@@ -75,7 +76,7 @@ class AulaVirtualController extends ApiController
             'dtProgActPublicacion' => $fechaHoraCompletaFin,
             'cProgActTituloLeccion' => $request->cTareaTitulo,
             'cProgActDescripcion' => $request->cTareaDescripcion,
-            'cTareaArchivoAdjunto' => $nombreArchivoGuardado
+            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
 
@@ -96,7 +97,7 @@ class AulaVirtualController extends ApiController
             $request->iDocenteId,
             $request->cTareaTitulo,
             $request->cTareaDescripcion,
-            $nombreArchivoGuardado,
+            $request->cTareaArchivoAdjunto,
             $request->cTareaIndicaciones,
             $request->bTareaEsEvaluado,
             0,
@@ -105,14 +106,15 @@ class AulaVirtualController extends ApiController
             $fechaHoraCompletaFin,
             null,
             1,
-            null
-
+            null,
+            $iContenidoSemId,
+            $request->iActTipoId
 
 
         ];
-
+        
         try {
-            $resp = DB::statement('EXEC [aula].[SP_INS_InsertActividades]
+            $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
                     @iProgActId  = ? ,
                     @iDocenteId = ? ,
                     @cTareaTitulo = ?,
@@ -126,14 +128,28 @@ class AulaVirtualController extends ApiController
                     @dtTareaFin = ?,
                     @cTareaComentarioDocente = ?,
                     @iEstado = ?,
-                    @iSesionId = ?
+                    @iSesionId = ?,
+                    @iContenidoSemId = ?,
+                    @iActTipoId = ?
             ', $params);
             DB::commit();
-            return $this->successResponse($resp, 'Datos guardados correctamente');
+            
+            if ($resp[0]->id > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+
         } catch (Exception $e) {
             DB::rollBack();
-            return $this->errorResponse($e, 'Error al guardar la actividad');
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
         }
+
+        return new JsonResponse($response, $codeResponse);
     }
 
     public function contenidoSemanasProgramacionActividades(Request $request)
