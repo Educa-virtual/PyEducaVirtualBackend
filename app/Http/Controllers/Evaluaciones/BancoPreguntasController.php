@@ -189,9 +189,6 @@ class BancoPreguntasController extends ApiController
 
         $ids = implode(',', $preguntasIds);
         $preguntasResponse = BancoRepository::obtenerPreguntas(['iBancoIds' => $ids]);
-        if (count($preguntasResponse) > 0) {
-            $preguntasResponse = $preguntasResponse[0];
-        }
 
         return $this->successResponse($preguntasResponse, 'Cambios realizados correctamente');
     }

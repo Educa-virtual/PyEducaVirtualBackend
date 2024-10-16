@@ -28,13 +28,13 @@ class AulaVirtualController extends ApiController
     {
 
         var_dump($request->input('cTareaArchivoAdjunto'));
-        if($request->hasFile('cTareaArchivoAdjunto')){
+        if ($request->hasFile('cTareaArchivoAdjunto')) {
             $archivo = $request->file('cTareaArchivoAdjunto');
             $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
 
             $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
             $nombreArchivoGuardado = $nombreArchivo;
-        }else{
+        } else {
             $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
         }
 
@@ -223,19 +223,36 @@ class AulaVirtualController extends ApiController
         $iProgActId = (int) $request->iProgActId;
         $iActTipoId = (int) $request->iActTipoId;
 
+        // evaluacinoes
         if ($iActTipoId === 3) {
             $iEvaluacionId = (int) $request->ixActivadadId;
+            $evaluacion = null;
             try {
                 $params = [
-                    'iActTipoId' => $iActTipoId,
-                    'iProgActId' => $iActTipoId,
-                    'ixActividadId' => $iEvaluacionId
+                    'iEvaluacionId' => $iEvaluacionId
                 ];
-                // ProgramacionActividadesRepository::obtenerActividad($params);
+                $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
+                if (count($resp) === 0) {
+                    return $this->errorResponse(null, 'La evaluación no existe');
+                }
+                $evaluacion = $resp[0];
             } catch (Throwable $e) {
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
                 return $this->errorResponse(null, $message);
             }
+
+            try {
+                $preguntas = ProgramacionActividadesRepository::obtenerPreguntasEvaluacion($evaluacion->iEvaluacionId);
+                foreach ($preguntas as $pregunta) {
+                    $pregunta->alternativas = json_decode($pregunta->alternativas, true);
+                }
+                $evaluacion->preguntas = $preguntas;
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
 }
