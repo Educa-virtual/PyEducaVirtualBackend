@@ -26,19 +26,40 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
-        $date = date('Y-m-d H:i:s');
-        $dateTime = new DateTime($date);
-        $isoDate = $dateTime->format(DateTime::ATOM);
-        $isoDateUTC = $dateTime->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s.v\Z');
 
-        // Extraer fecha y hora desde el request
-        $fechaFin = $request->input('dFechaEvaluacionPublicacion');
-        $horaFin = $request->input('tHoraEvaluacionPublicacion');
+        var_dump($request->input('cTareaArchivoAdjunto'));
+        if($request->hasFile('cTareaArchivoAdjunto')){
+            $archivo = $request->file('cTareaArchivoAdjunto');
+            $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
+
+            $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
+            $nombreArchivoGuardado = $nombreArchivo;
+        }else{
+            $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
+        }
+
+        // Extraer fecha y hora desde el request FECHA DE INICIO
+        $fechaInicio = $request->input('dFechaEvaluacionPublicacionInicio');
+        $horaInicio = $request->input('tHoraEvaluacionPublicacionInicio');
+        $date1 = new DateTime($fechaInicio);
+        $dateString1 = $date1->format('Y-m-d');
+
+        $horaInicioaux = new DateTime($horaInicio);
+        $horaString1 = $horaInicioaux->format('H:i:s');
+        $fechaHoraCompletaInicio = $dateString1 . 'T' . $horaString1 . 'Z';
+        // FIN
+
+        // Extraer fecha y hora desde el request FECHA FIN
+        $fechaFin = $request->input('dFechaEvaluacionPublicacionFin');
+        $horaFin = $request->input('tHoraEvaluacionPublicacionFin');
         $date2 = new DateTime($fechaFin);
         $dateString = $date2->format('Y-m-d');
-        $hora = new DateTime($horaFin);
-        $horaString = $hora->format('H:i:s');
-        $fechaHoraCompleta = $dateString . 'T' . $horaString . 'Z';
+
+        $horaFinaux = new DateTime($horaFin);
+        $horaString = $horaFinaux->format('H:i:s');
+        $fechaHoraCompletaFin = $dateString . 'T' . $horaString . 'Z';
+        // FIN
+
 
         $iProgActId = (int) $request->iProgActId ?? 0;
         $iContenidoSemId = $request->iContenidoSemId;
@@ -51,10 +72,10 @@ class AulaVirtualController extends ApiController
             'iContenidoSemId' => $iContenidoSemId,
             'iActTipoId' => $request->iActTipoId,
             'iHorarioId' => $request->iHorarioId ?? null,
-            'dtProgActPublicacion' => $fechaHoraCompleta,
+            'dtProgActPublicacion' => $fechaHoraCompletaFin,
             'cProgActTituloLeccion' => $request->cTareaTitulo,
             'cProgActDescripcion' => $request->cTareaDescripcion,
-            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
+            'cTareaArchivoAdjunto' => $nombreArchivoGuardado
         ];
 
 
@@ -75,13 +96,13 @@ class AulaVirtualController extends ApiController
             $request->iDocenteId,
             $request->cTareaTitulo,
             $request->cTareaDescripcion,
-            $request->cTareaArchivoAdjunto,
+            $nombreArchivoGuardado,
             $request->cTareaIndicaciones,
             $request->bTareaEsEvaluado,
             0,
             0,
-            $isoDateUTC,
-            $fechaHoraCompleta,
+            $fechaHoraCompletaInicio,
+            $fechaHoraCompletaFin,
             null,
             1,
             null
