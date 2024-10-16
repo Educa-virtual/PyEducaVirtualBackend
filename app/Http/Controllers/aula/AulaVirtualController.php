@@ -185,6 +185,9 @@ class AulaVirtualController extends ApiController
 
             if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
+                foreach ($contenido as $key => $contenidoItem) {
+                    $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                }
                 $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
                     'fecha' => $dtProgActPublicacion,
                     'actividades' => $contenido
