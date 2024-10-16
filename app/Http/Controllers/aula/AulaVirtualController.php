@@ -26,7 +26,6 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
-
         var_dump($request->input('cTareaArchivoAdjunto'));
         if($request->hasFile('cTareaArchivoAdjunto')){
             $archivo = $request->file('cTareaArchivoAdjunto');
@@ -184,5 +183,22 @@ class AulaVirtualController extends ApiController
         }, $finalResult);
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
+    }
+
+    public function guardarForo()
+    {
+         $where = '1';
+         try { 
+             $preguntas = DB ::select('EXEC [aula].Sp_SEL_categoriasXiForoCatId');
+            
+             return $this->successResponse(
+                 $preguntas,
+                 'Datos Obtenidos Correctamente'
+             );
+         }
+         catch (Exception $e){
+ 
+             return $this->errorResponse($e,'Error Upssss!');
+         }
     }
 }
