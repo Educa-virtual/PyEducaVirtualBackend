@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 use function PHPUnit\Framework\isNull;
+use Illuminate\Http\JsonResponse;
 
 class AulaVirtualController extends ApiController
 {
@@ -26,16 +27,17 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
-        var_dump($request->input('cTareaArchivoAdjunto'));
-        if($request->hasFile('cTareaArchivoAdjunto')){
-            $archivo = $request->file('cTareaArchivoAdjunto');
-            $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
 
-            $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
-            $nombreArchivoGuardado = $nombreArchivo;
-        }else{
-            $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
-        }
+        // var_dump($request->input('cTareaArchivoAdjunto'));
+        // if($request->hasFile('cTareaArchivoAdjunto')){
+        //     $archivo = $request->file('cTareaArchivoAdjunto');
+        //     $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
+
+        //     $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
+        //     $nombreArchivoGuardado = $nombreArchivo;
+        // }else{
+        //     $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
+        // }
 
         // Extraer fecha y hora desde el request FECHA DE INICIO
         $fechaInicio = $request->input('dFechaEvaluacionPublicacionInicio');
@@ -74,7 +76,7 @@ class AulaVirtualController extends ApiController
             'dtProgActPublicacion' => $fechaHoraCompletaFin,
             'cProgActTituloLeccion' => $request->cTareaTitulo,
             'cProgActDescripcion' => $request->cTareaDescripcion,
-            'cTareaArchivoAdjunto' => $nombreArchivoGuardado
+            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
 
@@ -95,7 +97,7 @@ class AulaVirtualController extends ApiController
             $request->iDocenteId,
             $request->cTareaTitulo,
             $request->cTareaDescripcion,
-            $nombreArchivoGuardado,
+            $request->cTareaArchivoAdjunto,
             $request->cTareaIndicaciones,
             $request->bTareaEsEvaluado,
             0,
@@ -104,14 +106,15 @@ class AulaVirtualController extends ApiController
             $fechaHoraCompletaFin,
             null,
             1,
-            null
-
+            null,
+            $iContenidoSemId,
+            $request->iActTipoId
 
 
         ];
 
         try {
-            $resp = DB::statement('EXEC [aula].[SP_INS_InsertActividades]
+            $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
                     @iProgActId  = ? ,
                     @iDocenteId = ? ,
                     @cTareaTitulo = ?,
@@ -125,14 +128,27 @@ class AulaVirtualController extends ApiController
                     @dtTareaFin = ?,
                     @cTareaComentarioDocente = ?,
                     @iEstado = ?,
-                    @iSesionId = ?
+                    @iSesionId = ?,
+                    @iContenidoSemId = ?,
+                    @iActTipoId = ?
             ', $params);
             DB::commit();
-            return $this->successResponse($resp, 'Datos guardados correctamente');
+
+            if ($resp[0]->id > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
         } catch (Exception $e) {
             DB::rollBack();
-            return $this->errorResponse($e, 'Error al guardar la actividad');
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
         }
+
+        return new JsonResponse($response, $codeResponse);
     }
 
     public function contenidoSemanasProgramacionActividades(Request $request)
@@ -169,6 +185,9 @@ class AulaVirtualController extends ApiController
 
             if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
+                foreach ($contenido as $key => $contenidoItem) {
+                    $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                }
                 $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
                     'fecha' => $dtProgActPublicacion,
                     'actividades' => $contenido
@@ -185,20 +204,73 @@ class AulaVirtualController extends ApiController
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
     }
 
-    public function guardarForo()
+    public function eliminarActividad(Request $request)
     {
-         $where = '1';
-         try { 
-             $preguntas = DB ::select('EXEC [aula].Sp_SEL_categoriasXiForoCatId');
-            
-             return $this->successResponse(
-                 $preguntas,
-                 'Datos Obtenidos Correctamente'
-             );
-         }
-         catch (Exception $e){
- 
-             return $this->errorResponse($e,'Error Upssss!');
-         }
+        $iProgActId = (int) $request->iProgActId;
+        $iActTipoId = (int) $request->iActTipoId;
+
+        DB::beginTransaction();
+        // evaluacion
+        if ($iActTipoId === 3) {
+            $iEvaluacionId = (int) $request->ixActivadadId;
+            try {
+                $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
+            } catch (Throwable $e) {
+                DB::rollBack();
+                $message = $this->handleAndLogError($e, 'Error al eliminar');
+                return $this->errorResponse(null, $message);
+            }
+        }
+
+        // eliminar programacion actividades
+        try {
+            $resp = ProgramacionActividadesRepository::eliminar(['iProgActId' => $iProgActId]);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al eliminar');
+            return $this->errorResponse(null, $message);
+        }
+        DB::commit();
+        return $this->successResponse(null, 'Eliminado correctamente');
+        // eliminar archivos
+    }
+
+
+    public function obtenerActividad(Request $request)
+    {
+        $iProgActId = (int) $request->iProgActId;
+        $iActTipoId = (int) $request->iActTipoId;
+
+        // evaluacinoes
+        if ($iActTipoId === 3) {
+            $iEvaluacionId = (int) $request->ixActivadadId;
+            $evaluacion = null;
+            try {
+                $params = [
+                    'iEvaluacionId' => $iEvaluacionId
+                ];
+                $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
+                if (count($resp) === 0) {
+                    return $this->errorResponse(null, 'La evaluación no existe');
+                }
+                $evaluacion = $resp[0];
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            try {
+                $preguntas = ProgramacionActividadesRepository::obtenerPreguntasEvaluacion($evaluacion->iEvaluacionId);
+                foreach ($preguntas as $pregunta) {
+                    $pregunta->alternativas = json_decode($pregunta->alternativas, true);
+                }
+                $evaluacion->preguntas = $preguntas;
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
+        }
     }
 }

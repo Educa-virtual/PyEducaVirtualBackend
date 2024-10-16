@@ -29,10 +29,11 @@ class GeneralController extends Controller
         if ($request->hasFile('file')) {
 
             $file = $request->file('file');
-            $path = $request->file("file")->store('evaluaciones', ['disk' => 'file']);
+            $path = $request->file("file")->store($request->nameFile, ['disk' => 'file']);
+            return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $path], 200);
             return response()->json($path);
         } else {
-            abort(503, 'No se adjuntaron archivos');
+            return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);
         }
     }
 }
