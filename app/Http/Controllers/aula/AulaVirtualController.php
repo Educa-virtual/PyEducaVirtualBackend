@@ -273,4 +273,20 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
+    public function guardarForo(){
+
+        try { 
+            $preguntas = DB ::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
+           
+            return $this->successResponse(
+                $preguntas,
+                'Datos Obtenidos Correctamente'
+            );
+        }
+        
+        catch (Exception $e){
+
+            return $this->errorResponse($e,'Error Upssss!');
+        }
+    }
 }
