@@ -27,40 +27,19 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
+        $date = date('Y-m-d H:i:s');
+        $dateTime = new DateTime($date);
+        $isoDate = $dateTime->format(DateTime::ATOM);
+        $isoDateUTC = $dateTime->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s.v\Z');
 
-        // var_dump($request->input('cTareaArchivoAdjunto'));
-        // if($request->hasFile('cTareaArchivoAdjunto')){
-        //     $archivo = $request->file('cTareaArchivoAdjunto');
-        //     $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
-
-        //     $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
-        //     $nombreArchivoGuardado = $nombreArchivo;
-        // }else{
-        //     $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
-        // }
-
-        // Extraer fecha y hora desde el request FECHA DE INICIO
-        $fechaInicio = $request->input('dFechaEvaluacionPublicacionInicio');
-        $horaInicio = $request->input('tHoraEvaluacionPublicacionInicio');
-        $date1 = new DateTime($fechaInicio);
-        $dateString1 = $date1->format('Y-m-d');
-
-        $horaInicioaux = new DateTime($horaInicio);
-        $horaString1 = $horaInicioaux->format('H:i:s');
-        $fechaHoraCompletaInicio = $dateString1 . 'T' . $horaString1 . 'Z';
-        // FIN
-
-        // Extraer fecha y hora desde el request FECHA FIN
-        $fechaFin = $request->input('dFechaEvaluacionPublicacionFin');
-        $horaFin = $request->input('tHoraEvaluacionPublicacionFin');
+        // Extraer fecha y hora desde el request
+        $fechaFin = $request->input('dFechaEvaluacionPublicacion');
+        $horaFin = $request->input('tHoraEvaluacionPublicacion');
         $date2 = new DateTime($fechaFin);
         $dateString = $date2->format('Y-m-d');
-
-        $horaFinaux = new DateTime($horaFin);
-        $horaString = $horaFinaux->format('H:i:s');
-        $fechaHoraCompletaFin = $dateString . 'T' . $horaString . 'Z';
-        // FIN
-
+        $hora = new DateTime($horaFin);
+        $horaString = $hora->format('H:i:s');
+        $fechaHoraCompleta = $dateString . 'T' . $horaString . 'Z';
 
         $iProgActId = (int) $request->iProgActId ?? 0;
         $iContenidoSemId = $request->iContenidoSemId;
@@ -73,31 +52,11 @@ class AulaVirtualController extends ApiController
             'iContenidoSemId' => $iContenidoSemId,
             'iActTipoId' => $request->iActTipoId,
             'iHorarioId' => $request->iHorarioId ?? null,
-            'dtProgActPublicacion' => $fechaHoraCompletaFin,
+            'dtProgActPublicacion' => $fechaHoraCompleta,
             'cProgActTituloLeccion' => $request->cTareaTitulo,
-            'cProgActDescripcion' => $request->cTareaDescripcion,
-            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
+            'cProgActDescripcion' => $request->cTareaDescripcion
         ];
 
-        // // desde aqui el codigo
-
-        // public function asignarEstudiantes(Request $request)
-        // {
-        //     $tarea_id = $request->input('tarea_id');
-        //     $estudiantes = $request->input('estudiantes');
-
-        //     foreach ($estudiantes as $estudiante_id) {
-        //         DB::table('aula_tarea_grupos')->insert([
-        //             'tarea_id' => $tarea_id,
-        //             'estudiante_id' => $estudiante_id,
-        //             'created_at' => now(),
-        //             'updated_at' => now(),
-        //         ]);
-        //     }
-
-        //     return response()->json(['message' => 'Estudiantes asignados correctamente'], 200);
-        // }//
-        // // fin del codigo
 
         DB::beginTransaction();
         try {
@@ -121,19 +80,18 @@ class AulaVirtualController extends ApiController
             $request->bTareaEsEvaluado,
             0,
             0,
-            $fechaHoraCompletaInicio,
-            $fechaHoraCompletaFin,
+            $isoDateUTC,
+            $fechaHoraCompleta,
             null,
             1,
-            null,
-            $iContenidoSemId,
-            $request->iActTipoId
+            null
+
 
 
         ];
 
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
+            $resp = DB::statement('EXEC [aula].[SP_INS_InsertActividades]
                     @iProgActId  = ? ,
                     @iDocenteId = ? ,
                     @cTareaTitulo = ?,
@@ -147,27 +105,14 @@ class AulaVirtualController extends ApiController
                     @dtTareaFin = ?,
                     @cTareaComentarioDocente = ?,
                     @iEstado = ?,
-                    @iSesionId = ?,
-                    @iContenidoSemId = ?,
-                    @iActTipoId = ?
+                    @iSesionId = ?
             ', $params);
             DB::commit();
-
-            if ($resp[0]->id > 0) {
-
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+            return $this->successResponse($resp, 'Datos guardados correctamente');
         } catch (Exception $e) {
             DB::rollBack();
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            $codeResponse = 500;
+            return $this->errorResponse($e, 'Error al guardar la actividad');
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function contenidoSemanasProgramacionActividades(Request $request)
