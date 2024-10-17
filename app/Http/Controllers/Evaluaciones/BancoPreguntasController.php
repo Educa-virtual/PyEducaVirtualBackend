@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
+use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\Evaluaciones\BancoRepository;
+use App\Repositories\Evaluaciones\PreguntasEvaluacionRepository;
 use App\Repositories\PreguntasRepository;
 use DateTime;
 use Exception;
@@ -47,13 +49,11 @@ class BancoPreguntasController extends ApiController
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
                 'iCursoId' => $request->iCursoId,
-                'iNivelGradoId' => $request->iNivelGradoId,
-                'iColumnValue' => $request->iDocenteId,
-                'cColumnName' => 'iDocenteId',
-                'cSchemaName'  => 'eval'
+                'iNivelCicloId' => $request->iNivelCicloId,
+                'iDocenteId' => $request->iDocenteId,
             ];
             try {
-                $resp =  PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+                $resp =  PreguntasEvaluacionRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
                 $resp = $resp[0];
                 $iEncabPregId = $resp->id;
             } catch (Throwable $e) {
@@ -94,8 +94,6 @@ class BancoPreguntasController extends ApiController
                 'iCursoId' => $request->iCursoId,
                 'iNivelCicloId' => $request->iNivelCicloId,
             ];
-
-
             // pregunta
             $respPregunta = null;
             try {
