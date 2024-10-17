@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\acad\MatriculaController;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'contenidos'], function () {

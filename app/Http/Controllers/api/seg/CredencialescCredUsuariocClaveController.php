@@ -7,48 +7,106 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTException;
+use App\Models\User;
 
 class CredencialescCredUsuariocClaveController extends Controller
 {
-    public function login(Request $request){
+    public function customAttempt($credentials)
+    {
+        $user = User::where('cCredUsuario', $credentials['cCredUsuario'])->first();
+
+        if ($user && sha1($credentials['password']) === $user->password) {
+            return $user;
+        }
+
+        return false;
+    }
+
+    public function login(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'user' => 'required',
+            'pass' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return new JsonResponse(['validated' => false, 'message' => $validator->errors(), 'data' => []], 422);
+        }
+
+        $credentials = ['cCredUsuario' => $request->user, 'password' => $request->pass];
+
+        if (!$user = $this->customAttempt($credentials)) {
+            return response()->json(['validated' => false, 'error' => 'Verifica tu usuario y contraseña'], 401);
+        }
+        $token = JWTAuth::fromUser($user);
+
+
         $user = $request->user;
         $pass = $request->pass;
+        $data = DB::select('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?', [$user, $pass]);
 
-        $sel_query = DB::select('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?',[$user,$pass]);
-        $conctactar = json_decode($sel_query[0]->contactar,true);
+        if (count($data) == 0) {
+            return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
+        }
+
+        //Obtener roles 
+        $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
+        $data[0]->perfiles = $perfiles;
+
+        $conctactar = json_decode($data[0]->contactar, true);
         $patron = "/^[[:digit:]]+$/";
-        foreach($conctactar as $key => $correo){
+        foreach ($conctactar as $key => $correo) {
             if (!preg_match($patron, $correo["cPersConNombre"])) {
-                $separar = explode("@",$correo["cPersConNombre"]);
+                $separar = explode("@", $correo["cPersConNombre"]);
                 $conctactar[$key]["iPersConId"] = bcrypt($correo["iPersConId"]);
-                $conctactar[$key]["cPersConNombre"] = $separar[0][0].$separar[0][1]."******"."@".$separar[1];
+                $conctactar[$key]["cPersConNombre"] = $separar[0][0] . $separar[0][1] . "******" . "@" . $separar[1];
             }
         }
-        //Obtener roles 
-        $perfiles = DB ::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$sel_query[0]->iCredId]);
-        $sel_query[0]->perfiles = $perfiles;
-        
-        $sel_query[0]->contactar = $conctactar;
 
-        try{
-            $response = [
-                'validated' => true, 
-                'message' => 'se obtuvo la información',
-                'data' => $sel_query,
-            ];
+        $data[0]->contactar = $conctactar;
 
-            $estado = 200;
+        return $this->createNewToken($token, $data);
+    }
 
-        }catch(Exception $e){
-            $response = [
-                'validated' => true, 
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-            $estado = 500;
-        }
-        
-        return new JsonResponse($response,$estado);
-        
+    protected function createNewToken($token, $data)
+    {
+        $user = count($data) > 0 ? $data[0] : [];
+        $modulos = DB::select("
+                            SELECT 
+                               iModuloId
+							  ,cModuloNombre
+															
+							FROM seg.modulos
+							WHERE iModuloEstado = 1
+														
+							ORDER BY iModuloOrden ASC
+                            ");
+        $years = DB::select("
+                            SELECT 
+                             iYearId
+                            ,cYearNombre
+                            ,cYearOficial
+                                                            
+                            FROM grl.years
+                            WHERE iYearEstado = 1
+                                                        
+                            ORDER BY cYearNombre DESC
+                            ");
+
+        $user->modulos = $modulos;
+        $user->years = $years;
+
+
+        return response()->json([
+            'accessToken' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60,
+            'user' => $user,
+
+        ]);
     }
 }
