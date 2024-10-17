@@ -147,7 +147,7 @@ class AulaVirtualController extends ApiController
                     @dtTareaFin = ?,
                     @cTareaComentarioDocente = ?,
                     @iEstado = ?,
-                    @iSesionId = ?
+                    @iSesionId = ?,
                     @iContenidoSemId = ?,
                     @iActTipoId = ?
             ', $params);
