@@ -79,6 +79,25 @@ class AulaVirtualController extends ApiController
             'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
+// // desde aqui el codigo
+
+// public function asignarEstudiantes(Request $request)
+// {
+//     $tarea_id = $request->input('tarea_id');
+//     $estudiantes = $request->input('estudiantes');
+
+//     foreach ($estudiantes as $estudiante_id) {
+//         DB::table('aula_tarea_grupos')->insert([
+//             'tarea_id' => $tarea_id,
+//             'estudiante_id' => $estudiante_id,
+//             'created_at' => now(),
+//             'updated_at' => now(),
+//         ]);
+//     }
+
+//     return response()->json(['message' => 'Estudiantes asignados correctamente'], 200);
+// }//
+// // fin del codigo
 
         DB::beginTransaction();
         try {
@@ -241,7 +260,7 @@ class AulaVirtualController extends ApiController
         $iProgActId = (int) $request->iProgActId;
         $iActTipoId = (int) $request->iActTipoId;
 
-        // evaluacinoes
+        // evaluaciones
         if ($iActTipoId === 3) {
             $iEvaluacionId = (int) $request->ixActivadadId;
             $evaluacion = null;
@@ -275,15 +294,15 @@ class AulaVirtualController extends ApiController
     }
     public function guardarForo(){
 
-        try { 
+        try {
             $preguntas = DB ::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
-           
+
             return $this->successResponse(
                 $preguntas,
                 'Datos Obtenidos Correctamente'
             );
         }
-        
+
         catch (Exception $e){
 
             return $this->errorResponse($e,'Error Upssss!');

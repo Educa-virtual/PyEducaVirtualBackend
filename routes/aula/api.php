@@ -10,6 +10,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::post('guardarActividad', [AulaVirtualController::class, 'guardarActividad']);
             Route::delete('eliminarActividad', [AulaVirtualController::class, 'eliminarActividad']);
             Route::get('obtenerActividad', [AulaVirtualController::class, 'obtenerActividad']);
+            //agregando para asignar estudiantes
+            Route::post('asignar-estudiantes', [AulaVirtualController::class, 'asignarEstudiantes']);
         });
         Route::group(['prefix' => 'foro'], function () {
             Route::post('guardarForo', [AulaVirtualController::class, 'guardarForo']);
