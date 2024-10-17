@@ -79,25 +79,25 @@ class AulaVirtualController extends ApiController
             'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
-// // desde aqui el codigo
+        // // desde aqui el codigo
 
-// public function asignarEstudiantes(Request $request)
-// {
-//     $tarea_id = $request->input('tarea_id');
-//     $estudiantes = $request->input('estudiantes');
+        // public function asignarEstudiantes(Request $request)
+        // {
+        //     $tarea_id = $request->input('tarea_id');
+        //     $estudiantes = $request->input('estudiantes');
 
-//     foreach ($estudiantes as $estudiante_id) {
-//         DB::table('aula_tarea_grupos')->insert([
-//             'tarea_id' => $tarea_id,
-//             'estudiante_id' => $estudiante_id,
-//             'created_at' => now(),
-//             'updated_at' => now(),
-//         ]);
-//     }
+        //     foreach ($estudiantes as $estudiante_id) {
+        //         DB::table('aula_tarea_grupos')->insert([
+        //             'tarea_id' => $tarea_id,
+        //             'estudiante_id' => $estudiante_id,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }
 
-//     return response()->json(['message' => 'Estudiantes asignados correctamente'], 200);
-// }//
-// // fin del codigo
+        //     return response()->json(['message' => 'Estudiantes asignados correctamente'], 200);
+        // }//
+        // // fin del codigo
 
         DB::beginTransaction();
         try {
@@ -205,7 +205,9 @@ class AulaVirtualController extends ApiController
             if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
                 foreach ($contenido as $key => $contenidoItem) {
-                    $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                    if (isset($contenido[$key]['ixActivadadId'])) {
+                        $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                    }
                 }
                 $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
                     'fecha' => $dtProgActPublicacion,
@@ -292,20 +294,19 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
-    public function guardarForo(){
+    public function guardarForo()
+    {
 
         try {
-            $preguntas = DB ::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
+            $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
             return $this->successResponse(
                 $preguntas,
                 'Datos Obtenidos Correctamente'
             );
-        }
+        } catch (Exception $e) {
 
-        catch (Exception $e){
-
-            return $this->errorResponse($e,'Error Upssss!');
+            return $this->errorResponse($e, 'Error Upssss!');
         }
     }
 }

@@ -32,13 +32,21 @@ class EvaluacionController extends ApiController
 
         $paramsProgramacionActividades = [
             'iProgActId' => $iProgActId,
-            'iContenidoSemId' => $iContenidoSemId,
             'iActTipoId' => $request->iActTipoId,
             'iHorarioId' => $request->iHorarioId ?? null,
             'dtProgActPublicacion' => $request->dtEvaluacionPublicacion,
+            'dtProgActInicio' => $request->dtEvaluacionInicio,
+            'dtProgActFin' => $request->dtEvaluacionFin ?? null,
             'cProgActTituloLeccion' => $request->cEvaluacionTitulo,
             'cProgActDescripcion' => $request->cEvaluacionDescripcion
         ];
+
+        if ($iProgActId == 0) {
+            array_push(
+                $paramsProgramacionActividades,
+                ['iContenidoSemId' => $iContenidoSemId]
+            );
+        }
 
         DB::beginTransaction();
         try {
