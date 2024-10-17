@@ -53,6 +53,10 @@ class CredencialescCredUsuariocClaveController extends Controller
             return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
         }
 
+        //Obtener roles 
+        $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
+        $data[0]->perfiles = $perfiles;
+
         $conctactar = json_decode($data[0]->contactar, true);
         $patron = "/^[[:digit:]]+$/";
         foreach ($conctactar as $key => $correo) {
@@ -71,52 +75,30 @@ class CredencialescCredUsuariocClaveController extends Controller
     protected function createNewToken($token, $data)
     {
         $user = count($data) > 0 ? $data[0] : [];
-
-
-        $data = DB::select("
-            SELECT 
-                c.iCredId
-                    -- ENTIDADES
-                ,(
-                    SELECT
-                            e.cEntNombreLargo -- FALTA OBTENER COD MODULAR - NIVEL - UGEL
-                                        FROM seg.credenciales_entidades AS ce
-                            INNER JOIN grl.entidades AS e ON e.iEntId = ce.iEntId
-                            where ce.iCredEntId = c.iCredId
-
-                        FOR JSON PATH, INCLUDE_NULL_VALUES
-                    ) AS entidades
-                    -- AÑOS
-                    ,(
+        $modulos = DB::select("
                             SELECT 
-                            cYAcadNombre
-                            FROM acad.year_academicos
-                            
-                            FOR JSON PATH, INCLUDE_NULL_VALUES
-                        ) AS years
-                    -- PERFILES
-                    ,(
-                    SELECT
-                                p.iPerfilId
-                        ,p.cPerfilNombre
-                                        FROM seg.credenciales_entidades_perfiles AS cep
-                            INNER JOIN seg.credenciales_entidades AS sce ON sce.iCredEntId = cep.iCredEntId
-                                        INNER JOIN seg.perfiles AS p ON p.iPerfilId = cep.iPerfilId
-                            WHERE sce.iCredEntId = c.iCredId
-                                        
-                                        ORDER BY p.iPerfilOrden ASC
+                               iModuloId
+							  ,cModuloNombre
+															
+							FROM seg.modulos
+							WHERE iModuloEstado = 1
+														
+							ORDER BY iModuloOrden ASC
+                            ");
+        $years = DB::select("
+                            SELECT 
+                             iYearId
+                            ,cYearNombre
+                            ,cYearOficial
+                                                            
+                            FROM grl.years
+                            WHERE iYearEstado = 1
+                                                        
+                            ORDER BY cYearNombre DESC
+                            ");
 
-                        FOR JSON PATH, INCLUDE_NULL_VALUES
-                    ) AS perfiles
-
-                FROM seg.credenciales as c
-
-                WHERE c.iCredId = " . $user->iCredId . "
-        ");
-
-        $entidades = count($data) > 0 ? $data[0]->entidades : [];
-        $perfiles = count($data) > 0 ? $data[0]->perfiles : [];
-        $years = count($data) > 0 ? $data[0]->years : [];
+        $user->modulos = $modulos;
+        $user->years = $years;
 
 
         return response()->json([
@@ -124,10 +106,6 @@ class CredencialescCredUsuariocClaveController extends Controller
             'token_type' => 'bearer',
             'expires_in' => JWTAuth::factory()->getTTL() * 60,
             'user' => $user,
-            'modulos' => [],
-            'years' => $years,
-            'entidades' => $entidades,
-            'perfiles' => $perfiles,
 
         ]);
     }
