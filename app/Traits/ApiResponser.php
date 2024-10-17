@@ -3,6 +3,8 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\JsonResponse;
+
 trait ApiResponser
 {
     protected function successResponse($data, $message = null, $code = 200)

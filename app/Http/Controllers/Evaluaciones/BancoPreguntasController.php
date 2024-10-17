@@ -88,7 +88,7 @@ class BancoPreguntasController extends ApiController
                 // 'dtBancoCreacion' => $request->,
                 'cBancoPregunta' => $pregunta['cPregunta'],
                 'dtBancoTiempo' => $fechaConHora,
-                'cBancoTextoAyuda' => $pregunta['cPreguntaTextoAyuda'],
+                'cBancoTextoAyuda' => $pregunta['cPreguntaTextoAyuda'] ?? '',
                 'nBancoPuntaje' => $pregunta['iPreguntaPeso'],
                 'idEncabPregId' => $iEncabPregId,
                 'iCursoId' => $request->iCursoId,

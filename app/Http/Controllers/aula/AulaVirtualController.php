@@ -4,6 +4,7 @@ namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\ApiController;
 use App\Repositories\aula\ProgramacionActividadesRepository;
+use App\Repositories\Evaluaciones\BancoRepository;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -226,10 +227,8 @@ class AulaVirtualController extends ApiController
             }
 
             try {
-                $preguntas = ProgramacionActividadesRepository::obtenerPreguntasEvaluacion($evaluacion->iEvaluacionId);
-                foreach ($preguntas as $pregunta) {
-                    $pregunta->alternativas = json_decode($pregunta->alternativas, true);
-                }
+                $preguntas = BancoRepository::obtenerPreguntas(['iEvalucionId' => $iEvaluacionId]);
+
                 $evaluacion->preguntas = $preguntas;
             } catch (Throwable $e) {
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
