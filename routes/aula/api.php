@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,5 +12,9 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         });
 
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
+    });
+
+    Route::group(['prefix' => 'matricula'], function () {
+        Route::post('list', [MatriculaController::class, 'list']);
     });
 });
