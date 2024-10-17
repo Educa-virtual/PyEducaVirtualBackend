@@ -112,7 +112,7 @@ class AulaVirtualController extends ApiController
 
 
         ];
-        
+
         try {
             $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
                     @iProgActId  = ? ,
@@ -133,7 +133,7 @@ class AulaVirtualController extends ApiController
                     @iActTipoId = ?
             ', $params);
             DB::commit();
-            
+
             if ($resp[0]->id > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
@@ -142,7 +142,6 @@ class AulaVirtualController extends ApiController
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-
         } catch (Exception $e) {
             DB::rollBack();
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
@@ -186,6 +185,9 @@ class AulaVirtualController extends ApiController
 
             if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
+                foreach ($contenido as $key => $contenidoItem) {
+                    $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                }
                 $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
                     'fecha' => $dtProgActPublicacion,
                     'actividades' => $contenido
@@ -239,19 +241,36 @@ class AulaVirtualController extends ApiController
         $iProgActId = (int) $request->iProgActId;
         $iActTipoId = (int) $request->iActTipoId;
 
+        // evaluacinoes
         if ($iActTipoId === 3) {
             $iEvaluacionId = (int) $request->ixActivadadId;
+            $evaluacion = null;
             try {
                 $params = [
-                    'iActTipoId' => $iActTipoId,
-                    'iProgActId' => $iActTipoId,
-                    'ixActividadId' => $iEvaluacionId
+                    'iEvaluacionId' => $iEvaluacionId
                 ];
-                // ProgramacionActividadesRepository::obtenerActividad($params);
+                $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
+                if (count($resp) === 0) {
+                    return $this->errorResponse(null, 'La evaluación no existe');
+                }
+                $evaluacion = $resp[0];
             } catch (Throwable $e) {
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
                 return $this->errorResponse(null, $message);
             }
+
+            try {
+                $preguntas = ProgramacionActividadesRepository::obtenerPreguntasEvaluacion($evaluacion->iEvaluacionId);
+                foreach ($preguntas as $pregunta) {
+                    $pregunta->alternativas = json_decode($pregunta->alternativas, true);
+                }
+                $evaluacion->preguntas = $preguntas;
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
 }

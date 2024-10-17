@@ -110,24 +110,27 @@ class EvaluacionController extends ApiController
 
     public function guardarActualizarPreguntasEvaluacion(Request $request)
     {
-        $preguntas = $request->preguantas;
+        $preguntas = $request->preguntas;
+        $iEvaluacionId = $request->iEvaluacionId;
 
-        DB::transaction();
+        DB::beginTransaction();
         foreach ($preguntas  as $key => $pregunta) {
-            $composJson = json_encode(['iEvaulacionId' => $pregunta->iEvaulacionId, 'iBancoId' => $pregunta->iBancoId]);
+            $camposJson = json_encode(['iEvaluacionId' => $iEvaluacionId, 'iBancoId' => $pregunta['iPreguntaId']]);
+
             try {
                 $params = [
                     'eval',
-                    'evaluaciones_preguntas',
-                    $composJson
+                    'evaluacion_preguntas',
+                    $camposJson
                 ];
-                $existePregunta = DB::select('select 1 eval.evaluacion.preguntas where iEvaluacionId = ? AND iBancoId = ?', [$pregunta->iEvaluacionId, $pregunta->iBancoId]);
+                $existePregunta = DB::select('select 1 from eval.evaluacion_preguntas where iEvaluacionId = ? AND iBancoId = ?', [$iEvaluacionId, $pregunta['iPreguntaId']]);
                 if (count($existePregunta) === 0) {
                     DB::select('exec grl.SP_INS_EnTablaDesdeJSON @Esquema = ?, @Tabla = ?, @DatosJSON = ?', $params);
                 }
             } catch (Throwable $e) {
                 DB::rollBack();
-                return $this->errorResponse(null, 'Errar al guardar los datos');
+                $message = $this->handleAndLogError($e, 'Error al guardar los datos');
+                return $this->errorResponse(null, $message);
             }
         }
         DB::commit();

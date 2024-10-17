@@ -9,6 +9,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::group(['prefix' => 'actividad'], function () {
             Route::post('guardarActividad', [AulaVirtualController::class, 'guardarActividad']);
             Route::delete('eliminarActividad', [AulaVirtualController::class, 'eliminarActividad']);
+            Route::get('obtenerActividad', [AulaVirtualController::class, 'obtenerActividad']);
+        });
+        Route::group(['prefix' => 'foro'], function () {
+            Route::post('guardarForo', [AulaVirtualController::class, 'guardarForo']);
         });
 
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);

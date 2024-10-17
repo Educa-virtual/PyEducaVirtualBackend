@@ -78,16 +78,15 @@ class ProgramacionActividadesRepository
 
     public static function obtenerActividadEvaluacion($params)
     {
-        $iProgActId = $params['iProgActId'];
-        $iActTipoId = $params['iActTipoId'];
-        $ixActividadId = $params['ixActividadId'];
+        $iEvaluacionId = $params['iEvaluacionId'];
 
 
-        $resp = DB::select('exec ');
+        $res = DB::select('exec eval.Sp_SEL_evaluaciones_by_id @_iEvaluacionId = ?', [$iEvaluacionId]);
+        return $res;
     }
 
-    public static function obtenerPreguntasEvaluacion($iEvalPregId)
+    public static function obtenerPreguntasEvaluacion($iEvaluacionId)
     {
-        DB::select('exec ');
+        return DB::select('exec eval.Sp_SEL_evaluacion_preguntas_by_id @_iEvaluacionId = ?', [$iEvaluacionId]);
     }
 }
