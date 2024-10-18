@@ -29,17 +29,6 @@ class AulaVirtualController extends ApiController
     public function guardarActividad(Request $request)
     {
 
-        // var_dump($request->input('cTareaArchivoAdjunto'));
-        // if($request->hasFile('cTareaArchivoAdjunto')){
-        //     $archivo = $request->file('cTareaArchivoAdjunto');
-        //     $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
-
-        //     $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
-        //     $nombreArchivoGuardado = $nombreArchivo;
-        // }else{
-        //     $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
-        // }
-
         // Extraer fecha y hora desde el request FECHA DE INICIO
         $fechaInicio = $request->input('dFechaEvaluacionPublicacionInicio');
         $horaInicio = $request->input('tHoraEvaluacionPublicacionInicio');
@@ -61,8 +50,6 @@ class AulaVirtualController extends ApiController
         $horaString = $horaFinaux->format('H:i:s');
         $fechaHoraCompletaFin = $dateString . 'T' . $horaString . 'Z';
         // FIN
-
-
         $iProgActId = (int) $request->iProgActId ?? 0;
         $iContenidoSemId = $request->iContenidoSemId;
         if ($request->iContenidoSemId) {
@@ -168,6 +155,42 @@ class AulaVirtualController extends ApiController
         }
         return new JsonResponse($response, $codeResponse);
     }
+    // fin de del codigo
+
+    // // codigo para mostrar actividad
+    // public function mostrarActividad($id)
+    // {
+    //     try {
+    //         // Ejecutar consulta SQL o utilizar un repositorio para obtener la actividad
+    //         $actividad = DB::table('tareas')
+    //             ->where('iProgActId', $id)
+    //             ->first();
+
+    //         if ($actividad) {
+    //             return response()->json([
+    //                 'validated' => true,
+    //                 'data' => $actividad
+    //             ], 200);
+    //         } else {
+    //             return response()->json([
+    //                 'validated' => false,
+    //                 'mensaje' => 'No se encontró la actividad'
+    //             ], 404);
+    //         }
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'validated' => false,
+    //             'mensaje' => 'Error al obtener la actividad: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+
+    // fin del codigo para mostrar actividad
+
+
+
+
+
 
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
@@ -223,7 +246,7 @@ class AulaVirtualController extends ApiController
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
     }
-
+    //funcion eliminarActividad
     public function eliminarActividad(Request $request)
     {
         $iProgActId = (int) $request->iProgActId;
@@ -255,7 +278,7 @@ class AulaVirtualController extends ApiController
         // eliminar archivos
     }
 
-
+    // obtener actviidad
     public function obtenerActividad(Request $request)
     {
         $iProgActId = (int) $request->iProgActId;
@@ -291,6 +314,7 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
+    //funcion guardar informacion Foro
     public function guardarForo()
     {
 
