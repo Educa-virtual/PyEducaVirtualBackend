@@ -45,7 +45,7 @@ class BancoPreguntasController extends ApiController
             $iEncabPregId = null;
         } else {
             $paramsEncabezado = [
-                'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
+                'idEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
                 'iCursoId' => $request->iCursoId,
@@ -54,8 +54,9 @@ class BancoPreguntasController extends ApiController
             ];
             try {
                 $resp =  PreguntasEvaluacionRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
-                $resp = $resp[0];
-                $iEncabPregId = $resp->id;
+                if ($iEncabPregId == 0) {
+                    $iEncabPregId = $resp->id;
+                }
             } catch (Throwable $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e,  'Error al guardar el encabezado');

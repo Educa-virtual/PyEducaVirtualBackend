@@ -150,9 +150,9 @@ class EvaluacionController extends ApiController
     }
 
 
-    public function eliminarPreguntaEvulacion(Request $request)
+    public function eliminarPreguntaEvulacion($id)
     {
-        $iEvalPregId = $request->ids;
+        $iEvalPregId = $id;
 
         try {
             $resp = DB::select('exec eval.Sp_DEL_evaluacion_preguntas @_iEvalPregId = ?', [$iEvalPregId]);

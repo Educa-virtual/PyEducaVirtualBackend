@@ -13,7 +13,7 @@ class PreguntasEvaluacionRepository
     {
 
         $data = json_encode([
-            'iEncabPregId' => $params['iEncabPregId'],
+            'idEncabPregId' => $params['idEncabPregId'],
             'cEncabPregTitulo' => $params['cEncabPregTitulo'],
             'cEncabPregContenido' => $params['cEncabPregContenido'],
             'iCursoId' => $params['iCursoId'],
@@ -29,26 +29,28 @@ class PreguntasEvaluacionRepository
 
         $condiciones = [
             [
-                'COLUMN_NAME' => "iEncabPregId",
-                'VALUE' => $params['iEncabPregId']
+                'COLUMN_NAME' => "idEncabPregId",
+                'VALUE' => $params['idEncabPregId']
             ]
         ];
         $condicionesJson = json_encode($condiciones);
 
-        if ($params['iEncabPregId'] == 0) {
-            return DB::select('exec grl.SP_INS_EnTablaDesdeJSON
+        if ($params['idEncabPregId'] == 0) {
+            $resp = DB::select('exec grl.SP_INS_EnTablaDesdeJSON
                 @Esquema = ?
                 ,@Tabla = ?
                 ,@DatosJSON = ?
             ', $paramsDB);
+            return $resp[0];
         } else {
             array_push($paramsDB, $condicionesJson);
-            return DB::select('exec grl.SP_UPD_EnTablaConJSON
+            DB::select('exec grl.SP_UPD_EnTablaConJSON
                 @Esquema = ?
                 ,@Tabla = ?
                 ,@DatosJSON = ?
                 ,@CondicionesJSON = ?
             ', $paramsDB);
+            return ['id' => $params['idEncabPregId']];
         }
     }
 }

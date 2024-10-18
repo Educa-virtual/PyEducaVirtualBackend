@@ -23,6 +23,6 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'evaluacion'], function () {
         Route::post('guardarActualizarEvaluacion', [EvaluacionController::class, 'guardarActualizarEvaluacion']);
         Route::post('guardarActualizarPreguntasEvaluacion', [EvaluacionController::class, 'guardarActualizarPreguntasEvaluacion']);
-        Route::delete('elPreguntaEvulacion/{iEvalPregId}', [EvaluacionController::class, 'eliminarPreguntaEvulacion']);
+        Route::delete('eliminarPreguntaEvulacion/{id}', [EvaluacionController::class, 'eliminarPreguntaEvulacion']);
     });
 });
