@@ -286,7 +286,10 @@ class AulaVirtualController extends ApiController
 
         // evaluaciones
         if ($iActTipoId === 3) {
-            $iEvaluacionId = (int) $request->ixActivadadId;
+            $iEvaluacionId = $request->ixActivadadId;
+            $iEvaluacionId = $this->hashids->decode($iEvaluacionId);
+            $iEvaluacionId = count($iEvaluacionId) > 0 ? $iEvaluacionId[0] : $iEvaluacionId;
+
             $evaluacion = null;
             try {
                 $params = [
