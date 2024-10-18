@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
+use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\Evaluaciones\BancoRepository;
+use App\Repositories\Evaluaciones\PreguntasEvaluacionRepository;
 use App\Repositories\PreguntasRepository;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class BancoPreguntasController extends ApiController
 {
@@ -46,21 +49,19 @@ class BancoPreguntasController extends ApiController
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
                 'iCursoId' => $request->iCursoId,
-                'iNivelGradoId' => $request->iNivelGradoId,
-                'iColumnValue' => $request->iDocenteId,
-                'cColumnName' => 'iDocenteId',
-                'cSchemaName'  => 'eval'
+                'iNivelCicloId' => $request->iNivelCicloId,
+                'iDocenteId' => $request->iDocenteId,
             ];
             try {
-                $resp =  PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+                $resp =  PreguntasEvaluacionRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
                 $resp = $resp[0];
                 $iEncabPregId = $resp->id;
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 DB::rollBack();
-                return $this->errorResponse($e, 'Error al guardar el encabezado');
+                $message = $this->handleAndLogError($e,  'Error al guardar el encabezado');
+                return $this->errorResponse(null, $message);
             }
         }
-
 
         // params pregunta
 
@@ -93,18 +94,16 @@ class BancoPreguntasController extends ApiController
                 'iCursoId' => $request->iCursoId,
                 'iNivelCicloId' => $request->iNivelCicloId,
             ];
-
-
             // pregunta
             $respPregunta = null;
             try {
                 $respPregunta = BancoRepository::guardarActualizarPregunta($params);
-                // DB::rollBack();
-                // return $this->errorResponse($respPregunta);
                 $respPregunta = $respPregunta[0];
-            } catch (Exception $e) {
+                $preguntas[$key]['iPreguntaId'] = $respPregunta->id;
+            } catch (Throwable $e) {
                 DB::rollBack();
-                return $this->errorResponse($e, 'Error al guardar los datos');
+                $message = $this->handleAndLogError($e,  'Error al guardar los datos');
+                return $this->errorResponse(null, $message);
             }
 
             // alternativas
@@ -116,18 +115,16 @@ class BancoPreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $resp = DB::select('exec eval.Sp_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
-
-                    // $resp = $resp[0];
-                } catch (Exception $e) {
+                    $respAlt = DB::select('exec eval.Sp_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
+                } catch (Throwable $e) {
                     DB::rollBack();
-                    $defaultMessage = $this->returnError($e, 'Error al eliminar');
+                    $defaultMessage = $this->handleAndLogError($e, 'Error al eliminar');
                     return $this->errorResponse($e, $defaultMessage);
                 }
             }
 
             // guardar actualizar alternativas
-            foreach ($alternativasActualizar as $alternativa) {
+            foreach ($alternativasActualizar as $altKey => $alternativa) {
 
                 try {
                     $paramsAlternativa = [
@@ -138,11 +135,13 @@ class BancoPreguntasController extends ApiController
                         'bBancoAltRptaCarrecta' =>  $alternativa['bAlternativaCorrecta'] ? 1 : 0,
                         'cBancoAltExplicacionRpta' =>  $alternativa['cAlternativaExplicacion'] ?? ''
                     ];
-                    $resp = BancoRepository::guardarActualizarAlternativa($paramsAlternativa);
-                } catch (Exception $e) {
+                    $respAlt  = BancoRepository::guardarActualizarAlternativa($paramsAlternativa);
+                    $respAlt = $respAlt[0];
+                    $preguntas[$key]['alternativas'][$altKey]['iAlternativaId'] = $respAlt->id;
+                } catch (Throwable $e) {
                     DB::rollBack();
-                    $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
-                    return $this->errorResponse($e->getMessage(), $message);
+                    $message = $this->handleAndLogError($e, 'Error al guardar los cambios de la alternativa');
+                    return $this->errorResponse(null, $message);
                 }
             }
         }
@@ -158,10 +157,10 @@ class BancoPreguntasController extends ApiController
                     $resp = DB::select('exec eval.Sp_DEL_alternativa_pregunta  @_iBancoAltId', $paramsAlternativaEliminar);
 
                     $resp = $resp[0];
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     DB::rollBack();
-                    $defaultMessage = $this->returnError($e, 'Error al eliminar');
-                    return $this->errorResponse($e, $defaultMessage);
+                    $defaultMessage = $this->handleAndLogError($e, 'Error al eliminar');
+                    return $this->errorResponse(null, $defaultMessage);
                 }
             }
 
@@ -174,15 +173,24 @@ class BancoPreguntasController extends ApiController
                 }
 
                 $resp = $resp[0];
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 DB::rollBack();
-                $message = $this->returnError($e, 'Error al eliminar la pregunta');
-                return $this->errorResponse($e, $message);
+                $message = $this->handleAndLogError($e, 'Error al eliminar la pregunta');
+                return $this->errorResponse(null, $message);
             }
         }
         DB::commit();
 
-        return $this->successResponse(null, 'Cambion realizados correctamente');
+        // retornar preguntas con los ids y las alternativas en un array
+
+        $preguntasIds =  array_map(function ($item) {
+            return $item['iPreguntaId'];
+        }, $preguntas);
+
+        $ids = implode(',', $preguntasIds);
+        $preguntasResponse = BancoRepository::obtenerPreguntas(['iBancoIds' => $ids]);
+
+        return $this->successResponse($preguntasResponse, 'Cambios realizados correctamente');
     }
 
     public function obtenerEncabezadosPreguntas(Request $request)

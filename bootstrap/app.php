@@ -23,6 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/evaluaciones/api.php'));
             Route::prefix('api')
                 ->group(base_path('routes/ere/api.php'));
+            Route::prefix('api')
+                ->group(base_path('routes/aula/api.php'));
+            Route::prefix('api')
+                ->group(base_path('routes/general.php'));
         },
         commands: __DIR__ . '/../routes/console.php',
         health: '/up'
