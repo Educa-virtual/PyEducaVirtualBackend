@@ -82,6 +82,7 @@ class DocenteCursosController extends Controller
                 $value->iYAcadId = $this->hashids->encode($value->iYAcadId);
                 $value->iIeCursoId = $this->hashids->encode($value->iIeCursoId);
                 $value->iSilaboId = $this->hashids->encode(($value->iSilaboId));
+                $value->iCursoId = $this->hashids->encode(($value->iCursoId));
             }
 
 
