@@ -15,12 +15,12 @@ class ProgramacionActividadesRepository
 
         $esquema = 'aula';
         $tabla = 'programacion_actividades';
-        $condiciones = [
+        $condiciones = json_encode([
             [
                 'COLUMN_NAME' => "iProgActId",
                 'VALUE' => $params->iProgActId
             ]
-        ];
+        ]);
 
         $paramsDB = [
             $esquema,
@@ -35,12 +35,11 @@ class ProgramacionActividadesRepository
                     @Esquema = ?
                     ,@Tabla = ?
                     ,@DatosJSON = ?
-            ',
+                    ',
                 $paramsDB
             );
             return $resp[0];
         } else {
-
             array_push($paramsDB, $condiciones);
             // actualizar
             $resp = DB::select(
@@ -56,8 +55,6 @@ class ProgramacionActividadesRepository
             $resp->id = $params->iProgActId;
             return $resp;
         }
-
-        $actividades = DB::select('exec ');
     }
 
     public static function eliminar($params)
@@ -85,8 +82,5 @@ class ProgramacionActividadesRepository
         return $res;
     }
 
-    public static function obtenerPreguntasEvaluacion($iEvaluacionId)
-    {
-        return DB::select('exec eval.Sp_SEL_evaluacion_preguntas_by_id @_iEvaluacionId = ?', [$iEvaluacionId]);
-    }
+    public static function obtenerPreguntasEvaluacion($iEvaluacionId) {}
 }
