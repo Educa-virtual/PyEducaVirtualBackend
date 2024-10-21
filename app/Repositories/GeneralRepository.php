@@ -25,4 +25,21 @@ class GeneralRepository
             $params
         );
     }
+
+    public static function insertar($schema, $tabla, $jsonParams)
+    {
+        $params = [
+            $schema,
+            $tabla,
+            $jsonParams,
+        ];
+        return DB::select(
+            'exec grl.SP_INS_EnTablaDesdeJSON
+            @Esquema = ?, 
+            @Tabla = ?,
+            @DatosJSON = ?,
+        ',
+            $params
+        );
+    }
 }
