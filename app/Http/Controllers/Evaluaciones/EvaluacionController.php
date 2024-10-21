@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\grl\GeneralController;
 use App\Repositories\aula\ProgramacionActividadesRepository;
+use App\Repositories\GeneralRepository;
 use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
@@ -123,6 +125,7 @@ class EvaluacionController extends ApiController
         $preguntas = $request->preguntas;
         $iEvaluacionId = $request->iEvaluacionId;
 
+        $totalPreguntas  = count($preguntas);
         DB::beginTransaction();
         foreach ($preguntas  as $key => $pregunta) {
             $camposJson = json_encode(['iEvaluacionId' => $iEvaluacionId, 'iBancoId' => $pregunta['iPreguntaId']]);
@@ -145,6 +148,21 @@ class EvaluacionController extends ApiController
                 return $this->errorResponse(null, $message);
             }
         }
+
+        // actualizar total preguntas
+        try {
+            $where =  [
+                [
+                    'COLUMN_NAME' => "iEvaluacionId",
+                    'VALUE' => $iEvaluacionId
+                ]
+            ];
+            GeneralRepository::actualizar('eval', 'evaluaciones', json_encode(['iEvaluacionNroPreguntas' => $totalPreguntas]), json_encode($where));
+        } catch (Throwable $e) {
+            $message = $this->handleAndLogError($e, 'Error al guardar los datos');
+            return $this->errorResponse(null, $message);
+        }
+
         DB::commit();
         return $this->successResponse($preguntas, 'Alternativas guardadas correctamente');
     }
