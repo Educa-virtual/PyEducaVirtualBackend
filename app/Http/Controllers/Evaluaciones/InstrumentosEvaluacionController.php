@@ -6,6 +6,7 @@ use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Repositories\GeneralRepository;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,14 +24,18 @@ class InstrumentosEvaluacionController extends ApiController
             $request->busqueda ?? ''
         ];
         try {
-            $resp = DB::select('exec eval.SEL_instrumento_evaluaciones
+            $data = DB::select('exec eval.SEL_instrumento_evaluaciones
                 @_iInstrumentoId = ?
                 ,@_iDocenteId = ?
                 ,@_idDocCursoId = ?
                 ,@_iCursoId = ?
                 ,@_busqueda = ?
             ', $params);
-            return $this->successResponse($resp, 'Datos obtenidos correctamente');
+            foreach ($data as $key => $item) {
+                $criterios = $item->criterios ?? '[]';
+                $data[$key]->criterios  = json_decode($criterios, true);
+            }
+            return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
@@ -41,35 +46,40 @@ class InstrumentosEvaluacionController extends ApiController
     {
         $iInstrumentoId = (int) $request->iInstrumentoId;
         $iSesionId = 1;
-        $paramsInstrumentoToInsert = json_encode([
-            'iDocenteId' => $request->iDocenteId,
-            'idDocCursoId' => $request->idDocCursoId,
-            'iCursoId' => $request->iCursoId,
-            'cInstrumnetoNombre' => $request->cInstrumentoNombre,
-            'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion
-        ]);
         DB::beginTransaction();
         if ($iInstrumentoId == 0) {
+            $paramsInstrumentoToInsert = json_encode([
+                'iDocenteId' => $request->iDocenteId,
+                'idDocCursoId' => $request->idDocCursoId,
+                'iCursoId' => $request->iCursoId,
+                'cInstrumentoNombre' => $request->cInstrumentoNombre,
+                'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion,
+                'dtInstrumentoCreacion' =>  $this->getDateToDB(),
+                'iEstado' => 1,
+                'iSesionId' => $iSesionId
+            ]);
+
             try {
                 $resp = GeneralRepository::insertar('eval', 'instrumento_evaluaciones', $paramsInstrumentoToInsert);
                 $resp = $resp[0];
                 $iInstrumentoId = $resp->id;
             } catch (Exception $e) {
                 DB::rollBack();
-                $message = $this->handleAndLogError($e, 'Error al actualizar los datos');
-                return $this->errorResponse($e, $message);
+                $message = $this->handleAndLogError($e, 'Error al guardar los cambios');
+                return $this->errorResponse(null, $message);
             }
         } else {
-            $paramsInstrumentoToUpdate = [
+            $paramsInstrumentoToUpdate = json_encode([
                 'cInstrumentoNombre' => $request->cInstrumentoNombre,
-                'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion
-            ];
+                'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion,
+                'dtActualizado' => $this->getDateToDB()
+            ]);
 
             $whereToUpdate = json_encode([
                 new WhereCondition('iInstrumentoId', $iInstrumentoId)
             ]);
             try {
-                $resp = GeneralRepository::actualizar('eval', 'instrumento_evaluaciones', json_encode($paramsInstrumentoToUpdate), $whereToUpdate);
+                $resp = GeneralRepository::actualizar('eval', 'instrumento_evaluaciones', $paramsInstrumentoToUpdate, $whereToUpdate);
             } catch (Exception $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al actualizar los datos');
@@ -105,10 +115,13 @@ class InstrumentosEvaluacionController extends ApiController
                     try {
                         $criterioToUpdate = json_encode([
                             'cCriterioNombre' => $criterio['cCriterioNombre'],
-                            'cCriteioDescripcion' => $criterio['cCriterioDescripcion'],
+                            'cCriterioDescripcion' => $criterio['cCriterioDescripcion'],
                             'iSesion' => $iSesionId
                         ]);
-                        $criterioWhere = new WhereCondition('iCriterioId', $iCriterioId);
+                        DB::rollBack();
+                        $criterioWhere = json_encode([
+                            new WhereCondition('iCriterioId', $iCriterioId)
+                        ]);
                         GeneralRepository::actualizar('eval', 'criterio_evaluaciones', $criterioToUpdate, $criterioWhere);
                     } catch (Exception $e) {
                         $this->handleAndLogError($e);
@@ -164,5 +177,18 @@ class InstrumentosEvaluacionController extends ApiController
         DB::commit();
 
         return $this->successResponse(null, 'Cambios realizados correctamente');
+    }
+
+    final public function destroy(Request $request, $id)
+    {
+        $cTipo = $request->cTipo;
+        try {
+            $resp = DB::select('exec eval.Sp_DEL_instrumento_evaluacion_rubrica_id 
+                @_id = ?, @_cTipo = ?', [$id, $cTipo]);
+            return $this->successResponse(null, 'Eliminado correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al eliminar la rúbrica');
+            return $this->errorResponse(null, $message);
+        }
     }
 }
