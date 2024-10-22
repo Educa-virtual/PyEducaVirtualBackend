@@ -9,6 +9,7 @@ use App\Repositories\GeneralRepository;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class InstrumentosEvaluacionController extends ApiController
 {
@@ -27,28 +28,30 @@ class InstrumentosEvaluacionController extends ApiController
     public function store(Request $request)
     {
         $iInstrumentoId = (int) $request->iInstrumentoId;
-        $paramsInstrumentoToInsert = [
-            $request->iDocenteId,
-            $request->idDocCursoId,
-            $request->iCursoId,
-            $request->cInstrumentoNombre,
-            $request->cInstrumentoDescripcion
-        ];
+        $paramsInstrumentoToInsert = json_encode([
+            'iDocenteId' => $request->iDocenteId,
+            'idDocCursoId' => $request->idDocCursoId,
+            'iCursoId' => $request->iCursoId,
+            'cInstrumnetoNombre' => $request->cInstrumentoNombre,
+            'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion
+        ]);
         DB::beginTransaction();
         if ($iInstrumentoId == 0) {
             try {
-                $resp = GeneralRepository::insertar('eval', 'instrumento_evaluaciones', json_encode($paramsInstrumentoToInsert));
+                DB::enableQueryLog();
+                $resp = GeneralRepository::insertar('eval', 'instrumento_evaluaciones', $paramsInstrumentoToInsert);
+                // return $resp;
                 $resp = $resp[0];
                 $iInstrumentoId = $resp->id;
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al actualizar los datos');
-                return $this->errorResponse(null, $message);
+                return $this->errorResponse($e, $message);
             }
         } else {
             $paramsInstrumentoToUpdate = [
-                $request->cInstrumentoNombre,
-                $request->cInstrumentoDescripcion
+                'cInstrumentoNombre' => $request->cInstrumentoNombre,
+                'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion
             ];
 
             $whereToUpdate = json_encode([
@@ -66,12 +69,14 @@ class InstrumentosEvaluacionController extends ApiController
 
         // criterios
 
-        $criterios = $request->criterios;
-        try {
-            $resp = DB::select('exec ');
-        } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al actualizar los datos');
-            return $this->errorResponse(null, $message);
-        }
+        // $criterios = $request->criterios;
+        // try {
+        //     $resp = DB::select('exec ');
+        // } catch (Exception $e) {
+        //     $message = $this->handleAndLogError($e, 'Error al actualizar los datos');
+        //     return $this->errorResponse(null, $message);
+        // }
+
+        return $this->successResponse(null, 'Cambios realizados correctamente');
     }
 }

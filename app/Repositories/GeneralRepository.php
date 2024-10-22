@@ -33,13 +33,9 @@ class GeneralRepository
             $tabla,
             $jsonParams,
         ];
-        return DB::select(
-            'exec grl.SP_INS_EnTablaDesdeJSON
-            @Esquema = ?, 
-            @Tabla = ?,
-            @DatosJSON = ?,
-        ',
-            $params
-        );
+        // return $params;
+        $resp = DB::select('exec grl.SP_INS_EnTablaDesdeJSON    @Esquema = ?, @Tabla = ?, @DatosJSON = ?
+            ', $params);
+        return $resp;
     }
 }
