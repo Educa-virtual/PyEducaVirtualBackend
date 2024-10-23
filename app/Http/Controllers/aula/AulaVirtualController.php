@@ -294,9 +294,7 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
-    public function guardarForo()
-    {
-
+    public function obtenerCategorias(){
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
@@ -309,4 +307,16 @@ class AulaVirtualController extends ApiController
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
+    // public function guardarForo(Request $request)
+    // {
+    //     // Validar los datos si es necesario
+    //     $validatedData = $request->validate([
+    //         'cForoTitulo' => 'required|string',
+    //         'cForoDescripcion' => 'required|string',
+    //         'iForoCatId' => 'required|integer',
+    //         'dtForoInicio' => 'required|date',
+    //         'iEstado' => 'required|integer',
+    //     ]);
+
+    // }
 }
