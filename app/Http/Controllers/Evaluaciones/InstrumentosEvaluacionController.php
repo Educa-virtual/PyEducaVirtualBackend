@@ -99,10 +99,11 @@ class InstrumentosEvaluacionController extends ApiController
                 if ($iCriterioId === 0) {
                     try {
                         $criterioToSave = json_encode([
-                            'iInstrumentoId' => $criterio['iInstrumentoId'],
+                            'iInstrumentoId' => $iInstrumentoId,
                             'cCriterioNombre' => $criterio['cCriterioNombre'],
-                            'cCriteioDescripcion' => $criterio['cCriterioDescripcion'],
-                            'iSesion' => $iSesionId
+                            'cCriterioDescripcion' => $criterio['cCriterioDescripcion'],
+                            'iSesion' => $iSesionId,
+                            'dtActualizado' => $this->getDateToDB()
                         ]);
                         $resp = GeneralRepository::insertar('eval', 'criterio_evaluaciones', $criterioToSave);
                         $iCriterioId = $resp[0]->id;
@@ -116,7 +117,8 @@ class InstrumentosEvaluacionController extends ApiController
                         $criterioToUpdate = json_encode([
                             'cCriterioNombre' => $criterio['cCriterioNombre'],
                             'cCriterioDescripcion' => $criterio['cCriterioDescripcion'],
-                            'iSesion' => $iSesionId
+                            'iSesion' => $iSesionId,
+                            'dtActualizado' => $this->getDateToDB()
                         ]);
                         DB::rollBack();
                         $criterioWhere = json_encode([
@@ -135,11 +137,12 @@ class InstrumentosEvaluacionController extends ApiController
                     if ($iNivelEvaId === 0) {
                         // insertar nivel
                         $nivelToSave = json_encode([
+                            'iInstrumentoId' => $iInstrumentoId,
                             'iCriterioId' => $iCriterioId,
                             'iEscalaCalifId' => $nivel['iEscalaCalifId'],
                             'cNivelEvaNombre' => $nivel['cNivelEvaNombre'],
                             'cNivelEvaDescripcion' => $nivel['cNivelEvaDescripcion'],
-                            'iSesionId' => $iSesionId
+                            'iSesionId' => $iSesionId,
                         ]);
                         try {
                             $resp =  GeneralRepository::insertar('eval', 'nivel_evaluaciones', $nivelToSave);
@@ -154,7 +157,8 @@ class InstrumentosEvaluacionController extends ApiController
                             'iEscalaCalifId' => $nivel['iEscalaCalifId'],
                             'cNivelEvaNombre' => $nivel['cNivelEvaNombre'],
                             'cNivelEvaDescripcion' => $nivel['cNivelEvaDescripcion'],
-                            'iSesionId' => $iSesionId
+                            'iSesionId' => $iSesionId,
+                            'dtActualizado' => $this->getDateToDB()
                         ]);
                         $whereNivel = json_encode([
                             new WhereCondition('iNivelEvaId', $iNivelEvaId)
