@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Evaluaciones\BancoPreguntasController;
+use App\Http\Controllers\Evaluaciones\EscalaCalificacionesController;
 use App\Http\Controllers\Evaluaciones\EvaluacionController;
 use App\Http\Controllers\evaluaciones\InstrumentosEvaluacionController;
 use App\Http\Controllers\Evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
@@ -30,4 +31,6 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
         Route::resource('rubrica', InstrumentosEvaluacionController::class);
     });
+
+    Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
 });
