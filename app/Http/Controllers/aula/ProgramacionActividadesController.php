@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
-
+use Illuminate\Support\Carbon;
 class ProgramacionActividadesController extends Controller
 {
     protected $hashids;
@@ -91,7 +91,7 @@ class ProgramacionActividadesController extends Controller
             //$request->iCredId
 
         ];
-        
+
         try {
             $data = DB::select('exec aula.Sp_AULA_CRUD_PROGRAMACION_ACTIVIDADES
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
@@ -117,6 +117,8 @@ class ProgramacionActividadesController extends Controller
 
     public function store(Request $request)
     {
+        
+        
         $request->validate(
             [
                 'opcion' => 'required',
@@ -182,15 +184,16 @@ class ProgramacionActividadesController extends Controller
             //$request->iCredId
 
         ];
-        //  return $parametros;
+        
         try {
             $data = DB::select('exec aula.Sp_AULA_CRUD_PROGRAMACION_ACTIVIDADES
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+               
             switch ($request->opcion) {
                 case 'GUARDARxProgActxiTarea':
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
-                        $resp = new TareasController();  
+                        $resp = new TareasController();
                     }
                     return $resp->store($request);
                     break;
@@ -206,7 +209,7 @@ class ProgramacionActividadesController extends Controller
                     break;
             }
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
 
