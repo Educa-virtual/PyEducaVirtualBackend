@@ -73,7 +73,7 @@ class TareasController extends Controller
 
         try {
             $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
                 $value->iTareaId = $this->hashids->encode($value->iTareaId);
@@ -140,7 +140,7 @@ class TareasController extends Controller
             //$request->iCredId
 
         ];
-
+        
         try {
             $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
@@ -154,7 +154,7 @@ class TareasController extends Controller
                 $codeResponse = 500;
             }
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
 
