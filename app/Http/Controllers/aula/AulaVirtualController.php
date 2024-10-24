@@ -4,6 +4,7 @@ namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\ApiController;
 use App\Repositories\aula\ProgramacionActividadesRepository;
+use App\Repositories\Evaluaciones\BancoRepository;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -27,7 +28,6 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
-        
         // var_dump($request->input('cTareaArchivoAdjunto'));
         // if($request->hasFile('cTareaArchivoAdjunto')){
         //     $archivo = $request->file('cTareaArchivoAdjunto');
@@ -61,7 +61,7 @@ class AulaVirtualController extends ApiController
         $fechaHoraCompletaFin = $dateString . 'T' . $horaString . 'Z';
         // FIN
 
-        
+
         $iProgActId = (int) $request->iProgActId ?? 0;
         $iContenidoSemId = $request->iContenidoSemId;
         if ($request->iContenidoSemId) {
@@ -79,25 +79,25 @@ class AulaVirtualController extends ApiController
             'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
-// // desde aqui el codigo
+        // // desde aqui el codigo
 
-// public function asignarEstudiantes(Request $request)
-// {
-//     $tarea_id = $request->input('tarea_id');
-//     $estudiantes = $request->input('estudiantes');
+        // public function asignarEstudiantes(Request $request)
+        // {
+        //     $tarea_id = $request->input('tarea_id');
+        //     $estudiantes = $request->input('estudiantes');
 
-//     foreach ($estudiantes as $estudiante_id) {
-//         DB::table('aula_tarea_grupos')->insert([
-//             'tarea_id' => $tarea_id,
-//             'estudiante_id' => $estudiante_id,
-//             'created_at' => now(),
-//             'updated_at' => now(),
-//         ]);
-//     }
+        //     foreach ($estudiantes as $estudiante_id) {
+        //         DB::table('aula_tarea_grupos')->insert([
+        //             'tarea_id' => $tarea_id,
+        //             'estudiante_id' => $estudiante_id,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }
 
-//     return response()->json(['message' => 'Estudiantes asignados correctamente'], 200);
-// }//
-// // fin del codigo
+        //     return response()->json(['message' => 'Estudiantes asignados correctamente'], 200);
+        // }//
+        // // fin del codigo
 
         DB::beginTransaction();
         try {
@@ -167,8 +167,9 @@ class AulaVirtualController extends ApiController
         }
         return new JsonResponse($response, $codeResponse);
     }
+    // fin de del codigo
 
-     public function contenidoSemanasProgramacionActividades(Request $request)
+    public function contenidoSemanasProgramacionActividades(Request $request)
     {
         $iSilaboId = $request->iSilaboId;
         $iSilaboId = $this->hashids->decode($iSilaboId);
@@ -196,14 +197,17 @@ class AulaVirtualController extends ApiController
                     'cContenidoSemTitulo' => $row->cContenidoSemTitulo,
                     'cContenidoSemNumero' => $row->cContenidoSemNumero,
                     'iContenidoSemId' =>  $this->hashids->encode($row->iContenidoSemId),
-                    'fechas' => []
+                    'fechas' => [],
+                    'iCursoId' => $this->hashids->encode($row->iCursoId),
                 ];
             }
 
             if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
                 foreach ($contenido as $key => $contenidoItem) {
-                    $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                    if (isset($contenido[$key]['ixActivadadId'])) {
+                        $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                    }
                 }
                 $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
                     'fecha' => $dtProgActPublicacion,
@@ -220,7 +224,7 @@ class AulaVirtualController extends ApiController
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
     }
-
+    //funcion eliminarActividad
     public function eliminarActividad(Request $request)
     {
         $iProgActId = (int) $request->iProgActId;
@@ -252,7 +256,7 @@ class AulaVirtualController extends ApiController
         // eliminar archivos
     }
 
-
+    // obtener actviidad
     public function obtenerActividad(Request $request)
     {
         $iProgActId = (int) $request->iProgActId;
@@ -260,7 +264,10 @@ class AulaVirtualController extends ApiController
 
         // evaluaciones
         if ($iActTipoId === 3) {
-            $iEvaluacionId = (int) $request->ixActivadadId;
+            $iEvaluacionId = $request->ixActivadadId;
+            $iEvaluacionId = $this->hashids->decode($iEvaluacionId);
+            $iEvaluacionId = count($iEvaluacionId) > 0 ? $iEvaluacionId[0] : $iEvaluacionId;
+
             $evaluacion = null;
             try {
                 $params = [
@@ -277,10 +284,8 @@ class AulaVirtualController extends ApiController
             }
 
             try {
-                $preguntas = ProgramacionActividadesRepository::obtenerPreguntasEvaluacion($evaluacion->iEvaluacionId);
-                foreach ($preguntas as $pregunta) {
-                    $pregunta->alternativas = json_decode($pregunta->alternativas, true);
-                }
+                $preguntas = BancoRepository::obtenerPreguntas(['iEvalucionId' => $iEvaluacionId]);
+
                 $evaluacion->preguntas = $preguntas;
             } catch (Throwable $e) {
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
@@ -290,20 +295,48 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
-    public function guardarForo(){
-
+    public function obtenerCategorias(){
         try {
-            $preguntas = DB ::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
+            $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
             return $this->successResponse(
                 $preguntas,
                 'Datos Obtenidos Correctamente'
             );
-        }
+        } catch (Exception $e) {
 
-        catch (Exception $e){
-
-            return $this->errorResponse($e,'Error Upssss!');
+            return $this->errorResponse($e, 'Error Upssss!');
         }
+    }
+    public function guardarForo(Request $request)
+    {
+        //all()
+        //return $request -> all();
+        // Validar los datos si es necesario
+        $request->validate([
+            'cForoTitulo' => 'required|string',
+            'cForoDescripcion' => 'required|string',
+            'iForoCatId' => 'required|integer',
+            'dtForoInicio' => 'required|date',
+            'iEstado' => 'required|integer',
+            'dtForoFin' => 'required|date'
+        ]);
+        $data = [
+            116,
+            $request -> iForoCatId,
+            1,
+            $request -> cForoTitulo,
+            $request -> cForoDescripcion,
+            $request -> dtForoInicio,
+            $request -> dtForoInicio,
+            $request -> dtForoFin,
+            '',
+            $request -> iEstado,
+            1,
+        
+        ];
+        
+        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+
     }
 }

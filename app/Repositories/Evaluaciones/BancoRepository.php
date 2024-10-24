@@ -17,7 +17,8 @@ class BancoRepository
             $params['iCurrContId'] ?? 0,
             $params['iNivelCicloId'] ?? 0,
             $params['iTipoPregId'] ?? 0,
-            $params['iBancoIds'] ?? ''
+            $params['iBancoIds'] ?? '',
+            $params['iEvalucionId'] ?? 0
         ];
 
         $preguntasDB = DB::select('exec eval.Sp_SEL_banco_preguntas 
@@ -28,6 +29,7 @@ class BancoRepository
             , @_iDocenteId = ?
             , @_iTipoPregId = ?
             , @_iBancoIds = ?
+            , @_iEvaluacionId = ?
         ', $params);
 
         $preguntas = [];
