@@ -31,7 +31,7 @@ class ProgramacionActividadesRepository
         if ($params->iProgActId === 0) {
             // insertar
             $resp = DB::select(
-                'exec grl.SP_INS_EnTablaDesdeJSON 
+                'exec grl.SP_INS_EnTablaDesdeJSON
                     @Esquema = ?
                     ,@Tabla = ?
                     ,@DatosJSON = ?
@@ -43,7 +43,7 @@ class ProgramacionActividadesRepository
             array_push($paramsDB, $condiciones);
             // actualizar
             $resp = DB::select(
-                'exec grl.SP_UPD_EnTablaConJSON 
+                'exec grl.SP_UPD_EnTablaConJSON
                     @Esquema = ?
                     ,@Tabla = ?
                     ,@DatosJSON = ?
@@ -65,10 +65,10 @@ class ProgramacionActividadesRepository
             'iProgActId',
             $params['iProgActId']
         ];
-        $resp = DB::select('exec grl.SP_DEL_RegistroConTransaccion  
+        $resp = DB::select('exec grl.SP_DEL_RegistroConTransaccion
             @Esquema = ?
             ,@NombreTabla = ?
-            ,@CampoID = ? 
+            ,@CampoID = ?
             ,@ValorID = ?', $parametrosDB);
         return $resp;
     }
@@ -84,3 +84,18 @@ class ProgramacionActividadesRepository
 
     public static function obtenerPreguntasEvaluacion($iEvaluacionId) {}
 }
+
+// // codigo para obtener actvidad /tareas
+// public static function obtenerActividad($params)
+// {
+//     $iactividadId = $params['iProgActId'];
+
+
+//     $res = DB::select('EXEC [aula].[SP_INS_InsertActividades= ?', [iactividadId]);
+//     return $res;
+// }
+
+// public static function obtenerActividad($iactividadId) {}
+// }
+
+// // FIN codigo para obtener actvidad /tareas

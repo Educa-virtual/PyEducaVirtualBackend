@@ -28,7 +28,6 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
-
         // var_dump($request->input('cTareaArchivoAdjunto'));
         // if($request->hasFile('cTareaArchivoAdjunto')){
         //     $archivo = $request->file('cTareaArchivoAdjunto');
@@ -168,6 +167,7 @@ class AulaVirtualController extends ApiController
         }
         return new JsonResponse($response, $codeResponse);
     }
+    // fin de del codigo
 
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
@@ -197,7 +197,8 @@ class AulaVirtualController extends ApiController
                     'cContenidoSemTitulo' => $row->cContenidoSemTitulo,
                     'cContenidoSemNumero' => $row->cContenidoSemNumero,
                     'iContenidoSemId' =>  $this->hashids->encode($row->iContenidoSemId),
-                    'fechas' => []
+                    'fechas' => [],
+                    'iCursoId' => $this->hashids->encode($row->iCursoId),
                 ];
             }
 
@@ -223,7 +224,7 @@ class AulaVirtualController extends ApiController
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
     }
-
+    //funcion eliminarActividad
     public function eliminarActividad(Request $request)
     {
         $iProgActId = (int) $request->iProgActId;
@@ -255,7 +256,7 @@ class AulaVirtualController extends ApiController
         // eliminar archivos
     }
 
-
+    // obtener actviidad
     public function obtenerActividad(Request $request)
     {
         $iProgActId = (int) $request->iProgActId;
@@ -294,9 +295,7 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
-    public function guardarForo()
-    {
-
+    public function obtenerCategorias(){
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
@@ -308,5 +307,36 @@ class AulaVirtualController extends ApiController
 
             return $this->errorResponse($e, 'Error Upssss!');
         }
+    }
+    public function guardarForo(Request $request)
+    {
+        //all()
+        //return $request -> all();
+        // Validar los datos si es necesario
+        $request->validate([
+            'cForoTitulo' => 'required|string',
+            'cForoDescripcion' => 'required|string',
+            'iForoCatId' => 'required|integer',
+            'dtForoInicio' => 'required|date',
+            'iEstado' => 'required|integer',
+            'dtForoFin' => 'required|date'
+        ]);
+        $data = [
+            116,
+            $request -> iForoCatId,
+            1,
+            $request -> cForoTitulo,
+            $request -> cForoDescripcion,
+            $request -> dtForoInicio,
+            $request -> dtForoInicio,
+            $request -> dtForoFin,
+            '',
+            $request -> iEstado,
+            1,
+        
+        ];
+        
+        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+
     }
 }

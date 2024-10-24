@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\asi;
+namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
 use Exception;
@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AsistenciaController extends Controller
+class FechasImportantesController extends Controller
 {
     protected $hashids;
     protected $iCursoId;
@@ -17,18 +17,21 @@ class AsistenciaController extends Controller
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
     public function list(Request $request){
-        if ($request->iCursoId) {
-            $iCursoId = $this->hashids->decode($request->iCursoId);
-            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
-        }
+
+
         $solicitud = [
             $request->opcion,
-            $iCursoId ?? NULL,
-            $request->dtCtrlAsistencia ?? NULL,
-            $request->asistencia_json ?? NULL,
+            $request->iFechaImpId ?? NULL,
+            $request->iTipoFerId ?? NULL,
+            $request->iCalAcadId ?? NULL,
+            $request->cFechaImpNombre ?? NULL,
+            $request->dtFechaImpFecha ?? NULL,
+            $request->bFechaImpSeraLaborable ?? NULL,
+            $request->cFechaImpURLDocumento ?? NULL,
+            $request->cFechaImpInfoAdicional ?? NULL
         ];
         
-        $query=DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?", $solicitud);
+        $query=DB::select("execute asi.Sp_CRUD_control_asistencias 'CONSULTAR_FECHAS',?,?,?,?,?,?,?,?", $solicitud);
         
         try{
             $response = [

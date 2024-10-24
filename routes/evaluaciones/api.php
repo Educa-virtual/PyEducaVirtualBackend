@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Evaluaciones\BancoPreguntasController;
+use App\Http\Controllers\Evaluaciones\EscalaCalificacionesController;
 use App\Http\Controllers\Evaluaciones\EvaluacionController;
+use App\Http\Controllers\evaluaciones\InstrumentosEvaluacionController;
 use App\Http\Controllers\Evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
 use App\Http\Controllers\Evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
@@ -25,4 +27,10 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('guardarActualizarPreguntasEvaluacion', [EvaluacionController::class, 'guardarActualizarPreguntasEvaluacion']);
         Route::delete('eliminarPreguntaEvulacion/{id}', [EvaluacionController::class, 'eliminarPreguntaEvulacion']);
     });
+
+    Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
+        Route::resource('rubrica', InstrumentosEvaluacionController::class);
+    });
+
+    Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
 });
