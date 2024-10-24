@@ -11,9 +11,17 @@ use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Facades\JWTException;
 use App\Models\User;
+use Hashids\Hashids;
 
 class CredencialescCredUsuariocClaveController extends Controller
-{
+{   
+    protected $hashids;
+
+    public function __construct()
+    {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
+
     public function customAttempt($credentials)
     {
         $user = User::where('cCredUsuario', $credentials['cCredUsuario'])->first();
@@ -99,13 +107,13 @@ class CredencialescCredUsuariocClaveController extends Controller
 
         $user->modulos = $modulos;
         $user->years = $years;
-
+        $user->iDocenteId = $this->hashids->encode($user->iDocenteId);
 
         return response()->json([
             'accessToken' => $token,
             'token_type' => 'bearer',
             'expires_in' => JWTAuth::factory()->getTTL() * 60,
-            'user' => $user,
+            'user' => $user
 
         ]);
     }
