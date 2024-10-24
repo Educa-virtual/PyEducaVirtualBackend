@@ -4,6 +4,7 @@ namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\ApiController;
 use App\Repositories\aula\ProgramacionActividadesRepository;
+use App\Repositories\Evaluaciones\BancoRepository;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 
 use function PHPUnit\Framework\isNull;
+use Illuminate\Http\JsonResponse;
 
 class AulaVirtualController extends ApiController
 {
@@ -26,19 +28,40 @@ class AulaVirtualController extends ApiController
 
     public function guardarActividad(Request $request)
     {
-        $date = date('Y-m-d H:i:s');
-        $dateTime = new DateTime($date);
-        $isoDate = $dateTime->format(DateTime::ATOM);
-        $isoDateUTC = $dateTime->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s.v\Z');
 
-        // Extraer fecha y hora desde el request
-        $fechaFin = $request->input('dFechaEvaluacionPublicacion');
-        $horaFin = $request->input('tHoraEvaluacionPublicacion');
+        // var_dump($request->input('cTareaArchivoAdjunto'));
+        // if($request->hasFile('cTareaArchivoAdjunto')){
+        //     $archivo = $request->file('cTareaArchivoAdjunto');
+        //     $nombreArchivo = time() . '_' . $archivo->getClientOriginalName();
+
+        //     $rutaArchivo = $archivo->storeAs('public/documentos', $nombreArchivo);
+        //     $nombreArchivoGuardado = $nombreArchivo;
+        // }else{
+        //     $nombreArchivoGuardado  = $request->input('cTareaArchivoAdjunto') ?? null;
+        // }
+
+        // Extraer fecha y hora desde el request FECHA DE INICIO
+        $fechaInicio = $request->input('dFechaEvaluacionPublicacionInicio');
+        $horaInicio = $request->input('tHoraEvaluacionPublicacionInicio');
+        $date1 = new DateTime($fechaInicio);
+        $dateString1 = $date1->format('Y-m-d');
+
+        $horaInicioaux = new DateTime($horaInicio);
+        $horaString1 = $horaInicioaux->format('H:i:s');
+        $fechaHoraCompletaInicio = $dateString1 . 'T' . $horaString1 . 'Z';
+        // FIN
+
+        // Extraer fecha y hora desde el request FECHA FIN
+        $fechaFin = $request->input('dFechaEvaluacionPublicacionFin');
+        $horaFin = $request->input('tHoraEvaluacionPublicacionFin');
         $date2 = new DateTime($fechaFin);
         $dateString = $date2->format('Y-m-d');
-        $hora = new DateTime($horaFin);
-        $horaString = $hora->format('H:i:s');
-        $fechaHoraCompleta = $dateString . 'T' . $horaString . 'Z';
+
+        $horaFinaux = new DateTime($horaFin);
+        $horaString = $horaFinaux->format('H:i:s');
+        $fechaHoraCompletaFin = $dateString . 'T' . $horaString . 'Z';
+        // FIN
+
 
         $iProgActId = (int) $request->iProgActId ?? 0;
         $iContenidoSemId = $request->iContenidoSemId;
@@ -51,11 +74,31 @@ class AulaVirtualController extends ApiController
             'iContenidoSemId' => $iContenidoSemId,
             'iActTipoId' => $request->iActTipoId,
             'iHorarioId' => $request->iHorarioId ?? null,
-            'dtProgActPublicacion' => $fechaHoraCompleta,
+            'dtProgActPublicacion' => $fechaHoraCompletaFin,
             'cProgActTituloLeccion' => $request->cTareaTitulo,
-            'cProgActDescripcion' => $request->cTareaDescripcion
+            'cProgActDescripcion' => $request->cTareaDescripcion,
+            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
+        // // desde aqui el codigo
+
+        // public function asignarEstudiantes(Request $request)
+        // {
+        //     $tarea_id = $request->input('tarea_id');
+        //     $estudiantes = $request->input('estudiantes');
+
+        //     foreach ($estudiantes as $estudiante_id) {
+        //         DB::table('aula_tarea_grupos')->insert([
+        //             'tarea_id' => $tarea_id,
+        //             'estudiante_id' => $estudiante_id,
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ]);
+        //     }
+
+        //     return response()->json(['message' => 'Estudiantes asignados correctamente'], 200);
+        // }//
+        // // fin del codigo
 
         DB::beginTransaction();
         try {
@@ -79,18 +122,19 @@ class AulaVirtualController extends ApiController
             $request->bTareaEsEvaluado,
             0,
             0,
-            $isoDateUTC,
-            $fechaHoraCompleta,
+            $fechaHoraCompletaInicio,
+            $fechaHoraCompletaFin,
             null,
             1,
-            null
-
+            null,
+            $iContenidoSemId,
+            $request->iActTipoId
 
 
         ];
 
         try {
-            $resp = DB::statement('EXEC [aula].[SP_INS_InsertActividades]
+            $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
                     @iProgActId  = ? ,
                     @iDocenteId = ? ,
                     @cTareaTitulo = ?,
@@ -104,14 +148,25 @@ class AulaVirtualController extends ApiController
                     @dtTareaFin = ?,
                     @cTareaComentarioDocente = ?,
                     @iEstado = ?,
-                    @iSesionId = ?
+                    @iSesionId = ?,
+                    @iContenidoSemId = ?,
+                    @iActTipoId = ?
             ', $params);
             DB::commit();
-            return $this->successResponse($resp, 'Datos guardados correctamente');
+            if ($resp[0]->id > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
         } catch (Exception $e) {
             DB::rollBack();
-            return $this->errorResponse($e, 'Error al guardar la actividad');
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
         }
+        return new JsonResponse($response, $codeResponse);
     }
 
     public function contenidoSemanasProgramacionActividades(Request $request)
@@ -148,6 +203,11 @@ class AulaVirtualController extends ApiController
 
             if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
+                foreach ($contenido as $key => $contenidoItem) {
+                    if (isset($contenido[$key]['ixActivadadId'])) {
+                        $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
+                    }
+                }
                 $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
                     'fecha' => $dtProgActPublicacion,
                     'actividades' => $contenido
@@ -162,5 +222,91 @@ class AulaVirtualController extends ApiController
         }, $finalResult);
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
+    }
+
+    public function eliminarActividad(Request $request)
+    {
+        $iProgActId = (int) $request->iProgActId;
+        $iActTipoId = (int) $request->iActTipoId;
+
+        DB::beginTransaction();
+        // evaluacion
+        if ($iActTipoId === 3) {
+            $iEvaluacionId = (int) $request->ixActivadadId;
+            try {
+                $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
+            } catch (Throwable $e) {
+                DB::rollBack();
+                $message = $this->handleAndLogError($e, 'Error al eliminar');
+                return $this->errorResponse(null, $message);
+            }
+        }
+
+        // eliminar programacion actividades
+        try {
+            $resp = ProgramacionActividadesRepository::eliminar(['iProgActId' => $iProgActId]);
+        } catch (Throwable $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al eliminar');
+            return $this->errorResponse(null, $message);
+        }
+        DB::commit();
+        return $this->successResponse(null, 'Eliminado correctamente');
+        // eliminar archivos
+    }
+
+
+    public function obtenerActividad(Request $request)
+    {
+        $iProgActId = (int) $request->iProgActId;
+        $iActTipoId = (int) $request->iActTipoId;
+
+        // evaluaciones
+        if ($iActTipoId === 3) {
+            $iEvaluacionId = $request->ixActivadadId;
+            $iEvaluacionId = $this->hashids->decode($iEvaluacionId);
+            $iEvaluacionId = count($iEvaluacionId) > 0 ? $iEvaluacionId[0] : $iEvaluacionId;
+
+            $evaluacion = null;
+            try {
+                $params = [
+                    'iEvaluacionId' => $iEvaluacionId
+                ];
+                $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
+                if (count($resp) === 0) {
+                    return $this->errorResponse(null, 'La evaluación no existe');
+                }
+                $evaluacion = $resp[0];
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            try {
+                $preguntas = BancoRepository::obtenerPreguntas(['iEvalucionId' => $iEvaluacionId]);
+
+                $evaluacion->preguntas = $preguntas;
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
+        }
+    }
+    public function guardarForo()
+    {
+
+        try {
+            $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
+
+            return $this->successResponse(
+                $preguntas,
+                'Datos Obtenidos Correctamente'
+            );
+        } catch (Exception $e) {
+
+            return $this->errorResponse($e, 'Error Upssss!');
+        }
     }
 }

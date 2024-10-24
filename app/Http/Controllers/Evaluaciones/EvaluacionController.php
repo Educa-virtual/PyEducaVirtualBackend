@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
 use App\Repositories\aula\ProgramacionActividadesRepository;
+use Exception;
 use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -32,13 +34,21 @@ class EvaluacionController extends ApiController
 
         $paramsProgramacionActividades = [
             'iProgActId' => $iProgActId,
-            'iContenidoSemId' => $iContenidoSemId,
             'iActTipoId' => $request->iActTipoId,
             'iHorarioId' => $request->iHorarioId ?? null,
             'dtProgActPublicacion' => $request->dtEvaluacionPublicacion,
+            'dtProgActInicio' => $request->dtEvaluacionInicio,
+            'dtProgActFin' => $request->dtEvaluacionFin ?? null,
             'cProgActTituloLeccion' => $request->cEvaluacionTitulo,
             'cProgActDescripcion' => $request->cEvaluacionDescripcion
         ];
+
+        if ($iProgActId == 0) {
+            array_push(
+                $paramsProgramacionActividades,
+                ['iContenidoSemId' => $iContenidoSemId]
+            );
+        }
 
         DB::beginTransaction();
         try {
@@ -110,27 +120,48 @@ class EvaluacionController extends ApiController
 
     public function guardarActualizarPreguntasEvaluacion(Request $request)
     {
-        $preguntas = $request->preguantas;
+        $preguntas = $request->preguntas;
+        $iEvaluacionId = $request->iEvaluacionId;
 
-        DB::transaction();
+        DB::beginTransaction();
         foreach ($preguntas  as $key => $pregunta) {
-            $composJson = json_encode(['iEvaulacionId' => $pregunta->iEvaulacionId, 'iBancoId' => $pregunta->iBancoId]);
+            $camposJson = json_encode(['iEvaluacionId' => $iEvaluacionId, 'iBancoId' => $pregunta['iPreguntaId']]);
+
             try {
                 $params = [
                     'eval',
-                    'evaluaciones_preguntas',
-                    $composJson
+                    'evaluacion_preguntas',
+                    $camposJson
                 ];
-                $existePregunta = DB::select('select 1 eval.evaluacion.preguntas where iEvaluacionId = ? AND iBancoId = ?', [$pregunta->iEvaluacionId, $pregunta->iBancoId]);
+                $existePregunta = DB::select('select 1 from eval.evaluacion_preguntas where iEvaluacionId = ? AND iBancoId = ?', [$iEvaluacionId, $pregunta['iPreguntaId']]);
                 if (count($existePregunta) === 0) {
-                    DB::select('exec grl.SP_INS_EnTablaDesdeJSON @Esquema = ?, @Tabla = ?, @DatosJSON = ?', $params);
+                    $resp = DB::select('exec grl.SP_INS_EnTablaDesdeJSON @Esquema = ?, @Tabla = ?, @DatosJSON = ?', $params);
+                    $resp = $resp[0];
+                    $preguntas[$key]['newId'] = $resp->id;
                 }
             } catch (Throwable $e) {
                 DB::rollBack();
-                return $this->errorResponse(null, 'Errar al guardar los datos');
+                $message = $this->handleAndLogError($e, 'Error al guardar los datos');
+                return $this->errorResponse(null, $message);
             }
         }
         DB::commit();
-        return $this->successResponse(null, 'Alternativas guardadas correctamente');
+        return $this->successResponse($preguntas, 'Alternativas guardadas correctamente');
+    }
+
+
+    public function eliminarPreguntaEvulacion($id)
+    {
+        $iEvalPregId = $id;
+
+        try {
+            $resp = DB::select('exec eval.Sp_DEL_evaluacion_preguntas @_iEvalPregId = ?', [$iEvalPregId]);
+            $resp = $resp[0];
+
+            return $this->successResponse($resp->mensaje, 'Se eliminó correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al eliminar la pregunta');
+            return $this->errorResponse(null, $message);
+        }
     }
 }

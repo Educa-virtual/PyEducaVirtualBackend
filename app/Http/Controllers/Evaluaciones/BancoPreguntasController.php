@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
+use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\Evaluaciones\BancoRepository;
+use App\Repositories\Evaluaciones\PreguntasEvaluacionRepository;
 use App\Repositories\PreguntasRepository;
 use DateTime;
 use Exception;
@@ -43,19 +45,18 @@ class BancoPreguntasController extends ApiController
             $iEncabPregId = null;
         } else {
             $paramsEncabezado = [
-                'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
+                'idEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
                 'iCursoId' => $request->iCursoId,
-                'iNivelGradoId' => $request->iNivelGradoId,
-                'iColumnValue' => $request->iDocenteId,
-                'cColumnName' => 'iDocenteId',
-                'cSchemaName'  => 'eval'
+                'iNivelCicloId' => $request->iNivelCicloId,
+                'iDocenteId' => $request->iDocenteId,
             ];
             try {
-                $resp =  PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
-                $resp = $resp[0];
-                $iEncabPregId = $resp->id;
+                $resp =  PreguntasEvaluacionRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+                if ($iEncabPregId == 0) {
+                    $iEncabPregId = $resp->id;
+                }
             } catch (Throwable $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e,  'Error al guardar el encabezado');
@@ -88,14 +89,12 @@ class BancoPreguntasController extends ApiController
                 // 'dtBancoCreacion' => $request->,
                 'cBancoPregunta' => $pregunta['cPregunta'],
                 'dtBancoTiempo' => $fechaConHora,
-                'cBancoTextoAyuda' => $pregunta['cPreguntaTextoAyuda'],
+                'cBancoTextoAyuda' => $pregunta['cPreguntaTextoAyuda'] ?? '',
                 'nBancoPuntaje' => $pregunta['iPreguntaPeso'],
                 'idEncabPregId' => $iEncabPregId,
                 'iCursoId' => $request->iCursoId,
                 'iNivelCicloId' => $request->iNivelCicloId,
             ];
-
-
             // pregunta
             $respPregunta = null;
             try {
