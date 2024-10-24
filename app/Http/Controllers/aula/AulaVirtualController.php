@@ -308,16 +308,35 @@ class AulaVirtualController extends ApiController
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
-    // public function guardarForo(Request $request)
-    // {
-    //     // Validar los datos si es necesario
-    //     $validatedData = $request->validate([
-    //         'cForoTitulo' => 'required|string',
-    //         'cForoDescripcion' => 'required|string',
-    //         'iForoCatId' => 'required|integer',
-    //         'dtForoInicio' => 'required|date',
-    //         'iEstado' => 'required|integer',
-    //     ]);
+    public function guardarForo(Request $request)
+    {
+        //all()
+        //return $request -> all();
+        // Validar los datos si es necesario
+        $request->validate([
+            'cForoTitulo' => 'required|string',
+            'cForoDescripcion' => 'required|string',
+            'iForoCatId' => 'required|integer',
+            'dtForoInicio' => 'required|date',
+            'iEstado' => 'required|integer',
+            'dtForoFin' => 'required|date'
+        ]);
+        $data = [
+            116,
+            $request -> iForoCatId,
+            1,
+            $request -> cForoTitulo,
+            $request -> cForoDescripcion,
+            $request -> dtForoInicio,
+            $request -> dtForoInicio,
+            $request -> dtForoFin,
+            '',
+            $request -> iEstado,
+            1,
+        
+        ];
+        
+        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
 
-    // }
+    }
 }
