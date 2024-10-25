@@ -18,6 +18,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::group(['prefix' => 'foro'], function () {
             Route::post('guardarForo', [AulaVirtualController::class, 'guardarForo']);
             Route::post('obtenerCategorias', [AulaVirtualController::class, 'obtenerCategorias']);
+            Route::post('obtenerCalificacion', [AulaVirtualController::class, 'obtenerCalificacion']);
+            Route::get('obtenerForo', [AulaVirtualController::class, 'obtenerForo']);
         });
 
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
