@@ -34,5 +34,6 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('list', [TareasController::class, 'list']);
         Route::post('store', [TareasController::class, 'store']);
         Route::post('getTareasxiCursoId', [TareasController::class, 'getTareasxiCursoId']);
+        Route::post('delete', [TareasController::class, 'delete']);
     });
 });
