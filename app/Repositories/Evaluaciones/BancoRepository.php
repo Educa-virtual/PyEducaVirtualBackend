@@ -34,7 +34,7 @@ class BancoRepository
 
         $preguntas = [];
         foreach ($preguntasDB as $item) {
-            $item->preguntas = json_decode($item->preguntas);
+            $item->preguntas = json_decode($item->preguntas, true);
             if ($item->idEncabPregId == -1) {
                 if (is_array($item->preguntas)) {
                     $preguntas = array_merge($preguntas, $item->preguntas);
