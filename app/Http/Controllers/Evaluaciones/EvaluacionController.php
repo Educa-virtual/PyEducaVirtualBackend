@@ -42,7 +42,8 @@ class EvaluacionController extends ApiController
             'dtProgActInicio' => $request->dtEvaluacionInicio,
             'dtProgActFin' => $request->dtEvaluacionFin ?? null,
             'cProgActTituloLeccion' => $request->cEvaluacionTitulo,
-            'cProgActDescripcion' => $request->cEvaluacionDescripcion
+            'cProgActDescripcion' => $request->cEvaluacionDescripcion,
+            'iEstado' => 1
         ];
 
         if ($iProgActId == 0) {

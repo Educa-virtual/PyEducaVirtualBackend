@@ -295,7 +295,8 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
-    public function obtenerCategorias(){
+    public function obtenerCategorias()
+    {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
@@ -323,20 +324,19 @@ class AulaVirtualController extends ApiController
         ]);
         $data = [
             116,
-            $request -> iForoCatId,
+            $request->iForoCatId,
             1,
-            $request -> cForoTitulo,
-            $request -> cForoDescripcion,
-            $request -> dtForoInicio,
-            $request -> dtForoInicio,
-            $request -> dtForoFin,
+            $request->cForoTitulo,
+            $request->cForoDescripcion,
+            $request->dtForoInicio,
+            $request->dtForoInicio,
+            $request->dtForoFin,
             '',
-            $request -> iEstado,
+            $request->iEstado,
             1,
-        
-        ];
-        
-        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
 
+        ];
+
+        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
 }
