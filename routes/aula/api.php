@@ -5,9 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\ProgramacionActividadesController;
 use App\Http\Controllers\aula\TareasController;
+use App\Http\Controllers\aula\TipoActividadController;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'contenidos'], function () {
+        Route::resource('tipo-actividad', TipoActividadController::class);
         Route::group(['prefix' => 'actividad'], function () {
             Route::post('guardarActividad', [AulaVirtualController::class, 'guardarActividad']);
             Route::delete('eliminarActividad', [AulaVirtualController::class, 'eliminarActividad']);
