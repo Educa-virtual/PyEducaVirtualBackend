@@ -14,7 +14,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
         $request->json,
-        $request->opcion,
+        $request->_opcion,
         ];
 
         $query = DB::select("EXEC acad.Sp_ACAD_CRUD_CALENDARIO ?,?", 
@@ -44,7 +44,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
         $request->json,
-        $request->opcion,
+        $request->_opcion,
         ];
         //@json = N'[{	"jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select("EXEC acad.Sp_ACAD_CRUD_CALENDARIO ?,?", 
