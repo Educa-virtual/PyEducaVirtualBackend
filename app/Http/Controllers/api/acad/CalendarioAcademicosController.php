@@ -64,6 +64,7 @@ class CalendarioAcademicosController extends Controller
             'message' => $e->getMessage(),
             'data' => [],
         ];
+        
         $estado = 500;
         }
 
