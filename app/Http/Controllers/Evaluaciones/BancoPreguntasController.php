@@ -188,6 +188,10 @@ class BancoPreguntasController extends ApiController
             return $item['iPreguntaId'];
         }, $preguntas);
 
+        $iEvaluacionId = (int) $request->iEvaluacionId  ?? 0;
+        // if ($iEvaluacionId) {
+        // }
+
         $ids = implode(',', $preguntasIds);
         $preguntasResponse = BancoRepository::obtenerPreguntas(['iBancoIds' => $ids]);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\grl\GeneralController;
+use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\GeneralRepository;
 use Exception;
@@ -42,7 +43,8 @@ class EvaluacionController extends ApiController
             'dtProgActInicio' => $request->dtEvaluacionInicio,
             'dtProgActFin' => $request->dtEvaluacionFin ?? null,
             'cProgActTituloLeccion' => $request->cEvaluacionTitulo,
-            'cProgActDescripcion' => $request->cEvaluacionDescripcion
+            'cProgActDescripcion' => $request->cEvaluacionDescripcion,
+            'iEstado' => 1
         ];
 
         if ($iProgActId == 0) {
@@ -125,46 +127,18 @@ class EvaluacionController extends ApiController
         $preguntas = $request->preguntas;
         $iEvaluacionId = $request->iEvaluacionId;
 
-        $totalPreguntas  = count($preguntas);
-        DB::beginTransaction();
-        foreach ($preguntas  as $key => $pregunta) {
-            $camposJson = json_encode(['iEvaluacionId' => $iEvaluacionId, 'iBancoId' => $pregunta['iPreguntaId']]);
-
-            try {
-                $params = [
-                    'eval',
-                    'evaluacion_preguntas',
-                    $camposJson
-                ];
-                $existePregunta = DB::select('select 1 from eval.evaluacion_preguntas where iEvaluacionId = ? AND iBancoId = ?', [$iEvaluacionId, $pregunta['iPreguntaId']]);
-                if (count($existePregunta) === 0) {
-                    $resp = DB::select('exec grl.SP_INS_EnTablaDesdeJSON @Esquema = ?, @Tabla = ?, @DatosJSON = ?', $params);
-                    $resp = $resp[0];
-                    $preguntas[$key]['newId'] = $resp->id;
-                }
-            } catch (Throwable $e) {
-                DB::rollBack();
-                $message = $this->handleAndLogError($e, 'Error al guardar los datos');
-                return $this->errorResponse(null, $message);
-            }
-        }
-
-        // actualizar total preguntas
         try {
-            $where =  [
-                [
-                    'COLUMN_NAME' => "iEvaluacionId",
-                    'VALUE' => $iEvaluacionId
-                ]
-            ];
-            GeneralRepository::actualizar('eval', 'evaluaciones', json_encode(['iEvaluacionNroPreguntas' => $totalPreguntas]), json_encode($where));
+            $evaluacionPregunta = new Evaluacion();
+            $preguntas = $evaluacionPregunta->guardarPreguntas(
+                $iEvaluacionId,
+                $preguntas
+            );
+
+            return $this->successResponse($preguntas, 'Preguntas guardadas correctamente');
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al guardar los datos');
             return $this->errorResponse(null, $message);
         }
-
-        DB::commit();
-        return $this->successResponse($preguntas, 'Alternativas guardadas correctamente');
     }
 
 
