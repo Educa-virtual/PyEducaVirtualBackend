@@ -35,7 +35,7 @@ class LogrosController extends ApiController
      */
     public function store(Request $request)
     {
-        $iNivelLogroEvaId  = (int) $request->iNivelLogroEvaId;
+        $iNivelLogroEvaId  = (int) $request->iNivelLogroEvaId ?? 0;
         $paramsToSave = json_encode([
             'cNivelLogroEvaDescripcion' => $request->cNivelLogroEvaDescripcion,
             'iEvalPregId' => $request->iEvalPregId,
