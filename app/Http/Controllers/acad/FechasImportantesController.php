@@ -18,9 +18,10 @@ class FechasImportantesController extends Controller
     }
     public function list(Request $request){
 
-
         $solicitud = [
             $request->opcion,
+            $request->iSedeId ?? NULL,
+            $request->iIieeId ?? NULL,
             $request->iFechaImpId ?? NULL,
             $request->iTipoFerId ?? NULL,
             $request->iCalAcadId ?? NULL,
@@ -31,7 +32,7 @@ class FechasImportantesController extends Controller
             $request->cFechaImpInfoAdicional ?? NULL
         ];
         
-        $query=DB::select("execute asi.Sp_CRUD_control_asistencias 'CONSULTAR_FECHAS',?,?,?,?,?,?,?,?", $solicitud);
+        $query=DB::select("execute acad.Sp_CRUD_fechas_importantes ?,?,?", $solicitud);
         
         try{
             $response = [

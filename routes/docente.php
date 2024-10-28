@@ -13,6 +13,7 @@ use App\Http\Controllers\acad\TipoMetodologiasController;
 use App\Http\Controllers\acad\BibliografiaController;
 use App\Http\Controllers\api\acad\EstudiantesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
+use App\Http\Controllers\acad\FechasImportantesController;
 use App\Http\Controllers\acad\IndicadorActividadesController;
 use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
 use App\Http\Controllers\acad\TipoIndicadorLogrosController;
@@ -88,5 +89,8 @@ Route::group(['prefix' => 'docente'], function () {
   });
   Route::group(['prefix' => 'silabus_reporte'], function () {
     Route::get('report/{iSilaboId}', [SilabosController::class, 'report']);
+  });
+  Route::group(['prefix' => 'fechas_importantes'], function () {
+    Route::post('list', [FechasImportantesController::class, 'list']);
   });
 });
