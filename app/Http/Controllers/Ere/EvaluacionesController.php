@@ -7,43 +7,144 @@ use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+//use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
+use App\Models\Ere\EreEvaluacion;
+use Carbon\Carbon;
 class EvaluacionesController extends ApiController
 {
-    public function obtenerEvaluaciones()
-    {
+    // public function obtenerEvaluaciones()
+    // {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
+    //     $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
 
-        $where = '';
+    //     $where = '';
 
 
+    //     $params = [
+    //         'ere',
+    //         'vistaInstitucionEducativa',
+    //         $campos,
+    //         $where
+
+    //     ];
+
+
+    //     try {
+    //         $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
+    //         return $this->successResponse(
+    //             $evaluaciones,
+    //             'Datos obtenidos correctamente'
+    //         );
+    //     } catch (Exception $e) {
+    //         return $this->errorResponse($e, 'Error al obtener los datos');
+    //     }
+    // }
+    // public function actualizarEvaluacion(Request $request)
+    // {
+    //     return  $this->errorResponse(null, 'Error al obtener los datos');
+
+    //     /*return $this->successResponse(
+    //         null,
+    //         'Datos obtenidos correctamente'
+    //     );*/
+    // }
+
+
+    public function guardarEvaluaciones(Request $request){
+      
+        // Validación del formato de fecha para asegurarse de que sea válida
+    $request->validate([
+        'dtEvaluacionCreacion' => 'required|date', // Laravel valida que sea una fecha
+    ]);
+
+   $fechaEvaluacion = Carbon::createFromFormat('d/m/Y', $request->dtEvaluacionCreacion)
+                    ->format('Y-m-d H:i:s');
+        
         $params = [
-            'ere',
-            'vistaInstitucionEducativa',
-            $campos,
-            $where
-
+            // $iEvaluacionId='16',
+            // $idTipoEvalId='1',
+            // $iNivelEvalId='1',
+            // $dtEvaluacionCreacion='2024-10-27','','','','','','','','',''
+            //$dtEvaluacionCreacion='2024-10-27'
+            $request->iEvaluacionId,
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+            $fechaEvaluacion,
+            //cambios abajo
+            //$request->cEvaluacionNombre,'','','','','','','','',''
+            //$request->dtEvaluacionCreacion,
+            
+            // $request->cEvaluacionNombre,
+            // $request->cEvaluacionDescripcion ,
+            // $request->cEvaluacionUrlDrive ,
+            // $request->cEvaluacionUrlPlantilla ,
+            // $request->cEvaluacionUrlManual ,
+            // $request->cEvaluacionUrlMatriz ,
+            // $request->cEvaluacionObs ,
+            // $request->dtEvaluacionLiberarMatriz ,
+            // $request->dtEvaluacionLiberarCuadernillo ,
+            // $request->dtEvaluacionLiberarResultados,
         ];
 
-
         try {
-            $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
-            return $this->successResponse(
-                $evaluaciones,
-                'Datos obtenidos correctamente'
-            );
-        } catch (Exception $e) {
-            return $this->errorResponse($e, 'Error al obtener los datos');
+            // Llama al método del modelo que ejecuta el procedimiento almacenado
+            $evaluaciones = EreEvaluacion::guardarEvaluaciones($params);
+
+            return response()->json([
+                'status' => 'Success',
+                'data' => $evaluaciones,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Error al obtener los datos',
+                'data' => [
+                    'errorInfo' => $e->getMessage(),
+                ],
+            ], 500);
         }
+    } 
+public function obtenerEvaluaciones()
+    {
+        //ESTE CODIGO ES CON EL PROCEDIMIENTO ALMACENADO: PROCEDIMIENTO
+        try {
+            // Llama al método del modelo que ejecuta el procedimiento almacenado
+            $evaluaciones = EreEvaluacion::obtenerEvaluaciones();
+
+            return response()->json([
+                'status' => 'Success',
+                'data' => $evaluaciones,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Error al obtener los datos',
+                'data' => [
+                    'errorInfo' => $e->getMessage(),
+                ],
+            ], 500);
+        }
+        //ESTE CODIGO ES DIRECTO A LA TABLA: TABLE
+        // try {
+        //     // Obtén todas las evaluaciones de la tabla 'evaluacion'
+        //     $evaluaciones = EreEvaluacion::all(); // O usa EreEvaluacion::get() para obtener colecciones
+
+        //     return response()->json([
+        //         'status' => 'Success',
+        //         'data' => $evaluaciones,
+        //     ]);
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'status' => 'Error',
+        //         'message' => 'Error al obtener los datos',
+        //         'data' => [
+        //             'errorInfo' => $e->getMessage(),
+        //         ],
+        //     ], 500);
+        // }
     }
     public function actualizarEvaluacion(Request $request)
     {
-        return  $this->errorResponse(null, 'Error al obtener los datos');
-
-        /*return $this->successResponse(
-            null,
-            'Datos obtenidos correctamente'
-        );*/
+        // Aquí agregas lógica para actualizar la evaluación usando el modelo Evaluacion
     }
 }
