@@ -10,35 +10,36 @@ use Illuminate\Support\Facades\DB;
 //use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\Ere\EreEvaluacion;
 use Carbon\Carbon;
+
 class EvaluacionesController extends ApiController
 {
-    // public function obtenerEvaluaciones()
-    // {
+    public function obtenerEvaluaciones()
+    {
 
-    //     $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
 
-    //     $where = '';
-
-
-    //     $params = [
-    //         'ere',
-    //         'vistaInstitucionEducativa',
-    //         $campos,
-    //         $where
-
-    //     ];
+        $where = '';
 
 
-    //     try {
-    //         $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
-    //         return $this->successResponse(
-    //             $evaluaciones,
-    //             'Datos obtenidos correctamente'
-    //         );
-    //     } catch (Exception $e) {
-    //         return $this->errorResponse($e, 'Error al obtener los datos');
-    //     }
-    // }
+        $params = [
+            'ere',
+            'vistaInstitucionEducativa',
+            $campos,
+            $where
+
+        ];
+
+
+        try {
+            $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
+            return $this->successResponse(
+                $evaluaciones,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
     // public function actualizarEvaluacion(Request $request)
     // {
     //     return  $this->errorResponse(null, 'Error al obtener los datos');
@@ -50,40 +51,32 @@ class EvaluacionesController extends ApiController
     // }
 
 
-    public function guardarEvaluaciones(Request $request){
-      
-        // Validación del formato de fecha para asegurarse de que sea válida
-    $request->validate([
-        'dtEvaluacionCreacion' => 'required|date', // Laravel valida que sea una fecha
-    ]);
+    public function guardarEvaluacion(Request $request)
+    {
 
-   $fechaEvaluacion = Carbon::createFromFormat('d/m/Y', $request->dtEvaluacionCreacion)
-                    ->format('Y-m-d H:i:s');
-        
         $params = [
             // $iEvaluacionId='16',
             // $idTipoEvalId='1',
             // $iNivelEvalId='1',
             // $dtEvaluacionCreacion='2024-10-27','','','','','','','','',''
             //$dtEvaluacionCreacion='2024-10-27'
-            $request->iEvaluacionId,
+
+            //$request->iEvaluacionId,
             $request->idTipoEvalId,
             $request->iNivelEvalId,
-            $fechaEvaluacion,
-            //cambios abajo
-            //$request->cEvaluacionNombre,'','','','','','','','',''
-            //$request->dtEvaluacionCreacion,
-            
-            // $request->cEvaluacionNombre,
-            // $request->cEvaluacionDescripcion ,
-            // $request->cEvaluacionUrlDrive ,
-            // $request->cEvaluacionUrlPlantilla ,
-            // $request->cEvaluacionUrlManual ,
-            // $request->cEvaluacionUrlMatriz ,
-            // $request->cEvaluacionObs ,
-            // $request->dtEvaluacionLiberarMatriz ,
-            // $request->dtEvaluacionLiberarCuadernillo ,
-            // $request->dtEvaluacionLiberarResultados,
+
+            $request->dtEvaluacionCreacion,
+
+            $request->cEvaluacionNombre,
+            $request->cEvaluacionDescripcion,
+            $request->cEvaluacionUrlDrive,
+            $request->cEvaluacionUrlPlantilla,
+            $request->cEvaluacionUrlManual,
+            $request->cEvaluacionUrlMatriz,
+            $request->cEvaluacionObs,
+            $request->dtEvaluacionLiberarMatriz,
+            $request->dtEvaluacionLiberarCuadernillo,
+            $request->dtEvaluacionLiberarResultados,
         ];
 
         try {
@@ -95,54 +88,68 @@ class EvaluacionesController extends ApiController
                 'data' => $evaluaciones,
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Error',
-                'message' => 'Error al obtener los datos',
-                'data' => [
-                    'errorInfo' => $e->getMessage(),
-                ],
-            ], 500);
-        }
-    } 
-public function obtenerEvaluaciones()
-    {
-        //ESTE CODIGO ES CON EL PROCEDIMIENTO ALMACENADO: PROCEDIMIENTO
-        try {
-            // Llama al método del modelo que ejecuta el procedimiento almacenado
-            $evaluaciones = EreEvaluacion::obtenerEvaluaciones();
 
-            return response()->json([
-                'status' => 'Success',
-                'data' => $evaluaciones,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'Error',
-                'message' => 'Error al obtener los datos',
-                'data' => [
-                    'errorInfo' => $e->getMessage(),
-                ],
-            ], 500);
+            // return response()->json([
+            //     'status' => 'Error',
+            //     'message' => 'Error al obtener los datos Porque',
+            //     'data' => [
+            //         'errorInfo' => $e->getMessage(),
+            //     ],
+            // ], 500);
         }
-        //ESTE CODIGO ES DIRECTO A LA TABLA: TABLE
-        // try {
-        //     // Obtén todas las evaluaciones de la tabla 'evaluacion'
-        //     $evaluaciones = EreEvaluacion::all(); // O usa EreEvaluacion::get() para obtener colecciones
-
-        //     return response()->json([
-        //         'status' => 'Success',
-        //         'data' => $evaluaciones,
-        //     ]);
-        // } catch (\Exception $e) {
-        //     return response()->json([
-        //         'status' => 'Error',
-        //         'message' => 'Error al obtener los datos',
-        //         'data' => [
-        //             'errorInfo' => $e->getMessage(),
-        //         ],
-        //     ], 500);
-        // }
     }
+    public function obtenerUltimaEvaluacion()
+    {
+        try {
+            // Realiza la consulta a la tabla 'evaluacion'
+            $ultimaEvaluacion = DB::table('ere.evaluacion')
+                ->orderBy('iEvaluacionId', 'desc')
+                ->first();
+
+            return response()->json(['data' => $ultimaEvaluacion ? [$ultimaEvaluacion] : []]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Error al obtener los datos', 'message' => $e->getMessage()], 500);
+        }
+    }
+    // public function obtenerEvaluaciones()
+    // {
+    //     //ESTE CODIGO ES CON EL PROCEDIMIENTO ALMACENADO: PROCEDIMIENTO
+    //     try {
+    //         // Llama al método del modelo que ejecuta el procedimiento almacenado
+    //         $evaluaciones = EreEvaluacion::obtenerEvaluaciones();
+
+    //         return response()->json([
+    //             'status' => 'Success',
+    //             'data' => $evaluaciones,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'status' => 'Error',
+    //             'message' => 'Error al obtener los datos',
+    //             'data' => [
+    //                 'errorInfo' => $e->getMessage(),
+    //             ],
+    //         ], 500);
+    //     }
+    //     //ESTE CODIGO ES DIRECTO A LA TABLA: TABLE
+    //     // try {
+    //     //     // Obtén todas las evaluaciones de la tabla 'evaluacion'
+    //     //     $evaluaciones = EreEvaluacion::all(); // O usa EreEvaluacion::get() para obtener colecciones
+
+    //     //     return response()->json([
+    //     //         'status' => 'Success',
+    //     //         'data' => $evaluaciones,
+    //     //     ]);
+    //     // } catch (\Exception $e) {
+    //     //     return response()->json([
+    //     //         'status' => 'Error',
+    //     //         'message' => 'Error al obtener los datos',
+    //     //         'data' => [
+    //     //             'errorInfo' => $e->getMessage(),
+    //     //         ],
+    //     //     ], 500);
+    //     // }
+    // }
     public function actualizarEvaluacion(Request $request)
     {
         // Aquí agregas lógica para actualizar la evaluación usando el modelo Evaluacion

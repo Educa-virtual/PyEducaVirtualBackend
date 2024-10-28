@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
- 
+
 Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
@@ -70,11 +70,11 @@ Route::group(['prefix' => 'ere'], function () {
 
     // });
     Route::group(['prefix' => 'Evaluaciones'], function () {
-        Route::get('obtener', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
-        
-        Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluaciones']);
-        Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
+        Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
+        Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
+        Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -100,4 +100,4 @@ Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
 
-Route::get('/imprimir',PersonaController::class);
+Route::get('/imprimir', PersonaController::class);
