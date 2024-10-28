@@ -3,18 +3,26 @@
 namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
+use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\Evaluaciones\BancoRepository;
 use App\Repositories\Evaluaciones\PreguntasEvaluacionRepository;
 use App\Repositories\PreguntasRepository;
 use DateTime;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class BancoPreguntasController extends ApiController
 {
+    protected $hashids;
+
+    public function __construct()
+    {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
 
     public function obtenerBancoPreguntas(Request $request)
     {
@@ -50,7 +58,7 @@ class BancoPreguntasController extends ApiController
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
                 'iCursoId' => $request->iCursoId,
                 'iNivelCicloId' => $request->iNivelCicloId,
-                'iDocenteId' => $request->iDocenteId,
+                'iDocenteId' => $this->decodeId($request->iDocenteId),
             ];
             try {
                 $resp =  PreguntasEvaluacionRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
@@ -83,7 +91,7 @@ class BancoPreguntasController extends ApiController
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 'iBancoId' => $iPreguntaId,
-                'iDocenteId' => $request->iDocenteId,
+                'iDocenteId' => $this->decodeId($request->iDocenteId),
                 'iTipoPregId' => $pregunta['iTipoPregId'],
                 'iCurrContId' => $request->iCurrContId,
                 // 'dtBancoCreacion' => $request->,
@@ -180,7 +188,23 @@ class BancoPreguntasController extends ApiController
                 return $this->errorResponse(null, $message);
             }
         }
-        DB::commit();
+
+
+        $iEvaluacionId = (int) $request->iEvaluacionId  ?? 0;
+        if ($iEvaluacionId !== 0) {
+            try {
+                $evaluacionPregunta = new Evaluacion();
+                $preguntas = $evaluacionPregunta->guardarPreguntas(
+                    $iEvaluacionId,
+                    $preguntas
+                );
+
+                return $this->successResponse($preguntas, 'Preguntas guardadas correctamente');
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al guardar los datos');
+                return $this->errorResponse(null, $message);
+            }
+        }
 
         // retornar preguntas con los ids y las alternativas en un array
 
@@ -188,22 +212,22 @@ class BancoPreguntasController extends ApiController
             return $item['iPreguntaId'];
         }, $preguntas);
 
-        $iEvaluacionId = (int) $request->iEvaluacionId  ?? 0;
-        // if ($iEvaluacionId) {
-        // }
-
         $ids = implode(',', $preguntasIds);
         $preguntasResponse = BancoRepository::obtenerPreguntas(['iBancoIds' => $ids]);
+
+        DB::commit();
 
         return $this->successResponse($preguntasResponse, 'Cambios realizados correctamente');
     }
 
     public function obtenerEncabezadosPreguntas(Request $request)
     {
+        $iDocenteId = $this->decodeId($request->iDocenteId);
+
         $params = [
             'iCursoId' => $request['iCursoId'],
             'iNivelCicloId' => $request['iNivelCicloId'],
-            'iDocenteId' => $request['iDocenteId'],
+            'iDocenteId' => $iDocenteId,
             'schema' => 'eval'
         ];
         try {
