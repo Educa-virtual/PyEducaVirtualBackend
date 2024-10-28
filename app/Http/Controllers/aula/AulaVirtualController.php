@@ -259,6 +259,8 @@ class AulaVirtualController extends ApiController
     // obtener actviidad
     public function obtenerActividad(Request $request)
     {
+        // return $request -> alll();
+
         $iProgActId = (int) $request->iProgActId;
         $iActTipoId = (int) $request->iActTipoId;
 
@@ -274,6 +276,7 @@ class AulaVirtualController extends ApiController
                     'iEvaluacionId' => $iEvaluacionId
                 ];
                 $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
+                
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
                 }
@@ -295,7 +298,8 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
-    public function obtenerCategorias(){
+    public function obtenerCategorias()
+    {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
@@ -323,20 +327,73 @@ class AulaVirtualController extends ApiController
         ]);
         $data = [
             116,
-            $request -> iForoCatId,
+            $request->iForoCatId,
             1,
-            $request -> cForoTitulo,
-            $request -> cForoDescripcion,
-            $request -> dtForoInicio,
-            $request -> dtForoInicio,
-            $request -> dtForoFin,
+            $request->cForoTitulo,
+            $request->cForoDescripcion,
+            $request->dtForoInicio,
+            $request->dtForoInicio,
+            $request->dtForoFin,
             '',
-            $request -> iEstado,
+            $request->iEstado,
             1,
-        
-        ];
-        
-        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
 
+        ];
+
+        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+    }
+    public function obtenerCalificacion(){
+        try {
+            $preguntas = DB::select('EXEC aula.Sp_SEL_escalaCalificacion');
+
+            return $this->successResponse(
+                $preguntas,
+                'Datos Obtenidos Correctamente'
+            );
+        } catch (Exception $e) {
+
+            return $this->errorResponse($e, 'Error Upssss!');
+        }
+    }
+    public function obtenerForo(Request $request){
+
+        // return $request -> all();
+        $iProgActId = (int) $request->iProgActId;
+        $iActTipoId = (int) $request->iActTipoId;
+
+        if($iActTipoId === 2){
+            $iForoId = $request->ixActivadadId;
+            $iForoId = $this->hashids->decode($iForoId);
+            $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
+            
+            $foro = null;
+            try {
+                $params = [
+                    'iForoId' => $iForoId
+                ];
+                $resp = ProgramacionActividadesRepository::obtenerActividadForo($params);
+                    
+                if (count($resp) === 0) {
+                    return $this->errorResponse(null, 'La evaluación no existe');
+                }
+                $foro = $resp[0];
+
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            try {
+                $preguntas = BancoRepository::obtenerPreguntas(['iEvalucionId' => $iForoId]);
+
+                $foro->preguntas = $preguntas;
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            return $this->successResponse($foro, 'Datos obtenidos correctamente');
+        }
+        
     }
 }
