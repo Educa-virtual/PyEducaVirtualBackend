@@ -7,6 +7,7 @@ use App\Http\Controllers\Ere\DesempenosController;
 
 use App\Http\Controllers\api\acad\ActividadesAprendizajeController;
 use App\Http\Controllers\api\acad\BibliografiaController;
+use App\http\Controllers\api\acad\CalendarioAcademicosController;
 use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
@@ -85,9 +86,12 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'AutenticarU'], function () {
         Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
     });
+    
     Route::group(['prefix' => 'Perfiles'], function () {
         Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
     });
+    Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
+    Route::post('calendarioAcademico/addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
 Route::post('/verificar', [MailController::class, 'index']);
