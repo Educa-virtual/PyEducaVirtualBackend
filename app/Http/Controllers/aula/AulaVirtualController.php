@@ -317,6 +317,36 @@ class AulaVirtualController extends ApiController
         //all()
         //return $request -> all();
         // Validar los datos si es necesario
+
+        // $iProgActId = (int) $request->iProgActId ?? 0;
+        // $iContenidoSemId = $request->iContenidoSemId;
+        // if ($request->iContenidoSemId) {
+        //     $iContenidoSemId = $this->hashids->decode($iContenidoSemId);
+        //     $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
+        // }
+        // $paramsProgramacionActividades = [
+        //     'iProgActId' => $iProgActId,
+        //     'iContenidoSemId' => $iContenidoSemId,
+        //     'iActTipoId' => $request->iActTipoId,
+        //     'iHorarioId' => $request->iHorarioId ?? null,
+        //     //'dtProgActPublicacion' => $fechaHoraCompletaFin,
+        //     'cProgActTituloLeccion' => $request->cForoTitulo,
+        //     'cProgActDescripcion' => $request->cForoDescripcion,
+        //     //'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
+        // ];
+        
+        // DB::beginTransaction();
+        // try {
+        //     $resp = ProgramacionActividadesRepository::guardarActualizar(json_encode($paramsProgramacionActividades));
+        //     if ($iProgActId === 0) {
+        //         $iProgActId = $resp->id;
+        //     }
+        // } catch (Throwable $e) {
+        //     DB::rollBack();
+        //     $message = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+        //     return $this->errorResponse(null, $message);
+        // }
+
         $request->validate([
             'cForoTitulo' => 'required|string',
             'cForoDescripcion' => 'required|string',
@@ -339,6 +369,37 @@ class AulaVirtualController extends ApiController
             1,
 
         ];
+        //try {
+            // $resp = DB::select('EXEC [aula].[SP_INS_Foro]
+            //         @iProgActId  = ? ,
+            //         @iForoCatId = ? ,
+            //         @iDocenteId = ?,
+            //         @cForoTitulo = ?,
+            //         @cForoDescripcion = ?,
+            //         @dtForoInicio = ?,
+            //         @dtForoInicio = ?,
+            //         @dtForoFin = ?,
+            //         @cForoUrl = ?,
+            //         @iEstado = ?,
+            //         @iSesionId = ?,
+                    
+            // ', $data);
+        //}
+        //     DB::commit();
+        //     if ($resp[0]->id > 0) {
+
+        //         $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+        //         $codeResponse = 200;
+        //     } else {
+        //         $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+        //         $codeResponse = 500;
+        //     }
+        // } catch (Exception $e) {
+        //     DB::rollBack();
+        //     $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+        //     $codeResponse = 500;
+        // }
+        //return new JsonResponse($response, $codeResponse);
 
         $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }

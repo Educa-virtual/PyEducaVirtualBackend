@@ -75,7 +75,7 @@ class ProgramacionActividadesRepository
 
     public static function obtenerActividadEvaluacion($params)
     {
-        $iEvaluacionId = $params['iEvaluacionId'];
+        $iEvaluacionId = $params['  '];
 
 
         $res = DB::select('exec eval.Sp_SEL_evaluaciones_by_id @_iEvaluacionId = ?', [$iEvaluacionId]);
@@ -86,7 +86,7 @@ class ProgramacionActividadesRepository
         $iForoId = $params['iForoId'];
 
 
-        $res = DB::select('exec eval.Sp_SEL_evaluaciones_by_id @_iEvaluacionId = ?', [$iForoId]);
+        $res = DB::select('exec aula.SP_SEL_Foro @iForoid = ?', [$iForoId]);
         return $res;
     }
 
