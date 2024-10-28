@@ -233,7 +233,7 @@ class AulaVirtualController extends ApiController
         DB::beginTransaction();
         // evaluacion
         if ($iActTipoId === 3) {
-            $iEvaluacionId = (int) $request->ixActivadadId;
+            $iEvaluacionId = $this->decodeId($request->ixActivadadId);
             try {
                 $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
             } catch (Throwable $e) {
@@ -276,7 +276,7 @@ class AulaVirtualController extends ApiController
                     'iEvaluacionId' => $iEvaluacionId
                 ];
                 $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
-                
+
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
                 }
@@ -342,7 +342,8 @@ class AulaVirtualController extends ApiController
 
         $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
-    public function obtenerCalificacion(){
+    public function obtenerCalificacion()
+    {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_escalaCalificacion');
 
@@ -355,29 +356,29 @@ class AulaVirtualController extends ApiController
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
-    public function obtenerForo(Request $request){
+    public function obtenerForo(Request $request)
+    {
 
         // return $request -> all();
         $iProgActId = (int) $request->iProgActId;
         $iActTipoId = (int) $request->iActTipoId;
 
-        if($iActTipoId === 2){
+        if ($iActTipoId === 2) {
             $iForoId = $request->ixActivadadId;
             $iForoId = $this->hashids->decode($iForoId);
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
-            
+
             $foro = null;
             try {
                 $params = [
                     'iForoId' => $iForoId
                 ];
                 $resp = ProgramacionActividadesRepository::obtenerActividadForo($params);
-                    
+
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
                 }
                 $foro = $resp[0];
-
             } catch (Throwable $e) {
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
                 return $this->errorResponse(null, $message);
@@ -394,6 +395,5 @@ class AulaVirtualController extends ApiController
 
             return $this->successResponse($foro, 'Datos obtenidos correctamente');
         }
-        
     }
 }
