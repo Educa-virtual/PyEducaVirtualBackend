@@ -198,9 +198,8 @@ class BancoPreguntasController extends ApiController
                     $iEvaluacionId,
                     $preguntas
                 );
-
-                return $this->successResponse($preguntas, 'Preguntas guardadas correctamente');
             } catch (Throwable $e) {
+                DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al guardar los datos');
                 return $this->errorResponse(null, $message);
             }
