@@ -189,7 +189,7 @@ class BancoPreguntasController extends ApiController
             }
         }
 
-
+        // guarda las preguntas en la evaluacion si se envia el id
         $iEvaluacionId = (int) $request->iEvaluacionId  ?? 0;
         if ($iEvaluacionId !== 0) {
             try {
