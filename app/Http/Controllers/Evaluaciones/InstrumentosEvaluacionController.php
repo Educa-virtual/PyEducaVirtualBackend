@@ -156,6 +156,7 @@ class InstrumentosEvaluacionController extends ApiController
                             'iCriterioId' => $iCriterioId,
                             'iEscalaCalifId' => $nivel['iEscalaCalifId'],
                             'cNivelEvaNombre' => $nivel['cNivelEvaNombre'],
+                            'iNivelEvaValor' => $nivel['iNivelEvaValor'],
                             'cNivelEvaDescripcion' => $nivel['cNivelEvaDescripcion'],
                             'iSesionId' => $iSesionId,
                         ]);
@@ -172,6 +173,7 @@ class InstrumentosEvaluacionController extends ApiController
                             'iEscalaCalifId' => $nivel['iEscalaCalifId'],
                             'cNivelEvaNombre' => $nivel['cNivelEvaNombre'],
                             'cNivelEvaDescripcion' => $nivel['cNivelEvaDescripcion'],
+                            'iNivelEvaValor' => $nivel['iNivelEvaValor'],
                             'iSesionId' => $iSesionId,
                             'dtActualizado' => $this->getDateToDB()
                         ]);

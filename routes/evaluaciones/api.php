@@ -28,6 +28,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('guardarActualizarPreguntasEvaluacion', [EvaluacionController::class, 'guardarActualizarPreguntasEvaluacion']);
         Route::delete('eliminarPreguntaEvulacion/{id}', [EvaluacionController::class, 'eliminarPreguntaEvulacion']);
         Route::resource('logros', LogrosController::class);
+        Route::post('publicar', [EvaluacionController::class, 'publicarEvaluacion']);
     });
 
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
