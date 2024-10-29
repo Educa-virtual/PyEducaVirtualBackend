@@ -67,22 +67,6 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionLiberarMatriz,
             $request->dtEvaluacionLiberarCuadernillo,
             $request->dtEvaluacionLiberarResultados
-
-            // //    Carbon::createFromFormat('Y-m-d', $request->dtEvaluacionCreacion),'','','','','','','','','',''
-            //     $dtEvaluacionCreacion, // Solo la fecha
-            //     //$request->dtEvaluacionLiberarMatriz,
-            //     '','','','','','','','','',''
-
-            // $request->cEvaluacionNombre,
-            // $request->cEvaluacionDescripcion,
-            // $request->cEvaluacionUrlDrive,
-            // $request->cEvaluacionUrlPlantilla,
-            // $request->cEvaluacionUrlManual,
-            // $request->cEvaluacionUrlMatriz,
-            // $request->cEvaluacionObs,
-            // $request->dtEvaluacionLiberarMatriz,
-            // $request->dtEvaluacionLiberarCuadernillo,
-            // $request->dtEvaluacionLiberarResultados
         ];
 
         try {

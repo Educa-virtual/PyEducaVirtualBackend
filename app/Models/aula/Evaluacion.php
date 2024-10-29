@@ -75,4 +75,14 @@ class Evaluacion
             json_encode($where)
         );
     }
+
+    public function actualizarEvaluacion($datos, $where)
+    {
+        GeneralRepository::actualizar(
+            $this->schema,
+            $this->table,
+            json_encode($datos),
+            json_encode($where)
+        );
+    }
 }
