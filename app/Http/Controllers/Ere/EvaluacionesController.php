@@ -50,52 +50,46 @@ class EvaluacionesController extends ApiController
     //     );*/
     // }
 
-    // Método para definir el formato de fecha
-    public function getDateFormat()
-    {
-        return 'Y-d-m'; // Establece el formato de fecha deseado
-    }
-    
+
     public function guardarEvaluacion(Request $request)
     {
-               
-            $params = [
-                // $iEvaluacionId='16',
-                // $idTipoEvalId='1',
-                // $iNivelEvalId='1',
-                // $dtEvaluacionCreacion='2024-10-27','','','','','','','','',''
-                //$dtEvaluacionCreacion='2024-10-27'
-
-                //$request->iEvaluacionId,
-                $request->idTipoEvalId,
-                $request->iNivelEvalId,
-                '','','','','','','','','','',''
+        $params = [
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+            $request->dtEvaluacionCreacion,
+            $request->cEvaluacionNombre,
+            $request->cEvaluacionDescripcion,
+            $request->cEvaluacionUrlDrive,
+            $request->cEvaluacionUrlPlantilla,
+            $request->cEvaluacionUrlManual,
+            $request->cEvaluacionUrlMatriz,
+            $request->cEvaluacionObs,
+            $request->dtEvaluacionLiberarMatriz,
+            $request->dtEvaluacionLiberarCuadernillo,
+            $request->dtEvaluacionLiberarResultados
 
             // //    Carbon::createFromFormat('Y-m-d', $request->dtEvaluacionCreacion),'','','','','','','','','',''
             //     $dtEvaluacionCreacion, // Solo la fecha
             //     //$request->dtEvaluacionLiberarMatriz,
             //     '','','','','','','','','',''
 
-                // $request->cEvaluacionNombre,
-                // $request->cEvaluacionDescripcion,
-                // $request->cEvaluacionUrlDrive,
-                // $request->cEvaluacionUrlPlantilla,
-                // $request->cEvaluacionUrlManual,
-                // $request->cEvaluacionUrlMatriz,
-                // $request->cEvaluacionObs,
-                // $request->dtEvaluacionLiberarMatriz,
-                // $request->dtEvaluacionLiberarCuadernillo,
-                // $request->dtEvaluacionLiberarResultados
-            ];
+            // $request->cEvaluacionNombre,
+            // $request->cEvaluacionDescripcion,
+            // $request->cEvaluacionUrlDrive,
+            // $request->cEvaluacionUrlPlantilla,
+            // $request->cEvaluacionUrlManual,
+            // $request->cEvaluacionUrlMatriz,
+            // $request->cEvaluacionObs,
+            // $request->dtEvaluacionLiberarMatriz,
+            // $request->dtEvaluacionLiberarCuadernillo,
+            // $request->dtEvaluacionLiberarResultados
+        ];
 
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
             $evaluaciones = EreEvaluacion::guardarEvaluaciones($params);
-
-
             // Suponiendo que guardarEvaluaciones() retorna el ID generado
             $iEvaluacionId = $evaluacion->iEvaluacionId ?? null;
-
             return response()->json([
                 'status' => 'Success',
                 'data' => $evaluaciones,
@@ -111,7 +105,7 @@ class EvaluacionesController extends ApiController
             ], 500);
         }
     }
-    
+
 
     public function obtenerUltimaEvaluacion()
     {
