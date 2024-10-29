@@ -8,19 +8,31 @@ use App\Http\Controllers\Controller;
 use App\Repositories\GeneralRepository;
 use Carbon\Carbon;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class InstrumentosEvaluacionController extends ApiController
 {
+    protected $hashids;
+
+    public function __construct()
+    {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
+
     public function index(Request $request)
     {
+        $iDocenteId = $this->decodeId($request->iDocenteId ?? 0);
+        $idDocCursoId = $this->decodeId($request->idDocCursoId ?? 0);
+        $iCursoId = $this->decodeId($request->iCursoId ?? 0);
+
         $params = [
             $request->iInstrumentoId ?? 0,
-            $request->iDocenteId ?? 0,
-            $request->idDocCursoId ?? 0,
-            $request->iCursoId ?? 0,
+            $iDocenteId,
+            $idDocCursoId,
+            $iCursoId,
             $request->busqueda ?? ''
         ];
         try {
@@ -45,13 +57,16 @@ class InstrumentosEvaluacionController extends ApiController
     public function store(Request $request)
     {
         $iInstrumentoId = (int) $request->iInstrumentoId;
+        $iDocenteId = $this->decodeId($request->iDocenteId ?? 0);
+        $idDocCursoId = $this->decodeId($request->idDocCursoId ?? 0);
+        $iCursoId = $this->decodeId($request->iCursoId ?? 0);
         $iSesionId = 1;
         DB::beginTransaction();
         if ($iInstrumentoId == 0) {
             $paramsInstrumentoToInsert = json_encode([
-                'iDocenteId' => $request->iDocenteId,
-                'idDocCursoId' => $request->idDocCursoId,
-                'iCursoId' => $request->iCursoId,
+                'iDocenteId' => $iDocenteId,
+                'idDocCursoId' => $idDocCursoId,
+                'iCursoId' => $iCursoId,
                 'cInstrumentoNombre' => $request->cInstrumentoNombre,
                 'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion,
                 'dtInstrumentoCreacion' =>  $this->getDateToDB(),
