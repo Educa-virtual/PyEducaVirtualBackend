@@ -4,6 +4,8 @@ use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\ProgramacionActividadesController;
+use App\Http\Controllers\aula\TareaCabeceraGruposController;
+use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
 
@@ -39,5 +41,16 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('store', [TareasController::class, 'store']);
         Route::post('getTareasxiCursoId', [TareasController::class, 'getTareasxiCursoId']);
         Route::post('delete', [TareasController::class, 'delete']);
+        Route::post('crear-actualizar-grupo', [TareasController::class, 'crearActualizarGrupo']);
+        Route::post('updatexiTareaId', [TareasController::class, 'updatexiTareaId']);
+    });
+    Route::group(['prefix' => 'tarea-estudiantes'], function () {
+        Route::post('list', [TareaEstudiantesController::class, 'list']);
+        Route::post('store', [TareaEstudiantesController::class, 'store']);
+    });
+    Route::group(['prefix' => 'tarea-cabecera-grupos'], function () {
+        Route::post('list', [TareaCabeceraGruposController::class, 'list']);
+        Route::post('store', [TareaCabeceraGruposController::class, 'store']);
     });
 });
+
