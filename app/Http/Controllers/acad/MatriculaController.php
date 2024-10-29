@@ -96,6 +96,7 @@ class MatriculaController extends Controller
             $request->iSedeId   ?? NULL,
 
         ];
+        return $parametros;
 
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_MATRICULA
