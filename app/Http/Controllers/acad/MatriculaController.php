@@ -96,19 +96,20 @@ class MatriculaController extends Controller
             $request->iSedeId   ?? NULL,
 
         ];
+        return $parametros;
 
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_MATRICULA
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
-            foreach ($data as $key => $value) {
-                $value->iMatrId = $this->hashids->encode($value->iMatrId);
-                $value->iSemAcadId = $this->hashids->encode($value->iSemAcadId);
-                $value->iEstudianteId = $this->hashids->encode($value->iEstudianteId);
-                $value->iYAcadId = $this->hashids->encode($value->iYAcadId);
-                $value->iTipoMatrId = $this->hashids->encode($value->iTipoMatrId);
-                $value->iCurrId = $this->hashids->encode($value->iCurrId);
-            }
+            // foreach ($data as $key => $value) {
+            //     $value->iMatrId = $this->hashids->encode($value->iMatrId);
+            //     $value->iSemAcadId = $this->hashids->encode($value->iSemAcadId);
+            //     $value->iEstudianteId = $this->hashids->encode($value->iEstudianteId);
+            //     $value->iYAcadId = $this->hashids->encode($value->iYAcadId);
+            //     $value->iTipoMatrId = $this->hashids->encode($value->iTipoMatrId);
+            //     $value->iCurrId = $this->hashids->encode($value->iCurrId);
+            // }
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;

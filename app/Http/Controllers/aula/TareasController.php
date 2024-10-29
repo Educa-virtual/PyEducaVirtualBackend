@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\aula;
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use PhpParser\Node\Stmt\TryCatch;
 
-class TareasController extends Controller
+class TareasController extends ApiController
 {
     protected $hashids;
     protected $iTareaId;
@@ -267,4 +270,6 @@ class TareasController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
+    public function crearActualizarGrupo(Request $request) {}
 }
