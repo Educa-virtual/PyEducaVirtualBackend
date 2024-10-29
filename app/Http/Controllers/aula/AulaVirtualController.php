@@ -233,7 +233,7 @@ class AulaVirtualController extends ApiController
         DB::beginTransaction();
         // evaluacion
         if ($iActTipoId === 3) {
-            $iEvaluacionId = (int) $request->ixActivadadId;
+            $iEvaluacionId = $this->decodeId($request->ixActivadadId);
             try {
                 $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
             } catch (Throwable $e) {
@@ -276,7 +276,7 @@ class AulaVirtualController extends ApiController
                     'iEvaluacionId' => $iEvaluacionId
                 ];
                 $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
-                
+
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
                 }
@@ -317,6 +317,36 @@ class AulaVirtualController extends ApiController
         //all()
         //return $request -> all();
         // Validar los datos si es necesario
+
+        // $iProgActId = (int) $request->iProgActId ?? 0;
+        // $iContenidoSemId = $request->iContenidoSemId;
+        // if ($request->iContenidoSemId) {
+        //     $iContenidoSemId = $this->hashids->decode($iContenidoSemId);
+        //     $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
+        // }
+        // $paramsProgramacionActividades = [
+        //     'iProgActId' => $iProgActId,
+        //     'iContenidoSemId' => $iContenidoSemId,
+        //     'iActTipoId' => $request->iActTipoId,
+        //     'iHorarioId' => $request->iHorarioId ?? null,
+        //     //'dtProgActPublicacion' => $fechaHoraCompletaFin,
+        //     'cProgActTituloLeccion' => $request->cForoTitulo,
+        //     'cProgActDescripcion' => $request->cForoDescripcion,
+        //     //'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
+        // ];
+        
+        // DB::beginTransaction();
+        // try {
+        //     $resp = ProgramacionActividadesRepository::guardarActualizar(json_encode($paramsProgramacionActividades));
+        //     if ($iProgActId === 0) {
+        //         $iProgActId = $resp->id;
+        //     }
+        // } catch (Throwable $e) {
+        //     DB::rollBack();
+        //     $message = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+        //     return $this->errorResponse(null, $message);
+        // }
+
         $request->validate([
             'cForoTitulo' => 'required|string',
             'cForoDescripcion' => 'required|string',
@@ -339,10 +369,42 @@ class AulaVirtualController extends ApiController
             1,
 
         ];
+        //try {
+            // $resp = DB::select('EXEC [aula].[SP_INS_Foro]
+            //         @iProgActId  = ? ,
+            //         @iForoCatId = ? ,
+            //         @iDocenteId = ?,
+            //         @cForoTitulo = ?,
+            //         @cForoDescripcion = ?,
+            //         @dtForoInicio = ?,
+            //         @dtForoInicio = ?,
+            //         @dtForoFin = ?,
+            //         @cForoUrl = ?,
+            //         @iEstado = ?,
+            //         @iSesionId = ?,
+                    
+            // ', $data);
+        //}
+        //     DB::commit();
+        //     if ($resp[0]->id > 0) {
+
+        //         $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+        //         $codeResponse = 200;
+        //     } else {
+        //         $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+        //         $codeResponse = 500;
+        //     }
+        // } catch (Exception $e) {
+        //     DB::rollBack();
+        //     $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+        //     $codeResponse = 500;
+        // }
+        //return new JsonResponse($response, $codeResponse);
 
         $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
-    public function obtenerCalificacion(){
+    public function obtenerCalificacion()
+    {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_escalaCalificacion');
 
@@ -355,29 +417,29 @@ class AulaVirtualController extends ApiController
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
-    public function obtenerForo(Request $request){
+    public function obtenerForo(Request $request)
+    {
 
         // return $request -> all();
         $iProgActId = (int) $request->iProgActId;
         $iActTipoId = (int) $request->iActTipoId;
 
-        if($iActTipoId === 2){
+        if ($iActTipoId === 2) {
             $iForoId = $request->ixActivadadId;
             $iForoId = $this->hashids->decode($iForoId);
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
-            
+
             $foro = null;
             try {
                 $params = [
                     'iForoId' => $iForoId
                 ];
                 $resp = ProgramacionActividadesRepository::obtenerActividadForo($params);
-                    
+
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
                 }
                 $foro = $resp[0];
-
             } catch (Throwable $e) {
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
                 return $this->errorResponse(null, $message);
@@ -394,6 +456,5 @@ class AulaVirtualController extends ApiController
 
             return $this->successResponse($foro, 'Datos obtenidos correctamente');
         }
-        
     }
 }

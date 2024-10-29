@@ -29,11 +29,8 @@ class EvaluacionController extends ApiController
 
         // guardar actualizar programacion actividad
         $iProgActId = (int) $request->iProgActId ?? 0;
-        $iContenidoSemId = $request->iContenidoSemId;
-        if ($request->iContenidoSemId) {
-            $iContenidoSemId = $this->hashids->decode($iContenidoSemId);
-            $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
-        }
+        $iDocenteId = $this->decodeId($request->iDocenteId);
+        $iContenidoSemId = $this->decodeId($request->iContenidoSemId);
 
         $paramsProgramacionActividades = [
             'iProgActId' => $iProgActId,
@@ -47,11 +44,8 @@ class EvaluacionController extends ApiController
             'iEstado' => 1
         ];
 
-        if ($iProgActId == 0) {
-            array_push(
-                $paramsProgramacionActividades,
-                ['iContenidoSemId' => $iContenidoSemId]
-            );
+        if ($iProgActId === 0) {
+            $paramsProgramacionActividades['iContenidoSemId'] = $iContenidoSemId;
         }
 
         DB::beginTransaction();
@@ -74,7 +68,7 @@ class EvaluacionController extends ApiController
             $iProgActId,
             $request->iInstrumentoId ?? NULL,
             $request->iEscalaCalifId ?? NULL,
-            $request->iDocenteId,
+            $iDocenteId,
             $request->dtEvaluacionPublicacion ?? NULL,
             $request->cEvaluacionTitulo,
             $request->cEvaluacionDescripcion,

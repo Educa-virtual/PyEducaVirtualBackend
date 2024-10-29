@@ -2,6 +2,7 @@
 
 // namespace App\Models\ere;
 namespace App\Models\Ere;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
@@ -56,7 +57,7 @@ class ereEvaluacion extends Model
 
     public static function guardarEvaluaciones($params)
     {
-        return DB::select('EXEC ere.sp_INS_Evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?',$params);
+        return DB::select('EXEC ere.sp_INS_Evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
     }
     //CON ESTE CODIGO SE USA DIRECTO A LA TABLA: TABLE
     //  protected $table = 'ere.evaluacion'; // Nombre de la tabla
