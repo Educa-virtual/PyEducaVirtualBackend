@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Support\Facades\DB;
+
 class InstitucionesEducativasController extends ApiController
 {
     //
@@ -15,7 +16,7 @@ class InstitucionesEducativasController extends ApiController
 
         $campos = 'iIieeId,cIieeCodigoModular,cIieeNombre';
         $where = '';
-       
+
         $params = [
             'ere',
             'vistaInstitucionEducativa',
