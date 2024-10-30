@@ -99,7 +99,7 @@ class AulaVirtualController extends ApiController
         // }//
         // // fin del codigo
 
-        DB::beginTransaction();
+        // DB::beginTransaction();
         try {
             $resp = ProgramacionActividadesRepository::guardarActualizar(json_encode($paramsProgramacionActividades));
             if ($iProgActId === 0) {
@@ -341,7 +341,7 @@ class AulaVirtualController extends ApiController
             'cProgActDescripcion' => $request->cForoDescripcion,
             //'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
-        
+
         DB::beginTransaction();
         try {
             $resp = ProgramacionActividadesRepository::guardarActualizar(json_encode($paramsProgramacionActividades));
@@ -370,7 +370,7 @@ class AulaVirtualController extends ApiController
         ];
         try {
             $resp = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
-        
+
             DB::commit();
             if ($resp[0]->id > 0) {
 

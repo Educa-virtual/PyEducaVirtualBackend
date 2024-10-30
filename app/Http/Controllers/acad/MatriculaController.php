@@ -34,33 +34,33 @@ class MatriculaController extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iMatrId) {
-            $iMatrId = $this->hashids->decode($request->iMatrId);
-            $iMatrId = count($iMatrId) > 0 ? $iMatrId[0] : $iMatrId;
-        }
-        if ($request->iEstudianteId) {
-            $iEstudianteId = $this->hashids->decode($request->iEstudianteId);
-            $iEstudianteId = count($iEstudianteId) > 0 ? $iEstudianteId[0] : $iEstudianteId;
-        }
-        if ($request->iSemAcadId) {
-            $iSemAcadId = $this->hashids->decode($request->iSemAcadId);
-            $iSemAcadId = count($iSemAcadId) > 0 ? $iSemAcadId[0] : $iSemAcadId;
-        }
+        // if ($request->iMatrId) {
+        //     $iMatrId = $this->hashids->decode($request->iMatrId);
+        //     $iMatrId = count($iMatrId) > 0 ? $iMatrId[0] : $iMatrId;
+        // }
+        // if ($request->iEstudianteId) {
+        //     $iEstudianteId = $this->hashids->decode($request->iEstudianteId);
+        //     $iEstudianteId = count($iEstudianteId) > 0 ? $iEstudianteId[0] : $iEstudianteId;
+        // }
+        // if ($request->iSemAcadId) {
+        //     $iSemAcadId = $this->hashids->decode($request->iSemAcadId);
+        //     $iSemAcadId = count($iSemAcadId) > 0 ? $iSemAcadId[0] : $iSemAcadId;
+        // }
 
-        if ($request->iYAcadId) {
-            $iYAcadId = $this->hashids->decode($request->iYAcadId);
-            $iYAcadId = count($iYAcadId) > 0 ? $iYAcadId[0] : $iYAcadId;
-        }
+        // if ($request->iYAcadId) {
+        //     $iYAcadId = $this->hashids->decode($request->iYAcadId);
+        //     $iYAcadId = count($iYAcadId) > 0 ? $iYAcadId[0] : $iYAcadId;
+        // }
 
-        if ($request->iTipoMatrId) {
-            $iTipoMatrId = $this->hashids->decode($request->iTipoMatrId);
-            $iTipoMatrId = count($iTipoMatrId) > 0 ? $iTipoMatrId[0] : $iTipoMatrId;
-        }
+        // if ($request->iTipoMatrId) {
+        //     $iTipoMatrId = $this->hashids->decode($request->iTipoMatrId);
+        //     $iTipoMatrId = count($iTipoMatrId) > 0 ? $iTipoMatrId[0] : $iTipoMatrId;
+        // }
 
-        if ($request->iCurrId) {
-            $iCurrId = $this->hashids->decode($request->iCurrId);
-            $iCurrId = count($iCurrId) > 0 ? $iCurrId[0] : $iCurrId;
-        }
+        // if ($request->iCurrId) {
+        //     $iCurrId = $this->hashids->decode($request->iCurrId);
+        //     $iCurrId = count($iCurrId) > 0 ? $iCurrId[0] : $iCurrId;
+        // }
 
 
         $parametros = [
@@ -96,7 +96,7 @@ class MatriculaController extends Controller
             $request->iSedeId   ?? NULL,
 
         ];
-        return $parametros;
+        // return $parametros;
 
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_MATRICULA
