@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Support\Facades\DB;
+
 class NivelTipoController extends ApiController
 {
     //
@@ -14,8 +15,8 @@ class NivelTipoController extends ApiController
     {
 
         $campos = 'iNivelTipoId,cNivelTipoNombre';
-        $where = '';
-       
+        $where = 'iNivelTipoId IN (3,4)';
+
 
         $params = [
             'acad',
