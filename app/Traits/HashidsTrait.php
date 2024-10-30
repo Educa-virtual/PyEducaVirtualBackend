@@ -2,15 +2,15 @@
 
 namespace App\Traits;
 
-use Carbon\Carbon;
+use Hashids\Hashids;
 
-trait Helper
+trait HashidsTrait
 {
-    protected function getDate() {}
+    protected $hashids;
 
-    protected function getDateToDB()
+    public function initializeHashids()
     {
-        return Carbon::now()->format('Y-d-m H:i:s');
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
 
     protected function decodeId($encodedId)
