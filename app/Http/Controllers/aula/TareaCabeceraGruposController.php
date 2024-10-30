@@ -75,6 +75,7 @@ class TareaCabeceraGruposController extends Controller
     }
     public function store(Request $request)
     {
+
         $request->validate(
             [
                 'opcion' => 'required',
@@ -83,10 +84,7 @@ class TareaCabeceraGruposController extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        // if ($request->iTareaCabGrupoId) {
-        //     $iTareaCabGrupoId = $this->hashids->decode($request->iTareaCabGrupoId);
-        //     $iTareaCabGrupoId = count($iTareaCabGrupoId) > 0 ? $iTareaCabGrupoId[0] : $iTareaCabGrupoId;
-        // }
+
         if ($request->iTareaId) {
             $iTareaId = $this->hashids->decode($request->iTareaId);
             $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
@@ -95,9 +93,9 @@ class TareaCabeceraGruposController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $iTareaCabGrupoId                       ?? NULL,
+            $request->iTareaCabGrupoId                       ?? NULL,
             $iTareaId                               ?? NULL,
-            $request->cTareaGrupoNombre             ?? NULL,
+            $request->cTareaGrupoNombre,
             $request->nTareaGrupoNota               ?? NULL,
             $request->cTareaGrupoComentarioDocente  ?? NULL,
             $request->cTareaGrupoUrl                ?? NULL,
