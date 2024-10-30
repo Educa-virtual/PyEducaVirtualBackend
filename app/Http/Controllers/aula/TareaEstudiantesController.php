@@ -52,10 +52,10 @@ class TareaEstudiantesController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iTareaEstudianteId                    ??      NULL,
-            $request->iTareaId                              ??      NULL,
-            $request->iEstudianteId                         ??      NULL,
-            $request->iEscalaCalifId                        ??      NULL,
+            $iTareaEstudianteId                    ??      NULL,
+            $iTareaId                              ??      NULL,
+            $iEstudianteId                         ??      NULL,
+            $iEscalaCalifId                        ??      NULL,
             $request->nTareaEstudianteNota                  ??      NULL,
             $request->cTareaEstudianteComentarioDocente     ??      NULL,
             $request->cTareaEstudianteUrlEstudiante         ??      NULL,
@@ -63,7 +63,7 @@ class TareaEstudiantesController extends Controller
             $request->iSesionId                             ??      NULL,
             $request->dtCreado                              ??      NULL,
             $request->dtActualizado                         ??      NULL,
-            $request->iTareaCabGrupoId                      ??      NULL
+            $iTareaCabGrupoId                      ??      NULL
 
             //$request->iCredId
 
@@ -90,5 +90,4 @@ class TareaEstudiantesController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
-
 }
