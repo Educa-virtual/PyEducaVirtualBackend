@@ -100,7 +100,7 @@ class CredencialescCredUsuariocClaveController extends Controller
                             ,cYearOficial
                                                             
                             FROM grl.years
-                            WHERE iYearEstado = 1
+                           
                                                         
                             ORDER BY cYearNombre DESC
                             ");

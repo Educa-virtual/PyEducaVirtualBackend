@@ -9,7 +9,7 @@ use Throwable;
 class Evaluacion
 {
     protected $schema = 'eval';
-    protected $table = 'evaluacion_preguntas';
+    protected $table = 'evaluaciones';
 
     public function guardarPreguntas($evaluacionId, $preguntas)
     {
@@ -74,5 +74,16 @@ class Evaluacion
             json_encode(['iEvaluacionNroPreguntas' => $total]),
             json_encode($where)
         );
+    }
+
+    public function actualizarEvaluacion($datos, $where)
+    {
+        $resp =  GeneralRepository::actualizar(
+            $this->schema,
+            $this->table,
+            json_encode($datos),
+            json_encode($where)
+        );
+        return $resp;
     }
 }

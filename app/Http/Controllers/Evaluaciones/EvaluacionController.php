@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Evaluaciones;
 
+use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\grl\GeneralController;
 use App\Models\aula\Evaluacion;
@@ -149,5 +150,52 @@ class EvaluacionController extends ApiController
             $message = $this->handleAndLogError($e, 'Error al eliminar la pregunta');
             return $this->errorResponse(null, $message);
         }
+    }
+
+    public function publicarEvaluacion(Request $request)
+    {
+        $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
+        $paramsGenerarPreguntas = [
+            $iEvaluacionId,
+            $this->decodeId($request->iCursoId),
+            $this->decodeId($request->iSeccionId),
+            $this->decodeId($request->iYAcadId),
+            $this->decodeId($request->iSemAcadId),
+            $this->decodeId($request->iNivelGradoId),
+            $this->decodeId($request->iCurrId),
+        ];
+
+        DB::beginTransaction();
+
+        try {
+            $evaluacion = new Evaluacion();
+            $params = ['iEstado' => (int) $request->iEstado];
+            $where = [new WhereCondition('iEvaluacionId', $iEvaluacionId)];
+            $resp = $evaluacion->actualizarEvaluacion($params, $where);
+        } catch (Exception $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al publicar la evaluación');
+            return $this->errorResponse(null, $message);
+        }
+
+        // agregar preguntas para los estudiantes
+        $resp = null;
+        try {
+            $resp = DB::select('exec eval.Sp_INS_generar_preguntas_estudiantes 
+                @_iEvaluacionId = ?
+                ,@_iCursoId = ?
+                ,@_iSeccionId  = ?
+                ,@_iYAcadId = ?
+                ,@_iSemAcadId = ?
+                ,@_iNivelGradoId = ?
+                ,@_iCurrId = ?
+            ', $paramsGenerarPreguntas);
+        } catch (Exception $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al generar las preguntas a estudiantes');
+            return $this->errorResponse(null, $message);
+        }
+        DB::commit();
+        return $this->successResponse(null, $resp[0]->mensaje);
     }
 }

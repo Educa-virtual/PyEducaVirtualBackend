@@ -104,6 +104,7 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
+        
         if ($request->iTareaId) {
             $iTareaId = $this->hashids->decode($request->iTareaId);
             $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
@@ -255,6 +256,65 @@ class TareasController extends ApiController
             $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
+            if ($data[0]->iTareaId > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function updatexiTareaId(Request $request)
+    {
+        $request->validate(
+            [
+                'opcion' => 'required',
+            ],
+            [
+                'opcion.required' => 'Hubo un problema al obtener la acción',
+            ]
+        );
+        if ($request->iTareaId) {
+            $iTareaId = $this->hashids->decode($request->iTareaId);
+            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
+        }
+
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+
+            $iTareaId              ?? NULL,
+            $request->iProgActId,
+            $request->iDocenteId            ?? NULL,
+            $request->cTareaTitulo          ?? NULL,
+            $request->cTareaDescripcion     ?? NULL,
+            $request->cTareaArchivoAdjunto  ?? NULL,
+            $request->cTareaIndicaciones    ?? NULL,
+            $request->bTareaEsEvaluado      ?? NULL,
+            $request->bTareaEsRestringida   ?? NULL,
+            $request->bTareaEsGrupal        ?? NULL,
+            $request->dtTareaInicio         ?? NULL,
+            $request->dtTareaFin            ?? NULL,
+            $request->cTareaComentarioDocente   ?? NULL,
+            $request->iEstado                   ?? NULL,
+            $request->iSesionId                 ?? NULL,
+            $request->dtCreado                  ?? NULL,
+            $request->dtActualizado             ?? NULL,
+
+        ];
+
+        try {
+            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+           
             if ($data[0]->iTareaId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
