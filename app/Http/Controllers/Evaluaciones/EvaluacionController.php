@@ -155,6 +155,15 @@ class EvaluacionController extends ApiController
     public function publicarEvaluacion(Request $request)
     {
         $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
+        $params = [
+            $iEvaluacionId,
+            $this->decodeId($request->iCursoId),
+            $this->decodeId($request->iSeccionId),
+            $this->decodeId($request->iYAcadId),
+            $this->decodeId($request->iSemAcadId),
+            $this->decodeId($request->iNivelGradoId),
+            $this->decodeId($request->iCurrId),
+        ];
         try {
             $evaluacion = new Evaluacion();
             $params = ['iEstado' => $request->iEstado];
