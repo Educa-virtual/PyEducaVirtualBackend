@@ -227,13 +227,13 @@ class AulaVirtualController extends ApiController
     //funcion eliminarActividad
     public function eliminarActividad(Request $request)
     {
-        $iProgActId = (int) $request->iProgActId;
-        $iActTipoId = (int) $request->iActTipoId;
-
+        $iProgActId = (int) $this->decodeId($request->iProgActId);
+        $iActTipoId = (int) $this->decodeId($request->iActTipoId);
         DB::beginTransaction();
         // evaluacion
         if ($iActTipoId === 3) {
             $iEvaluacionId = $this->decodeId($request->ixActivadadId);
+            DB::rollBack();
             try {
                 $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
             } catch (Throwable $e) {
@@ -387,7 +387,7 @@ class AulaVirtualController extends ApiController
         }
         return new JsonResponse($response, $codeResponse);
 
-       // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+        // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
     public function obtenerCalificacion()
     {
