@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Evaluaciones;
 
+use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\grl\GeneralController;
 use App\Models\aula\Evaluacion;
@@ -147,6 +148,45 @@ class EvaluacionController extends ApiController
             return $this->successResponse($resp->mensaje, 'Se eliminó correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al eliminar la pregunta');
+            return $this->errorResponse(null, $message);
+        }
+    }
+
+    public function publicarEvaluacion(Request $request)
+    {
+        $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
+        $params = [
+            $iEvaluacionId,
+            $this->decodeId($request->iCursoId),
+            $this->decodeId($request->iSeccionId),
+            $this->decodeId($request->iYAcadId),
+            $this->decodeId($request->iSemAcadId),
+            $this->decodeId($request->iNivelGradoId),
+            $this->decodeId($request->iCurrId),
+        ];
+        try {
+            $evaluacion = new Evaluacion();
+            $params = ['iEstado' => $request->iEstado];
+            $where = new WhereCondition('iEvaluacionId', $iEvaluacionId);
+            $evaluacion->actualizarEvaluacion($params, $where);
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al publicar la evaluación');
+            return $this->errorResponse(null, $message);
+        }
+
+        // agregar preguntas para los estudiantes
+        try {
+            DB::select('exec eval.Sp_INS_generar_preguntas_estudiantes 
+                @_iEvaluacionId = ?
+                ,@_iCursoId = ?
+                ,@_iSeccionId  = ?
+                ,@_iYAcadId = ?
+                ,@_iSemAcadId = ?
+                ,@_iNivelGradoId = ?
+                ,@_iCurrId = ?
+            ');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al generar las preguntas a estudiantes');
             return $this->errorResponse(null, $message);
         }
     }
