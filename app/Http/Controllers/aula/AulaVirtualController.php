@@ -179,7 +179,7 @@ class AulaVirtualController extends ApiController
 
         $contenidos = [];
         try {
-            $contenidos = DB::select('exec aula.Sp_SEL_contenido_semana_programacion_actividades @_iSilaboId = ?', $params);
+            $contenidos = DB::select('exec aula.SP_SEL_contenido_semana_programacion_actividades @_iSilaboId = ?', $params);
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
@@ -235,7 +235,7 @@ class AulaVirtualController extends ApiController
             $iEvaluacionId = $this->decodeId($request->ixActivadadId);
             DB::rollBack();
             try {
-                $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
+                $resp = DB::select('exec eval.SP_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
             } catch (Throwable $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al eliminar');

@@ -124,7 +124,7 @@ class BancoPreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $respAlt = DB::select('exec eval.Sp_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
+                    $respAlt = DB::select('exec eval.SP_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
                 } catch (Throwable $e) {
                     DB::rollBack();
                     $defaultMessage = $this->handleAndLogError($e, 'Error al eliminar');
@@ -163,7 +163,7 @@ class BancoPreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $resp = DB::select('exec eval.Sp_DEL_alternativa_pregunta  @_iBancoAltId', $paramsAlternativaEliminar);
+                    $resp = DB::select('exec eval.SP_DEL_alternativa_pregunta  @_iBancoAltId', $paramsAlternativaEliminar);
 
                     $resp = $resp[0];
                 } catch (Throwable $e) {
@@ -175,7 +175,7 @@ class BancoPreguntasController extends ApiController
 
             try {
 
-                $resp = DB::select('exec eval.Sp_DEL_pregunta @_iBancoId = ?', [$pregunta['iPreguntaId']]);
+                $resp = DB::select('exec eval.SP_DEL_pregunta @_iBancoId = ?', [$pregunta['iPreguntaId']]);
 
                 if (count($resp) === 0) {
                     return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
@@ -245,7 +245,7 @@ class BancoPreguntasController extends ApiController
 
         try {
 
-            $resp = DB::select('exec eval.Sp_DEL_pregunta @_iBancoId = ?', $params);
+            $resp = DB::select('exec eval.SP_DEL_pregunta @_iBancoId = ?', $params);
 
             if (count($resp) === 0) {
                 return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
