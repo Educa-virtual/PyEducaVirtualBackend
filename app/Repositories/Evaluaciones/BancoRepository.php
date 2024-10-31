@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Evaluaciones;
 
+use App\Models\eval\BancoPreguntas;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +22,7 @@ class BancoRepository
             $params['iEvalucionId'] ?? 0
         ];
 
-        $preguntasDB = DB::select('exec eval.Sp_SEL_banco_preguntas 
+        $preguntasDB = DB::select('exec eval.SP_SEL_banco_preguntas 
             @_iCursoId   = ?
             , @_busqueda = ?
             , @_iCurrContId = ?
@@ -32,17 +33,7 @@ class BancoRepository
             , @_iEvaluacionId = ?
         ', $params);
 
-        $preguntas = [];
-        foreach ($preguntasDB as $item) {
-            $item->preguntas = json_decode($item->preguntas, true);
-            if ($item->idEncabPregId == -1) {
-                if (is_array($item->preguntas)) {
-                    $preguntas = array_merge($preguntas, $item->preguntas);
-                }
-            } else {
-                array_push($preguntas, $item);
-            }
-        }
+        $preguntas = (new BancoPreguntas())->procesarPreguntas($preguntasDB);
         return $preguntas;
     }
 
@@ -64,7 +55,7 @@ class BancoRepository
             $data['iNivelCicloId']
         ];
 
-        $result = DB::select('exec eval.Sp_INS_UPD_banco_pregunta @_iBancoId = ?
+        $result = DB::select('exec eval.SP_INS_UPD_banco_pregunta @_iBancoId = ?
             , @_iDocenteId  = ?
             , @_iTipoPregId  = ?
             , @_iCurrContId  = ?
@@ -91,7 +82,7 @@ class BancoRepository
             $params['cBancoAltExplicacionRpta']
         ];
 
-        $result = DB::select('exec eval.Sp_INS_UPD_alternativa_pregunta 
+        $result = DB::select('exec eval.SP_INS_UPD_alternativa_pregunta 
             @_iBancoAltId = ?
 	        , @_iBancoId = ?
 	        , @_cBancoAltLetra = ? 
