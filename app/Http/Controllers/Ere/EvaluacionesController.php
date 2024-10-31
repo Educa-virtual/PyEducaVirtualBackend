@@ -100,56 +100,15 @@ class EvaluacionesController extends ApiController
         try {
             foreach ($items as $item) {
                 DB::table('ere.iiee_participa_evaluaciones')->insert([
-                    //'iIeeParticipaId' => $item['iIeeParticipaId'],
                     'iIieeId' => $item['iIieeId'],
                     'iEvaluacionId' => $item['iEvaluacionId'],
                 ]);
             }
-
             return response()->json(['status' => 'success', 'message' => 'Datos guardados correctamente']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error al guardar los datos', 'error' => $e->getMessage()], 500);
         }
     }
-
-    // Método para eliminar las evaluaciones de la tabla de participantes
-    // public function eliminarParticipacion(Request $request)
-    // {
-    //     // $id = $request->id;
-
-    //     // // Validación de los datos recibidos
-    //     // $items = $request->items;
-    //     // try {
-    //     //     foreach ($items as $item) {
-    //     //         DB::table('ere.iiee_participa_evaluaciones')
-    //     //             ->where('idEvaluacion', $item['idEvaluacion'])
-    //     //             ->delete();
-    //     //     }
-
-    //     //     return response()->json(['status' => 'success', 'message' => 'Datos eliminados correctamente']);
-    //     // } catch (Exception $e) {
-    //     //     return response()->json(['status' => 'error', 'message' => 'Error al eliminar los datos', 'error' => $e->getMessage()], 500);
-    //     // }
-    //     // Obtener el ID del cuerpo de la solicitud
-    //     $id = $request->id;
-    //     // Validar que el ID sea proporcionado
-    //     try {
-    //         // Realizar la eliminación del registro
-    //         $deleted = DB::table('ere.iiee_participa_evaluaciones')
-    //             ->where('iIeeParticipaId', $id) // Cambia 'idEvaluacion' por el campo correcto según tu estructura
-    //             ->delete();
-
-    //         if ($deleted) {
-    //             return response()->json(['status' => 'success', 'message' => 'Datos eliminados correctamente']);
-    //         } else {
-    //             return response()->json(['status' => 'error', 'message' => 'No se encontró el registro para eliminar'], 404);
-    //         }
-    //     } catch (Exception $e) {
-    //         return response()->json(['status' => 'error', 'message' => 'Error al eliminar los datos', 'error' => $e->getMessage()], 500);
-    //     }
-    // }
-
-
     public function eliminarParticipacion($id)
     {
         $id = (int)$id; // Asegúrate de que sea un número 
