@@ -39,4 +39,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     });
 
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
+
+    Route::group(['prefix' => 'escala-calificaciones'], function () {
+        Route::post('list', [EscalaCalificacionesController::class, 'list']);
+    });
 });
