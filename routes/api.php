@@ -76,6 +76,9 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
         Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
         Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        //!Agregando participacion y eliminando participacion, IE
+        Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
+        Route::delete('eliminarParticipacion/{id}', [EvaluacionesController::class, 'eliminarParticipacion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

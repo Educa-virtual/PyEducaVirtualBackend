@@ -28,8 +28,6 @@ class EvaluacionesController extends ApiController
             $where
 
         ];
-
-
         try {
             $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
             return $this->successResponse(
@@ -40,16 +38,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    // public function actualizarEvaluacion(Request $request)
-    // {
-    //     return  $this->errorResponse(null, 'Error al obtener los datos');
-
-    //     /*return $this->successResponse(
-    //         null,
-    //         'Datos obtenidos correctamente'
-    //     );*/
-    // }
-
 
     public function guardarEvaluacion(Request $request)
     {
@@ -104,45 +92,71 @@ class EvaluacionesController extends ApiController
             return response()->json(['error' => 'Error al obtener los datos', 'message' => $e->getMessage()], 500);
         }
     }
-    // public function obtenerEvaluaciones()
-    // {
-    //     //ESTE CODIGO ES CON EL PROCEDIMIENTO ALMACENADO: PROCEDIMIENTO
-    //     try {
-    //         // Llama al método del modelo que ejecuta el procedimiento almacenado
-    //         $evaluaciones = EreEvaluacion::obtenerEvaluaciones();
 
-    //         return response()->json([
-    //             'status' => 'Success',
-    //             'data' => $evaluaciones,
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'status' => 'Error',
-    //             'message' => 'Error al obtener los datos',
-    //             'data' => [
-    //                 'errorInfo' => $e->getMessage(),
-    //             ],
-    //         ], 500);
-    //     }
-    //     //ESTE CODIGO ES DIRECTO A LA TABLA: TABLE
-    //     // try {
-    //     //     // Obtén todas las evaluaciones de la tabla 'evaluacion'
-    //     //     $evaluaciones = EreEvaluacion::all(); // O usa EreEvaluacion::get() para obtener colecciones
 
-    //     //     return response()->json([
-    //     //         'status' => 'Success',
-    //     //         'data' => $evaluaciones,
-    //     //     ]);
-    //     // } catch (\Exception $e) {
-    //     //     return response()->json([
-    //     //         'status' => 'Error',
-    //     //         'message' => 'Error al obtener los datos',
-    //     //         'data' => [
-    //     //             'errorInfo' => $e->getMessage(),
-    //     //         ],
-    //     //     ], 500);
-    //     // }
-    // }
+
+    
+// Método para guardar las evaluaciones en la tabla de participantes
+    public function guardarParticipacion(Request $request)
+    {
+        
+        // Validación de los datos recibidos
+        $items = $request->items;
+
+        try {
+            foreach ($items as $item) {
+                DB::table('ere.iiee_participa_evaluaciones')->insert([
+                    //'iIeeParticipaId' => $item['iIeeParticipaId'],
+                    'iIieeId' => $item['iIieeId'],
+                    'iEvaluacionId' => $item['iEvaluacionId'],
+                ]);
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Datos guardados correctamente']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al guardar los datos', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    // Método para eliminar las evaluaciones de la tabla de participantes
+    public function eliminarParticipacion(Request $request)
+    {
+        // $id = $request->id;
+        
+        // // Validación de los datos recibidos
+        // $items = $request->items;
+        // try {
+        //     foreach ($items as $item) {
+        //         DB::table('ere.iiee_participa_evaluaciones')
+        //             ->where('idEvaluacion', $item['idEvaluacion'])
+        //             ->delete();
+        //     }
+
+        //     return response()->json(['status' => 'success', 'message' => 'Datos eliminados correctamente']);
+        // } catch (Exception $e) {
+        //     return response()->json(['status' => 'error', 'message' => 'Error al eliminar los datos', 'error' => $e->getMessage()], 500);
+        // }
+         // Obtener el ID del cuerpo de la solicitud
+        $id = $request->id;
+        // Validar que el ID sea proporcionado
+        try {
+            // Realizar la eliminación del registro
+            $deleted = DB::table('ere.iiee_participa_evaluaciones')
+                ->where('iIeeParticipaId', $id) // Cambia 'idEvaluacion' por el campo correcto según tu estructura
+                ->delete();
+
+            if ($deleted) {
+                return response()->json(['status' => 'success', 'message' => 'Datos eliminados correctamente']);
+            } else {
+                return response()->json(['status' => 'error', 'message' => 'No se encontró el registro para eliminar'], 404);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Error al eliminar los datos', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+
+
     public function actualizarEvaluacion(Request $request)
     {
         // Aquí agregas lógica para actualizar la evaluación usando el modelo Evaluacion
