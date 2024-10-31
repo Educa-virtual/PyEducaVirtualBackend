@@ -38,8 +38,8 @@ class Evaluacion
 
         if (!$this->existePregunta($evaluacionId, $pregunta['iPreguntaId'])) {
             $params = [
-                $this->schema,
-                $this->table,
+                'eval',
+                'evaluacion_preguntas',
                 $camposJson
             ];
 
@@ -53,7 +53,7 @@ class Evaluacion
     protected function existePregunta($evaluacionId, $bancoId)
     {
         $existe = DB::select(
-            "select 1 from {$this->schema}.{$this->table} where iEvaluacionId = ? AND iBancoId = ?",
+            "select 1 from eval.evaluacion_preguntas where iEvaluacionId = ? AND iBancoId = ?",
             [$evaluacionId, $bancoId]
         );
         return count($existe) > 0;

@@ -30,6 +30,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::delete('eliminarPreguntaEvulacion/{id}', [EvaluacionController::class, 'eliminarPreguntaEvulacion']);
         Route::resource('logros', LogrosController::class);
         Route::post('publicar', [EvaluacionController::class, 'publicarEvaluacion']);
+        Route::post('anula-publicacion', [EvaluacionController::class, 'anularPublicacionEvaluacion']);
 
         Route::group(['prefix' => 'estudiantes'], function () {
             Route::resource('', EvaluacionEstudiantesController::class);
