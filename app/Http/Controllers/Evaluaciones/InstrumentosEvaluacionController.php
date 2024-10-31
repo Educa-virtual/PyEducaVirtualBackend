@@ -15,12 +15,6 @@ use Throwable;
 
 class InstrumentosEvaluacionController extends ApiController
 {
-    protected $hashids;
-
-    public function __construct()
-    {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
 
     public function index(Request $request)
     {

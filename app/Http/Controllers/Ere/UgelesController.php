@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Ere;
+
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +15,6 @@ class UgelesController extends ApiController
     {
         $campos = 'iUgelId,cUgelNombre';
         $where = '';
-
         $params = [
             'acad',
             'ugeles',
@@ -22,20 +22,19 @@ class UgelesController extends ApiController
             $where
         ];
         try {
-            $preguntas = DB :: select('EXEC grl.sp_SEL_DesdeTabla_Where
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,
                 @nombreTabla = ?,    
                 @campos = ?,        
                 @condicionWhere = ?
-            ',$params);
+            ', $params);
 
-             return $this->successResponse(
+            return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'
             );
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Erro No!');
         }
-        catch (Exception $e) {
-            return $this->errorResponse($e,'Erro No!');
-        }
-    } 
+    }
 }

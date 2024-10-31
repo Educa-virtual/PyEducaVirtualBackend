@@ -168,7 +168,6 @@ class AulaVirtualController extends ApiController
         return new JsonResponse($response, $codeResponse);
     }
     // fin de del codigo
-
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
         $iSilaboId = $request->iSilaboId;
@@ -227,13 +226,13 @@ class AulaVirtualController extends ApiController
     //funcion eliminarActividad
     public function eliminarActividad(Request $request)
     {
-        $iProgActId = (int) $request->iProgActId;
-        $iActTipoId = (int) $request->iActTipoId;
-
+        $iProgActId = (int) $this->decodeId($request->iProgActId);
+        $iActTipoId = (int) $this->decodeId($request->iActTipoId);
         DB::beginTransaction();
         // evaluacion
         if ($iActTipoId === 3) {
             $iEvaluacionId = $this->decodeId($request->ixActivadadId);
+            DB::rollBack();
             try {
                 $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
             } catch (Throwable $e) {
@@ -255,7 +254,6 @@ class AulaVirtualController extends ApiController
         return $this->successResponse(null, 'Eliminado correctamente');
         // eliminar archivos
     }
-
     // obtener actviidad
     public function obtenerActividad(Request $request)
     {
@@ -387,7 +385,75 @@ class AulaVirtualController extends ApiController
         }
         return new JsonResponse($response, $codeResponse);
 
-       // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+        // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+    }
+    // Guardar respuesta de Foro
+    public function guardarRespuesta(Request $request){
+        //return $request -> all();
+        $request -> validate([
+            'cForoRptaRespuesta' => 'required|string'
+        ]);
+
+        $data = [
+            //$iEstudianteId ?? null
+            7,
+            //$iForoId ?? null,
+            30,
+            NULL,
+            // $iForoRptaPadre ?? null,
+            $iDocenteId ?? null,
+            $request -> cForoRptaRespuesta,
+            $request -> nForoRptaNota ?? null,
+            $request -> dtForoRptaPublicacion ?? null,
+            $request -> cForoRptaDocente ?? null,
+            $request -> iEstado ?? null,
+            $request -> iSesionId ?? null,
+            $request -> dtCreado ?? null,
+            $request -> dtActualizado ?? null,
+            $request -> iEscalaCalifId ?? null
+            // $request -> nForoRptaNota ?? null,
+            // $request -> dtForoRptaPublicacion ?? null,
+            // $request -> cForoRptaDocente ?? null,
+            // $request -> iEstado ?? null,
+            // $request -> iSesionId ?? null,
+            // $request -> dtCreado ?? null,
+            // $request -> dtActualizado ?? null,
+            // $request -> iEscalaCalifId ?? null,
+        
+        ];
+         //return $data;
+        try{
+            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaForo]
+                @iEstudianteId = ?,
+                @iForoId = ?,
+                @iForoRptaPadre = ?,
+                @iDocenteId = ?,
+                @cForoRptaRespuesta = ?,
+                @nForoRptaNota = ?,
+                @dtForoRptaPublicacion = ?,
+                @cForoRptaDocente = ?,
+                @iEstado = ?,
+                @iSesionId = ?,
+                @dtCreado = ?,
+                @dtActualizado = ?,
+                @iEscalaCalifId = ?', $data);
+            DB::commit();
+            if ($resp[0]->id > 0) {
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        }
+        catch (Exception $e) {
+            $this->handleAndLogError($e);
+            DB::rollBack();
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+
+        }
+        return new JsonResponse($response, $codeResponse);
     }
     public function obtenerCalificacion()
     {

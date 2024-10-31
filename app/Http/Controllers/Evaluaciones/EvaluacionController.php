@@ -18,13 +18,6 @@ use Throwable;
 class EvaluacionController extends ApiController
 {
 
-    protected $hashids;
-
-    public function __construct()
-    {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
-
     public function guardarActualizarEvaluacion(Request $request)
     {
 
@@ -155,7 +148,7 @@ class EvaluacionController extends ApiController
     public function publicarEvaluacion(Request $request)
     {
         $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
-        $params = [
+        $paramsGenerarPreguntas = [
             $iEvaluacionId,
             $this->decodeId($request->iCursoId),
             $this->decodeId($request->iSeccionId),
@@ -164,19 +157,24 @@ class EvaluacionController extends ApiController
             $this->decodeId($request->iNivelGradoId),
             $this->decodeId($request->iCurrId),
         ];
+
+        DB::beginTransaction();
+
         try {
             $evaluacion = new Evaluacion();
-            $params = ['iEstado' => $request->iEstado];
-            $where = new WhereCondition('iEvaluacionId', $iEvaluacionId);
-            $evaluacion->actualizarEvaluacion($params, $where);
+            $params = ['iEstado' => (int) $request->iEstado];
+            $where = [new WhereCondition('iEvaluacionId', $iEvaluacionId)];
+            $resp = $evaluacion->actualizarEvaluacion($params, $where);
         } catch (Exception $e) {
+            DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al publicar la evaluación');
             return $this->errorResponse(null, $message);
         }
 
         // agregar preguntas para los estudiantes
+        $resp = null;
         try {
-            DB::select('exec eval.Sp_INS_generar_preguntas_estudiantes 
+            $resp = DB::select('exec eval.Sp_INS_generar_preguntas_estudiantes 
                 @_iEvaluacionId = ?
                 ,@_iCursoId = ?
                 ,@_iSeccionId  = ?
@@ -184,10 +182,13 @@ class EvaluacionController extends ApiController
                 ,@_iSemAcadId = ?
                 ,@_iNivelGradoId = ?
                 ,@_iCurrId = ?
-            ');
+            ', $paramsGenerarPreguntas);
         } catch (Exception $e) {
+            DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al generar las preguntas a estudiantes');
             return $this->errorResponse(null, $message);
         }
+        DB::commit();
+        return $this->successResponse(null, $resp[0]->mensaje);
     }
 }
