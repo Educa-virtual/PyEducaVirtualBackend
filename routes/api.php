@@ -96,6 +96,10 @@ Route::group(['prefix' => 'acad'], function () {
     });
     Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
     Route::post('calendarioAcademico/addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
+    Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
+    Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
+
+    
 
     Route::get('periodoAcademico/selPerAcademico', [PeriodoAcademicosController::class, 'selPerAcademico']);
     Route::post('periodoAcademico/addPerAcademico', [PeriodoAcademicosController::class, 'addPerAcademico']);
@@ -105,10 +109,10 @@ Route::post('/verificar', [MailController::class, 'index']);
 Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 
-Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
-Route::post('/verificar', [MailController::class, 'index']);
-Route::post('/verificar_codigo', [MailController::class, 'comparar']);
-Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
-Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
+// Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
+// Route::post('/verificar', [MailController::class, 'index']);
+// Route::post('/verificar_codigo', [MailController::class, 'comparar']);
+// Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
+// Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
 
 Route::get('/imprimir', PersonaController::class);
