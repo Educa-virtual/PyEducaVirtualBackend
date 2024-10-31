@@ -30,7 +30,7 @@ class InstrumentosEvaluacionController extends ApiController
             $request->busqueda ?? ''
         ];
         try {
-            $data = DB::select('exec eval.SEL_instrumento_evaluaciones
+            $data = DB::select('exec eval.SP_SEL_instrumento_evaluaciones
                 @_iInstrumentoId = ?
                 ,@_iDocenteId = ?
                 ,@_idDocCursoId = ?
@@ -198,7 +198,7 @@ class InstrumentosEvaluacionController extends ApiController
     {
         $cTipo = $request->cTipo;
         try {
-            $resp = DB::select('exec eval.Sp_DEL_instrumento_evaluacion_rubrica_id 
+            $resp = DB::select('exec eval.SP_DEL_instrumento_evaluacion_rubrica_id 
                 @_id = ?, @_cTipo = ?', [$id, $cTipo]);
             return $this->successResponse(null, 'Eliminado correctamente');
         } catch (Exception $e) {

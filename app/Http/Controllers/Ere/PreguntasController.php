@@ -121,7 +121,7 @@ class PreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+                    $resp = DB::select('exec ere.SP_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
 
                     // $resp = $resp[0];
                 } catch (Exception $e) {
@@ -160,7 +160,7 @@ class PreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+                    $resp = DB::select('exec ere.SP_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
 
                     $resp = $resp[0];
                 } catch (Exception $e) {
@@ -172,7 +172,7 @@ class PreguntasController extends ApiController
 
             try {
 
-                $resp = DB::select('exec ere.Sp_DEL_pregunta @_iPreguntaId = ?', [$pregunta['iPreguntaId']]);
+                $resp = DB::select('exec ere.SP_DEL_pregunta @_iPreguntaId = ?', [$pregunta['iPreguntaId']]);
 
                 if (count($resp) === 0) {
                     return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
@@ -314,7 +314,7 @@ class PreguntasController extends ApiController
 
         try {
 
-            $resp = DB::select('exec ere.Sp_DEL_pregunta @_iPreguntaId = ?', $params);
+            $resp = DB::select('exec ere.SP_DEL_pregunta @_iPreguntaId = ?', $params);
 
             if (count($resp) === 0) {
                 return $this->errorResponse($resp, 'Error al eliminar la pregunta.');

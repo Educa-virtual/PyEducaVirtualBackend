@@ -90,4 +90,64 @@ class TareaEstudiantesController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
+    public function guardarCalificacionDocente(Request $request)
+    {
+
+        $request->validate(
+            [
+                'opcion' => 'required',
+            ],
+            [
+                'opcion.required' => 'Hubo un problema al obtener la acción',
+            ]
+        );
+        if ($request->iTareaEstudianteId) {
+            $iTareaEstudianteId = $this->hashids->decode($request->iTareaEstudianteId);
+            $iTareaEstudianteId = count($iTareaEstudianteId) > 0 ? $iTareaEstudianteId[0] : $iTareaEstudianteId;
+        }
+        if ($request->iEscalaCalifId) {
+            $iEscalaCalifId = $this->hashids->decode($request->iEscalaCalifId);
+            $iEscalaCalifId = count($iEscalaCalifId) > 0 ? $iEscalaCalifId[0] : $iEscalaCalifId;
+        }
+
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+
+            $iTareaEstudianteId                    ??      NULL,
+            $request->iTareaId                              ??      NULL,
+            $request->iEstudianteId                         ??      NULL,
+            $iEscalaCalifId                        ??      NULL,
+            $request->nTareaEstudianteNota                  ??      NULL,
+            $request->cTareaEstudianteComentarioDocente     ??      NULL,
+            $request->cTareaEstudianteUrlEstudiante         ??      NULL,
+            $request->iEstado                               ??      NULL,
+            $request->iSesionId                             ??      NULL,
+            $request->dtCreado                              ??      NULL,
+            $request->dtActualizado                         ??      NULL,
+            $request->iTareaCabGrupoId                      ??      NULL
+
+            //$request->iCredId
+
+        ];
+
+        try {
+            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREA_ESTUDIANTES
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            if ($data[0]->iTareaEstudianteId > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
 }

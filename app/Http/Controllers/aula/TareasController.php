@@ -104,7 +104,7 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        
+
         if ($request->iTareaId) {
             $iTareaId = $this->hashids->decode($request->iTareaId);
             $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
@@ -185,7 +185,7 @@ class TareasController extends ApiController
         ];
 
         try {
-            $data = DB::select('exec aula.SP_Obtener_tareas
+            $data = DB::select('exec aula.SP_SEL_obtenerTareas
                 ?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -314,7 +314,7 @@ class TareasController extends ApiController
         try {
             $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-           
+
             if ($data[0]->iTareaId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];

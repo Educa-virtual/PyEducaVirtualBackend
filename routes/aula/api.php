@@ -49,12 +49,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'tarea-estudiantes'], function () {
         Route::post('list', [TareaEstudiantesController::class, 'list']);
         Route::post('store', [TareaEstudiantesController::class, 'store']);
+        Route::post('guardar-calificacion-docente', [TareaEstudiantesController::class, 'guardarCalificacionDocente']);
     });
     Route::group(['prefix' => 'tarea-cabecera-grupos'], function () {
         Route::post('list', [TareaCabeceraGruposController::class, 'list']);
         Route::post('store', [TareaCabeceraGruposController::class, 'store']);
-        
     });
-
 });
-

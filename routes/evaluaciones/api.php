@@ -30,8 +30,12 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::delete('eliminarPreguntaEvulacion/{id}', [EvaluacionController::class, 'eliminarPreguntaEvulacion']);
         Route::resource('logros', LogrosController::class);
         Route::post('publicar', [EvaluacionController::class, 'publicarEvaluacion']);
+        Route::post('anula-publicacion', [EvaluacionController::class, 'anularPublicacionEvaluacion']);
 
-        Route::resource('estudiantes', EvaluacionEstudiantesController::class);
+        Route::group(['prefix' => 'estudiantes'], function () {
+            Route::resource('', EvaluacionEstudiantesController::class);
+            Route::get('obtenerEvaluacionRespuestasEstudiante', [EvaluacionEstudiantesController::class, 'obtenerEvaluacionRespuestasEstudiante']);
+        });
     });
 
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
@@ -39,4 +43,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     });
 
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
+
+    Route::group(['prefix' => 'escala-calificaciones'], function () {
+        Route::post('list', [EscalaCalificacionesController::class, 'list']);
+    });
 });
