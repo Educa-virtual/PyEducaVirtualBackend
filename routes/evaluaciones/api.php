@@ -31,7 +31,10 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::resource('logros', LogrosController::class);
         Route::post('publicar', [EvaluacionController::class, 'publicarEvaluacion']);
 
-        Route::resource('estudiantes', EvaluacionEstudiantesController::class);
+        Route::group(['prefix' => 'estudiantes'], function () {
+            Route::resource('', EvaluacionEstudiantesController::class);
+            Route::get('obtenerEvaluacionRespuestasEstudiante', [EvaluacionEstudiantesController::class, 'obtenerEvaluacionRespuestasEstudiante']);
+        });
     });
 
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {

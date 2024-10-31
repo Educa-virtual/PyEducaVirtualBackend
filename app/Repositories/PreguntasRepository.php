@@ -26,7 +26,7 @@ class PreguntasRepository
             $params['iEncabPregId'] ?? 0
         ];
 
-        $preguntasDB = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
+        $preguntasDB = DB::select('exec ere.SP_SEL_banco_preguntas @_iCursoId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
              @_iEncabPregId = ? 
             ', $params);
