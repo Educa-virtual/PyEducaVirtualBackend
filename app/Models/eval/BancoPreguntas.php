@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BancoPreguntas extends Model
 {
 
+    // saca las preguntas sin cabecera y las coloca al mismo nivel
     public function procesarPreguntas($preguntasDB)
     {
         $preguntas = [];
