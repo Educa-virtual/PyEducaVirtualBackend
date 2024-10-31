@@ -24,7 +24,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::post('obtenerCategorias', [AulaVirtualController::class, 'obtenerCategorias']);
             Route::post('obtenerCalificacion', [AulaVirtualController::class, 'obtenerCalificacion']);
             Route::get('obtenerForo', [AulaVirtualController::class, 'obtenerForo']);
-            Route::post('guardarRespuesta',[AulaVirtualController::class,'guardarRespuesta']);
+            Route::post('guardarRespuesta', [AulaVirtualController::class, 'guardarRespuesta']);
         });
 
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
@@ -48,12 +48,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'tarea-estudiantes'], function () {
         Route::post('list', [TareaEstudiantesController::class, 'list']);
         Route::post('store', [TareaEstudiantesController::class, 'store']);
+        Route::post('guardar-calificacion-docente', [TareaEstudiantesController::class, 'guardarCalificacionDocente']);
     });
     Route::group(['prefix' => 'tarea-cabecera-grupos'], function () {
         Route::post('list', [TareaCabeceraGruposController::class, 'list']);
         Route::post('store', [TareaCabeceraGruposController::class, 'store']);
-        
     });
-
 });
-
