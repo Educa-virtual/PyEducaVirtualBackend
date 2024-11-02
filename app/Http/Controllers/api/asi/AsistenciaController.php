@@ -9,6 +9,8 @@ use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\LaravelPdf\Enums\Orientation;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class AsistenciaController extends Controller
 {
@@ -136,6 +138,10 @@ class AsistenciaController extends Controller
             "grado"=>"",
         ];
 
-        return view("asistencia_reporte_mensual",$respuesta);
+        $pdf = Pdf::view('asistencia_reporte_mensual', $respuesta)
+            ->orientation(Orientation::Landscape)
+            ->name('silabus.pdf');
+        return $pdf;
+        
     }
 }
