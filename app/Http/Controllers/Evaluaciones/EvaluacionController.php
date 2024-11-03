@@ -4,13 +4,9 @@ namespace App\Http\Controllers\Evaluaciones;
 
 use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\grl\GeneralController;
 use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
-use App\Repositories\GeneralRepository;
 use Exception;
-use Hashids\Hashids;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;

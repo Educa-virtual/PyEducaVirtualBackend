@@ -331,12 +331,17 @@ class AulaVirtualController extends ApiController
         }
         $paramsProgramacionActividades = [
             'iProgActId' => $iProgActId,
-            'iContenidoSemId' => $iContenidoSemId,
-            'iActTipoId' => $request->iActTipoId,
+            //'iContenidoSemId' => $iContenidoSemId,
+            'iContenidoSemId' => 1,
+            //'iActTipoId' => $request->iActTipoId,
+            'iActTipoId' => 2,
             'iHorarioId' => $request->iHorarioId ?? null,
             'dtProgActPublicacion' => $request->dtForoPublicacion,
+            'dtProgActInicio' => $request -> dtForoInicio,
+            'dtProgActFin' => $request -> dtForoFin,
             'cProgActTituloLeccion' => $request->cForoTitulo,
             'cProgActDescripcion' => $request->cForoDescripcion,
+            'iEstado' => $request -> iEstado
             //'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
@@ -411,15 +416,6 @@ class AulaVirtualController extends ApiController
             $request -> dtCreado ?? null,
             $request -> dtActualizado ?? null,
             $request -> iEscalaCalifId ?? null
-            // $request -> nForoRptaNota ?? null,
-            // $request -> dtForoRptaPublicacion ?? null,
-            // $request -> cForoRptaDocente ?? null,
-            // $request -> iEstado ?? null,
-            // $request -> iSesionId ?? null,
-            // $request -> dtCreado ?? null,
-            // $request -> dtActualizado ?? null,
-            // $request -> iEscalaCalifId ?? null,
-        
         ];
          //return $data;
         try{
@@ -507,6 +503,21 @@ class AulaVirtualController extends ApiController
             }
 
             return $this->successResponse($foro, 'Datos obtenidos correctamente');
+        }
+    }
+    public function obtenerRespuestaForo()
+    {
+        $where = '30';    
+        try {
+            $preguntas = DB::select('EXEC aula.SP_SEL_RespuestaXiDForo ?',[$where]);
+
+            return $this->successResponse(
+                $preguntas,
+                'Datos Obtenidos Correctamente'
+            );
+        } catch (Exception $e) {
+
+            return $this->errorResponse($e, 'Error Upssss!');
         }
     }
 }

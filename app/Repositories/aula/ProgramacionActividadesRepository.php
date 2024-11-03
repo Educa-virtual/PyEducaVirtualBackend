@@ -2,7 +2,6 @@
 
 namespace App\Repositories\aula;
 
-use App\Repositories\Evaluaciones\BancoRepository;
 use Illuminate\Support\Facades\DB;
 
 class ProgramacionActividadesRepository
