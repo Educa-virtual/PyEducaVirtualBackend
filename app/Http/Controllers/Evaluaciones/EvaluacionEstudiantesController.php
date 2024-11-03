@@ -14,7 +14,7 @@ class EvaluacionEstudiantesController extends ApiController
     {
         $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
         try {
-            $data = DB::select('exec eval.SP_SEL_estudiantes_evaluacion @_iEvaluacionId = ? ', [$iEvaluacionId]);
+            $data = DB::select('exec eval.SP_SEL_estudiantesEvaluacion @_iEvaluacionId = ? ', [$iEvaluacionId]);
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
@@ -29,7 +29,7 @@ class EvaluacionEstudiantesController extends ApiController
 
         try {
             $data = DB::select(
-                'exec eval.SP_SEL_examen_estudiante_evaluacion_docente
+                'exec eval.SP_SEL_examenEstudianteEvaluacionDocente
                     @_iEstudianteId = ?
                     ,@_iEvaluacionId = ?
                 ',

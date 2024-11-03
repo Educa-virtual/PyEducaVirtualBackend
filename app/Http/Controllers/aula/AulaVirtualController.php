@@ -178,7 +178,7 @@ class AulaVirtualController extends ApiController
 
         $contenidos = [];
         try {
-            $contenidos = DB::select('exec aula.SP_SEL_contenido_semana_programacion_actividades @_iSilaboId = ?', $params);
+            $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?', $params);
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
@@ -337,11 +337,11 @@ class AulaVirtualController extends ApiController
             'iActTipoId' => 2,
             'iHorarioId' => $request->iHorarioId ?? null,
             'dtProgActPublicacion' => $request->dtForoPublicacion,
-            'dtProgActInicio' => $request -> dtForoInicio,
-            'dtProgActFin' => $request -> dtForoFin,
+            'dtProgActInicio' => $request->dtForoInicio,
+            'dtProgActFin' => $request->dtForoFin,
             'cProgActTituloLeccion' => $request->cForoTitulo,
             'cProgActDescripcion' => $request->cForoDescripcion,
-            'iEstado' => $request -> iEstado
+            'iEstado' => $request->iEstado
             //'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
         ];
 
@@ -393,9 +393,10 @@ class AulaVirtualController extends ApiController
         // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
     // Guardar respuesta de Foro
-    public function guardarRespuesta(Request $request){
+    public function guardarRespuesta(Request $request)
+    {
         //return $request -> all();
-        $request -> validate([
+        $request->validate([
             'cForoRptaRespuesta' => 'required|string'
         ]);
 
@@ -407,18 +408,18 @@ class AulaVirtualController extends ApiController
             NULL,
             // $iForoRptaPadre ?? null,
             $iDocenteId ?? null,
-            $request -> cForoRptaRespuesta,
-            $request -> nForoRptaNota ?? null,
-            $request -> dtForoRptaPublicacion ?? null,
-            $request -> cForoRptaDocente ?? null,
-            $request -> iEstado ?? null,
-            $request -> iSesionId ?? null,
-            $request -> dtCreado ?? null,
-            $request -> dtActualizado ?? null,
-            $request -> iEscalaCalifId ?? null
+            $request->cForoRptaRespuesta,
+            $request->nForoRptaNota ?? null,
+            $request->dtForoRptaPublicacion ?? null,
+            $request->cForoRptaDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
+            $request->iEscalaCalifId ?? null
         ];
-         //return $data;
-        try{
+        //return $data;
+        try {
             $resp = DB::select('EXEC [aula].[SP_INS_RespuestaForo]
                 @iEstudianteId = ?,
                 @iForoId = ?,
@@ -441,13 +442,11 @@ class AulaVirtualController extends ApiController
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
-
         }
         return new JsonResponse($response, $codeResponse);
     }
@@ -507,9 +506,9 @@ class AulaVirtualController extends ApiController
     }
     public function obtenerRespuestaForo()
     {
-        $where = '30';    
+        $where = '30';
         try {
-            $preguntas = DB::select('EXEC aula.SP_SEL_RespuestaXiDForo ?',[$where]);
+            $preguntas = DB::select('EXEC aula.SP_SEL_RespuestaXiDForo ?', [$where]);
 
             return $this->successResponse(
                 $preguntas,
