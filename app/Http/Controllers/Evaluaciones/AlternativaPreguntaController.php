@@ -53,7 +53,7 @@ class AlternativaPreguntaController extends ApiController
         ];
 
         try {
-            $resp = DB::select('exec ere.Sp_INS_UPD_alternativa_pregunta
+            $resp = DB::select('exec ere.SP_INS_UPD_alternativa_pregunta
                 @_iAlternativaId = ?
                 , @_iPreguntaId = ?
                 , @_cAlternativaDescripcion = ?
@@ -76,7 +76,7 @@ class AlternativaPreguntaController extends ApiController
             $id
         ];
         try {
-            $resp = DB::select('exec ere.Sp_DEL_alternativa_pregunta @_iAlternativaId = ?', $params);
+            $resp = DB::select('exec ere.SP_DEL_alternativa_pregunta @_iAlternativaId = ?', $params);
 
             $resp = $resp[0];
             return $this->successResponse($resp, $resp->mensaje);

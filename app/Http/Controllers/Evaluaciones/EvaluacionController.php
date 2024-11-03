@@ -4,13 +4,9 @@ namespace App\Http\Controllers\Evaluaciones;
 
 use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\grl\GeneralController;
 use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
-use App\Repositories\GeneralRepository;
 use Exception;
-use Hashids\Hashids;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -75,7 +71,7 @@ class EvaluacionController extends ApiController
             $request->iEvaluacionDuracionMinutos
         ];
         try {
-            $data = DB::select('exec eval.Sp_INS_UPD_evaluacion_aula 
+            $data = DB::select('exec eval.SP_INS_UPD_evaluacion_aula 
                 @_iEvaluacionId = ?
                 , @_iTipoEvalId = ?
                 , @_iProgActId = ?
@@ -135,7 +131,7 @@ class EvaluacionController extends ApiController
         $iEvalPregId = $id;
 
         try {
-            $resp = DB::select('exec eval.Sp_DEL_evaluacion_preguntas @_iEvalPregId = ?', [$iEvalPregId]);
+            $resp = DB::select('exec eval.SP_DEL_evaluacion_preguntas @_iEvalPregId = ?', [$iEvalPregId]);
             $resp = $resp[0];
 
             return $this->successResponse($resp->mensaje, 'Se eliminó correctamente');
@@ -174,7 +170,7 @@ class EvaluacionController extends ApiController
         // agregar preguntas para los estudiantes
         $resp = null;
         try {
-            $resp = DB::select('exec eval.Sp_INS_generar_preguntas_estudiantes 
+            $resp = DB::select('exec eval.SP_INS_generar_preguntas_estudiantes 
                 @_iEvaluacionId = ?
                 ,@_iCursoId = ?
                 ,@_iSeccionId  = ?
