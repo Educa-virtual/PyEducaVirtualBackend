@@ -185,7 +185,7 @@ class TareasController extends ApiController
         ];
 
         try {
-            $data = DB::select('exec aula.SP_Obtener_tareas
+            $data = DB::select('exec aula.SP_SEL_Obtener_tareas
                 ?', $parametros);
 
             foreach ($data as $key => $value) {
