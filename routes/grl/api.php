@@ -14,5 +14,7 @@ Route::group(['prefix' => 'administracion'], function () {
 Route::group(['prefix' => 'grl'], function () {
   Route::group(['prefix' => 'personas'], function () {
     Route::post('list', [PersonasController::class, 'list']);
+    Route::post('obtenerPersonasxiPersId', [PersonasController::class, 'obtenerPersonasxiPersId']);
+    Route::post('guardarPersonasxDatosPersonales', [PersonasController::class, 'guardarPersonasxDatosPersonales']);
   });
 });
