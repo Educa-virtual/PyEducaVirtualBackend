@@ -76,7 +76,9 @@ Route::group(['prefix' => 'ere'], function () {
 
         Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
         Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
-        Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        //EditarEvaluacion
+        Route::put('/actualizarEvaluacion/{id}', [EvaluacionesController::class, 'actualizarEvaluacion']);
+
         //!Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
         Route::delete('eliminarParticipacion/{id}', [EvaluacionesController::class, 'eliminarParticipacion']);
@@ -99,7 +101,7 @@ Route::group(['prefix' => 'acad'], function () {
     Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
     Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
 
-    
+
 
     Route::get('periodoAcademico/selPerAcademico', [PeriodoAcademicosController::class, 'selPerAcademico']);
     Route::post('periodoAcademico/addPerAcademico', [PeriodoAcademicosController::class, 'addPerAcademico']);

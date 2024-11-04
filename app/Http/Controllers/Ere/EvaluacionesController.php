@@ -17,16 +17,12 @@ class EvaluacionesController extends ApiController
     {
 
         $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
-
         $where = '';
-
-
         $params = [
             'ere',
             'vistaInstitucionEducativa',
             $campos,
             $where
-
         ];
         try {
             $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
@@ -77,8 +73,6 @@ class EvaluacionesController extends ApiController
             ], 500);
         }
     }
-
-
     public function obtenerUltimaEvaluacion()
     {
         try {
@@ -129,10 +123,174 @@ class EvaluacionesController extends ApiController
             return response()->json(['status' => 'error', 'message' => 'Error al eliminar los datos', 'error' => $e->getMessage()], 500);
         }
     }
+    // public function actualizarEvaluacion(Request $request, $id)
+    // {
+    //     // Validar los datos recibidos
+    //     $request->validate([
+    //         'idTipoEvalId' => 'required|integer', // Cambiado a integer
+    //         'iNivelEvalId' => 'required|integer',  // Cambiado a integer
+    //         'dtEvaluacionCreacion' => 'required|date',
+    //         'cEvaluacionNombre' => 'required|string|max:255',
+    //         'cEvaluacionDescripcion' => 'required|string|max:255',
+    //         'cEvaluacionUrlDrive' => 'nullable|string|max:255',
+    //         'cEvaluacionUrlPlantilla' => 'nullable|string|max:255',
+    //         'cEvaluacionUrlManual' => 'nullable|string|max:255',
+    //         'cEvaluacionUrlMatriz' => 'nullable|string|max:255',
+    //         'cEvaluacionObs' => 'nullable|string|max:255',
+    //         'dtEvaluacionLiberarMatriz' => 'required|date',
+    //         'dtEvaluacionLiberarCuadernillo' => 'required|date',
+    //         'dtEvaluacionLiberarResultados' => 'required|date',
+    //     ]);
 
+    //     // Preparar los datos para la actualización
+    //     $data = $request->only([
+    //         'idTipoEvalId',
+    //         'iNivelEvalId',
+    //         'dtEvaluacionCreacion',
+    //         'cEvaluacionNombre',
+    //         'cEvaluacionDescripcion',
+    //         'cEvaluacionUrlDrive',
+    //         'cEvaluacionUrlPlantilla',
+    //         'cEvaluacionUrlManual',
+    //         'cEvaluacionUrlMatriz',
+    //         'cEvaluacionObs',
+    //         'dtEvaluacionLiberarMatriz',
+    //         'dtEvaluacionLiberarCuadernillo',
+    //         'dtEvaluacionLiberarResultados',
+    //     ]);
 
-    public function actualizarEvaluacion(Request $request)
-    {
-        // Aquí agregas lógica para actualizar la evaluación usando el modelo Evaluacion
+    //     // Realizar la actualización usando DB::update para llamar al procedimiento almacenado
+    //     $result = DB::update(
+    //         'EXEC ere.sp_UPD_Evaluaciones 
+    //         @iEvaluacionId = ?, 
+    //         @idTipoEvalId = ?, 
+    //         @iNivelEvalId = ?, 
+    //         @dtEvaluacionCreacion = ?, 
+    //         @cEvaluacionNombre = ?, 
+    //         @cEvaluacionDescripcion = ?, 
+    //         @cEvaluacionUrlDrive = ?, 
+    //         @cEvaluacionUrlPlantilla = ?, 
+    //         @cEvaluacionUrlManual = ?, 
+    //         @cEvaluacionUrlMatriz = ?, 
+    //         @cEvaluacionObs = ?, 
+    //         @dtEvaluacionLiberarMatriz = ?, 
+    //         @dtEvaluacionLiberarCuadernillo = ?, 
+    //         @dtEvaluacionLiberarResultados = ?',
+    //         [
+    //             $id, // ID de la evaluación a actualizar
+    //             $data['idTipoEvalId'],
+    //             $data['iNivelEvalId'],
+    //             $data['dtEvaluacionCreacion'],
+    //             $data['cEvaluacionNombre'],
+    //             $data['cEvaluacionDescripcion'],
+    //             $data['cEvaluacionUrlDrive'],
+    //             $data['cEvaluacionUrlPlantilla'],
+    //             $data['cEvaluacionUrlManual'],
+    //             $data['cEvaluacionUrlMatriz'],
+    //             $data['cEvaluacionObs'],
+    //             $data['dtEvaluacionLiberarMatriz'],
+    //             $data['dtEvaluacionLiberarCuadernillo'],
+    //             $data['dtEvaluacionLiberarResultados']
+    //         ]
+    //     );
+
+    //     // Verificar el resultado de la actualización
+    //     if ($result) {
+    //         return response()->json(['message' => 'Evaluación actualizada con éxito'], 200);
+    //     } else {
+    //         return response()->json(['message' => 'Error al actualizar la evaluación'], 500);
+    //     }
+    // }
+    public function actualizarEvaluacion(Request $request, $id)
+    { // Mostrar el ID recibido
+
+        $id = $request->input('iEvaluacionId'); // Obtener el ID del cuerpo de la solicitud
+
+        // Agregar un log para verificar qué ID se está recibiendo
+        //Log::info('ID recibido para actualización:', ['id' => $id]);
+        var_dump($id);
+        exit;
+        // Verificar que $id es un entero
+        if (!is_numeric($id)) {
+
+            return response()->json(['message' => 'ID no válido'], 400);
+        }
+        // Validar los datos recibidos
+        $request->validate([
+            'idTipoEvalId' => 'required|integer', // Cambiado a integer
+            'iNivelEvalId' => 'required|integer',  // Cambiado a integer
+            'dtEvaluacionCreacion' => 'required|date',
+            'cEvaluacionNombre' => 'required|string|max:255',
+            'cEvaluacionDescripcion' => 'required|string|max:255',
+            'cEvaluacionUrlDrive' => 'nullable|string|max:255',
+            'cEvaluacionUrlPlantilla' => 'nullable|string|max:255',
+            'cEvaluacionUrlManual' => 'nullable|string|max:255',
+            'cEvaluacionUrlMatriz' => 'nullable|string|max:255',
+            'cEvaluacionObs' => 'nullable|string|max:255',
+            'dtEvaluacionLiberarMatriz' => 'required|date',
+            'dtEvaluacionLiberarCuadernillo' => 'required|date',
+            'dtEvaluacionLiberarResultados' => 'required|date',
+        ]);
+
+        // Preparar los datos para la actualización
+        $data = $request->only([
+            'idTipoEvalId',
+            'iNivelEvalId',
+            'dtEvaluacionCreacion',
+            'cEvaluacionNombre',
+            'cEvaluacionDescripcion',
+            'cEvaluacionUrlDrive',
+            'cEvaluacionUrlPlantilla',
+            'cEvaluacionUrlManual',
+            'cEvaluacionUrlMatriz',
+            'cEvaluacionObs',
+            'dtEvaluacionLiberarMatriz',
+            'dtEvaluacionLiberarCuadernillo',
+            'dtEvaluacionLiberarResultados',
+        ]);
+
+        try {
+            $result = DB::update(
+                'EXEC ere.sp_UPD_Evaluaciones 
+            @iEvaluacionId = ?, 
+            @idTipoEvalId = ?, 
+            @iNivelEvalId = ?, 
+            @dtEvaluacionCreacion = ?, 
+            @cEvaluacionNombre = ?, 
+            @cEvaluacionDescripcion = ?, 
+            @cEvaluacionUrlDrive = ?, 
+            @cEvaluacionUrlPlantilla = ?, 
+            @cEvaluacionUrlManual = ?, 
+            @cEvaluacionUrlMatriz = ?, 
+            @cEvaluacionObs = ?, 
+            @dtEvaluacionLiberarMatriz = ?, 
+            @dtEvaluacionLiberarCuadernillo = ?, 
+            @dtEvaluacionLiberarResultados = ?',
+                [
+                    $id,
+                    $data['idTipoEvalId'],
+                    $data['iNivelEvalId'],
+                    $data['dtEvaluacionCreacion'],
+                    $data['cEvaluacionNombre'],
+                    $data['cEvaluacionDescripcion'],
+                    $data['cEvaluacionUrlDrive'],
+                    $data['cEvaluacionUrlPlantilla'],
+                    $data['cEvaluacionUrlManual'],
+                    $data['cEvaluacionUrlMatriz'],
+                    $data['cEvaluacionObs'],
+                    $data['dtEvaluacionLiberarMatriz'],
+                    $data['dtEvaluacionLiberarCuadernillo'],
+                    $data['dtEvaluacionLiberarResultados']
+                ]
+            );
+
+            if ($result) {
+                return response()->json(['message' => 'Evaluación actualizada con éxito'], 200);
+            } else {
+                return response()->json(['message' => 'Error al actualizar la evaluación'], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+        }
     }
 }
