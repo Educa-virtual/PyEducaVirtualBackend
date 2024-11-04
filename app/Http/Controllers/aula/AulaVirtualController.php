@@ -331,9 +331,7 @@ class AulaVirtualController extends ApiController
         }
         $paramsProgramacionActividades = [
             'iProgActId' => $iProgActId,
-            //'iContenidoSemId' => $iContenidoSemId,
-            'iContenidoSemId' => 1,
-            //'iActTipoId' => $request->iActTipoId,
+            'iContenidoSemId' => $iContenidoSemId,
             'iActTipoId' => 2,
             'iHorarioId' => $request->iHorarioId ?? null,
             'dtProgActPublicacion' => $request->dtForoPublicacion,
@@ -518,5 +516,33 @@ class AulaVirtualController extends ApiController
 
             return $this->errorResponse($e, 'Error Upssss!');
         }
+    }
+
+    public function calificarForoDocente(Request $request){
+        $parametros = [
+            $request->iForoRptaId,
+            $request->cForoRptaDocente ?? NULL,
+            $request->iEscalaCalifId ?? NULL
+
+        ];
+
+        try {
+            $data = DB::select('exec aula.Sp_UPD_calificarDocenteForoRespuestas
+                ?,?,?', $parametros);
+
+            if ($data[0]->iForoRptaId > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
     }
 }
