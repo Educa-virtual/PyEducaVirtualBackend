@@ -133,7 +133,7 @@ class AulaVirtualController extends ApiController
         ];
 
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
+            $resp = DB::select('EXEC [aula].[SP_INS_insertActividades]
                     @iProgActId  = ? ,
                     @iDocenteId = ? ,
                     @cTareaTitulo = ?,
@@ -395,15 +395,22 @@ class AulaVirtualController extends ApiController
     {
         //return $request -> all();
         $request->validate([
-            'cForoRptaRespuesta' => 'required|string'
+            //'iEstudianteId' => 'required|integer',
+            'cForoRptaRespuesta' => 'required|string',
+            'iForoId' => 'required|string'
         ]);
+        //$iProgActId = (int) $request->iProgActId ?? 0;
+        $iForoId = $request->iForoId;
+        if ($request->iForoId) {
+            $iForoId = $this->hashids->decode($iForoId);
+            $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
+        }
 
         $data = [
-            //$iEstudianteId ?? null
+            //$request->iEstudianteId,
             7,
-            //$iForoId ?? null,
-            30,
-            NULL,
+            $iForoId,
+            null,
             // $iForoRptaPadre ?? null,
             $iDocenteId ?? null,
             $request->cForoRptaRespuesta,
@@ -502,23 +509,36 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($foro, 'Datos obtenidos correctamente');
         }
     }
-    public function obtenerRespuestaForo()
+    public function obtenerRespuestaForo(Request $request)
     {
-        $where = '30';
-        try {
-            $preguntas = DB::select('EXEC aula.SP_SEL_RespuestaXiDForo ?', [$where]);
+        $iActTipoId = (int) $request->iActTipoId;
 
-            return $this->successResponse(
-                $preguntas,
-                'Datos Obtenidos Correctamente'
-            );
-        } catch (Exception $e) {
+        if ($iActTipoId === 2) {
+            $iForoId = $request->ixActivadadId;
+            $iForoId = $this->hashids->decode($iForoId);
+            $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
 
-            return $this->errorResponse($e, 'Error Upssss!');
+            $foro = null;
+            try {
+                $params = [
+                    'iForoId' => $iForoId
+                ];
+                $resp = ProgramacionActividadesRepository::obtenerRespuestaActividadForo($params);
+
+                if (count($resp) === 0) {
+                    return $this->errorResponse(null, 'El Foro no existe');
+                }
+                $foro = $resp;
+            } catch (Throwable $e) {
+                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+                return $this->errorResponse(null, $message);
+            }
+
+            return $this->successResponse($foro, 'Datos obtenidos correctamente');
         }
     }
-
-    public function calificarForoDocente(Request $request){
+    public function calificarForoDocente(Request $request)
+    {
         $parametros = [
             $request->iForoRptaId,
             $request->cForoRptaDocente ?? NULL,

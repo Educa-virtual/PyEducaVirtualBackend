@@ -83,6 +83,8 @@ Route::group(['prefix' => 'ere'], function () {
 
         //! Ruta para actualizar la evaluación
         Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        //! Ruta para obtener las participaciones
+        Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

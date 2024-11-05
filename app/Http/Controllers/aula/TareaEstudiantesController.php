@@ -70,7 +70,7 @@ class TareaEstudiantesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREA_ESTUDIANTES
+            $data = DB::select('exec aula.SP_aulaCrudTareaEstudiantes
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -133,7 +133,7 @@ class TareaEstudiantesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREA_ESTUDIANTES
+            $data = DB::select('exec aula.SP_aulaCrudTareaEstudiantes
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             if ($data[0]->iTareaEstudianteId > 0) {
 
