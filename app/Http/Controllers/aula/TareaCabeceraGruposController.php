@@ -56,7 +56,7 @@ class TareaCabeceraGruposController extends Controller
         ];
 
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREA_CABECERA_GRUPOS
+            $data = DB::select('exec aula.SP_aulaCrudTareaCabeceraGrupos
                 ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -108,7 +108,7 @@ class TareaCabeceraGruposController extends Controller
         ];
 
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREA_CABECERA_GRUPOS
+            $data = DB::select('exec aula.SP_aulaCrudTareaCabeceraGrupos
                 ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaCabGrupoId > 0) {

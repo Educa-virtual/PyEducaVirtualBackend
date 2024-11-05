@@ -133,7 +133,7 @@ class AulaVirtualController extends ApiController
         ];
 
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_InsertActividades]
+            $resp = DB::select('EXEC [aula].[SP_INS_insertActividades]
                     @iProgActId  = ? ,
                     @iDocenteId = ? ,
                     @cTareaTitulo = ?,
@@ -518,7 +518,8 @@ class AulaVirtualController extends ApiController
         }
     }
 
-    public function calificarForoDocente(Request $request){
+    public function calificarForoDocente(Request $request)
+    {
         $parametros = [
             $request->iForoRptaId,
             $request->cForoRptaDocente ?? NULL,

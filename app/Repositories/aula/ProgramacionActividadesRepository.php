@@ -98,7 +98,7 @@ class ProgramacionActividadesRepository
 //     $iactividadId = $params['iProgActId'];
 
 
-//     $res = DB::select('EXEC [aula].[SP_INS_InsertActividades= ?', [iactividadId]);
+//     $res = DB::select('EXEC [aula].[SP_INS_insertActividades= ?', [iactividadId]);
 //     return $res;
 // }
 

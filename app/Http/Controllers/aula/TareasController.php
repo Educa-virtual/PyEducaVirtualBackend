@@ -75,7 +75,7 @@ class TareasController extends ApiController
         ];
 
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
+            $data = DB::select('exec aula.SP_aulaCrudTareas
             ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -146,7 +146,7 @@ class TareasController extends ApiController
         ];
         //return $parametros;
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
+            $data = DB::select('exec aula.SP_aulaCrudTareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaId > 0) {
@@ -253,7 +253,7 @@ class TareasController extends ApiController
         ];
         //return $parametros;
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
+            $data = DB::select('exec aula.SP_aulaCrudTareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaId > 0) {
@@ -312,7 +312,7 @@ class TareasController extends ApiController
         ];
 
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_TAREAS
+            $data = DB::select('exec aula.SP_aulaCrudTareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaId > 0) {
