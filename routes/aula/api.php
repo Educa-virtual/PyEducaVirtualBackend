@@ -56,5 +56,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'tarea-cabecera-grupos'], function () {
         Route::post('list', [TareaCabeceraGruposController::class, 'list']);
         Route::post('store', [TareaCabeceraGruposController::class, 'store']);
+        Route::post('eliminarTareaCabeceraGrupos', [TareaCabeceraGruposController::class, 'eliminarTareaCabeceraGrupos']);
+        Route::post('guardarCalificacionTareaCabeceraGruposDocente', [TareaCabeceraGruposController::class, 'guardarCalificacionTareaCabeceraGruposDocente']);
     });
 });
