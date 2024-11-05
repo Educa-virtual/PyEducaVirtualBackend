@@ -76,12 +76,13 @@ Route::group(['prefix' => 'ere'], function () {
 
         Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
         Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
-        //EditarEvaluacion
-        Route::put('/actualizarEvaluacion/{id}', [EvaluacionesController::class, 'actualizarEvaluacion']);
 
         //!Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
         Route::delete('eliminarParticipacion/{id}', [EvaluacionesController::class, 'eliminarParticipacion']);
+
+        //! Ruta para actualizar la evaluación
+        Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
