@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Evaluaciones;
 
+use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
 use App\Models\eval\BancoPreguntas;
+use App\Models\eval\NivelLogroAlcanzadoEvaluacion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,5 +43,47 @@ class EvaluacionEstudiantesController extends ApiController
             $mensaje = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $mensaje);
         }
+    }
+
+    public function calificarLogros(Request $request)
+    {
+        $logros = $request->logrosCalificacion;
+
+        DB::beginTransaction();
+        try {
+            foreach ($logros as &$logro) {
+                $iNivelLogroAlcId = $this->decodeId($logro['iNivelLogroAlcId'] ?? 0);
+                $datosBase = [
+                    'cNivelLogroAlcConclusionDescriptiva' => $logro['cNivelLogroAlcConclusionDescriptiva'],
+                    'nNnivelLogroAlcNota' => $logro['nNnivelLogroAlcNota'],
+                    'iEscalaCalifId' => $logro['iEscalaCalifId'],
+                ];
+
+                $datosInsertar = $datosBase;
+                $datosInsertar['iEvalRptaId'] = $logro['iEvalRptaId'];
+                $datosInsertar['iNivelLogroEvaId'] = $logro['iNivelLogroEvaId'];
+
+                $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
+                if ($logro['iNivelLogroAlcId'] == 0) {
+                    $resp = $nivelLogroAlcanzado->guardar(json_encode($datosInsertar));
+                    $logro['newId'] = $resp[0]->id;
+                } else {
+                    $where = json_encode([
+                        new WhereCondition('iNivelLogroAlcId', $iNivelLogroAlcId)
+                    ]);
+
+                    $nivelLogroAlcanzado->actualizar(json_encode($datosBase), $where);
+                }
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            $mensaje =  $this->handleAndLogError($e, 'Error al guardar los cambios');
+            return $this->errorResponse(null, $mensaje);
+        } finally {
+            unset($logro);
+        }
+
+        DB::commit();
+        return $this->successResponse($logros, 'Cambios realizados correctamente');
     }
 }
