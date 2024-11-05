@@ -28,12 +28,13 @@ class BancoPreguntasController extends ApiController
     {
 
         $params = [
-            'iCursoId' => $request->iCursoId,
-            'iDocenteId' => $request->iDocenteId,
+            'iCursoId' => $this->decodeId($request->iCursoId ?? 0),
+            'iDocenteId' => $this->decodeId($request->iDocenteId ?? 0),
             'iCurrContId' => $request->iCurrContId,
             'iNivelCicloId' => $request->iNivelCicloId,
             'busqueda' => $request->busqueda ?? '',
-            'iTipoPregId' => $request->iTipoPregId ?? 0
+            'iTipoPregId' => $request->iTipoPregId ?? 0,
+            'idEncabPregId' => $request->iEncabPregId ?? 0
         ];
 
         try {
