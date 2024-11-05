@@ -184,7 +184,10 @@ class EvaluacionesController extends ApiController
     {
         // Obtener el ID de evaluación del parámetro de consulta
         $iEvaluacionId = $request->query('iEvaluacionId');
-
+        // Verificar si el ID no es nulo antes de hacer la consulta
+        if ($iEvaluacionId === null) {
+            return response()->json(['error' => 'ID de evaluación no proporcionado'], 400);
+        }
         try {
             // Filtrar las participaciones por el ID de evaluación
             $participaciones = DB::table('ere.iiee_participa_evaluaciones')
