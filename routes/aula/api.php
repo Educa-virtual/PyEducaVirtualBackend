@@ -58,5 +58,6 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('store', [TareaCabeceraGruposController::class, 'store']);
         Route::post('eliminarTareaCabeceraGrupos', [TareaCabeceraGruposController::class, 'eliminarTareaCabeceraGrupos']);
         Route::post('guardarCalificacionTareaCabeceraGruposDocente', [TareaCabeceraGruposController::class, 'guardarCalificacionTareaCabeceraGruposDocente']);
+        Route::post('transferenciaTareaCabeceraGrupos', [TareaCabeceraGruposController::class, 'transferenciaTareaCabeceraGrupos']);
     });
 });
