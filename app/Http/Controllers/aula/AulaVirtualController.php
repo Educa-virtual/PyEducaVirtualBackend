@@ -300,10 +300,10 @@ class AulaVirtualController extends ApiController
     {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
-
+            
             return $this->successResponse(
                 $preguntas,
-                'Datos Obtenidos Correctamente'
+                // 'Datos Obtenidos Correctamente'
             );
         } catch (Exception $e) {
 
@@ -319,6 +319,7 @@ class AulaVirtualController extends ApiController
             'cForoTitulo' => 'required|string',
             'cForoDescripcion' => 'required|string',
             'iForoCatId' => 'required|integer',
+            'cForoUrl' => 'required|string',
             //'dtForoInicio' => 'required|date',
             'iEstado' => 'required|integer',
             //'dtForoFin' => 'required|date'
@@ -364,7 +365,7 @@ class AulaVirtualController extends ApiController
             $request->dtForoInicio,
             $request->dtForoInicio,
             $request->dtForoFin,
-            '',
+            $request->cForoUrl,
             $request->iEstado,
             1,
 
