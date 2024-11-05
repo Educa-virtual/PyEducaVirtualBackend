@@ -123,45 +123,45 @@ class EvaluacionesController extends ApiController
             return response()->json(['status' => 'error', 'message' => 'Error al eliminar los datos', 'error' => $e->getMessage()], 500);
         }
     }
-    
-    public function actualizarEvaluacion(Request $request, $iEvaluacionId){
-    // Validar solo los campos opcionales
-    $request->validate([
-        'idTipoEvalId' => 'nullable|integer',
-        'iNivelEvalId' => 'nullable|integer',
-        'dtEvaluacionCreacion' => 'nullable|string',
-        'cEvaluacionNombre' => 'nullable|string|max:255',
-        'cEvaluacionDescripcion' => 'nullable|string|max:255',
-        'cEvaluacionUrlDrive' => 'nullable|string|max:255',
-        'cEvaluacionUrlPlantilla' => 'nullable|string|max:255',
-        'cEvaluacionUrlManual' => 'nullable|string|max:255',
-        'cEvaluacionUrlMatriz' => 'nullable|string|max:255',
-        'cEvaluacionObs' => 'nullable|string|max:255',
-        'dtEvaluacionLiberarMatriz' => 'nullable|string',
-        'dtEvaluacionLiberarCuadernillo' => 'nullable|string',
-        'dtEvaluacionLiberarResultados' => 'nullable|string'
-    ]);
 
-    // Preparar los valores para la llamada al procedimiento
-    $params = [
-        'iEvaluacionId' => $iEvaluacionId,
-        'idTipoEvalId' => $request->input('idTipoEvalId', null),
-        'iNivelEvalId' => $request->input('iNivelEvalId', null),
-        'dtEvaluacionCreacion' => $request->input('dtEvaluacionCreacion', null),
-        'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
-        'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
-        'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
-        'cEvaluacionUrlPlantilla' => $request->input('cEvaluacionUrlPlantilla', null),
-        'cEvaluacionUrlManual' => $request->input('cEvaluacionUrlManual', null),
-        'cEvaluacionUrlMatriz' => $request->input('cEvaluacionUrlMatriz', null),
-        'cEvaluacionObs' => $request->input('cEvaluacionObs', null),
-        'dtEvaluacionLiberarMatriz' => $request->input('dtEvaluacionLiberarMatriz', null),
-        'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
-        'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null)
-    ];
+    public function actualizarEvaluacion(Request $request, $iEvaluacionId)
+    {
+        // Validar solo los campos opcionales
+        $request->validate([
+            'idTipoEvalId' => 'nullable|integer',
+            'iNivelEvalId' => 'nullable|integer',
+            'dtEvaluacionCreacion' => 'nullable|string',
+            'cEvaluacionNombre' => 'nullable|string|max:255',
+            'cEvaluacionDescripcion' => 'nullable|string|max:255',
+            'cEvaluacionUrlDrive' => 'nullable|string|max:255',
+            'cEvaluacionUrlPlantilla' => 'nullable|string|max:255',
+            'cEvaluacionUrlManual' => 'nullable|string|max:255',
+            'cEvaluacionUrlMatriz' => 'nullable|string|max:255',
+            'cEvaluacionObs' => 'nullable|string|max:255',
+            'dtEvaluacionLiberarMatriz' => 'nullable|string',
+            'dtEvaluacionLiberarCuadernillo' => 'nullable|string',
+            'dtEvaluacionLiberarResultados' => 'nullable|string'
+        ]);
+        // Preparar los valores para la llamada al procedimiento
+        $params = [
+            'iEvaluacionId' => $iEvaluacionId,
+            'idTipoEvalId' => $request->input('idTipoEvalId', null),
+            'iNivelEvalId' => $request->input('iNivelEvalId', null),
+            'dtEvaluacionCreacion' => $request->input('dtEvaluacionCreacion', null),
+            'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
+            'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
+            'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
+            'cEvaluacionUrlPlantilla' => $request->input('cEvaluacionUrlPlantilla', null),
+            'cEvaluacionUrlManual' => $request->input('cEvaluacionUrlManual', null),
+            'cEvaluacionUrlMatriz' => $request->input('cEvaluacionUrlMatriz', null),
+            'cEvaluacionObs' => $request->input('cEvaluacionObs', null),
+            'dtEvaluacionLiberarMatriz' => $request->input('dtEvaluacionLiberarMatriz', null),
+            'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
+            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null)
+        ];
 
-    // Construir la llamada dinámica al procedimiento
-    DB::statement('EXEC ere.sp_UPD_Evaluaciones 
+        // Construir la llamada dinámica al procedimiento
+        DB::statement('EXEC ere.sp_UPD_Evaluaciones 
         @iEvaluacionId = :iEvaluacionId, 
         @idTipoEvalId = :idTipoEvalId, 
         @iNivelEvalId = :iNivelEvalId, 
@@ -177,7 +177,25 @@ class EvaluacionesController extends ApiController
         @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
         @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados', $params);
 
-    return response()->json(['message' => 'Evaluación actualizada exitosamente']);
-}
-    
+        return response()->json(['message' => 'Evaluación actualizada exitosamente']);
+    }
+    // Function para obtener las evaluaciones de participación por evaluación
+    public function obtenerParticipaciones(Request $request)
+    {
+        // Obtener el ID de evaluación del parámetro de consulta
+        $iEvaluacionId = $request->query('iEvaluacionId');
+
+        try {
+            // Filtrar las participaciones por el ID de evaluación
+            $participaciones = DB::table('ere.iiee_participa_evaluaciones')
+                ->join('ere.evaluacion', 'ere.iiee_participa_evaluaciones.iEvaluacionId', '=', 'ere.evaluacion.iEvaluacionId')
+                ->select('ere.iiee_participa_evaluaciones.iIieeId', 'ere.evaluacion.cEvaluacionNombre')
+                ->where('ere.iiee_participa_evaluaciones.iEvaluacionId', $iEvaluacionId) // Agregar la condición where
+                ->get();
+
+            return response()->json(['data' => $participaciones]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Error al obtener las participaciones', 'message' => $e->getMessage()], 500);
+        }
+    }
 }
