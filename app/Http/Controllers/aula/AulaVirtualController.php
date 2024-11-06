@@ -293,6 +293,8 @@ class AulaVirtualController extends ApiController
                 return $this->errorResponse(null, $message);
             }
 
+            $evaluacion->cEvaluacionArchivoAdjunto = json_decode($evaluacion->cEvaluacionArchivoAdjunto ?? '[]');
+
             return $this->successResponse($evaluacion, 'Datos obtenidos correctamente');
         }
     }
@@ -300,7 +302,7 @@ class AulaVirtualController extends ApiController
     {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
-            
+
             return $this->successResponse(
                 $preguntas,
                 // 'Datos Obtenidos Correctamente'
