@@ -33,13 +33,12 @@ trait handleErrorDb
             'trace' => array_slice($e->getTrace(), 0, 5)
         ];
 
-
         if ($e instanceof QueryException) {
             // Errores de base de datos
             $errorInfo = $e->errorInfo;
-            $errorCode = $e->getCode();
+            $errorCode = $e->errorInfo[1];
             if ($errorCode >= 50000) {
-                $returnMessage = substr($errorInfo[2] ?? $defaultMessage, 0, 200);
+                $returnMessage = substr($errorInfo[2] ?? $defaultMessage, 54);
             } else {
                 $returnMessage = $defaultMessage;
             }
