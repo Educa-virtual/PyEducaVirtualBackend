@@ -187,4 +187,17 @@ class EvaluacionController extends ApiController
         DB::commit();
         return $this->successResponse(null, $resp[0]->mensaje);
     }
+
+    public function anularPublicacionEvaluacion(Request $request)
+    {
+        $iEvaluacionId = $this->decodeId($request->iEvaluacionId ?? 0);
+        try {
+            $resp = DB::select('exec eval.SP_DEL_anularPublicacionEvaluacionById @_iEvaluacionId = ?', [$iEvaluacionId]);
+            $resp = $resp[0];
+            return $this->successResponse(null, $resp->mensaje);
+        } catch (Exception $e) {
+            $mensaje = $this->handleAndLogError($e, 'Error al anular la publicación');
+            return $this->errorResponse(null, $mensaje);
+        }
+    }
 }
