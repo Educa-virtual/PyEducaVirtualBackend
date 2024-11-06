@@ -332,4 +332,29 @@ class TareasController extends ApiController
     }
 
     public function crearActualizarGrupo(Request $request) {}
+
+    public function obtenerTareaxiTareaidxiEstudianteId(Request $request)
+    {
+        if ($request->iTareaId) {
+            $iTareaId = $this->hashids->decode($request->iTareaId);
+            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
+        }
+        $parametros = [
+            $iTareaId,
+            $request->iEstudianteId,
+        ];
+
+        try {
+            $data = DB::select('exec aula.SP_SEL_tareasxiTareaIdxiEstudianteId
+                ?,?', $parametros);
+
+            $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
 }
