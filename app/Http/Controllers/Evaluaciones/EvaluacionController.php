@@ -68,7 +68,8 @@ class EvaluacionController extends ApiController
             $request->dtEvaluacionInicio ?? NULL,
             $request->dtEvaluacionFin ?? NULL,
             $request->iEvaluacionDuracionHoras,
-            $request->iEvaluacionDuracionMinutos
+            $request->iEvaluacionDuracionMinutos,
+            $request->cEvaluacionArchivoAdjunto
         ];
         try {
             $data = DB::select('exec eval.SP_INS_UPD_evaluacionAula
@@ -88,6 +89,7 @@ class EvaluacionController extends ApiController
                 , @_dtEvaluacionFin = ?
                 , @_iEvaluacionDuracionHoras  = ?
                 , @_iEvaluacionDuracionMinutos  = ?
+                , @_cEvaluacionArchivoAdjunto = ?
             ', $params);
             $data = $data[0];
             $iEvaluacionId = $data->id;
