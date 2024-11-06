@@ -150,4 +150,35 @@ class TareaEstudiantesController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+    public function entregarEstudianteTarea(Request $request)
+    {
+        if ($request->iTareaId) {
+            $iTareaId = $this->hashids->decode($request->iTareaId);
+            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
+        }
+        $parametros = [
+            $iTareaId,
+            $request->iEstudianteId,
+            $request->cTareaEstudianteUrlEstudiante,
+        ];
+
+        try {
+            $data = DB::select('exec aula.SP_UPD_tareaEstudiantesxEntregarEstudianteTarea
+                ?,?,?', $parametros);
+
+            if ($data[0]->iTareaEstudianteId > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
 }
