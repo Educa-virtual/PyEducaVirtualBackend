@@ -128,8 +128,6 @@ class TareaEstudiantesController extends Controller
             $request->dtActualizado                         ??      NULL,
             $request->iTareaCabGrupoId                      ??      NULL
 
-            //$request->iCredId
-
         ];
 
         try {
