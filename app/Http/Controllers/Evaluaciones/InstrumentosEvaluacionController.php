@@ -5,6 +5,7 @@ namespace App\Http\Controllers\evaluaciones;
 use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
+use App\Models\eval\InstrumentoEvaluacion;
 use App\Repositories\GeneralRepository;
 use Carbon\Carbon;
 use Exception;
@@ -23,24 +24,15 @@ class InstrumentosEvaluacionController extends ApiController
         $iCursoId = $this->decodeId($request->iCursoId ?? 0);
 
         $params = [
-            $request->iInstrumentoId ?? 0,
-            $iDocenteId,
-            $idDocCursoId,
-            $iCursoId,
-            $request->busqueda ?? ''
+            'iInstrumentoId' => $request->iInstrumentoId ?? 0,
+            'iDocenteId' => $iDocenteId,
+            'idDocCursoId' => $idDocCursoId,
+            'iCursoId' => $iCursoId,
+            'busqueda' => $request->busqueda ?? ''
         ];
         try {
-            $data = DB::select('exec eval.SP_SEL_instrumentoEvaluaciones
-                @_iInstrumentoId = ?
-                ,@_iDocenteId = ?
-                ,@_idDocCursoId = ?
-                ,@_iCursoId = ?
-                ,@_busqueda = ?
-            ', $params);
-            foreach ($data as $key => $item) {
-                $criterios = $item->criterios ?? '[]';
-                $data[$key]->criterios  = json_decode($criterios, true);
-            }
+            $instrumento = new InstrumentoEvaluacion();
+            $data = $instrumento->obtener($params);
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');

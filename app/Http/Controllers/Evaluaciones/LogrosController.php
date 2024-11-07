@@ -35,10 +35,10 @@ class LogrosController extends ApiController
      */
     public function store(Request $request)
     {
-        $iNivelLogroEvaId  = (int) $request->iNivelLogroEvaId ?? 0;
+        $iNivelLogroEvaId  = $this->decodeId($request->iNivelLogroEvaId ?? 0);
         $paramsToSave = json_encode([
             'cNivelLogroEvaDescripcion' => $request->cNivelLogroEvaDescripcion,
-            'iEvalPregId' => $request->iEvalPregId,
+            'iEvalPregId' => $this->decodeId($request->iEvalPregId ?? 0),
         ]);
 
         $paramsToUpdate = json_encode([
@@ -60,7 +60,7 @@ class LogrosController extends ApiController
 
             return $this->successResponse(['id' => $iNivelLogroEvaId], 'Cambios realizados correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al guardar los cambios');
+            $message = $this->handleAndLogError($e, 'Error al guardar los cambios.');
             return $this->errorResponse(null, $message);
         }
     }
