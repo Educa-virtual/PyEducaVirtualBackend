@@ -202,44 +202,31 @@ class EvaluacionesController extends ApiController
         }
     }
 
-    public function ereFunInsCursos(Request $request)
+
+    public function obtenerCursos()
     {
-        // Validar los datos entrantes
-        $validated = $request->validate([
-            'iEvaluacionId' => 'required|integer',
-            'iTipoCursoId' => 'required|integer',
-            'iCurrId' => 'required|integer', // Agrega iCurrId a la validación
-            'cCursoNombre' => 'required|string|max:100',
-            'nCursoCredTeoria' => 'required|numeric',
-            'nCursoCredPractica' => 'required|numeric',
-            'cCursoDescripcion' => 'required|string',
-            'nCursoTotalCreditos' => 'required|numeric',
-            'cCursoPerfilDocente' => 'required|string',
-            'iCursoTotalHoras' => 'required|integer',
-            'iCursoEstado' => 'required|integer',
-            'iEstado' => 'required|integer',
-            'iSesionId' => 'required|integer',
-        ]);
+        $campos = 'iCursoId,cCursoNombre';
+        $where = '';
+        $params = [
+            'acad',
+            'cursos',
+            $campos,
+            $where
+        ];
+        try {
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
+                @nombreEsquema = ?,
+                @nombreTabla = ?,    
+                @campos = ?,        
+                @condicionWhere = ?
+            ', $params);
 
-        // Ejecutar el procedimiento almacenado (incluyendo iCurrId)
-        $result = DB::statement('EXEC [ere].[SP_INS_InsertarExamenCurso] 
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', [
-            $request->iEvaluacionId,
-            $request->iTipoCursoId,
-            $request->iCurrId,
-            $request->cCursoNombre,
-            $request->nCursoCredTeoria,
-            $request->nCursoCredPractica,
-            $request->cCursoDescripcion,
-            $request->nCursoTotalCreditos,
-            $request->cCursoPerfilDocente,
-            $request->iCursoTotalHoras,
-            $request->iCursoEstado,
-            $request->iEstado,
-            $request->iSesionId
-        ]);
-
-        // Devolver la respuesta con el ID del curso insertado
-        return response()->json(['iCursoId' => $result], 200);
+            return $this->successResponse(
+                $preguntas,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Erro No!');
+        }
     }
 }
