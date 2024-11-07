@@ -187,7 +187,7 @@ class ProgramacionActividadesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec SP_aulaCrudTareaEstudiantes
+            $data = DB::select('exec aula.SP_aulaCrudProgramacionActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             switch ($request->opcion) {
