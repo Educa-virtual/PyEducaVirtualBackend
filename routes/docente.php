@@ -94,6 +94,6 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('list', [FechasImportantesController::class, 'list']);
   });
   Route::group(['prefix' => 'reporte_mensual'], function () {
-    Route::get('report', [AsistenciaController::class, 'report']);
+    Route::get('report/{tipoReporte}', [AsistenciaController::class, 'report']);
   });
 });
