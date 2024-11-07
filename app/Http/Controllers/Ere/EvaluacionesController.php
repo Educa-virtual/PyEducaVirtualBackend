@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 //use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\Ere\EreEvaluacion;
-use Carbon\Carbon;
+//use Carbon\Carbon;
 
 class EvaluacionesController extends ApiController
 {
@@ -52,7 +52,6 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionLiberarCuadernillo,
             $request->dtEvaluacionLiberarResultados
         ];
-
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
             $evaluaciones = EreEvaluacion::guardarEvaluaciones($params);
@@ -80,7 +79,6 @@ class EvaluacionesController extends ApiController
             $ultimaEvaluacion = DB::table('ere.evaluacion')
                 ->orderBy('iEvaluacionId', 'desc')
                 ->first();
-
             return response()->json(['data' => $ultimaEvaluacion ? [$ultimaEvaluacion] : []]);
         } catch (Exception $e) {
             return response()->json(['error' => 'Error al obtener los datos', 'message' => $e->getMessage()], 500);
@@ -103,27 +101,16 @@ class EvaluacionesController extends ApiController
             return response()->json(['status' => 'error', 'message' => 'Error al guardar los datos', 'error' => $e->getMessage()], 500);
         }
     }
-    public function eliminarParticipacion($id)
+
+    public function eliminarParticipacion(Request $request)
     {
-        $id = (int)$id; // Asegúrate de que sea un número 
-        if ($id <= 0) {
-            return response()->json(['status' => 'error', 'message' => 'ID inválido'], 400);
-        }
-        try {
-            $deleted = DB::table('ere.iiee_participa_evaluaciones')
-                ->where('iIieeId', $id)
-                ->delete();
+        $ids = $request->input('ids'); // Recibimos un array de IDs de participaciones
+        DB::table('ere.iiee_participa_evaluaciones')
+            ->whereIn('iIieeId', $ids)  // Eliminamos todas las participaciones con los IDs proporcionados
+            ->delete();
 
-            if ($deleted) {
-                return response()->json(['status' => 'success', 'message' => 'Datos eliminados correctamente']);
-            } else {
-                return response()->json(['status' => 'error', 'message' => 'No se encontró el registro para eliminar'], 404);
-            }
-        } catch (Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Error al eliminar los datos', 'error' => $e->getMessage()], 500);
-        }
+        return response()->json(['message' => 'Participaciones eliminadas exitosamente']);
     }
-
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
         // Validar solo los campos opcionales
@@ -179,26 +166,80 @@ class EvaluacionesController extends ApiController
 
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
-    // Function para obtener las evaluaciones de participación por evaluación
+
     public function obtenerParticipaciones(Request $request)
     {
         // Obtener el ID de evaluación del parámetro de consulta
         $iEvaluacionId = $request->query('iEvaluacionId');
+
         // Verificar si el ID no es nulo antes de hacer la consulta
         if ($iEvaluacionId === null) {
             return response()->json(['error' => 'ID de evaluación no proporcionado'], 400);
         }
+
         try {
-            // Filtrar las participaciones por el ID de evaluación
-            $participaciones = DB::table('ere.iiee_participa_evaluaciones')
-                ->join('ere.evaluacion', 'ere.iiee_participa_evaluaciones.iEvaluacionId', '=', 'ere.evaluacion.iEvaluacionId')
-                ->select('ere.iiee_participa_evaluaciones.iIieeId', 'ere.evaluacion.cEvaluacionNombre')
-                ->where('ere.iiee_participa_evaluaciones.iEvaluacionId', $iEvaluacionId) // Agregar la condición where
+            // Filtrar las participaciones por el ID de evaluación y obtener la información adicional de las instituciones
+            $participaciones = DB::table('acad.institucion_educativas')
+                ->join('acad.nivel_tipos', 'acad.institucion_educativas.iNivelTipoId', '=', 'acad.nivel_tipos.iNivelTipoId')
+                ->join('grl.distritos', 'acad.institucion_educativas.iDsttId', '=', 'grl.distritos.iDsttId')
+                ->join('grl.provincias', 'grl.distritos.iPrvnId', '=', 'grl.provincias.iPrvnId')
+                ->leftJoin('ere.iiee_participa_evaluaciones', 'acad.institucion_educativas.iIieeId', '=', 'ere.iiee_participa_evaluaciones.iIieeId')
+                ->select(
+                    'acad.institucion_educativas.iIieeId',
+                    'acad.institucion_educativas.cIieeCodigoModular',
+                    'acad.institucion_educativas.cIieeNombre',
+                    'acad.nivel_tipos.cNivelTipoNombre',
+                    'grl.distritos.cDsttNombre',
+                    'grl.provincias.cPrvnNombre',
+                    'ere.iiee_participa_evaluaciones.iEvaluacionId'
+                )
+                ->where('ere.iiee_participa_evaluaciones.iEvaluacionId', $iEvaluacionId) // Filtrar por ID de evaluación
                 ->get();
 
             return response()->json(['data' => $participaciones]);
         } catch (Exception $e) {
             return response()->json(['error' => 'Error al obtener las participaciones', 'message' => $e->getMessage()], 500);
         }
+    }
+
+    public function ereFunInsCursos(Request $request)
+    {
+        // Validar los datos entrantes
+        $validated = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+            'iTipoCursoId' => 'required|integer',
+            'iCurrId' => 'required|integer', // Agrega iCurrId a la validación
+            'cCursoNombre' => 'required|string|max:100',
+            'nCursoCredTeoria' => 'required|numeric',
+            'nCursoCredPractica' => 'required|numeric',
+            'cCursoDescripcion' => 'required|string',
+            'nCursoTotalCreditos' => 'required|numeric',
+            'cCursoPerfilDocente' => 'required|string',
+            'iCursoTotalHoras' => 'required|integer',
+            'iCursoEstado' => 'required|integer',
+            'iEstado' => 'required|integer',
+            'iSesionId' => 'required|integer',
+        ]);
+
+        // Ejecutar el procedimiento almacenado (incluyendo iCurrId)
+        $result = DB::statement('EXEC [ere].[SP_INS_InsertarExamenCurso] 
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', [
+            $request->iEvaluacionId,
+            $request->iTipoCursoId,
+            $request->iCurrId,
+            $request->cCursoNombre,
+            $request->nCursoCredTeoria,
+            $request->nCursoCredPractica,
+            $request->cCursoDescripcion,
+            $request->nCursoTotalCreditos,
+            $request->cCursoPerfilDocente,
+            $request->iCursoTotalHoras,
+            $request->iCursoEstado,
+            $request->iEstado,
+            $request->iSesionId
+        ]);
+
+        // Devolver la respuesta con el ID del curso insertado
+        return response()->json(['iCursoId' => $result], 200);
     }
 }

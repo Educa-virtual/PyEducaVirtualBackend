@@ -79,12 +79,17 @@ Route::group(['prefix' => 'ere'], function () {
 
         //!Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
-        Route::delete('eliminarParticipacion/{id}', [EvaluacionesController::class, 'eliminarParticipacion']);
-
+        Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
+        //Agregando participacion nuevo
+        Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
         //! Ruta para actualizar la evaluación
         Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
         //! Ruta para obtener las participaciones
         Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        //Nuevo Ver con Datos completos
+        Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
+        //Insertar cursos
+        Route::post('ereFunInsCursos', [EvaluacionesController::class, 'ereFunInsCursos']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
