@@ -9,7 +9,7 @@ use Throwable;
 class Evaluacion
 {
     protected $schema = 'eval';
-    protected $table = 'evaluacion_preguntas';
+    protected $table = 'evaluaciones';
 
     public function guardarPreguntas($evaluacionId, $preguntas)
     {
@@ -38,8 +38,8 @@ class Evaluacion
 
         if (!$this->existePregunta($evaluacionId, $pregunta['iPreguntaId'])) {
             $params = [
-                $this->schema,
-                $this->table,
+                'eval',
+                'evaluacion_preguntas',
                 $camposJson
             ];
 
@@ -53,7 +53,7 @@ class Evaluacion
     protected function existePregunta($evaluacionId, $bancoId)
     {
         $existe = DB::select(
-            "select 1 from {$this->schema}.{$this->table} where iEvaluacionId = ? AND iBancoId = ?",
+            "select 1 from eval.evaluacion_preguntas where iEvaluacionId = ? AND iBancoId = ?",
             [$evaluacionId, $bancoId]
         );
         return count($existe) > 0;
@@ -74,5 +74,16 @@ class Evaluacion
             json_encode(['iEvaluacionNroPreguntas' => $total]),
             json_encode($where)
         );
+    }
+
+    public function actualizarEvaluacion($datos, $where)
+    {
+        $resp =  GeneralRepository::actualizar(
+            $this->schema,
+            $this->table,
+            json_encode($datos),
+            json_encode($where)
+        );
+        return $resp;
     }
 }

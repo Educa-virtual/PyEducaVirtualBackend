@@ -20,7 +20,7 @@ class LogrosController extends ApiController
             $request->iEvalPregId,
         ];
         try {
-            $logros = DB::select('exec eval.Sp_SEL_pregunta_logros
+            $logros = DB::select('exec eval.SP_SEL_pregunta_logros
                 @_iEvalPregId = ?
             ', $params);
             return $this->successResponse($logros, 'Datos obtenidos correctamente');
@@ -88,7 +88,7 @@ class LogrosController extends ApiController
     {
         try {
             $resp = DB::select('
-                exec eval.Sp_DEL_nivel_logro_evaluaciones_id 
+                exec eval.SP_DEL_nivel_logro_evaluaciones_id 
                 @_iNivelLogroEvaId = ?    
             ', [$id]);
             return $this->successResponse($resp, 'Eliminado correctamente');

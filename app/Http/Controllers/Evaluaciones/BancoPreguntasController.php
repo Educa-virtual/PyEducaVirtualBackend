@@ -3,18 +3,26 @@
 namespace App\Http\Controllers\Evaluaciones;
 
 use App\Http\Controllers\ApiController;
+use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\Evaluaciones\BancoRepository;
 use App\Repositories\Evaluaciones\PreguntasEvaluacionRepository;
 use App\Repositories\PreguntasRepository;
 use DateTime;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class BancoPreguntasController extends ApiController
 {
+    protected $hashids;
+
+    public function __construct()
+    {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
 
     public function obtenerBancoPreguntas(Request $request)
     {
@@ -50,7 +58,7 @@ class BancoPreguntasController extends ApiController
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
                 'iCursoId' => $request->iCursoId,
                 'iNivelCicloId' => $request->iNivelCicloId,
-                'iDocenteId' => $request->iDocenteId,
+                'iDocenteId' => $this->decodeId($request->iDocenteId),
             ];
             try {
                 $resp =  PreguntasEvaluacionRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
@@ -83,7 +91,7 @@ class BancoPreguntasController extends ApiController
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 'iBancoId' => $iPreguntaId,
-                'iDocenteId' => $request->iDocenteId,
+                'iDocenteId' => $this->decodeId($request->iDocenteId),
                 'iTipoPregId' => $pregunta['iTipoPregId'],
                 'iCurrContId' => $request->iCurrContId,
                 // 'dtBancoCreacion' => $request->,
@@ -116,7 +124,7 @@ class BancoPreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $respAlt = DB::select('exec eval.Sp_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
+                    $respAlt = DB::select('exec eval.SP_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
                 } catch (Throwable $e) {
                     DB::rollBack();
                     $defaultMessage = $this->handleAndLogError($e, 'Error al eliminar');
@@ -155,7 +163,7 @@ class BancoPreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $resp = DB::select('exec eval.Sp_DEL_alternativa_pregunta  @_iBancoAltId', $paramsAlternativaEliminar);
+                    $resp = DB::select('exec eval.SP_DEL_alternativa_pregunta  @_iBancoAltId', $paramsAlternativaEliminar);
 
                     $resp = $resp[0];
                 } catch (Throwable $e) {
@@ -167,7 +175,7 @@ class BancoPreguntasController extends ApiController
 
             try {
 
-                $resp = DB::select('exec eval.Sp_DEL_pregunta @_iBancoId = ?', [$pregunta['iPreguntaId']]);
+                $resp = DB::select('exec eval.SP_DEL_pregunta @_iBancoId = ?', [$pregunta['iPreguntaId']]);
 
                 if (count($resp) === 0) {
                     return $this->errorResponse($resp, 'Error al eliminar la pregunta.');
@@ -180,7 +188,22 @@ class BancoPreguntasController extends ApiController
                 return $this->errorResponse(null, $message);
             }
         }
-        DB::commit();
+
+        // guarda las preguntas en la evaluacion si se envia el id
+        $iEvaluacionId = (int) $request->iEvaluacionId  ?? 0;
+        if ($iEvaluacionId !== 0) {
+            try {
+                $evaluacionPregunta = new Evaluacion();
+                $preguntas = $evaluacionPregunta->guardarPreguntas(
+                    $iEvaluacionId,
+                    $preguntas
+                );
+            } catch (Throwable $e) {
+                DB::rollBack();
+                $message = $this->handleAndLogError($e, 'Error al guardar los datos');
+                return $this->errorResponse(null, $message);
+            }
+        }
 
         // retornar preguntas con los ids y las alternativas en un array
 
@@ -188,22 +211,22 @@ class BancoPreguntasController extends ApiController
             return $item['iPreguntaId'];
         }, $preguntas);
 
-        $iEvaluacionId = (int) $request->iEvaluacionId  ?? 0;
-        // if ($iEvaluacionId) {
-        // }
-
         $ids = implode(',', $preguntasIds);
         $preguntasResponse = BancoRepository::obtenerPreguntas(['iBancoIds' => $ids]);
+
+        DB::commit();
 
         return $this->successResponse($preguntasResponse, 'Cambios realizados correctamente');
     }
 
     public function obtenerEncabezadosPreguntas(Request $request)
     {
+        $iDocenteId = $this->decodeId($request->iDocenteId);
+
         $params = [
             'iCursoId' => $request['iCursoId'],
             'iNivelCicloId' => $request['iNivelCicloId'],
-            'iDocenteId' => $request['iDocenteId'],
+            'iDocenteId' => $iDocenteId,
             'schema' => 'eval'
         ];
         try {
@@ -222,7 +245,7 @@ class BancoPreguntasController extends ApiController
 
         try {
 
-            $resp = DB::select('exec eval.Sp_DEL_pregunta @_iBancoId = ?', $params);
+            $resp = DB::select('exec eval.SP_DEL_pregunta @_iBancoId = ?', $params);
 
             if (count($resp) === 0) {
                 return $this->errorResponse($resp, 'Error al eliminar la pregunta.');

@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Evaluaciones;
 
+use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\grl\GeneralController;
 use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
-use App\Repositories\GeneralRepository;
 use Exception;
-use Hashids\Hashids;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -17,23 +14,13 @@ use Throwable;
 class EvaluacionController extends ApiController
 {
 
-    protected $hashids;
-
-    public function __construct()
-    {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
-
     public function guardarActualizarEvaluacion(Request $request)
     {
 
         // guardar actualizar programacion actividad
         $iProgActId = (int) $request->iProgActId ?? 0;
-        $iContenidoSemId = $request->iContenidoSemId;
-        if ($request->iContenidoSemId) {
-            $iContenidoSemId = $this->hashids->decode($iContenidoSemId);
-            $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
-        }
+        $iDocenteId = $this->decodeId($request->iDocenteId);
+        $iContenidoSemId = $this->decodeId($request->iContenidoSemId);
 
         $paramsProgramacionActividades = [
             'iProgActId' => $iProgActId,
@@ -47,11 +34,8 @@ class EvaluacionController extends ApiController
             'iEstado' => 1
         ];
 
-        if ($iProgActId == 0) {
-            array_push(
-                $paramsProgramacionActividades,
-                ['iContenidoSemId' => $iContenidoSemId]
-            );
+        if ($iProgActId === 0) {
+            $paramsProgramacionActividades['iContenidoSemId'] = $iContenidoSemId;
         }
 
         DB::beginTransaction();
@@ -74,7 +58,7 @@ class EvaluacionController extends ApiController
             $iProgActId,
             $request->iInstrumentoId ?? NULL,
             $request->iEscalaCalifId ?? NULL,
-            $request->iDocenteId,
+            $iDocenteId,
             $request->dtEvaluacionPublicacion ?? NULL,
             $request->cEvaluacionTitulo,
             $request->cEvaluacionDescripcion,
@@ -87,7 +71,7 @@ class EvaluacionController extends ApiController
             $request->iEvaluacionDuracionMinutos
         ];
         try {
-            $data = DB::select('exec eval.Sp_INS_UPD_evaluacion_aula 
+            $data = DB::select('exec eval.SP_INS_UPD_evaluacion_aula 
                 @_iEvaluacionId = ?
                 , @_iTipoEvalId = ?
                 , @_iProgActId = ?
@@ -147,7 +131,7 @@ class EvaluacionController extends ApiController
         $iEvalPregId = $id;
 
         try {
-            $resp = DB::select('exec eval.Sp_DEL_evaluacion_preguntas @_iEvalPregId = ?', [$iEvalPregId]);
+            $resp = DB::select('exec eval.SP_DEL_evaluacion_preguntas @_iEvalPregId = ?', [$iEvalPregId]);
             $resp = $resp[0];
 
             return $this->successResponse($resp->mensaje, 'Se eliminó correctamente');
@@ -155,5 +139,52 @@ class EvaluacionController extends ApiController
             $message = $this->handleAndLogError($e, 'Error al eliminar la pregunta');
             return $this->errorResponse(null, $message);
         }
+    }
+
+    public function publicarEvaluacion(Request $request)
+    {
+        $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
+        $paramsGenerarPreguntas = [
+            $iEvaluacionId,
+            $this->decodeId($request->iCursoId),
+            $this->decodeId($request->iSeccionId),
+            $this->decodeId($request->iYAcadId),
+            $this->decodeId($request->iSemAcadId),
+            $this->decodeId($request->iNivelGradoId),
+            $this->decodeId($request->iCurrId),
+        ];
+
+        DB::beginTransaction();
+
+        try {
+            $evaluacion = new Evaluacion();
+            $params = ['iEstado' => (int) $request->iEstado];
+            $where = [new WhereCondition('iEvaluacionId', $iEvaluacionId)];
+            $resp = $evaluacion->actualizarEvaluacion($params, $where);
+        } catch (Exception $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al publicar la evaluación');
+            return $this->errorResponse(null, $message);
+        }
+
+        // agregar preguntas para los estudiantes
+        $resp = null;
+        try {
+            $resp = DB::select('exec eval.SP_INS_generar_preguntas_estudiantes 
+                @_iEvaluacionId = ?
+                ,@_iCursoId = ?
+                ,@_iSeccionId  = ?
+                ,@_iYAcadId = ?
+                ,@_iSemAcadId = ?
+                ,@_iNivelGradoId = ?
+                ,@_iCurrId = ?
+            ', $paramsGenerarPreguntas);
+        } catch (Exception $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al generar las preguntas a estudiantes');
+            return $this->errorResponse(null, $message);
+        }
+        DB::commit();
+        return $this->successResponse(null, $resp[0]->mensaje);
     }
 }

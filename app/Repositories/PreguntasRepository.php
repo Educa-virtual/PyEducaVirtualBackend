@@ -2,10 +2,17 @@
 
 namespace App\Repositories;
 
+use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
 
 class PreguntasRepository
 {
+    protected $hashids;
+
+    public function __construct()
+    {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
 
     public static function obtenerBancoPreguntasByParams($params)
     {
@@ -19,7 +26,7 @@ class PreguntasRepository
             $params['iEncabPregId'] ?? 0
         ];
 
-        $preguntasDB = DB::select('exec ere.Sp_SEL_banco_preguntas @_iCursoId = ?,
+        $preguntasDB = DB::select('exec ere.SP_SEL_banco_preguntas @_iCursoId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
              @_iEncabPregId = ? 
             ', $params);
@@ -72,6 +79,7 @@ class PreguntasRepository
 
     public static function obtenerCabecerasPregunta($params)
     {
+
         $campos = 'cEncabPregTitulo, cEncabPregContenido';
         $where = '1=1 ';
         $where .= " AND iCursoId = {$params['iCursoId']}";

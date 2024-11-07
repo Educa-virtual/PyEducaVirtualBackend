@@ -8,23 +8,29 @@ use App\Http\Controllers\Controller;
 use App\Repositories\GeneralRepository;
 use Carbon\Carbon;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class InstrumentosEvaluacionController extends ApiController
 {
+
     public function index(Request $request)
     {
+        $iDocenteId = $this->decodeId($request->iDocenteId ?? 0);
+        $idDocCursoId = $this->decodeId($request->idDocCursoId ?? 0);
+        $iCursoId = $this->decodeId($request->iCursoId ?? 0);
+
         $params = [
             $request->iInstrumentoId ?? 0,
-            $request->iDocenteId ?? 0,
-            $request->idDocCursoId ?? 0,
-            $request->iCursoId ?? 0,
+            $iDocenteId,
+            $idDocCursoId,
+            $iCursoId,
             $request->busqueda ?? ''
         ];
         try {
-            $data = DB::select('exec eval.SEL_instrumento_evaluaciones
+            $data = DB::select('exec eval.SP_SEL_instrumento_evaluaciones
                 @_iInstrumentoId = ?
                 ,@_iDocenteId = ?
                 ,@_idDocCursoId = ?
@@ -45,13 +51,16 @@ class InstrumentosEvaluacionController extends ApiController
     public function store(Request $request)
     {
         $iInstrumentoId = (int) $request->iInstrumentoId;
+        $iDocenteId = $this->decodeId($request->iDocenteId ?? 0);
+        $idDocCursoId = $this->decodeId($request->idDocCursoId ?? 0);
+        $iCursoId = $this->decodeId($request->iCursoId ?? 0);
         $iSesionId = 1;
         DB::beginTransaction();
         if ($iInstrumentoId == 0) {
             $paramsInstrumentoToInsert = json_encode([
-                'iDocenteId' => $request->iDocenteId,
-                'idDocCursoId' => $request->idDocCursoId,
-                'iCursoId' => $request->iCursoId,
+                'iDocenteId' => $iDocenteId,
+                'idDocCursoId' => $idDocCursoId,
+                'iCursoId' => $iCursoId,
                 'cInstrumentoNombre' => $request->cInstrumentoNombre,
                 'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion,
                 'dtInstrumentoCreacion' =>  $this->getDateToDB(),
@@ -141,6 +150,7 @@ class InstrumentosEvaluacionController extends ApiController
                             'iCriterioId' => $iCriterioId,
                             'iEscalaCalifId' => $nivel['iEscalaCalifId'],
                             'cNivelEvaNombre' => $nivel['cNivelEvaNombre'],
+                            'iNivelEvaValor' => $nivel['iNivelEvaValor'],
                             'cNivelEvaDescripcion' => $nivel['cNivelEvaDescripcion'],
                             'iSesionId' => $iSesionId,
                         ]);
@@ -157,6 +167,7 @@ class InstrumentosEvaluacionController extends ApiController
                             'iEscalaCalifId' => $nivel['iEscalaCalifId'],
                             'cNivelEvaNombre' => $nivel['cNivelEvaNombre'],
                             'cNivelEvaDescripcion' => $nivel['cNivelEvaDescripcion'],
+                            'iNivelEvaValor' => $nivel['iNivelEvaValor'],
                             'iSesionId' => $iSesionId,
                             'dtActualizado' => $this->getDateToDB()
                         ]);
@@ -187,7 +198,7 @@ class InstrumentosEvaluacionController extends ApiController
     {
         $cTipo = $request->cTipo;
         try {
-            $resp = DB::select('exec eval.Sp_DEL_instrumento_evaluacion_rubrica_id 
+            $resp = DB::select('exec eval.SP_DEL_instrumento_evaluacion_rubrica_id 
                 @_id = ?, @_cTipo = ?', [$id, $cTipo]);
             return $this->successResponse(null, 'Eliminado correctamente');
         } catch (Exception $e) {

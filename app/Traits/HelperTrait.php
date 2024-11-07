@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use Carbon\Carbon;
 
-trait Helper
+trait HelperTrait
 {
     protected function getDate() {}
 

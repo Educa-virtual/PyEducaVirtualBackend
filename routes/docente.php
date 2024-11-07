@@ -15,6 +15,7 @@ use App\Http\Controllers\api\acad\EstudiantesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\FechasImportantesController;
 use App\Http\Controllers\acad\IndicadorActividadesController;
+use App\Http\Controllers\acad\MaterialEducativoDocentesController;
 use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
 use App\Http\Controllers\acad\TipoIndicadorLogrosController;
 use App\Http\Controllers\api\acad\GradoAcademicosController;
@@ -95,5 +96,11 @@ Route::group(['prefix' => 'docente'], function () {
   });
   Route::group(['prefix' => 'reporte_mensual'], function () {
     Route::get('report/{tipoReporte}', [AsistenciaController::class, 'report']);
+  });
+  Route::group(['prefix' => 'material-educativo-docentes'], function () {
+    Route::post('list', [MaterialEducativoDocentesController::class, 'list']);
+    Route::post('store', [MaterialEducativoDocentesController::class, 'store']);
+    Route::post('update', [MaterialEducativoDocentesController::class, 'update']);
+    Route::post('delete', [MaterialEducativoDocentesController::class, 'delete']);
   });
 });

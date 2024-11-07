@@ -3,6 +3,7 @@
 use App\Http\Controllers\Evaluaciones\BancoPreguntasController;
 use App\Http\Controllers\Evaluaciones\EscalaCalificacionesController;
 use App\Http\Controllers\Evaluaciones\EvaluacionController;
+use App\Http\Controllers\Evaluaciones\EvaluacionEstudiantesController;
 use App\Http\Controllers\evaluaciones\InstrumentosEvaluacionController;
 use App\Http\Controllers\Evaluaciones\LogrosController;
 use App\Http\Controllers\Evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
@@ -28,6 +29,13 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('guardarActualizarPreguntasEvaluacion', [EvaluacionController::class, 'guardarActualizarPreguntasEvaluacion']);
         Route::delete('eliminarPreguntaEvulacion/{id}', [EvaluacionController::class, 'eliminarPreguntaEvulacion']);
         Route::resource('logros', LogrosController::class);
+        Route::post('publicar', [EvaluacionController::class, 'publicarEvaluacion']);
+        Route::post('anula-publicacion', [EvaluacionController::class, 'anularPublicacionEvaluacion']);
+
+        Route::group(['prefix' => 'estudiantes'], function () {
+            Route::resource('', EvaluacionEstudiantesController::class);
+            Route::get('obtenerEvaluacionRespuestasEstudiante', [EvaluacionEstudiantesController::class, 'obtenerEvaluacionRespuestasEstudiante']);
+        });
     });
 
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
@@ -35,4 +43,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     });
 
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
+
+    Route::group(['prefix' => 'escala-calificaciones'], function () {
+        Route::post('list', [EscalaCalificacionesController::class, 'list']);
+    });
 });

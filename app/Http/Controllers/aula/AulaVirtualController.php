@@ -99,7 +99,7 @@ class AulaVirtualController extends ApiController
         // }//
         // // fin del codigo
 
-        DB::beginTransaction();
+        // DB::beginTransaction();
         try {
             $resp = ProgramacionActividadesRepository::guardarActualizar(json_encode($paramsProgramacionActividades));
             if ($iProgActId === 0) {
@@ -168,7 +168,6 @@ class AulaVirtualController extends ApiController
         return new JsonResponse($response, $codeResponse);
     }
     // fin de del codigo
-
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
         $iSilaboId = $request->iSilaboId;
@@ -179,7 +178,7 @@ class AulaVirtualController extends ApiController
 
         $contenidos = [];
         try {
-            $contenidos = DB::select('exec aula.Sp_SEL_contenido_semana_programacion_actividades @_iSilaboId = ?', $params);
+            $contenidos = DB::select('exec aula.SP_SEL_contenido_semana_programacion_actividades @_iSilaboId = ?', $params);
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
@@ -227,15 +226,15 @@ class AulaVirtualController extends ApiController
     //funcion eliminarActividad
     public function eliminarActividad(Request $request)
     {
-        $iProgActId = (int) $request->iProgActId;
-        $iActTipoId = (int) $request->iActTipoId;
-
+        $iProgActId = (int) $this->decodeId($request->iProgActId);
+        $iActTipoId = (int) $this->decodeId($request->iActTipoId);
         DB::beginTransaction();
         // evaluacion
         if ($iActTipoId === 3) {
-            $iEvaluacionId = (int) $request->ixActivadadId;
+            $iEvaluacionId = $this->decodeId($request->ixActivadadId);
+            DB::rollBack();
             try {
-                $resp = DB::select('exec eval.Sp_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
+                $resp = DB::select('exec eval.SP_DEL_evaluacion @_iEvaluacionId = ?', [$iEvaluacionId]);
             } catch (Throwable $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al eliminar');
@@ -255,7 +254,6 @@ class AulaVirtualController extends ApiController
         return $this->successResponse(null, 'Eliminado correctamente');
         // eliminar archivos
     }
-
     // obtener actviidad
     public function obtenerActividad(Request $request)
     {
@@ -276,7 +274,7 @@ class AulaVirtualController extends ApiController
                     'iEvaluacionId' => $iEvaluacionId
                 ];
                 $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
-                
+
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
                 }
@@ -321,12 +319,46 @@ class AulaVirtualController extends ApiController
             'cForoTitulo' => 'required|string',
             'cForoDescripcion' => 'required|string',
             'iForoCatId' => 'required|integer',
-            'dtForoInicio' => 'required|date',
+            //'dtForoInicio' => 'required|date',
             'iEstado' => 'required|integer',
-            'dtForoFin' => 'required|date'
+            //'dtForoFin' => 'required|date'
         ]);
+        $iProgActId = (int) $request->iProgActId ?? 0;
+        $iContenidoSemId = $request->iContenidoSemId;
+        if ($request->iContenidoSemId) {
+            $iContenidoSemId = $this->hashids->decode($iContenidoSemId);
+            $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
+        }
+        $paramsProgramacionActividades = [
+            'iProgActId' => $iProgActId,
+            //'iContenidoSemId' => $iContenidoSemId,
+            'iContenidoSemId' => 1,
+            //'iActTipoId' => $request->iActTipoId,
+            'iActTipoId' => 2,
+            'iHorarioId' => $request->iHorarioId ?? null,
+            'dtProgActPublicacion' => $request->dtForoPublicacion,
+            'dtProgActInicio' => $request -> dtForoInicio,
+            'dtProgActFin' => $request -> dtForoFin,
+            'cProgActTituloLeccion' => $request->cForoTitulo,
+            'cProgActDescripcion' => $request->cForoDescripcion,
+            'iEstado' => $request -> iEstado
+            //'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
+        ];
+
+        DB::beginTransaction();
+        try {
+            $resp = ProgramacionActividadesRepository::guardarActualizar(json_encode($paramsProgramacionActividades));
+            if ($iProgActId === 0) {
+                $iProgActId = $resp->id;
+            }
+        } catch (Throwable $e) {
+            DB::rollBack();
+            $message = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+            return $this->errorResponse(null, $message);
+        }
+
         $data = [
-            116,
+            $iProgActId,
             $request->iForoCatId,
             1,
             $request->cForoTitulo,
@@ -339,10 +371,88 @@ class AulaVirtualController extends ApiController
             1,
 
         ];
+        try {
+            $resp = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
 
-        $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+            DB::commit();
+            if ($resp[0]->id > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+
+        // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
-    public function obtenerCalificacion(){
+    // Guardar respuesta de Foro
+    public function guardarRespuesta(Request $request){
+        //return $request -> all();
+        $request -> validate([
+            'cForoRptaRespuesta' => 'required|string'
+        ]);
+
+        $data = [
+            //$iEstudianteId ?? null
+            7,
+            //$iForoId ?? null,
+            30,
+            NULL,
+            // $iForoRptaPadre ?? null,
+            $iDocenteId ?? null,
+            $request -> cForoRptaRespuesta,
+            $request -> nForoRptaNota ?? null,
+            $request -> dtForoRptaPublicacion ?? null,
+            $request -> cForoRptaDocente ?? null,
+            $request -> iEstado ?? null,
+            $request -> iSesionId ?? null,
+            $request -> dtCreado ?? null,
+            $request -> dtActualizado ?? null,
+            $request -> iEscalaCalifId ?? null
+        ];
+         //return $data;
+        try{
+            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaForo]
+                @iEstudianteId = ?,
+                @iForoId = ?,
+                @iForoRptaPadre = ?,
+                @iDocenteId = ?,
+                @cForoRptaRespuesta = ?,
+                @nForoRptaNota = ?,
+                @dtForoRptaPublicacion = ?,
+                @cForoRptaDocente = ?,
+                @iEstado = ?,
+                @iSesionId = ?,
+                @dtCreado = ?,
+                @dtActualizado = ?,
+                @iEscalaCalifId = ?', $data);
+            DB::commit();
+            if ($resp[0]->id > 0) {
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        }
+        catch (Exception $e) {
+            $this->handleAndLogError($e);
+            DB::rollBack();
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+    public function obtenerCalificacion()
+    {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_escalaCalificacion');
 
@@ -355,29 +465,29 @@ class AulaVirtualController extends ApiController
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
-    public function obtenerForo(Request $request){
+    public function obtenerForo(Request $request)
+    {
 
         // return $request -> all();
         $iProgActId = (int) $request->iProgActId;
         $iActTipoId = (int) $request->iActTipoId;
 
-        if($iActTipoId === 2){
+        if ($iActTipoId === 2) {
             $iForoId = $request->ixActivadadId;
             $iForoId = $this->hashids->decode($iForoId);
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
-            
+
             $foro = null;
             try {
                 $params = [
                     'iForoId' => $iForoId
                 ];
                 $resp = ProgramacionActividadesRepository::obtenerActividadForo($params);
-                    
+
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
                 }
                 $foro = $resp[0];
-
             } catch (Throwable $e) {
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
                 return $this->errorResponse(null, $message);
@@ -394,6 +504,20 @@ class AulaVirtualController extends ApiController
 
             return $this->successResponse($foro, 'Datos obtenidos correctamente');
         }
-        
+    }
+    public function obtenerRespuestaForo()
+    {
+        $where = '30';    
+        try {
+            $preguntas = DB::select('EXEC aula.SP_SEL_RespuestaXiDForo ?',[$where]);
+
+            return $this->successResponse(
+                $preguntas,
+                'Datos Obtenidos Correctamente'
+            );
+        } catch (Exception $e) {
+
+            return $this->errorResponse($e, 'Error Upssss!');
+        }
     }
 }

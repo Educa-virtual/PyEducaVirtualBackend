@@ -4,6 +4,8 @@ use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\ProgramacionActividadesController;
+use App\Http\Controllers\aula\TareaCabeceraGruposController;
+use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
 
@@ -22,6 +24,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::post('obtenerCategorias', [AulaVirtualController::class, 'obtenerCategorias']);
             Route::post('obtenerCalificacion', [AulaVirtualController::class, 'obtenerCalificacion']);
             Route::get('obtenerForo', [AulaVirtualController::class, 'obtenerForo']);
+            Route::post('guardarRespuesta',[AulaVirtualController::class,'guardarRespuesta']);
+            Route::get('obtenerRespuestaForo',[AulaVirtualController::class,'obtenerRespuestaForo']);
         });
 
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);

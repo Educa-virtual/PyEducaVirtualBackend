@@ -2,7 +2,6 @@
 
 namespace App\Repositories\aula;
 
-use App\Repositories\Evaluaciones\BancoRepository;
 use Illuminate\Support\Facades\DB;
 
 class ProgramacionActividadesRepository
@@ -77,16 +76,16 @@ class ProgramacionActividadesRepository
     {
         $iEvaluacionId = $params['iEvaluacionId'];
 
-
-        $res = DB::select('exec eval.Sp_SEL_evaluaciones_by_id @_iEvaluacionId = ?', [$iEvaluacionId]);
+        $res = DB::select('exec eval.SP_SEL_evaluaciones_by_id @_iEvaluacionId = ?', [$iEvaluacionId]);
         return $res;
     }
-    public static function obtenerActividadForo($params){
-        
+    public static function obtenerActividadForo($params)
+    {
+
         $iForoId = $params['iForoId'];
 
 
-        $res = DB::select('exec eval.Sp_SEL_evaluaciones_by_id @_iEvaluacionId = ?', [$iForoId]);
+        $res = DB::select('exec aula.SP_SEL_Foro @iForoid = ?', [$iForoId]);
         return $res;
     }
 
