@@ -255,4 +255,20 @@ class EvaluacionesController extends ApiController
             return response()->json(['message' => 'Error al insertar cursos', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function obtenerCursosEvaluacion($iEvaluacionId)
+    {
+        // Consulta que obtiene los cursos asociados a la evaluación
+        $cursos = examen_cursos::join('acad.cursos', 'examen_cursos.iCursoId', '=', 'cursos.iCursoId')
+            ->where('examen_cursos.iEvaluacionId', $iEvaluacionId)
+            ->select('cursos.iCursoId', 'cursos.cCursoNombre')
+            ->get();
+
+        // Devolver la respuesta en formato JSON
+        return response()->json([
+            'data' => $cursos,
+            'message' => 'Cursos obtenidos correctamente.',
+            'status' => true
+        ]);
+    }
 }
