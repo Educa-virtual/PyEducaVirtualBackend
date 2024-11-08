@@ -398,7 +398,7 @@ class AulaVirtualController extends ApiController
     {
         //return $request -> all();
         $request->validate([
-            //'iEstudianteId' => 'required|integer',
+            'iEstudianteId' => 'required|integer',
             'cForoRptaRespuesta' => 'required|string',
             'iForoId' => 'required|string'
         ]);
@@ -410,8 +410,7 @@ class AulaVirtualController extends ApiController
         }
 
         $data = [
-            //$request->iEstudianteId,
-            7,
+            $request -> iEstudianteId,
             $iForoId,
             null,
             // $iForoRptaPadre ?? null,
