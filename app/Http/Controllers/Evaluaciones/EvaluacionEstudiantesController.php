@@ -48,6 +48,7 @@ class EvaluacionEstudiantesController extends ApiController
     public function calificarLogros(Request $request)
     {
         $logros = $request->logrosCalificacion;
+        $ixColumn = $request->ixColumn ?? 'iNivelLogroEvaId';
 
         DB::beginTransaction();
         try {
@@ -61,7 +62,7 @@ class EvaluacionEstudiantesController extends ApiController
 
                 $datosInsertar = $datosBase;
                 $datosInsertar['iEvalRptaId'] = $logro['iEvalRptaId'];
-                $datosInsertar['iNivelLogroEvaId'] = $logro['iNivelLogroEvaId'];
+                $datosInsertar[$ixColumn] = $logro[$ixColumn];
 
                 $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
                 if ($logro['iNivelLogroAlcId'] == 0) {
