@@ -48,7 +48,6 @@ class EvaluacionEstudiantesController extends ApiController
     public function calificarLogros(Request $request)
     {
         $logros = $request->logrosCalificacion;
-        $ixColumn = $request->ixColumn ?? 'iNivelLogroEvaId';
 
         DB::beginTransaction();
         try {
@@ -62,7 +61,49 @@ class EvaluacionEstudiantesController extends ApiController
 
                 $datosInsertar = $datosBase;
                 $datosInsertar['iEvalRptaId'] = $logro['iEvalRptaId'];
-                $datosInsertar[$ixColumn] = $logro[$ixColumn];
+                $datosInsertar['iNivelLogroEvaId'] = $logro['iNivelLogroEvaId'];
+
+                $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
+                if ($logro['iNivelLogroAlcId'] == 0) {
+                    $resp = $nivelLogroAlcanzado->guardar(json_encode($datosInsertar));
+                    $logro['iEvalRptaId'] = $resp[0]->id;
+                } else {
+                    $where = json_encode([
+                        new WhereCondition('iNivelLogroAlcId', $iNivelLogroAlcId)
+                    ]);
+
+                    $nivelLogroAlcanzado->actualizar(json_encode($datosBase), $where);
+                }
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            $mensaje =  $this->handleAndLogError($e, 'Error al guardar los cambios');
+            return $this->errorResponse(null, $mensaje);
+        } finally {
+            unset($logro);
+        }
+
+        DB::commit();
+        return $this->successResponse($logros, 'Cambios realizados correctamente');
+    }
+
+    public function calificarLogrosRubrica(Request $request)
+    {
+        $logros = $request->logrosCalificacion;
+
+        DB::beginTransaction();
+        try {
+            foreach ($logros as &$logro) {
+                $iNivelLogroAlcId = $this->decodeId($logro['iNivelLogroAlcId'] ?? 0);
+                $datosBase = [
+                    'cNivelLogroAlcConclusionDescriptiva' => $logro['cNivelLogroAlcConclusionDescriptiva'],
+                    'nNnivelLogroAlcNota' => $logro['nNnivelLogroAlcNota'],
+                    'iEscalaCalifId' => $logro['iEscalaCalifId'],
+                    'iNivelEvaId' => $logro['iNivelEvaId']
+                ];
+
+                $datosInsertar = $datosBase;
+                $datosInsertar['iEvalRptaId'] = $logro['iEvalRptaId'];
 
                 $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
                 if ($logro['iNivelLogroAlcId'] == 0) {
