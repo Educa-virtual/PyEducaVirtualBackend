@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Evaluaciones;
 use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
 use App\Models\eval\BancoPreguntas;
+use App\Models\eval\EvaluacionRespuesta;
 use App\Models\eval\NivelLogroAlcanzadoEvaluacion;
 use Exception;
 use Illuminate\Http\Request;
@@ -17,10 +18,25 @@ class EvaluacionEstudiantesController extends ApiController
         $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
         try {
             $data = DB::select('exec eval.SP_SEL_estudiantesEvaluacion @_iEvaluacionId = ? ', [$iEvaluacionId]);
+            foreach ($data as &$item) {
+                $item->totalPreguntasEvaluacion = (int) $item->totalPreguntasEvaluacion;
+                $item->totalPreguntasCalificadas = (int) $item->totalPreguntasCalificadas;
+                if ($item->totalPreguntasCalificadas < $item->totalPreguntasEvaluacion) {
+                    $item->cEstado = 'PROCESO';
+                }
+                if ($item->totalPreguntasCalificadas === 0) {
+                    $item->cEstado = 'FALTA';
+                }
+                if ($item->totalPreguntasCalificadas === $item->totalPreguntasEvaluacion) {
+                    $item->cEstado = 'REVISADO';
+                }
+            }
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
+        } finally {
+            unset($item);
         }
     }
 
@@ -47,85 +63,29 @@ class EvaluacionEstudiantesController extends ApiController
 
     public function calificarLogros(Request $request)
     {
-        $logros = $request->logrosCalificacion;
+        $request->validate([
+            'iEvalRptaId' => 'required',
+            'logrosCalificacion' => 'required'
+        ]);
+
+        $esRubrica = $request->esRubrica ?? false;
+        $iEvalRptaId = $this->decodeId($request->iEvalRptaId ?? 0);
 
         DB::beginTransaction();
         try {
-            foreach ($logros as &$logro) {
-                $iNivelLogroAlcId = $this->decodeId($logro['iNivelLogroAlcId'] ?? 0);
-                $datosBase = [
-                    'cNivelLogroAlcConclusionDescriptiva' => $logro['cNivelLogroAlcConclusionDescriptiva'],
-                    'nNnivelLogroAlcNota' => $logro['nNnivelLogroAlcNota'],
-                    'iEscalaCalifId' => $logro['iEscalaCalifId'],
-                ];
+            $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
+            $resultado = $nivelLogroAlcanzado->calificarLogros(
+                $request->logrosCalificacion,
+                $iEvalRptaId,
+                $esRubrica
+            );
 
-                $datosInsertar = $datosBase;
-                $datosInsertar['iEvalRptaId'] = $logro['iEvalRptaId'];
-                $datosInsertar['iNivelLogroEvaId'] = $logro['iNivelLogroEvaId'];
-
-                $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
-                if ($logro['iNivelLogroAlcId'] == 0) {
-                    $resp = $nivelLogroAlcanzado->guardar(json_encode($datosInsertar));
-                    $logro['iEvalRptaId'] = $resp[0]->id;
-                } else {
-                    $where = json_encode([
-                        new WhereCondition('iNivelLogroAlcId', $iNivelLogroAlcId)
-                    ]);
-
-                    $nivelLogroAlcanzado->actualizar(json_encode($datosBase), $where);
-                }
-            }
+            DB::commit();
+            return $this->successResponse($resultado, 'Cambios realizados correctamente');
         } catch (Exception $e) {
             DB::rollBack();
-            $mensaje =  $this->handleAndLogError($e, 'Error al guardar los cambios');
+            $mensaje = $this->handleAndLogError($e, 'Error en el proceso de calificación');
             return $this->errorResponse(null, $mensaje);
-        } finally {
-            unset($logro);
         }
-
-        DB::commit();
-        return $this->successResponse($logros, 'Cambios realizados correctamente');
-    }
-
-    public function calificarLogrosRubrica(Request $request)
-    {
-        $logros = $request->logrosCalificacion;
-
-        DB::beginTransaction();
-        try {
-            foreach ($logros as &$logro) {
-                $iNivelLogroAlcId = $this->decodeId($logro['iNivelLogroAlcId'] ?? 0);
-                $datosBase = [
-                    'cNivelLogroAlcConclusionDescriptiva' => $logro['cNivelLogroAlcConclusionDescriptiva'],
-                    'nNnivelLogroAlcNota' => $logro['nNnivelLogroAlcNota'],
-                    'iEscalaCalifId' => $logro['iEscalaCalifId'],
-                    'iNivelEvaId' => $logro['iNivelEvaId']
-                ];
-
-                $datosInsertar = $datosBase;
-                $datosInsertar['iEvalRptaId'] = $logro['iEvalRptaId'];
-
-                $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
-                if ($logro['iNivelLogroAlcId'] == 0) {
-                    $resp = $nivelLogroAlcanzado->guardar(json_encode($datosInsertar));
-                    $logro['newId'] = $resp[0]->id;
-                } else {
-                    $where = json_encode([
-                        new WhereCondition('iNivelLogroAlcId', $iNivelLogroAlcId)
-                    ]);
-
-                    $nivelLogroAlcanzado->actualizar(json_encode($datosBase), $where);
-                }
-            }
-        } catch (Exception $e) {
-            DB::rollBack();
-            $mensaje =  $this->handleAndLogError($e, 'Error al guardar los cambios');
-            return $this->errorResponse(null, $mensaje);
-        } finally {
-            unset($logro);
-        }
-
-        DB::commit();
-        return $this->successResponse($logros, 'Cambios realizados correctamente');
     }
 }
