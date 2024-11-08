@@ -95,7 +95,11 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
     });
     Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
-    Route::post('calendarioAcademico/addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
+
+    Route::get('calendarioAcademico/selFasesYear', [CalendarioAcademicosController::class, 'selFasesYear']);
+
+    Route::post('calendarioAcademico/addCalendarioFasesAcad', [CalendarioAcademicosController::class, 'addCalendarioFasesAcad']);
+
     Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
     Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
 
