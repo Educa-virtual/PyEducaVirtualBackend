@@ -52,10 +52,11 @@
     }
 </style>
 <body>
-    <div style="text-align: center;font-size:12px;font-weight:900;">REPORTE DE ASISTENCIA MENSUAL</div>
+    <div style="text-align:center;font-size:12px;font-weight:900;">REPORTE DE ASISTENCIA MENSUAL</div>
     <main>
     <div class=container>
         <aside>
+            <div>Docente : {{$docente}}</div>
             <div>Cod. Modular/I.E. : {{$modular}}</div>
             <div>DRE/UGEL : {{$dre}}</div>
             <div>AÑO : {{$year}}</div>
@@ -78,19 +79,37 @@
             @for ($i = 1; $i <= $ultimodia; $i++)
                 <th style="border:1px solid black">{{$i}}</th>
             @endfor
+            <th style="border:1px solid black"></th>
+            <th style="border:1px solid black"></th>
+            <th style="border:1px solid black"></th>
+            <th style="border:1px solid black"></th>
+            <th style="border:1px solid black"></th>
+            <th style="border:1px solid black"></th>
         </tr>
         <tr>
             <th style="border:1px solid black;margin:0;padding:7px;">NOMBRES Y APELLIDOS</th>
             @for ($i = 1; $i <= $ultimodia; $i++)
                 <th style="border:1px solid black">{{ $dias_Semana[($i+6)%7] }}</th>
             @endfor
+            <th style="border:1px solid black">X</th>
+            <th style="border:1px solid black">I</th>
+            <th style="border:1px solid black">J</th>
+            <th style="border:1px solid black">T</th>
+            <th style="border:1px solid black">P</th>
+            <th style="border:1px solid black">-</th>
         </tr>
         @foreach ($query as $list)
             <tr>
-                <th style="border:1px solid black;margin:0;padding:7px;">{{$list->nombrecompleto}}</th>
+                <th style="border:1px solid black;margin:0;padding:7px;">{{$list->completoalumno}}</th>
                 @foreach (json_decode(json_encode($list->diasAsistencia)) as $simbolo)
                     <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$simbolo->cTipoAsiLetra}}</td>
                 @endforeach
+                <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$list->asistencias}}</td>
+                <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$list->inasistencia}}</td>
+                <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$list->inasistenciaJustificada}}</td>
+                <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$list->tardanzas}}</td>
+                <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$list->tardanzaJustificada}}</td>
+                <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$list->SinRegistrar}}</td>
             </tr>
         @endforeach
     </table>

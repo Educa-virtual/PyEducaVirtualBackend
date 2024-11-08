@@ -29,9 +29,13 @@ class AsistenciaController extends Controller
             $iCursoId ?? NULL,
             $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? NULL,
+            $request->iSeccionId ?? NULL,
+            $request->iYAcadId ?? NULL,
+            $request->iNivelGradoId ?? NULL,
+            $request->iDocenteId ?? NULL,
         ];
         
-        $query=DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?", $solicitud);
+        $query=DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?", $solicitud);
         
         try{
             $response = [
@@ -53,8 +57,8 @@ class AsistenciaController extends Controller
 
         return new JsonResponse($response,$estado);
     }
-    public function report(){
-       
+    public function report(Request $request){
+        
         $primera_fecha = new DateTime();
         $primerDia = $primera_fecha->modify("first day of this month");
         $ultima_fecha = new DateTime();
@@ -87,12 +91,16 @@ class AsistenciaController extends Controller
 
         $solicitud = [
             $request->opcion ?? 'REPORTE_MENSUAL',
-            $iCursoId ?? NULL,
-            $request->dtCtrlAsistencia ?? NULL,
-            $request->asistencia_json ?? NULL,
+            $request->iCursoId ?? 1,
+            $request->dtCtrlAsistencia ?? '2024-11-01',
+            $request->asistencia_json ?? 1,
+            $request->iSeccionId ?? 2,
+            $request->iYAcadId ?? 3,
+            $request->iNivelGradoId ?? 1,
+            $request->iDocenteId ?? 1,
         ];
 
-        $query=DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?", $solicitud);
+        $query=DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?", $solicitud);
 
         $json_registro = [];
         
@@ -128,6 +136,7 @@ class AsistenciaController extends Controller
             "query"=>$query,
             "dias_Semana"=>$unir_dias,
             "year"=>"2024",
+            "docente"=>"Prof. Ramires",
             "mes"=>"2024-10-01 2024-10-31",
             "modular"=>"000005600",
             "dre"=>"DRE MOQUEGUA UGEL",
