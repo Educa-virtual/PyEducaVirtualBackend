@@ -229,4 +229,46 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Erro No!');
         }
     }
+
+
+    public function insertarCursos(Request $request)
+    {
+        try {
+            $iEvaluacionId = $request->input('iEvaluacionId');
+            $selectedCursos = $request->input('selectedCursos');
+
+            // Valida que los datos existan
+            if (!$iEvaluacionId || empty($selectedCursos)) {
+                return response()->json(['message' => 'Datos incompletos.'], 400);
+            }
+
+            // Inserta los cursos
+            foreach ($selectedCursos as $curso) {
+                DB::table('ere.examen_cursos')->insert([
+                    'iEvaluacionId' => $iEvaluacionId,
+                    'iCursoId' => $curso['iCursoId']
+                ]);
+            }
+
+            return response()->json(['message' => 'Cursos insertados correctamente'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al insertar cursos', 'error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function obtenerCursosEvaluacion($iEvaluacionId)
+    {
+        // Consulta que obtiene los cursos asociados a la evaluación
+        $cursos = examen_cursos::join('acad.cursos', 'examen_cursos.iCursoId', '=', 'cursos.iCursoId')
+            ->where('examen_cursos.iEvaluacionId', $iEvaluacionId)
+            ->select('cursos.iCursoId', 'cursos.cCursoNombre')
+            ->get();
+
+        // Devolver la respuesta en formato JSON
+        return response()->json([
+            'data' => $cursos,
+            'message' => 'Cursos obtenidos correctamente.',
+            'status' => true
+        ]);
+    }
 }
