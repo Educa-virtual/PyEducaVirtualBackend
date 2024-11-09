@@ -297,10 +297,8 @@ class AulaVirtualController extends ApiController
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
-            return $this->successResponse(
-                $preguntas,
-                // 'Datos Obtenidos Correctamente'
-            );
+            //return $preguntas;
+            return $this->successResponse($preguntas);
         } catch (Exception $e) {
 
             return $this->errorResponse($e, 'Error Upssss!');
@@ -391,7 +389,7 @@ class AulaVirtualController extends ApiController
     {
         //return $request -> all();
         $request->validate([
-            'iEstudianteId' => 'required|integer',
+            //'iEstudianteId' => 'required|integer',
             'cForoRptaRespuesta' => 'required|string',
             'iForoId' => 'required|string'
         ]);
@@ -402,8 +400,14 @@ class AulaVirtualController extends ApiController
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
         }
 
+        $iDocenteId = $request->iDocenteId;
+        if ($request->iDocenteId) {
+            $iDocenteId = $this->hashids->decode($iDocenteId);
+            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        }
+
         $data = [
-            $request -> iEstudianteId,
+            $request -> iEstudianteId ?? null,
             $iForoId,
             null,
             // $iForoRptaPadre ?? null,
