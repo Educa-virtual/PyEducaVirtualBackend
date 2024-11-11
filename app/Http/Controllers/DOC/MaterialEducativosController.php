@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\acad;
+namespace App\Http\Controllers\DOC;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 
-class MaterialEducativoDocentesController extends Controller
+class MaterialEducativosController extends Controller
 {
     protected $hashids;
 
@@ -33,11 +33,11 @@ class MaterialEducativoDocentesController extends Controller
                 ? $request->valorBusqueda
                 : ($this->hashids->decode($request->valorBusqueda)[0] ?? null));
 
-        $request['iMatEduDocId'] = is_null($request->iMatEduDocId)
+        $request['iMatEducativoId'] = is_null($request->iMatEducativoId)
             ? null
-            : (is_numeric($request->iMatEduDocId)
-                ? $request->iMatEduDocId
-                : ($this->hashids->decode($request->iMatEduDocId)[0] ?? null));
+            : (is_numeric($request->iMatEducativoId)
+                ? $request->iMatEducativoId
+                : ($this->hashids->decode($request->iMatEducativoId)[0] ?? null));
 
         $request['iDocenteId'] = is_null($request->iDocenteId)
             ? null
@@ -55,16 +55,17 @@ class MaterialEducativoDocentesController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iMatEduDocId                 ?? NULL,
+            $request->iMatEducativoId              ?? NULL,
             $request->iDocenteId                   ?? NULL,
-            $request->iCursosNivelGradId           ?? NULL,
-            $request->cMatEduTitulo                ?? NULL,
-            $request->cMatEduDescripcion           ?? NULL,
-            $request->cMatEduUrl                   ?? NULL,
+            $request->cMatEducativoTitulo          ?? NULL,
+            $request->cMatEducativoDescripcion     ?? NULL,
+            $request->dtMatEducativo               ?? NULL,
             $request->iEstado                      ?? NULL,
             $request->iSesionId                    ?? NULL,
             $request->dtCreado                     ?? NULL,
             $request->dtActualizado                ?? NULL,
+            $request->iCursosNivelGradId           ?? NULL,
+            $request->cMatEducativoUrl             ?? NULL,
 
             $request->iCredId
 
@@ -75,12 +76,12 @@ class MaterialEducativoDocentesController extends Controller
 
     public function list(Request $request)
     {
-        $resp = new MaterialEducativoDocentesController();
+        $resp = new MaterialEducativosController();
         $parametros = $resp->validate($request);
 
         try {
-            $data = DB::select('exec acad.Sp_SEL_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec doc.Sp_SEL_materialEducativoDocentes
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
@@ -94,13 +95,13 @@ class MaterialEducativoDocentesController extends Controller
 
     public function store(Request $request)
     {
-        $resp = new MaterialEducativoDocentesController();
+        $resp = new MaterialEducativosController();
         $parametros = $resp->validate($request);
 
         try {
-            $data = DB::select('exec acad.Sp_INS_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            if ($data[0]->iMatEduDocId > 0) {
+            $data = DB::select('exec doc.Sp_INS_materialEducativoDocentes
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            if ($data[0]->iMatEducativoId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
                 $codeResponse = 200;
@@ -118,14 +119,14 @@ class MaterialEducativoDocentesController extends Controller
 
     public function update(Request $request)
     {
-        $resp = new MaterialEducativoDocentesController();
+        $resp = new MaterialEducativosController();
         $parametros = $resp->validate($request);
 
         try {
-            $data = DB::select('exec acad.Sp_UPD_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec doc.Sp_UPD_materialEducativoDocentes
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                 
-            if ($data[0]->iMatEduDocId > 0) {
+            if ($data[0]->iMatEducativoId > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se actualizó la información exitosamente.'];
                 $codeResponse = 200;
             } else {
@@ -142,14 +143,14 @@ class MaterialEducativoDocentesController extends Controller
 
     public function delete(Request $request)
     {
-        $resp = new MaterialEducativoDocentesController();
+        $resp = new MaterialEducativosController();
         $parametros = $resp->validate($request);
 
         try {
-            $data = DB::select('exec acad.Sp_DEL_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec doc.Sp_DEL_materialEducativoDocentes
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                 
-            if ($data[0]->iMatEduDocId > 0) {
+            if ($data[0]->iMatEducativoId > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se eliminó la información exitosamente.'];
                 $codeResponse = 200;
             } else {
