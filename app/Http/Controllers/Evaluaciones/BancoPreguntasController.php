@@ -54,11 +54,11 @@ class BancoPreguntasController extends ApiController
             $iEncabPregId = null;
         } else {
             $paramsEncabezado = [
-                'idEncabPregId' => (int) $request->encabezado['iEncabPregId'],
+                'idEncabPregId' => $iEncabPregId,
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
-                'iCursoId' => $request->iCursoId,
-                'iNivelCicloId' => $request->iNivelCicloId,
+                'iCursoId' => $this->decodeId($request->iCursoId),
+                'iNivelCicloId' => $this->decodeId($request->iNivelCicloId),
                 'iDocenteId' => $this->decodeId($request->iDocenteId),
             ];
             try {
@@ -94,15 +94,15 @@ class BancoPreguntasController extends ApiController
                 'iBancoId' => $iPreguntaId,
                 'iDocenteId' => $this->decodeId($request->iDocenteId),
                 'iTipoPregId' => $pregunta['iTipoPregId'],
-                'iCurrContId' => $request->iCurrContId,
+                'iCurrContId' => $this->decodeId($request->iCurrContId),
                 // 'dtBancoCreacion' => $request->,
                 'cBancoPregunta' => $pregunta['cPregunta'],
                 'dtBancoTiempo' => $fechaConHora,
                 'cBancoTextoAyuda' => $pregunta['cPreguntaTextoAyuda'] ?? '',
                 'nBancoPuntaje' => $pregunta['iPreguntaPeso'],
                 'idEncabPregId' => $iEncabPregId,
-                'iCursoId' => $request->iCursoId,
-                'iNivelCicloId' => $request->iNivelCicloId,
+                'iCursoId' => $this->decodeId($request->iCursoId),
+                'iNivelCicloId' => $this->decodeId($request->iNivelCicloId),
             ];
             // pregunta
             $respPregunta = null;
@@ -223,10 +223,12 @@ class BancoPreguntasController extends ApiController
     public function obtenerEncabezadosPreguntas(Request $request)
     {
         $iDocenteId = $this->decodeId($request->iDocenteId);
+        $iCursoId = $this->decodeId($request->iCursoId);
+        $iNivelCicloId = $this->decodeId($request->iNivelCicloId);
 
         $params = [
-            'iCursoId' => $request['iCursoId'],
-            'iNivelCicloId' => $request['iNivelCicloId'],
+            'iCursoId' => $iCursoId,
+            'iNivelCicloId' => $iNivelCicloId,
             'iDocenteId' => $iDocenteId,
             'schema' => 'eval'
         ];

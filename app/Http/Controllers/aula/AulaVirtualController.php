@@ -147,7 +147,6 @@ class AulaVirtualController extends ApiController
         return new JsonResponse($response, $codeResponse);
     }
 
-    //funcion eliminarActividad
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
         $iSilaboId = $request->iSilaboId;
@@ -178,6 +177,7 @@ class AulaVirtualController extends ApiController
                     'iContenidoSemId' =>  $this->hashids->encode($row->iContenidoSemId),
                     'fechas' => [],
                     'iCursoId' => $this->hashids->encode($row->iCursoId),
+                    'idDocCursoId' => $this->hashids->encode($row->idDocCursoId),
                 ];
             }
 
@@ -407,7 +407,7 @@ class AulaVirtualController extends ApiController
         }
 
         $data = [
-            $request -> iEstudianteId ?? null,
+            $request->iEstudianteId ?? null,
             $iForoId,
             null,
             // $iForoRptaPadre ?? null,
