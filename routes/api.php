@@ -93,7 +93,8 @@ Route::group(['prefix' => 'ere'], function () {
         //Insertar cursos
         Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
         //Ver Cursos
-        Route::get('evaluaciones/cursos/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
+        // Route::get('obtenerCursosEvaluacion/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
+        Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
