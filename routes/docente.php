@@ -15,12 +15,15 @@ use App\Http\Controllers\api\acad\EstudiantesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\FechasImportantesController;
 use App\Http\Controllers\acad\IndicadorActividadesController;
-use App\Http\Controllers\DOC\MaterialEducativosController;
+use App\Http\Controllers\doc\MaterialEducativosController;
 use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
 use App\Http\Controllers\acad\TipoIndicadorLogrosController;
 use App\Http\Controllers\api\acad\GradoAcademicosController;
 use App\Http\Controllers\api\asi\AsistenciaController;
 use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Controllers\doc\CargaNoLectivasController;
+use App\Http\Controllers\doc\DetalleCargaNoLectivasController;
+use App\Http\Controllers\doc\TiposCargaNoLectivasController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'docente'], function () {
@@ -102,5 +105,20 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('store', [MaterialEducativosController::class, 'store']);
     Route::post('update', [MaterialEducativosController::class, 'update']);
     Route::post('delete', [MaterialEducativosController::class, 'delete']);
+  });
+  Route::group(['prefix' => 'tipos-carga-no-lectivas'], function () {
+    Route::post('list', [TiposCargaNoLectivasController::class, 'list']);
+  });
+  Route::group(['prefix' => 'detalle-carga-no-lectivas'], function () {
+    Route::post('list', [DetalleCargaNoLectivasController::class, 'list']);
+    Route::post('store', [DetalleCargaNoLectivasController::class, 'store']);
+    Route::post('update', [DetalleCargaNoLectivasController::class, 'update']);
+    Route::post('delete', [DetalleCargaNoLectivasController::class, 'delete']);
+  });
+  Route::group(['prefix' => 'carga-no-lectivas'], function () {
+    Route::post('list', [CargaNoLectivasController::class, 'list']);
+    Route::post('store', [CargaNoLectivasController::class, 'store']);
+    Route::post('update', [CargaNoLectivasController::class, 'update']);
+    Route::post('delete', [CargaNoLectivasController::class, 'delete']);
   });
 });
