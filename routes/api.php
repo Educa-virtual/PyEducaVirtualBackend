@@ -94,19 +94,92 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'Perfiles'], function () {
         Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
     });
-    Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
 
-    Route::get('calendarioAcademico/selFasesYear', [CalendarioAcademicosController::class, 'selFasesYear']);
+    Route::group(['prefix' => 'calendarioAcademico'], function () {
+        /*
+         * * Peticiones de información de varios calendarios
+        */
+        //* GET: Calendarios académicos por sede
+        Route::get('selCalAcademicoSede', [CalendarioAcademicosController::class, 'selCalAcademicoSede']);
 
-    Route::post('calendarioAcademico/addCalendarioFasesAcad', [CalendarioAcademicosController::class, 'addCalendarioFasesAcad']);
+        /*
+         * * Peticiones de información para la configuración de un calendario  
+        */
+        //* GET: Fases promocionales y fechas para configurar un calendario
+        Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
+        
+        // //* GET: Dias laborales para configurar un calendario
+        // Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
 
-    Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
-    Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
+        // //* GET: Formas y modalidades de atención para configurar un calendario
+        // Route::get('selFormasAtencion', [CalendarioAcademicosController::class, 'selFormasAtencion']);
 
-    
+        // /*
+        //  * * Peticiones de información de un calendario
+        // */
+        // //* GET: Fases promocionales y fechas de un calendario académico
+        // Route::get('selCalFasesFechas', [CalendarioAcademicosController::class, 'selCalFasesFechas']);
 
-    Route::get('periodoAcademico/selPerAcademico', [PeriodoAcademicosController::class, 'selPerAcademico']);
-    Route::post('periodoAcademico/addPerAcademico', [PeriodoAcademicosController::class, 'addPerAcademico']);
+        // //* GET: Dias Laborales de un calendario
+        // Route::get('selCalDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
+
+        // //* GET: Formas de atención y sus modalidades de un calendario
+        // Route::get('selCalFormasAtencion', [CalendarioAcademicosController::class, 'selCalFormasAtencion']);
+
+        // //* GET: Periodos académicos de un calendario
+        // Route::get('selCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'selCalPeriodosAcademicos']);
+
+        // //* GET: Información de un calendario configurado
+        // Route::get('selCalAcademicoResumen', [CalendarioAcademicosController::class, 'selCalAcademicoResumen']);
+
+        // /*
+        //  * * Peticiones con información para guardar información de un
+        //  * * calendario 
+        // */
+        // // * POST: Fases promocionales y fechas de un calendario académico
+        // Route::post('insCalFasesFechas', CalendarioAcademicosController::class, 'insCalFasesFechas');
+
+        // // * POST: Dias Laborales de un calendario
+        // Route::post('insCalDiasLaborales', CalendarioAcademicosController::class, 'insCalDiasLaborales');
+
+        // //* POST: Formas de atención y sus modalidades de un calendario
+        // Route::post('insCalFormasAtencion', [CalendarioAcademicosController::class, 'insCalFormasAtencion']);
+
+        // //* POST: Periodos académicos de un calendario
+        // Route::post('insCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'insCalPeriodosAcademicos']);
+
+        // //* POST: Información de un calendario configurado
+        // Route::post('insCalAcademicoResumen', [CalendarioAcademicosController::class, 'insCalAcademicoResumen']);
+
+        // /*
+        //  * * Peticiones con información para editar información de un
+        //  * * calendario 
+        // */
+        // // * PUT: Fases promocionales y fechas de un calendario académico
+        // Route::put('updCalFasesFechas', CalendarioAcademicosController::class, 'updCalFasesFechas');
+
+        // // * PUT: Dias Laborales de un calendario
+        // Route::put('updCalDiasLaborales', CalendarioAcademicosController::class, 'updCalDiasLaborales');
+
+        // //* PUT: Formas de atención y sus modalidades de un calendario
+        // Route::put('updCalFormasAtencion', [CalendarioAcademicosController::class, 'updCalFormasAtencion']);
+
+        // //* PUT: Periodos académicos de un calendario
+        // Route::put('updCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'updCalPeriodosAcademicos']);
+
+        // /*
+        //  * * Peticiones con información para eliminar información de un
+        //  * * calendario 
+        // */
+        // // * DELETE: Calendario Academico por identificador
+        // Route::delete('deleteCalAcademico', CalendarioAcademicosController::class, 'deleteCalAcademico');
+
+        // //* DELETE: Formas de atención y sus modalidades de un calendario
+        // Route::delete('deleteCalFormasAtencion', [CalendarioAcademicosController::class, 'deleteCalFormasAtencion']);
+
+        // //* DELETE: Periodos académicos de un calendario
+        // Route::delete('deleteCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'deleteCalPeriodosAcademicos']);
+    });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
 Route::post('/verificar', [MailController::class, 'index']);

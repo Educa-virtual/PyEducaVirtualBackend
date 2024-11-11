@@ -10,19 +10,40 @@ use Illuminate\Support\Facades\DB;
 
 class CalendarioAcademicosController extends Controller
 {
-    public function addCalendarioFasesAcad(Request $request)
+    public function selCalAcademicoSede(Request $request)
     {
-        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", [
+        $query = collect(DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
             'acad',
-            'calendario_academicos',
-            $request->calAcad,
-            'calendario_fases_promocionales',
-            $request->calFaseProm,
-            'iCalAcadId'
-        ]);
+            'V_CalendariosAcademicos',
+            '*',
+            'ISedeId=' . $request->iSedeId,
+
+        ]))->sortByDesc('cYearNombre')->values();
+
+        $response = [
+            'validated' => true,
+            'message' => '',
+            'data' => [],
+        ];
+        $estado = 200;
+        
+        if (!$request->iSedeId) {
+            $response['message'] = 'Error al solicitar calendarios académicos';
+            $estado = 500;
+        } else {
+            try {
+                $response['message'] = 'Se obtuvo la información';
+                $response['data'] = $query;
+            } catch (Exception $e) {
+                $response['message'] = $e->getMessage();
+                $estado = 500;
+            }
+        }
+        
+        return new JsonResponse($response, $estado);
     }
 
-    public function selFasesYear()
+    public function selFasesFechas()
     {
         $fasesPromQuery = DB::select(
             "EXEC grl.SP_SEL_DesdeTabla ?,?,?",
@@ -61,6 +82,18 @@ class CalendarioAcademicosController extends Controller
         }
 
         return new JsonResponse($response, $estado);
+    }
+
+    public function addCalendarioFasesAcad(Request $request)
+    {
+        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", [
+            'acad',
+            'calendario_academicos',
+            $request->calAcad,
+            'calendario_fases_promocionales',
+            $request->calFaseProm,
+            'iCalAcadId'
+        ]);
     }
 
     public function addCalAcademico(Request $request)
