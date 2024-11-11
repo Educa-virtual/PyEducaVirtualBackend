@@ -256,18 +256,42 @@ class EvaluacionesController extends ApiController
         }
     }
 
+
+    // public function obtenerCursosEvaluacion($iEvaluacionId)
+    // {
+    //     // Cursos que ya están registrados para la evaluación especificada
+    //     $cursosRegistrados = DB::table('ere.examen_cursos')
+    //         ->join('acad.cursos', 'ere.examen_cursos.iCursoId', '=', 'acad.cursos.iCursoId')
+    //         ->where('ere.examen_cursos.iEvaluacionId', $iEvaluacionId)
+    //         ->select('acad.cursos.iCursoId', 'acad.cursos.cCursoNombre')
+    //         ->get();
+
+    //     // IDs de los cursos registrados
+    //     $idsCursosRegistrados = $cursosRegistrados->pluck('iCursoId')->toArray();
+
+    //     // Cursos que NO están registrados para la evaluación especificada
+    //     $cursosNoRegistrados = DB::table('acad.cursos')
+    //         ->whereNotIn('iCursoId', $idsCursosRegistrados)
+    //         ->select('iCursoId', 'cCursoNombre')
+    //         ->get();
+
+    //     // Devolver la respuesta en formato JSON con clasificación
+    //     return response()->json([
+    //         'registrados' => $cursosRegistrados,
+    //         'no_registrados' => $cursosNoRegistrados,
+    //         'message' => 'Cursos clasificados correctamente.',
+    //         'status' => true
+    //     ]);
+
     public function obtenerCursosEvaluacion($iEvaluacionId)
     {
-        // Consulta que obtiene los cursos asociados a la evaluación
-        $cursos = examen_cursos::join('acad.cursos', 'examen_cursos.iCursoId', '=', 'cursos.iCursoId')
-            ->where('examen_cursos.iEvaluacionId', $iEvaluacionId)
-            ->select('cursos.iCursoId', 'cursos.cCursoNombre')
-            ->get();
+        // Llamar al procedimiento almacenado
+        $cursos = DB::select('EXEC ere.sp_SEL_CursosEvaluacion ?', [$iEvaluacionId]);
 
         // Devolver la respuesta en formato JSON
         return response()->json([
-            'data' => $cursos,
-            'message' => 'Cursos obtenidos correctamente.',
+            'cursos' => $cursos,
+            'message' => 'Cursos clasificados correctamente.',
             'status' => true
         ]);
     }
