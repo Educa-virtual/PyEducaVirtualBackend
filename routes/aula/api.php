@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
@@ -52,6 +53,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('store', [TareaEstudiantesController::class, 'store']);
         Route::post('guardar-calificacion-docente', [TareaEstudiantesController::class, 'guardarCalificacionDocente']);
         Route::post('entregarEstudianteTarea', [TareaEstudiantesController::class, 'entregarEstudianteTarea']);
+        Route::post('eliminarEstudianteTarea', [TareaEstudiantesController::class, 'eliminarEstudianteTarea']);
     });
     Route::group(['prefix' => 'tarea-cabecera-grupos'], function () {
         Route::post('list', [TareaCabeceraGruposController::class, 'list']);
@@ -59,10 +61,11 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('eliminarTareaCabeceraGrupos', [TareaCabeceraGruposController::class, 'eliminarTareaCabeceraGrupos']);
         Route::post('guardarCalificacionTareaCabeceraGruposDocente', [TareaCabeceraGruposController::class, 'guardarCalificacionTareaCabeceraGruposDocente']);
         Route::post('transferenciaTareaCabeceraGrupos', [TareaCabeceraGruposController::class, 'transferenciaTareaCabeceraGrupos']);
+        Route::post('entregarEstudianteTareaGrupal', [TareaCabeceraGruposController::class, 'entregarEstudianteTareaGrupal']);
     });
 
     Route::group(['prefix' => 'foros'], function () {
         Route::post('obtenerForoxiForoId', [ForosController::class, 'obtenerForoxiForoId']);
         Route::post('actualizarForo', [ForosController::class, 'actualizarForo']);
-     });
+    });
 });

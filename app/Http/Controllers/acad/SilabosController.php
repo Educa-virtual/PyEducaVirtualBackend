@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Spatie\LaravelPdf\Facades\Pdf;
+use Spatie\Browsershot\Browsershot;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SilabosController extends Controller
 {
@@ -88,18 +90,18 @@ class SilabosController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
-    public function report($iSilaboId)
+    public function report(Request $request)
     {
-        
-        if ($iSilaboId) {
-            $iSilaboId = $this->hashids->decode($iSilaboId);
-            $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
-        }
+        $request['iSilaboId'] = is_null($request->iSilaboId)
+            ? null
+            : (is_numeric($request->iSilaboId)
+                ? $request->iSilaboId
+                : ($this->hashids->decode($request->iSilaboId)[0] ?? null));
 
         $parametros = [
             "CONSULTAR_SILABO",
             '-',
-            $iSilaboId,
+            $request->iSilaboId,
             NULL,
             NULL,
             NULL,
@@ -110,24 +112,21 @@ class SilabosController extends Controller
 
         ];
 
-
         $query = DB::select(
             "EXECUTE acad.Sp_ACAD_CRUD_SILABOS ?,?,?,?,?,?,?,?,?,?",
             $parametros
         );
 
-       
-        $pdf = Pdf::view('silabus_reporte', ["query" => $query[0]])
-            ->format('a4')
-            ->name('silabus.pdf');
+        $html = view('silabus_reporte', ["query" => $query[0]])->render();
 
-        // $content = base64_encode($pdf->stream());
-        // $response = ['validated' => true, 'content' => $pdf, 'file' => 'RptIngMetasIndObj', 'mensaje' => 'Información obtenido exitosamente'];
-        // return new JsonResponse($response);
-        // return Pdf::view('silabus_reporte', ["query" => $query[0]])
-        //     ->format('a4')
-        //     ->name('silabus.pdf');
+        $pdf = Browsershot::html($html)->pdf();
 
-        return $pdf;
+         return response()->streamDownload(function () use ($pdf) {
+            echo $pdf;
+        }, 'Silabo.pdf', [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="archivo.pdf"',
+        ]);
+
     }
 }

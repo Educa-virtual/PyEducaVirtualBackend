@@ -77,6 +77,53 @@ class PersonasController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
+    }
+    public function obtenerPersonasxiPersId(Request $request)
+    {   
+         $parametros = [
+            $request->iPersId
+        ];
+        
+        try {
+            $data = DB::select("execute grl.Sp_SEL_personasxiPersId ?", $parametros);
+          
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
 
+        return new JsonResponse($response, $codeResponse);
+    }
+    public function guardarPersonasxDatosPersonales(Request $request){
+
+        $parametros = [
+             $request->iPersId
+            ,$request->dPersNacimiento
+            ,$request->cPersFotografia
+            ,$request->cPersDomicilio
+            ,$request->cPersCorreo
+            ,$request->cPersCelular
+            ,$request->cPersPassword
+        ];
+
+        try {
+            $data = DB::select("execute grl.Sp_UPD_personasxDatosPersonales ?,?,?,?,?,?,?", $parametros);
+            
+            if ($data[0]->iPersId > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
     }
 }
