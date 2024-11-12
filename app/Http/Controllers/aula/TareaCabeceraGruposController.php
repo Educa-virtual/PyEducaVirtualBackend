@@ -257,4 +257,36 @@ class TareaCabeceraGruposController extends Controller
         // Retorna la respuesta en formato JSON con el código de estado
         return new JsonResponse($response, $codeResponse);
     }
+
+    public function entregarEstudianteTareaGrupal(Request $request)
+    {
+        if ($request->iTareaId) {
+            $iTareaId = $this->hashids->decode($request->iTareaId);
+            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
+        }
+        $parametros = [
+            $iTareaId,
+            $request->iEstudianteId,
+            $request->cTareaGrupoUrl,
+        ];
+
+        try {
+            $data = DB::select('exec aula.SP_UPD_tareaEstudiantesxEntregarEstudianteTareaGrupal
+                ?,?,?', $parametros);
+
+            if ($data[0]->iTareaCabGrupoId > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
 }
