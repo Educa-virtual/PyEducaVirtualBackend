@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Illuminate\Support\Carbon;
+
 class ProgramacionActividadesController extends Controller
 {
     protected $hashids;
@@ -93,7 +94,7 @@ class ProgramacionActividadesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_PROGRAMACION_ACTIVIDADES
+            $data = DB::select('exec SP_crudProgramacionActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -117,8 +118,8 @@ class ProgramacionActividadesController extends Controller
 
     public function store(Request $request)
     {
-        
-        
+
+
         $request->validate(
             [
                 'opcion' => 'required',
@@ -184,11 +185,11 @@ class ProgramacionActividadesController extends Controller
             //$request->iCredId
 
         ];
-        
+
         try {
-            $data = DB::select('exec aula.Sp_AULA_CRUD_PROGRAMACION_ACTIVIDADES
+            $data = DB::select('exec aula.SP_aulaCrudProgramacionActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-               
+
             switch ($request->opcion) {
                 case 'GUARDARxProgActxiTarea':
                     if ($data[0]->iProgActId > 0) {

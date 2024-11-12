@@ -59,9 +59,11 @@ class ereEvaluacion extends Model
     {
         return DB::select('EXEC ere.sp_INS_Evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
     }
-    //CON ESTE CODIGO SE USA DIRECTO A LA TABLA: TABLE
-    //  protected $table = 'ere.evaluacion'; // Nombre de la tabla
-
-    // // Si la tabla tiene una clave primaria diferente a 'id', defínela aquí
-    // protected $primaryKey = 'iEvaluacionId';
+    public static function actualizarEvaluacion(array $params)
+    {
+        // Ejecutar el procedimiento almacenado para actualizar la evaluación
+        $result = DB::select('EXEC ere.sp_UPD_Evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
+        // Si el procedimiento devuelve resultados, asumimos que el primer resultado es la evaluación actualizada
+        return !empty($result) ? $result[0] : null;
+    }
 }

@@ -28,12 +28,13 @@ class BancoPreguntasController extends ApiController
     {
 
         $params = [
-            'iCursoId' => $request->iCursoId,
-            'iDocenteId' => $request->iDocenteId,
+            'iCursoId' => $this->decodeId($request->iCursoId ?? 0),
+            'iDocenteId' => $this->decodeId($request->iDocenteId ?? 0),
             'iCurrContId' => $request->iCurrContId,
             'iNivelCicloId' => $request->iNivelCicloId,
             'busqueda' => $request->busqueda ?? '',
-            'iTipoPregId' => $request->iTipoPregId ?? 0
+            'iTipoPregId' => $request->iTipoPregId ?? 0,
+            'idEncabPregId' => $request->iEncabPregId ?? 0
         ];
 
         try {
@@ -53,11 +54,11 @@ class BancoPreguntasController extends ApiController
             $iEncabPregId = null;
         } else {
             $paramsEncabezado = [
-                'idEncabPregId' => (int) $request->encabezado['iEncabPregId'],
+                'idEncabPregId' => $iEncabPregId,
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
-                'iCursoId' => $request->iCursoId,
-                'iNivelCicloId' => $request->iNivelCicloId,
+                'iCursoId' => $this->decodeId($request->iCursoId),
+                'iNivelCicloId' => $this->decodeId($request->iNivelCicloId),
                 'iDocenteId' => $this->decodeId($request->iDocenteId),
             ];
             try {
@@ -93,15 +94,15 @@ class BancoPreguntasController extends ApiController
                 'iBancoId' => $iPreguntaId,
                 'iDocenteId' => $this->decodeId($request->iDocenteId),
                 'iTipoPregId' => $pregunta['iTipoPregId'],
-                'iCurrContId' => $request->iCurrContId,
+                'iCurrContId' => $this->decodeId($request->iCurrContId),
                 // 'dtBancoCreacion' => $request->,
                 'cBancoPregunta' => $pregunta['cPregunta'],
                 'dtBancoTiempo' => $fechaConHora,
                 'cBancoTextoAyuda' => $pregunta['cPreguntaTextoAyuda'] ?? '',
                 'nBancoPuntaje' => $pregunta['iPreguntaPeso'],
                 'idEncabPregId' => $iEncabPregId,
-                'iCursoId' => $request->iCursoId,
-                'iNivelCicloId' => $request->iNivelCicloId,
+                'iCursoId' => $this->decodeId($request->iCursoId),
+                'iNivelCicloId' => $this->decodeId($request->iNivelCicloId),
             ];
             // pregunta
             $respPregunta = null;
@@ -124,7 +125,7 @@ class BancoPreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $respAlt = DB::select('exec eval.SP_DEL_alternativa_pregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
+                    $respAlt = DB::select('exec eval.SP_DEL_alternativaPregunta @_iBancoAltId = ?', $paramsAlternativaEliminar);
                 } catch (Throwable $e) {
                     DB::rollBack();
                     $defaultMessage = $this->handleAndLogError($e, 'Error al eliminar');
@@ -163,7 +164,7 @@ class BancoPreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $resp = DB::select('exec eval.SP_DEL_alternativa_pregunta  @_iBancoAltId', $paramsAlternativaEliminar);
+                    $resp = DB::select('exec eval.SP_DEL_alternativaPregunta  @_iBancoAltId', $paramsAlternativaEliminar);
 
                     $resp = $resp[0];
                 } catch (Throwable $e) {
@@ -222,10 +223,12 @@ class BancoPreguntasController extends ApiController
     public function obtenerEncabezadosPreguntas(Request $request)
     {
         $iDocenteId = $this->decodeId($request->iDocenteId);
+        $iCursoId = $this->decodeId($request->iCursoId);
+        $iNivelCicloId = $this->decodeId($request->iNivelCicloId);
 
         $params = [
-            'iCursoId' => $request['iCursoId'],
-            'iNivelCicloId' => $request['iNivelCicloId'],
+            'iCursoId' => $iCursoId,
+            'iNivelCicloId' => $iNivelCicloId,
             'iDocenteId' => $iDocenteId,
             'schema' => 'eval'
         ];

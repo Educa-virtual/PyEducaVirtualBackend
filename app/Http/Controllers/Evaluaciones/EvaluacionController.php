@@ -68,10 +68,11 @@ class EvaluacionController extends ApiController
             $request->dtEvaluacionInicio ?? NULL,
             $request->dtEvaluacionFin ?? NULL,
             $request->iEvaluacionDuracionHoras,
-            $request->iEvaluacionDuracionMinutos
+            $request->iEvaluacionDuracionMinutos,
+            $request->cEvaluacionArchivoAdjunto
         ];
         try {
-            $data = DB::select('exec eval.SP_INS_UPD_evaluacion_aula 
+            $data = DB::select('exec eval.SP_INS_UPD_evaluacionAula
                 @_iEvaluacionId = ?
                 , @_iTipoEvalId = ?
                 , @_iProgActId = ?
@@ -88,6 +89,7 @@ class EvaluacionController extends ApiController
                 , @_dtEvaluacionFin = ?
                 , @_iEvaluacionDuracionHoras  = ?
                 , @_iEvaluacionDuracionMinutos  = ?
+                , @_cEvaluacionArchivoAdjunto = ?
             ', $params);
             $data = $data[0];
             $iEvaluacionId = $data->id;
@@ -131,7 +133,7 @@ class EvaluacionController extends ApiController
         $iEvalPregId = $id;
 
         try {
-            $resp = DB::select('exec eval.SP_DEL_evaluacion_preguntas @_iEvalPregId = ?', [$iEvalPregId]);
+            $resp = DB::select('exec eval.SP_DEL_evaluacionPreguntas @_iEvalPregId = ?', [$iEvalPregId]);
             $resp = $resp[0];
 
             return $this->successResponse($resp->mensaje, 'Se eliminó correctamente');
@@ -170,7 +172,7 @@ class EvaluacionController extends ApiController
         // agregar preguntas para los estudiantes
         $resp = null;
         try {
-            $resp = DB::select('exec eval.SP_INS_generar_preguntas_estudiantes 
+            $resp = DB::select('exec eval.SP_INS_generarPreguntasEstudiantes 
                 @_iEvaluacionId = ?
                 ,@_iCursoId = ?
                 ,@_iSeccionId  = ?
@@ -186,5 +188,18 @@ class EvaluacionController extends ApiController
         }
         DB::commit();
         return $this->successResponse(null, $resp[0]->mensaje);
+    }
+
+    public function anularPublicacionEvaluacion(Request $request)
+    {
+        $iEvaluacionId = $this->decodeId($request->iEvaluacionId ?? 0);
+        try {
+            $resp = DB::select('exec eval.SP_DEL_anularPublicacionEvaluacionById @_iEvaluacionId = ?', [$iEvaluacionId]);
+            $resp = $resp[0];
+            return $this->successResponse(null, $resp->mensaje);
+        } catch (Exception $e) {
+            $mensaje = $this->handleAndLogError($e, 'Error al anular la publicación');
+            return $this->errorResponse(null, $mensaje);
+        }
     }
 }
