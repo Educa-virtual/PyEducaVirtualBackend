@@ -101,16 +101,6 @@ class EvaluacionesController extends ApiController
             return response()->json(['status' => 'error', 'message' => 'Error al guardar los datos', 'error' => $e->getMessage()], 500);
         }
     }
-
-    // public function eliminarParticipacion(Request $request)
-    // {
-    //     $ids = $request->input('ids'); // Recibimos un array de IDs de participaciones
-    //     DB::table('ere.iiee_participa_evaluaciones')
-    //         ->whereIn('iIieeId', $ids)  // Eliminamos todas las participaciones con los IDs proporcionados
-    //         ->delete();
-
-    //     return response()->json(['message' => 'Participaciones eliminadas exitosamente']);
-    // }
     public function eliminarParticipacion(Request $request)
     {
         $participaciones = $request->input('participaciones'); // Recibimos un array de objetos con iIieeId e iEvaluacionId
