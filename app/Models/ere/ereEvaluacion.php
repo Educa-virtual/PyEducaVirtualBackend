@@ -51,18 +51,19 @@ class ereEvaluacion extends Model
 
     // Aquí puedes definir un método para ejecutar el procedimiento almacenado
     public static function obtenerEvaluaciones()
-    {
-        return DB::select('EXEC ere.sp_SEL_Evaluaciones');
+    { //Se cambio el nombre sp_SEL_Evaluaciones
+        return DB::select('EXEC ere.SP_SEL_evaluaciones');
     }
 
     public static function guardarEvaluaciones($params)
     {
-        return DB::select('EXEC ere.sp_INS_Evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
+        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
     }
     public static function actualizarEvaluacion(array $params)
     {
         // Ejecutar el procedimiento almacenado para actualizar la evaluación
-        $result = DB::select('EXEC ere.sp_UPD_Evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
+        //Se cambio el nombre sp_UPD_Evaluaciones
+        $result = DB::select('EXEC ere.SP_UPD_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
         // Si el procedimiento devuelve resultados, asumimos que el primer resultado es la evaluación actualizada
         return !empty($result) ? $result[0] : null;
     }

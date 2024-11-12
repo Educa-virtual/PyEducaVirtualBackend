@@ -93,7 +93,7 @@ class PreguntasController extends ApiController
             // pregunta
             $respPregunta = null;
             try {
-                $respPregunta = DB::select('exec ere.Sp_INS_UPD_pregunta 
+                $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta 
                 @_iPreguntaId = ?
                 , @_iCursoId = ?
                 , @_iTipoPregId = ?
@@ -121,7 +121,8 @@ class PreguntasController extends ApiController
                     $alternativa['iAlternativaId']
                 ];
                 try {
-                    $resp = DB::select('exec ere.SP_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
+                    //Se cambio el nombre SP_DEL_alternativa_pregunta
+                    $resp = DB::select('exec ere.SP_DEL_alternativaPregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
 
                     // $resp = $resp[0];
                 } catch (Exception $e) {
@@ -294,7 +295,8 @@ class PreguntasController extends ApiController
         ];
 
         try {
-            $resp = DB::select('exec ere.Sp_DEL_encabezado_pregunta @_iEncabPregId = ?', $params);
+            //Se cambio el nombre Sp_DEL_encabezado_pregunta
+            $resp = DB::select('exec ere.SP_DEL_encabezadoPregunta @_iEncabPregId = ?', $params);
             if (count($resp) === 0) {
                 return $this->successResponse(null, 'Error al eliminar');
             }

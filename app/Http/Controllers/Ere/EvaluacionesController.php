@@ -25,7 +25,7 @@ class EvaluacionesController extends ApiController
             $where
         ];
         try {
-            $evaluaciones = DB::select('EXEC ere.sp_SEL_Evaluaciones');
+            $evaluaciones = DB::select('EXEC ere.SP_SEL_evaluaciones');
             return $this->successResponse(
                 $evaluaciones,
                 'Datos obtenidos correctamente'
@@ -148,7 +148,8 @@ class EvaluacionesController extends ApiController
         ];
 
         // Construir la llamada dinámica al procedimiento
-        DB::statement('EXEC ere.sp_UPD_Evaluaciones 
+        //Se cambio el nombre sp_UPD_Evaluaciones
+        DB::statement('EXEC ere.SP_UPD_evaluaciones
         @iEvaluacionId = :iEvaluacionId, 
         @idTipoEvalId = :idTipoEvalId, 
         @iNivelEvalId = :iNivelEvalId, 
@@ -255,7 +256,8 @@ class EvaluacionesController extends ApiController
     public function obtenerCursosEvaluacion($iEvaluacionId)
     {
         // Llamar al procedimiento almacenado
-        $cursos = DB::select('EXEC ere.sp_SEL_CursosEvaluacion ?', [$iEvaluacionId]);
+        //Se cambio el nombre SP_SEL_CursosEvaluacion
+        $cursos = DB::select('EXEC ere.SP_SEL_cursosEvaluacion ?', [$iEvaluacionId]);
 
         // Devolver la respuesta en formato JSON
         return response()->json([
@@ -279,5 +281,33 @@ class EvaluacionesController extends ApiController
             'message' => 'Cursos actualizados correctamente.',
             'status' => true
         ]);
+    }
+    //Insertar Evaluacion
+    public function obtenerEvaluacionCopia2()
+    {
+
+        $campos = 'iEvaluacionId,cEvaluacionNombre';
+        $where = '';
+        $params = [
+            'ere',
+            'evaluacion',
+            $campos,
+            $where
+        ];
+        try {
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
+                @nombreEsquema = ?,
+                @nombreTabla = ?,    
+                @campos = ?,        
+                @condicionWhere = ?
+            ', $params);
+
+            return $this->successResponse(
+                $preguntas,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Erro No!');
+        }
     }
 }

@@ -64,13 +64,6 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
-
-    // Route::group(['prefix' => 'Evaluaciones'], function () {
-    //     Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
-
-    //     Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
-
-    // });
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
@@ -96,6 +89,10 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
         //Actualizar Cursos COMENTADO
         Route::post('evaluaciones/{iEvaluacionId}/actualizarCursos', [EvaluacionesController::class, 'actualizarCursosEvaluacion']);
+        //Obtener Evaluacion Copiar
+        Route::get('/obtenerEvaluacionCopia', [EvaluacionesController::class, 'obtenerEvaluacionCopia']);
+        //Obtener evaluacion Copiar 2
+        Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

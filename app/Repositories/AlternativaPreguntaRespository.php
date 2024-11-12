@@ -33,7 +33,7 @@ class AlternativaPreguntaRespository
 
     public function guardarActualizarAlternativa($params)
     {
-        $resp = DB::select('exec ere.SP_INS_UPD_alternativa_pregunta
+        $resp = DB::select('exec ere.SP_INS_UPD_alternativaPregunta
                 @_iAlternativaId = ?
                 , @_iPreguntaId = ?
                 , @_cAlternativaDescripcion = ?
