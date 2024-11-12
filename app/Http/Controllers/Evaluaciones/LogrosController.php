@@ -20,7 +20,7 @@ class LogrosController extends ApiController
             $request->iEvalPregId,
         ];
         try {
-            $logros = DB::select('exec eval.SP_SEL_pregunta_logros
+            $logros = DB::select('exec eval.SP_SEL_preguntaLogros
                 @_iEvalPregId = ?
             ', $params);
             return $this->successResponse($logros, 'Datos obtenidos correctamente');
@@ -35,10 +35,10 @@ class LogrosController extends ApiController
      */
     public function store(Request $request)
     {
-        $iNivelLogroEvaId  = (int) $request->iNivelLogroEvaId ?? 0;
+        $iNivelLogroEvaId  = $this->decodeId($request->iNivelLogroEvaId ?? 0);
         $paramsToSave = json_encode([
             'cNivelLogroEvaDescripcion' => $request->cNivelLogroEvaDescripcion,
-            'iEvalPregId' => $request->iEvalPregId,
+            'iEvalPregId' => $this->decodeId($request->iEvalPregId ?? 0),
         ]);
 
         $paramsToUpdate = json_encode([
@@ -60,7 +60,7 @@ class LogrosController extends ApiController
 
             return $this->successResponse(['id' => $iNivelLogroEvaId], 'Cambios realizados correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al guardar los cambios');
+            $message = $this->handleAndLogError($e, 'Error al guardar los cambios.');
             return $this->errorResponse(null, $message);
         }
     }
@@ -88,7 +88,7 @@ class LogrosController extends ApiController
     {
         try {
             $resp = DB::select('
-                exec eval.SP_DEL_nivel_logro_evaluaciones_id 
+                exec eval.SP_DEL_nivelLogroXevaluacionesId 
                 @_iNivelLogroEvaId = ?    
             ', [$id]);
             return $this->successResponse($resp, 'Eliminado correctamente');

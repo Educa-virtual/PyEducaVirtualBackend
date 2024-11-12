@@ -76,7 +76,7 @@ class ProgramacionActividadesRepository
     {
         $iEvaluacionId = $params['iEvaluacionId'];
 
-        $res = DB::select('exec eval.SP_SEL_evaluaciones_by_id @_iEvaluacionId = ?', [$iEvaluacionId]);
+        $res = DB::select('exec eval.SP_SEL_evaluacionesXid @_iEvaluacionId = ?', [$iEvaluacionId]);
         return $res;
     }
     public static function obtenerActividadForo($params)
@@ -86,6 +86,13 @@ class ProgramacionActividadesRepository
 
 
         $res = DB::select('exec aula.SP_SEL_Foro @iForoid = ?', [$iForoId]);
+        return $res;
+    }
+    public static function obtenerRespuestaActividadForo($params)
+    {
+        $iForoId = $params['iForoId'];
+
+        $res = DB::select('exec aula.SP_SEL_respuestaXiDForo @iForoid = ?', [$iForoId]);
         return $res;
     }
 
@@ -98,7 +105,7 @@ class ProgramacionActividadesRepository
 //     $iactividadId = $params['iProgActId'];
 
 
-//     $res = DB::select('EXEC [aula].[SP_INS_InsertActividades= ?', [iactividadId]);
+//     $res = DB::select('EXEC [aula].[SP_INS_insertActividades= ?', [iactividadId]);
 //     return $res;
 // }
 
