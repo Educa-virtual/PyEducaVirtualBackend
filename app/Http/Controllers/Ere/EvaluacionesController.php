@@ -201,8 +201,6 @@ class EvaluacionesController extends ApiController
             return response()->json(['error' => 'Error al obtener las participaciones', 'message' => $e->getMessage()], 500);
         }
     }
-
-
     public function obtenerCursos()
     {
         $campos = 'iCursoId,cCursoNombre';
@@ -229,8 +227,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Erro No!');
         }
     }
-
-
     public function insertarCursos(Request $request)
     {
         try {
@@ -256,33 +252,6 @@ class EvaluacionesController extends ApiController
         }
     }
 
-
-    // public function obtenerCursosEvaluacion($iEvaluacionId)
-    // {
-    //     // Cursos que ya están registrados para la evaluación especificada
-    //     $cursosRegistrados = DB::table('ere.examen_cursos')
-    //         ->join('acad.cursos', 'ere.examen_cursos.iCursoId', '=', 'acad.cursos.iCursoId')
-    //         ->where('ere.examen_cursos.iEvaluacionId', $iEvaluacionId)
-    //         ->select('acad.cursos.iCursoId', 'acad.cursos.cCursoNombre')
-    //         ->get();
-
-    //     // IDs de los cursos registrados
-    //     $idsCursosRegistrados = $cursosRegistrados->pluck('iCursoId')->toArray();
-
-    //     // Cursos que NO están registrados para la evaluación especificada
-    //     $cursosNoRegistrados = DB::table('acad.cursos')
-    //         ->whereNotIn('iCursoId', $idsCursosRegistrados)
-    //         ->select('iCursoId', 'cCursoNombre')
-    //         ->get();
-
-    //     // Devolver la respuesta en formato JSON con clasificación
-    //     return response()->json([
-    //         'registrados' => $cursosRegistrados,
-    //         'no_registrados' => $cursosNoRegistrados,
-    //         'message' => 'Cursos clasificados correctamente.',
-    //         'status' => true
-    //     ]);
-
     public function obtenerCursosEvaluacion($iEvaluacionId)
     {
         // Llamar al procedimiento almacenado
@@ -292,6 +261,22 @@ class EvaluacionesController extends ApiController
         return response()->json([
             'cursos' => $cursos,
             'message' => 'Cursos clasificados correctamente.',
+            'status' => true
+        ]);
+    }
+
+    //Actualizar Cursos Examen Evaluacion COMENTADO
+    public function actualizarCursosEvaluacion($iEvaluacionId, $cursosSeleccionados)
+    {
+        // Convertir el array de cursos seleccionados en una cadena separada por comas
+        $cursosSeleccionadosStr = implode(',', $cursosSeleccionados);
+
+        // Llamar al procedimiento almacenado
+        DB::select('EXEC ere.SP_UPD_CursosEvaluacion ?, ?', [$iEvaluacionId, $cursosSeleccionadosStr]);
+
+        // Devolver la respuesta
+        return response()->json([
+            'message' => 'Cursos actualizados correctamente.',
             'status' => true
         ]);
     }

@@ -88,12 +88,14 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
         //Nuevo Ver con Datos completos
         Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
-        //Obtener cursos
+        //Obtener Cursos
         Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
-        //Insertar cursos
+        //Insertar Cursos
         Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
         //Ver Cursos
         Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
+        //Actualizar Cursos COMENTADO
+        Route::post('evaluaciones/{iEvaluacionId}/actualizarCursos', [EvaluacionesController::class, 'actualizarCursosEvaluacion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
