@@ -113,8 +113,28 @@ class CalendarioAcademicosController extends Controller
         ]);
     }
 
+    public function selCalFasesProm(Request $request){
+        $query = DB::select(
+            "EXEC grl.SP_SEL_DesdeTabla_Where ?,?,?,?",
+            [
+                'acad',
+                'calendario_fases_promocionales',
+                'iFaseId, iFasePromId, dtFaseInicio, dtFaseFin',
+                "iCalAcadId=" . $request->iCalAcadId,
+            ]
+        )[0];
+
+        return $this->response($query);
+    }
+
     public function insCalFasesProm(Request $request){
-        
+        $query = DB::select("EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?", [
+            'acad',
+            'calendario_fases_promocionales',
+            $request->calFasesProm,
+        ]);
+
+        return $this->response($query);
     }
 
     public function deleteCalFasesProm(Request $request){

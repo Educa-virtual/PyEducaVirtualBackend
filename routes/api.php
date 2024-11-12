@@ -106,6 +106,12 @@ Route::group(['prefix' => 'acad'], function () {
          * * Peticiones de información para la configuración de un calendario  
         */
         //* GET: Fases promocionales y fechas para configurar un calendario
+        Route::get('selCalFasesProm', [CalendarioAcademicosController::class, 'selCalFasesProm']);
+
+        /*
+         * * Peticiones de información para la configuración de un calendario  
+        */
+        //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
         
         // //* GET: Dias laborales para configurar un calendario
