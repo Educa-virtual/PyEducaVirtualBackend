@@ -120,9 +120,12 @@ Route::group(['prefix' => 'acad'], function () {
         // //* GET: Formas y modalidades de atención para configurar un calendario
         // Route::get('selFormasAtencion', [CalendarioAcademicosController::class, 'selFormasAtencion']);
 
-        // /*
-        //  * * Peticiones de información de un calendario
-        // */
+        /*
+         * * Peticiones de información de un calendario
+        */
+        // * GET: Toda la información de un calendario
+        Route::get('selCalAcad', [CalendarioAcademicosController::class, 'selCadAcad']);
+
         // //* GET: Fases promocionales y fechas de un calendario académico
         // Route::get('selCalFasesFechas', [CalendarioAcademicosController::class, 'selCalFasesFechas']);
 
@@ -164,8 +167,8 @@ Route::group(['prefix' => 'acad'], function () {
          * * Peticiones con información para editar información de un
          * * calendario 
         */
-        // * PUT: Fases promocionales y fechas de un calendario académico
-        Route::put('updCalFasesFechas', [CalendarioAcademicosController::class, 'updCalFasesFechas']);
+        // * PUT: Calendario Académico
+        Route::put('updCalAcademico', [CalendarioAcademicosController::class, 'updCalAcademico']);
 
         // // * PUT: Dias Laborales de un calendario
         // Route::put('updCalDiasLaborales', CalendarioAcademicosController::class, 'updCalDiasLaborales');
