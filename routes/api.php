@@ -94,9 +94,7 @@ Route::group(['prefix' => 'ere'], function () {
         //Obtener evaluacion Copiar 2
         Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
         // ACTUALIZAAR En routes/api.php o routes/web.php
-        Route::put('/actualizarCursos2', [EvaluacionesController::class, 'actualizarCursosExamen']);
-
-
+        Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
