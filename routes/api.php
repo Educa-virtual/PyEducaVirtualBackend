@@ -96,6 +96,15 @@ Route::group(['prefix' => 'acad'], function () {
     });
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
+        Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
+        Route::post('calendarioAcademico/addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
+        Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
+        Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
+        Route::post('calendarioAcademicos/addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
+        Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
+        Route::post('calendarioAcademicos/updateCalendario', [ CalendarioAcademicosController::class,'updateCalendario']);
+        Route::post('calendarioAcademicos/deleteCalendario',[ CalendarioAcademicosController::class,'deleteCalendario']); 
+    
         /*
          * * Peticiones de información de varios calendarios
         */
