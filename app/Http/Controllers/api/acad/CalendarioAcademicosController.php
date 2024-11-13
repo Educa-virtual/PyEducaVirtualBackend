@@ -43,15 +43,15 @@ class CalendarioAcademicosController extends Controller
         return $this->response($query);
     }
 
-    public function selCadAcad(Request $request)
+    public function selCalAcademico(Request $request)
     {
-        $query = collect(DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
+        $query = DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
             'acad',
-            'V_CalendariosAcademicos',
+            'V_CalendarioAcademico',
             '*',
-            'ISedeId=' . $request->iSedeId,
+            'iCalAcadId=' . $request->iCalAcadId,
 
-        ]))->sortByDesc('cYearNombre')->values();
+        ])[0];
 
         return $this->response($query);
     }
@@ -81,6 +81,47 @@ class CalendarioAcademicosController extends Controller
             'fasesProm' => $fasesPromQuery,
             'yearAcad' => $yearAcadQuery
         ]);
+    }
+
+    public function selDiasLaborales(Request $request){
+        $query = DB::select(
+            "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+            [
+                json_encode([
+                    'jmod' => 'grl',
+                    'jtable' => 'dias',
+                ]),
+                'getConsulta'
+            ]
+        );
+
+        return $this->response($query);
+    }
+
+    public function selCalDiasLaborales(Request $request){
+        $query = DB::select(
+            "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+            [
+                json_encode([
+                    'iCalAcadId' => $request->iCalAcadId,
+                ]),
+                'getCalendarioDiasLaborables'
+            ]
+        );
+
+        return $this->response($query);
+    }
+
+    public function insCalDiasLaborales(Request $request){
+        $query = DB::select(
+            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+            [
+                $request->json,
+                'addDiasLaborales'
+            ]
+        );
+
+        return $this->response($query);
     }
 
     public function insCalAcademico(Request $request)

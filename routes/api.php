@@ -114,8 +114,11 @@ Route::group(['prefix' => 'acad'], function () {
         //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
         
-        // //* GET: Dias laborales para configurar un calendario
-        // Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
+        //* GET: Dias laborales para configurar un calendario
+        Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
+
+        //* GET: Dias laborales de un calendario
+        Route::get('selCalDiasLaborales', [CalendarioAcademicosController::class, 'selCalDiasLaborales']);
 
         // //* GET: Formas y modalidades de atención para configurar un calendario
         // Route::get('selFormasAtencion', [CalendarioAcademicosController::class, 'selFormasAtencion']);
@@ -124,7 +127,7 @@ Route::group(['prefix' => 'acad'], function () {
          * * Peticiones de información de un calendario
         */
         // * GET: Toda la información de un calendario
-        Route::get('selCalAcad', [CalendarioAcademicosController::class, 'selCadAcad']);
+        Route::get('selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
 
         // //* GET: Fases promocionales y fechas de un calendario académico
         // Route::get('selCalFasesFechas', [CalendarioAcademicosController::class, 'selCalFasesFechas']);
@@ -151,8 +154,8 @@ Route::group(['prefix' => 'acad'], function () {
        // * POST: Calendario académico
        Route::post('insCalAcademico', [CalendarioAcademicosController::class, 'insCalAcademico']);
 
-        // // * POST: Dias Laborales de un calendario
-        // Route::post('insCalDiasLaborales', CalendarioAcademicosController::class, 'insCalDiasLaborales');
+        // * POST: Dias Laborales de un calendario
+        Route::post('insCalDiasLaborales', [CalendarioAcademicosController::class, 'insCalDiasLaborales']);
 
         // //* POST: Formas de atención y sus modalidades de un calendario
         // Route::post('insCalFormasAtencion', [CalendarioAcademicosController::class, 'insCalFormasAtencion']);
