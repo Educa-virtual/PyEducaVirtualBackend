@@ -181,6 +181,7 @@ class AulaVirtualController extends ApiController
                     'iNivelGradoId' => $this->hashids->encode($row->iNivelGradoId),
                     'iSemAcadId' => $this->hashids->encode($row->iSemAcadId),
                     'iCurrId' => $this->hashids->encode($row->iCurrId),
+                    'iSeccionId' => $this->hashids->encode($row->iSeccionId),
                 ];
             }
 
