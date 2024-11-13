@@ -271,22 +271,6 @@ class EvaluacionesController extends ApiController
         ]);
     }
 
-    //Actualizar Cursos Examen Evaluacion COMENTADO
-    // public function actualizarCursosEvaluacion($iEvaluacionId, $cursosSeleccionados)
-    // {
-    //     // Convertir el array de cursos seleccionados en una cadena separada por comas
-    //     $cursosSeleccionadosStr = implode(',', $cursosSeleccionados);
-
-    //     // Llamar al procedimiento almacenado
-    //     DB::select('EXEC ere.SP_UPD_CursosEvaluacion ?, ?', [$iEvaluacionId, $cursosSeleccionadosStr]);
-
-    //     // Devolver la respuesta
-    //     return response()->json([
-    //         'message' => 'Cursos actualizados correctamente.',
-    //         'status' => true
-    //     ]);
-    // }
-    //Insertar Evaluacion
     public function obtenerEvaluacionCopia2()
     {
 
@@ -314,21 +298,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Erro No!');
         }
     }
-
-    // public function actualizarCursoEvaluacion($iEvaluacionId, $iCursoId, $isSelected)
-    // {
-    //     // Llama al procedimiento almacenado en la base de datos
-    //     DB::statement('EXEC ere.SP_UPD_CursosExamenEvaluacion ?, ?, ?', [
-    //         $iEvaluacionId,
-    //         $iCursoId,
-    //         $isSelected
-    //     ]);
-
-    //     return response()->json([
-    //         'message' => 'Curso actualizado correctamente.',
-    //     ]);
-    // }
-
     // En EvaluacionController.php
     public function actualizarCursosExamen(Request $request)
     {
