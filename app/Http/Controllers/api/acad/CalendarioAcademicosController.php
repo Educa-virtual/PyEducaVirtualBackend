@@ -83,7 +83,34 @@ class CalendarioAcademicosController extends Controller
         ]);
     }
 
-    public function selDiasLaborales(Request $request){
+    public function selTurnosModalidades()
+    {
+        $turnosQuery = DB::select(
+            "EXEC grl.SP_SEL_DesdeTabla ?,?,?",
+            [
+                'acad',
+                'turnos',
+                'iTurnoId, cTurnoNombre',
+            ]
+        );
+
+        $modalidadesQuery = DB::select(
+            "EXEC grl.SP_SEL_DesdeTabla ?,?,?",
+            [
+                'acad',
+                'modalidad_servicios',
+                'iModalServId, cModalServNombre',
+            ]
+        );
+
+        return $this->response([
+            'turnos' => $turnosQuery,
+            'modalidades' => $modalidadesQuery
+        ]);
+    }
+
+    public function selDiasLaborales(Request $request)
+    {
         $query = DB::select(
             "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
             [
@@ -98,7 +125,8 @@ class CalendarioAcademicosController extends Controller
         return $this->response($query);
     }
 
-    public function selCalDiasLaborales(Request $request){
+    public function selCalDiasLaborales(Request $request)
+    {
         $query = DB::select(
             "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
             [
@@ -112,12 +140,26 @@ class CalendarioAcademicosController extends Controller
         return $this->response($query);
     }
 
-    public function insCalDiasLaborales(Request $request){
+    public function insCalDiasLaborales(Request $request)
+    {
         $query = DB::select(
             "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
             [
                 $request->json,
                 'addDiasLaborales'
+            ]
+        );
+
+        return $this->response($query);
+    }
+
+    public function insCalFormasAtencion(Request $request)
+    {
+        $query = DB::select(
+            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+            [
+                $request->json,
+                'addCalTurno'
             ]
         );
 
@@ -160,6 +202,16 @@ class CalendarioAcademicosController extends Controller
         return $this->response([]);
     }
 
+    public function updCalFormasAtencion(Request $request)
+    {
+        $query = DB::statement("EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->json,
+            'updateCalTurno',
+        ]);
+
+        return $this->response(['message' => 'Registros actualizado exitosamente']);
+    }
+
     public function selCalFasesProm(Request $request)
     {
         $query = DB::select(
@@ -186,7 +238,18 @@ class CalendarioAcademicosController extends Controller
         return $this->response($query);
     }
 
-    public function deleteCalDiasLaborales(Request $request){
+    public function insCalPeriodosFormativos(Request $request)
+    {
+        $query = DB::statement("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->json,
+            'addCalPeriodoEval',
+        ]);
+
+        return $this->response($query);
+    }
+
+    public function deleteCalDiasLaborales(Request $request)
+    {
         $query = DB::statement("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
             $request->calDiasLaborales,
             'deleteDiasLaborales',
@@ -209,63 +272,103 @@ class CalendarioAcademicosController extends Controller
         return $this->response($deleteCalFasesPromQuery);
     }
 
+    public function selDias(Request $request){
+        $diasQuery = DB::select(
+            "EXEC grl.SP_SEL_DesdeTabla ?,?,?",
+            [
+                'grl',
+                'dias',
+                'iDiaId, iDia, cDiaNombre, cDiaAbreviado',
+            ]
+        );
+
+        return $this->response($diasQuery);
+    }
+
+    public function selPeriodosFormativos(){
+        $periodosQuery = DB::select(
+            "EXEC grl.SP_SEL_DesdeTabla ?,?,?",
+            [
+                'acad',
+                'periodo_evaluaciones',
+                'iPeriodoEvalId, cPeriodoEvalNombre, cPeriodoEvalLetra, iPeriodoEvalCantidad',
+            ]
+        );
+
+        return $this->response($periodosQuery);
+    }
+    
+    public function deleteCalFormasAtencion(Request $request)
+    {
+        $deleteCalFormaAtencionQuery = DB::statement("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->json,
+            'deleteCalTurno',
+        ]);
+
+        return $this->response($deleteCalFormaAtencionQuery);
+    }
+
 
     // no tocar
     public function addCalAcademico(Request $request)
     {
         $solicitud = [
-        $request->json,
-        $request->_opcion,
+            $request->json,
+            $request->_opcion,
         ];
 
-        $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
-        $solicitud);
+        $query = DB::select(
+            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
+            $solicitud
+        );
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
     }
-    
+
     public function addAmbienteAcademico(Request $request)
     {
         $solicitud = [
-        $request->json,
-        $request->_opcion,
+            $request->json,
+            $request->_opcion,
         ];
 
-        $query = DB::select("EXEC acad.SP_INS_stepAmbienteAcademicoDesdeJsonOpcion ?,?",  //Actualizado
-        $solicitud);
+        $query = DB::select(
+            "EXEC acad.SP_INS_stepAmbienteAcademicoDesdeJsonOpcion ?,?",  //Actualizado
+            $solicitud
+        );
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información de los ambientes',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información de los ambientes',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' =>false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
@@ -274,31 +377,33 @@ class CalendarioAcademicosController extends Controller
     public function searchCalAcademico(Request $request)
     {
         $solicitud = [
-        $request->esquema,
-        $request->tabla,
-        $request->campos,
-        $request->condicion
+            $request->esquema,
+            $request->tabla,
+            $request->campos,
+            $request->condicion
         ];
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select("EXEC grl.sp_SEL_DesdeTabla_Where ?,?,?,? ", 
-        $solicitud);
+        $query = DB::select(
+            "EXEC grl.sp_SEL_DesdeTabla_Where ?,?,?,? ",
+            $solicitud
+        );
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información de los calendarios académicos',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información de los calendarios académicos',
+                'data' => $query,
+            ];
 
-        $estado = 200;
+            $estado = 200;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
@@ -307,28 +412,30 @@ class CalendarioAcademicosController extends Controller
     public function selAmbienteAcademico(Request $request)
     {
         $solicitud = [
-        $request->json,
-        $request->_opcion,
+            $request->json,
+            $request->_opcion,
         ];
 
-        $query = DB::select("EXEC acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?",  // actualizado
-        $solicitud);
+        $query = DB::select(
+            "EXEC acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?",  // actualizado
+            $solicitud
+        );
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información de los ambientes',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información de los ambientes',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' =>false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
@@ -336,36 +443,38 @@ class CalendarioAcademicosController extends Controller
 
     public function addYear(Request $request)
     {
-   
-    //    $json = json_encode($request->json);
-    //    $opcion = $request->_opcion;
+
+        //    $json = json_encode($request->json);
+        //    $opcion = $request->_opcion;
 
         $solicitud = [
-        $request->json,
-        $request->_opcion,
+            $request->json,
+            $request->_opcion,
         ];
-        
+
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select("EXEC grl.Sp_CRUD_YEAR ?,?", 
-        $solicitud);
-      //  [$json, $opcion ]);
+        $query = DB::select(
+            "EXEC grl.Sp_CRUD_YEAR ?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
@@ -373,87 +482,87 @@ class CalendarioAcademicosController extends Controller
 
     public function updateCalendario(Request $request)
     {
-   
+
         //    $json = json_encode($request->json);
         //    $opcion = $request->_opcion;
         $condiciones = json_encode(
-        [
-            'COLUMN_NAME' => $request->campo,
-            'VALUE' => $request->condicion
-        ]);
+            [
+                'COLUMN_NAME' => $request->campo,
+                'VALUE' => $request->condicion
+            ]
+        );
 
         $solicitud = [
-            $request-> esquema,     // NVARCHAR(128),          -- Esquema de la tabla
-            $request-> tabla,     // NVARCHAR(128),           -- Nombre de la tabla
+            $request->esquema,     // NVARCHAR(128),          -- Esquema de la tabla
+            $request->tabla,     // NVARCHAR(128),           -- Nombre de la tabla
             $request->json,  // NVARCHAR(MAX),       -- Datos en formato JSON para la actualización
             $condiciones // NVARCHAR(MAX)  -- JSON con condiciones para el WHERE (Array de condiciones AND)
         ];
-        
+
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select("EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?", 
-        $solicitud);
-      //  [$json, $opcion ]);
+        $query = DB::select(
+            "EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
-        }
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
 
+            $estado = 500;
+        }
     }
-    
+
     public function deleteCalendario(Request $request)
     {
-    //    $json = json_encode($request->json);
-    //    $opcion = $request->_opcion;
-   
+        //    $json = json_encode($request->json);
+        //    $opcion = $request->_opcion;
+
         $solicitud = [
-            $request-> esquema, //NVARCHAR(128),       -- Nombre del esquema
-            $request-> tabla, // NVARCHAR(128),   -- Nombre de la tabla principal
-            $request-> campo, //NVARCHAR(128),       -- Nombre del campo ID de la tabla principal
-            $request-> valorId, // BIGINT,              -- Valor del ID a eliminar
-           // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)        
+            $request->esquema, //NVARCHAR(128),       -- Nombre del esquema
+            $request->tabla, // NVARCHAR(128),   -- Nombre de la tabla principal
+            $request->campo, //NVARCHAR(128),       -- Nombre del campo ID de la tabla principal
+            $request->valorId, // BIGINT,              -- Valor del ID a eliminar
+            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)        
         ];
-        
+
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select("EXEC grl.SP_DEL_RegistroConTransaccion ?,?,?,?", 
-        $solicitud);
-      //  [$json, $opcion ]);
+        $query = DB::select(
+            "EXEC grl.SP_DEL_RegistroConTransaccion ?,?,?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
     }
 }
-
-
-
-
