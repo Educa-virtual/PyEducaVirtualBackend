@@ -270,6 +270,7 @@ class AulaVirtualController extends ApiController
 
                 // Asigna el primer resultado de la respuesta a la variable evaluación
                 $evaluacion = $resp[0];
+                $evaluacion->iEstado = (int) $evaluacion->iEstado;
             } catch (Throwable $e) {
                 // Maneja cualquier error que ocurra durante la obtención de datos y retorna un mensaje de error
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
