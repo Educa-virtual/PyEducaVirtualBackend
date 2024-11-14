@@ -295,7 +295,7 @@ class CalendarioAcademicosController extends Controller
             ]
         );
 
-        return $this->response($periodosQuery);
+        return $this->response($periodosQuery); 
     }
     
     public function deleteCalFormasAtencion(Request $request)
@@ -340,6 +340,15 @@ class CalendarioAcademicosController extends Controller
         }
 
         return new JsonResponse($response, $estado);
+    }
+
+    public function deleteCalPeriodosFormativos(Request $request){
+        $deleteCalPeriodosAcademicos = DB::statement("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->json,
+            'deleteCalPeriodo',
+        ]);
+
+        return $this->response($deleteCalPeriodosAcademicos);
     }
 
     public function addAmbienteAcademico(Request $request)

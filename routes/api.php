@@ -111,6 +111,8 @@ Route::group(['prefix' => 'acad'], function () {
         //* GET: Calendarios académicos por sede
         Route::get('selCalAcademicoSede', [CalendarioAcademicosController::class, 'selCalAcademicoSede']);
 
+        Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
+
         /*
          * * Peticiones de información para la configuración de un calendario  
         */
@@ -210,8 +212,8 @@ Route::group(['prefix' => 'acad'], function () {
         //* DELETE: Formas de atención y sus modalidades de un calendario
         Route::delete('deleteCalFormasAtencion', [CalendarioAcademicosController::class, 'deleteCalFormasAtencion']);
 
-        // //* DELETE: Periodos académicos de un calendario
-        // Route::delete('deleteCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'deleteCalPeriodosAcademicos']);
+        //* DELETE: Periodos académicos de un calendario
+        Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
     });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
