@@ -198,6 +198,9 @@ Route::group(['prefix' => 'acad'], function () {
         // * DELETE: Calendario Academico por identificador
         Route::delete('deleteCalFasesProm', [CalendarioAcademicosController::class, 'deleteCalFasesProm']);
 
+        // * DELETE: Dias laborales del calendario
+        Route::delete('deleteCalDiasLaborales', [CalendarioAcademicosController::class, 'deleteCalDiasLaborales']);
+
         // * DELETE: Calendario Academico por identificador
         // Route::delete('deleteCalAcademico', CalendarioAcademicosController::class, 'deleteCalAcademico');
 

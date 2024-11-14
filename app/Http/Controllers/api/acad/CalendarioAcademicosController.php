@@ -186,6 +186,16 @@ class CalendarioAcademicosController extends Controller
         return $this->response($query);
     }
 
+    public function deleteCalDiasLaborales(Request $request){
+        $query = DB::statement("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->calDiasLaborales,
+            'deleteDiasLaborales',
+        ]);
+
+
+        return $this->response(['message' => 'Registros eliminados exitosamente']);
+    }
+
     public function deleteCalFasesProm(Request $request)
     {
         $deleteCalFasesPromQuery = DB::select("EXEC grl.SP_DEL_RegistroConTransaccion ?,?,?,?,?", [
@@ -277,37 +287,6 @@ class CalendarioAcademicosController extends Controller
         $response = [
             'validated' => true,
             'message' => 'se obtuvo la información de los calendarios académicos',
-            'data' => $query,
-        ];
-
-        $estado = 200;
-        } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
-        }
-
-        return new JsonResponse($response, $estado);
-    }
-
-    public function selCalAcademico(Request $request)
-    {
-        $solicitud = [
-        $request->json,
-        $request->_opcion,
-        ];
-        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select("EXEC acad.Sp_ACAD_CRUD_CALENDARIO ?,?", 
-        $solicitud);
-
-        try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
             'data' => $query,
         ];
 
