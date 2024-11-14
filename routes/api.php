@@ -93,6 +93,8 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('/obtenerEvaluacionCopia', [EvaluacionesController::class, 'obtenerEvaluacionCopia']);
         //Obtener evaluacion Copiar 2
         Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
+        // ACTUALIZAAR En routes/api.php o routes/web.php
+        Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

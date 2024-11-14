@@ -271,22 +271,6 @@ class EvaluacionesController extends ApiController
         ]);
     }
 
-    //Actualizar Cursos Examen Evaluacion COMENTADO
-    public function actualizarCursosEvaluacion($iEvaluacionId, $cursosSeleccionados)
-    {
-        // Convertir el array de cursos seleccionados en una cadena separada por comas
-        $cursosSeleccionadosStr = implode(',', $cursosSeleccionados);
-
-        // Llamar al procedimiento almacenado
-        DB::select('EXEC ere.SP_UPD_CursosEvaluacion ?, ?', [$iEvaluacionId, $cursosSeleccionadosStr]);
-
-        // Devolver la respuesta
-        return response()->json([
-            'message' => 'Cursos actualizados correctamente.',
-            'status' => true
-        ]);
-    }
-    //Insertar Evaluacion
     public function obtenerEvaluacionCopia2()
     {
 
@@ -313,5 +297,66 @@ class EvaluacionesController extends ApiController
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Erro No!');
         }
+    }
+    // En EvaluacionController.php
+    public function actualizarCursosExamen(Request $request)
+    {
+        // Validación de los datos entrantes
+        $request->validate([
+            'evaluacion_id' => 'required|integer',
+            'cursos' => 'required|array', // Array de cursos
+            'cursos.*.id' => 'required|integer', // ID del curso
+            'cursos.*.is_selected' => 'required|boolean', // 1 para agregar, 0 para quitar
+        ]);
+
+        $evaluacionId = $request->evaluacion_id;
+        $cursos = $request->cursos;
+
+        // Iterar sobre los cursos recibidos
+        foreach ($cursos as $curso) {
+            $cursoId = $curso['id'];
+            $isSelected = $curso['is_selected'];
+
+            if ($isSelected == 1) {
+                // Agregar el curso a la evaluación si no existe ya
+                DB::table('ere.examen_cursos')
+                    ->updateOrInsert(
+                        ['iEvaluacionId' => $evaluacionId, 'iCursoId' => $cursoId],
+                        ['iEvaluacionId' => $evaluacionId, 'iCursoId' => $cursoId]
+                    );
+            } else {
+                // Eliminar el curso de la evaluación si es seleccionado para quitar
+                DB::table('ere.examen_cursos')
+                    ->where('iEvaluacionId', $evaluacionId)
+                    ->where('iCursoId', $cursoId)
+                    ->delete();
+            }
+        }
+
+        return response()->json(['message' => 'Cursos actualizados correctamente']);
+    }
+
+    public function actualizarCursos(Request $request)
+    {
+        // Validar los parámetros recibidos
+        $validated = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+            'cursos' => 'required|array',
+            'cursos.*.iCursoId' => 'required|integer',
+            'cursos.*.isSelected' => 'required|boolean',
+        ]);
+
+        $iEvaluacionId = $validated['iEvaluacionId'];
+
+        // Iterar a través de cada curso y ejecutar el procedimiento almacenado
+        foreach ($validated['cursos'] as $curso) {
+            DB::statement('EXEC ere.SP_UPD_CursosExamenEvaluacion ?, ?, ?', [
+                $iEvaluacionId,
+                $curso['iCursoId'],
+                $curso['isSelected'],
+            ]);
+        }
+
+        return response()->json(['message' => 'Cursos actualizados correctamente para la evaluación ' . $iEvaluacionId]);
     }
 }
