@@ -64,13 +64,6 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
-
-    // Route::group(['prefix' => 'Evaluaciones'], function () {
-    //     Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
-
-    //     Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
-
-    // });
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
@@ -79,7 +72,29 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
         //!Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
-        Route::delete('eliminarParticipacion/{id}', [EvaluacionesController::class, 'eliminarParticipacion']);
+        Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
+        //Agregando participacion nuevo
+        Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
+        //! Ruta para actualizar la evaluación
+        Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        //! Ruta para obtener las participaciones
+        Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        //Nuevo Ver con Datos completos
+        Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
+        //Obtener Cursos
+        Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
+        //Insertar Cursos
+        Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
+        //Ver Cursos
+        Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
+        //Actualizar Cursos COMENTADO
+        Route::post('evaluaciones/{iEvaluacionId}/actualizarCursos', [EvaluacionesController::class, 'actualizarCursosEvaluacion']);
+        //Obtener Evaluacion Copiar
+        Route::get('/obtenerEvaluacionCopia', [EvaluacionesController::class, 'obtenerEvaluacionCopia']);
+        //Obtener evaluacion Copiar 2
+        Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
+        // ACTUALIZAAR En routes/api.php o routes/web.php
+        Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
