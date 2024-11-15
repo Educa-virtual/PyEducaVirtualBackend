@@ -168,10 +168,9 @@ class CalendarioAcademicosController extends Controller
 
     public function insCalAcademico(Request $request)
     {
-        $query = DB::select("EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?", [
-            'acad',
-            'calendario_academicos',
-            $request->calAcad,
+        $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->json,
+            'addCalAcademico',
         ]);
 
         return $this->response($query);
