@@ -208,8 +208,12 @@ Route::group(['prefix' => 'acad'], function () {
         //* PUT: Formas de atención y sus modalidades de un calendario
         Route::put('updCalFormasAtencion', [CalendarioAcademicosController::class, 'updCalFormasAtencion']);
 
+        //* PUT: Periodos académicos de un calendario
+        Route::put('updCalFasesProm', [CalendarioAcademicosController::class, 'updCalFasesProm']);
+        
         // //* PUT: Periodos académicos de un calendario
         // Route::put('updCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'updCalPeriodosAcademicos']);
+
 
         /*
          * * Peticiones con información para eliminar información de un

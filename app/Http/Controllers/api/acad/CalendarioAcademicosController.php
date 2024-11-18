@@ -178,12 +178,12 @@ class CalendarioAcademicosController extends Controller
 
     public function updCalAcademico(Request $request)
     {
-        $query = DB::select("EXEC grl.SP_UPD_ParcheEnTablaDesdeJSON ?,?,?,?,?", [
-            'acad',
-            'calendario_academicos',
-            'iCalAcadId',
-            $request->iCalAcadId,
+        $query = DB::select("EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
             $request->calAcad,
+            // 'acad',
+            'updateCalAcademico',
+            // 'iCalAcadId',
+            // $request->iCalAcadId,
         ]);
 
         return $this->response($query);
@@ -211,6 +211,16 @@ class CalendarioAcademicosController extends Controller
         return $this->response(['message' => 'Registros actualizado exitosamente']);
     }
 
+    public function updCalFasesProm(Request $request)
+    {
+        $query = DB::statement("EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->calFases,
+            'updateCalFase',
+        ]);
+
+        return $this->response(['message' => 'Registros actualizado exitosamente']);
+    }
+
     public function selCalFasesProm(Request $request)
     {
         $query = DB::select(
@@ -228,10 +238,11 @@ class CalendarioAcademicosController extends Controller
 
     public function insCalFasesProm(Request $request)
     {
-        $query = DB::select("EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?", [
-            'acad',
-            'calendario_fases_promocionales',
+        $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
             $request->calFasesProm,
+            'addCalFase',
+            // 'acad',
+            // 'calendario_fases_promocionales',
         ]);
 
         return $this->response($query);
@@ -260,12 +271,11 @@ class CalendarioAcademicosController extends Controller
 
     public function deleteCalFasesProm(Request $request)
     {
-        $deleteCalFasesPromQuery = DB::select("EXEC grl.SP_DEL_RegistroConTransaccion ?,?,?,?,?", [
-            'acad',
-            'calendario_fases_promocionales',
-            'iFaseId',
-            $request->iFaseId,
-            'calendario_periodos_evaluaciones'
+        $deleteCalFasesPromQuery = DB::select("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+            $request->deleteFasesProm,
+            'deleteCalFasesProm',
+            // 'iFaseId',
+            // 'calendario_periodos_evaluaciones'
         ]);
 
         return $this->response($deleteCalFasesPromQuery);
