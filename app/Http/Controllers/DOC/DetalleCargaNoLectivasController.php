@@ -77,7 +77,7 @@ class DetalleCargaNoLectivasController extends Controller
             $data = DB::select('exec doc.Sp_SEL_detalleCargaNoLectivas
                 ?,?,?,?,?,?,?,?', $parametros);
 
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];

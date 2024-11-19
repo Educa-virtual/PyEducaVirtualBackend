@@ -26,7 +26,7 @@ class InstitucionesEducativasController extends ApiController
         ];
 
         try {
-            $preguntas = DB::select('EXEC ere.sp_SEL_Instituciones');
+            $preguntas = DB::select('EXEC ere.SP_SEL_instituciones');
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'
