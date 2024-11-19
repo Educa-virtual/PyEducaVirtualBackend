@@ -64,13 +64,6 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
-
-    // Route::group(['prefix' => 'Evaluaciones'], function () {
-    //     Route::get('obtenerEvaluaciones', [EvaluacionesController::class, 'obtenerEvaluaciones']);
-
-    //     Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
-
-    // });
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
@@ -79,7 +72,29 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
         //!Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
-        Route::delete('eliminarParticipacion/{id}', [EvaluacionesController::class, 'eliminarParticipacion']);
+        Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
+        //Agregando participacion nuevo
+        Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
+        //! Ruta para actualizar la evaluación
+        Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        //! Ruta para obtener las participaciones
+        Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        //Nuevo Ver con Datos completos
+        Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
+        //Obtener Cursos
+        Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
+        //Insertar Cursos
+        Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
+        //Ver Cursos
+        Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
+        //Actualizar Cursos COMENTADO
+        Route::post('evaluaciones/{iEvaluacionId}/actualizarCursos', [EvaluacionesController::class, 'actualizarCursosEvaluacion']);
+        //Obtener Evaluacion Copiar
+        Route::get('/obtenerEvaluacionCopia', [EvaluacionesController::class, 'obtenerEvaluacionCopia']);
+        //Obtener evaluacion Copiar 2
+        Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
+        // ACTUALIZAAR En routes/api.php o routes/web.php
+        Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -96,11 +111,22 @@ Route::group(['prefix' => 'acad'], function () {
     });
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
+        Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
+        Route::post('calendarioAcademico/addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
+        Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
+        Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
+        Route::post('calendarioAcademicos/addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
+        Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
+        Route::post('calendarioAcademicos/updateCalendario', [ CalendarioAcademicosController::class,'updateCalendario']);
+        Route::post('calendarioAcademicos/deleteCalendario',[ CalendarioAcademicosController::class,'deleteCalendario']); 
+    
         /*
          * * Peticiones de información de varios calendarios
         */
         //* GET: Calendarios académicos por sede
         Route::get('selCalAcademicoSede', [CalendarioAcademicosController::class, 'selCalAcademicoSede']);
+
+        Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
 
         /*
          * * Peticiones de información para la configuración de un calendario  
@@ -113,9 +139,18 @@ Route::group(['prefix' => 'acad'], function () {
         */
         //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
+
+        //* GET: Fases promocionales y fechas para configurar un calendario
+        Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
         
-        // //* GET: Dias laborales para configurar un calendario
-        // Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
+        //* GET: Dias laborales para configurar un calendario
+        Route::get('selTurnosModalidades', [CalendarioAcademicosController::class, 'selTurnosModalidades']);
+
+        //* GET: Periodos de evaluaciones formativos
+        Route::get('selPeriodosFormativos', [CalendarioAcademicosController::class, 'selPeriodosFormativos']);
+
+        //* GET: Dias laborales de un calendario
+        Route::get('selCalDiasLaborales', [CalendarioAcademicosController::class, 'selCalDiasLaborales']);
 
         // //* GET: Formas y modalidades de atención para configurar un calendario
         // Route::get('selFormasAtencion', [CalendarioAcademicosController::class, 'selFormasAtencion']);
@@ -124,13 +159,13 @@ Route::group(['prefix' => 'acad'], function () {
          * * Peticiones de información de un calendario
         */
         // * GET: Toda la información de un calendario
-        Route::get('selCalAcad', [CalendarioAcademicosController::class, 'selCadAcad']);
+        Route::get('selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
 
         // //* GET: Fases promocionales y fechas de un calendario académico
         // Route::get('selCalFasesFechas', [CalendarioAcademicosController::class, 'selCalFasesFechas']);
 
-        // //* GET: Dias Laborales de un calendario
-        // Route::get('selCalDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
+        //* GET: Dias Laborales de la semana
+        Route::get('selDias', [CalendarioAcademicosController::class, 'selDias']);
 
         // //* GET: Formas de atención y sus modalidades de un calendario
         // Route::get('selCalFormasAtencion', [CalendarioAcademicosController::class, 'selCalFormasAtencion']);
@@ -151,14 +186,14 @@ Route::group(['prefix' => 'acad'], function () {
        // * POST: Calendario académico
        Route::post('insCalAcademico', [CalendarioAcademicosController::class, 'insCalAcademico']);
 
-        // // * POST: Dias Laborales de un calendario
-        // Route::post('insCalDiasLaborales', CalendarioAcademicosController::class, 'insCalDiasLaborales');
+        // * POST: Dias Laborales de un calendario
+        Route::post('insCalDiasLaborales', [CalendarioAcademicosController::class, 'insCalDiasLaborales']);
 
-        // //* POST: Formas de atención y sus modalidades de un calendario
-        // Route::post('insCalFormasAtencion', [CalendarioAcademicosController::class, 'insCalFormasAtencion']);
+        //* POST: Formas de atención y sus modalidades de un calendario
+        Route::post('insCalFormasAtencion', [CalendarioAcademicosController::class, 'insCalFormasAtencion']);
 
-        // //* POST: Periodos académicos de un calendario
-        // Route::post('insCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'insCalPeriodosAcademicos']);
+        //* POST: Periodos académicos de un calendario
+        Route::post('insCalPeriodosFormativos', [CalendarioAcademicosController::class, 'insCalPeriodosFormativos']);
 
         // //* POST: Información de un calendario configurado
         // Route::post('insCalAcademicoResumen', [CalendarioAcademicosController::class, 'insCalAcademicoResumen']);
@@ -170,11 +205,8 @@ Route::group(['prefix' => 'acad'], function () {
         // * PUT: Calendario Académico
         Route::put('updCalAcademico', [CalendarioAcademicosController::class, 'updCalAcademico']);
 
-        // // * PUT: Dias Laborales de un calendario
-        // Route::put('updCalDiasLaborales', CalendarioAcademicosController::class, 'updCalDiasLaborales');
-
-        // //* PUT: Formas de atención y sus modalidades de un calendario
-        // Route::put('updCalFormasAtencion', [CalendarioAcademicosController::class, 'updCalFormasAtencion']);
+        //* PUT: Formas de atención y sus modalidades de un calendario
+        Route::put('updCalFormasAtencion', [CalendarioAcademicosController::class, 'updCalFormasAtencion']);
 
         // //* PUT: Periodos académicos de un calendario
         // Route::put('updCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'updCalPeriodosAcademicos']);
@@ -186,14 +218,17 @@ Route::group(['prefix' => 'acad'], function () {
         // * DELETE: Calendario Academico por identificador
         Route::delete('deleteCalFasesProm', [CalendarioAcademicosController::class, 'deleteCalFasesProm']);
 
+        // * DELETE: Dias laborales del calendario
+        Route::delete('deleteCalDiasLaborales', [CalendarioAcademicosController::class, 'deleteCalDiasLaborales']);
+
         // * DELETE: Calendario Academico por identificador
         // Route::delete('deleteCalAcademico', CalendarioAcademicosController::class, 'deleteCalAcademico');
 
-        // //* DELETE: Formas de atención y sus modalidades de un calendario
-        // Route::delete('deleteCalFormasAtencion', [CalendarioAcademicosController::class, 'deleteCalFormasAtencion']);
+        //* DELETE: Formas de atención y sus modalidades de un calendario
+        Route::delete('deleteCalFormasAtencion', [CalendarioAcademicosController::class, 'deleteCalFormasAtencion']);
 
-        // //* DELETE: Periodos académicos de un calendario
-        // Route::delete('deleteCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'deleteCalPeriodosAcademicos']);
+        //* DELETE: Periodos académicos de un calendario
+        Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
     });
 });
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);

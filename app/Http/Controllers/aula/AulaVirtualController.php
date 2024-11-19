@@ -181,6 +181,7 @@ class AulaVirtualController extends ApiController
                     'iNivelGradoId' => $this->hashids->encode($row->iNivelGradoId),
                     'iSemAcadId' => $this->hashids->encode($row->iSemAcadId),
                     'iCurrId' => $this->hashids->encode($row->iCurrId),
+                    'iSeccionId' => $this->hashids->encode($row->iSeccionId),
                 ];
             }
 
@@ -269,6 +270,7 @@ class AulaVirtualController extends ApiController
 
                 // Asigna el primer resultado de la respuesta a la variable evaluación
                 $evaluacion = $resp[0];
+                $evaluacion->iEstado = (int) $evaluacion->iEstado;
             } catch (Throwable $e) {
                 // Maneja cualquier error que ocurra durante la obtención de datos y retorna un mensaje de error
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
@@ -587,6 +589,59 @@ class AulaVirtualController extends ApiController
         }
 
         // Retorna una respuesta JSON con el mensaje y el código HTTP correspondiente.
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function guardarComentarioRespuesta(Request $request)
+    {
+
+        $request->validate([
+            'cForoRptaPadre' => 'required|string',
+            'iForoRptaId' => 'required|string'
+        ]);
+
+        $request['iEstudianteId'] = is_null($request->iEstudianteId)
+            ? null
+            : (is_numeric($request->iEstudianteId)
+                ? $request->iEstudianteId
+                : ($this->hashids->decode($request->iEstudianteId)[0] ?? null));
+
+        $request['iDocenteId'] = is_null($request->iDocenteId)
+            ? null
+            : (is_numeric($request->iDocenteId)
+                ? $request->iDocenteId
+                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
+
+        $request['iForoRptaId'] = is_null($request->iForoRptaId)
+            ? null
+            : (is_numeric($request->iForoRptaId)
+                ? $request->iForoRptaId
+                : ($this->hashids->decode($request->iForoRptaId)[0] ?? null));
+
+        $data = [
+            $request->iEstudianteId     ?? NULL,
+            $request->iDocenteId        ?? NULL,
+            $request->iForoRptaId       ?? NULL,
+            $request->cForoRptaPadre    ?? NULL
+        ];
+        //return $data;
+        try {
+            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaPadre]
+               ?,?,?,?', $data);
+            DB::commit();
+            if ($resp[0]->id > 0) {
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (Exception $e) {
+            $this->handleAndLogError($e);
+            DB::rollBack();
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
         return new JsonResponse($response, $codeResponse);
     }
 }
