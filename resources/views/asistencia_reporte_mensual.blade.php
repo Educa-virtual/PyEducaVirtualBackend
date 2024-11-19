@@ -68,8 +68,8 @@
             <div>Gestion :</div>
             <div>Nivel : {{$nivel}}</div>
             <div>Fase / Periodo:</div>
-            <div>Ciclo - Grado :</div>
-            <div>Seccion - Turno :</div>
+            <div>Ciclo - Grado : {{$grado}}</div>
+            <div>Seccion - Turno : {{$seccion}} - {{$turno}}</div>
             <div>Cerrado por :</div>
         </aside>
     </div>
@@ -113,9 +113,20 @@
             </tr>
         @endforeach
     </table>
+    <table>
+        <tr>
+            <td>Legenda:</td>
+            <td>[X] Asistio</td>
+            <td>[I] Inasistencia</td>
+            <td>[J] Inasistencia Justificada</td>
+            <td>[T] Tardanza</td>
+            <td>[P] Tardanza Justificada</td>
+            <td>[-] Sin Registro</td>
+        </tr>
+    </table>
     </main>
     <footer>
-        PRof juan manuel
+        --
     </footer>
 </body>
 </html>
