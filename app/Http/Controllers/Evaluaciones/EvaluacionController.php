@@ -46,7 +46,7 @@ class EvaluacionController extends ApiController
             }
         } catch (Throwable $e) {
             DB::rollBack();
-            $message = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+            $message = $this->handleAndLogError($e, 'Error al guardar la programación');
             return $this->errorResponse(null, $message);
         }
 
@@ -56,7 +56,7 @@ class EvaluacionController extends ApiController
             $iEvaluacionId,
             $request->iTipoEvalId,
             $iProgActId,
-            $request->iInstrumentoId ?? NULL,
+            $request->iInstrumentoId === 0 ? NULL : $request->iInstrumentoId,
             $request->iEscalaCalifId ?? NULL,
             $iDocenteId,
             $request->dtEvaluacionPublicacion ?? NULL,
