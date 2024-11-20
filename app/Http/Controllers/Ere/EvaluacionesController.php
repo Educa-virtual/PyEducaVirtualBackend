@@ -256,7 +256,31 @@ class EvaluacionesController extends ApiController
             return response()->json(['message' => 'Error al insertar cursos', 'error' => $e->getMessage()], 500);
         }
     }
+    //!ELIMINAR CURSO
+    public function eliminarCursos(Request $request)
+{
+    try {
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $selectedCursos = $request->input('selectedCursos');
 
+        // Valida que los datos existan
+        if (!$iEvaluacionId || empty($selectedCursos)) {
+            return response()->json(['message' => 'Datos incompletos.'], 400);
+        }
+
+        // Elimina los cursos
+        foreach ($selectedCursos as $curso) {
+            DB::table('ere.examen_cursos')
+                ->where('iEvaluacionId', $iEvaluacionId)
+                ->where('iCursoId', $curso['iCursoId'])
+                ->delete();
+        }
+
+        return response()->json(['message' => 'Cursos eliminados correctamente'], 200);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Error al eliminar cursos', 'error' => $e->getMessage()], 500);
+    }
+}
     public function obtenerCursosEvaluacion($iEvaluacionId)
     {
         // Llamar al procedimiento almacenado
@@ -358,5 +382,32 @@ class EvaluacionesController extends ApiController
         }
 
         return response()->json(['message' => 'Cursos actualizados correctamente para la evaluación ' . $iEvaluacionId]);
+    }
+    //!Agregando CopiarEvaluacion
+    public function copiarEvaluacion(Request $request)
+    {
+        // Validar que el parámetro iEvaluacionIdOriginal esté presente
+        $request->validate([
+            'iEvaluacionIdOriginal' => 'required|integer',
+        ]);
+
+        try {
+            // Llamar al procedimiento almacenado con el parámetro proporcionado
+            $result = DB::statement('EXEC ere.SP_INS_copiarEvaluacionAsociados :iEvaluacionIdOriginal', [
+                'iEvaluacionIdOriginal' => $request->input('iEvaluacionIdOriginal'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Copia realizada correctamente.',
+            ], 200);
+        } catch (\Exception $e) {
+            // Capturar errores y devolver una respuesta adecuada
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al realizar la copia.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
