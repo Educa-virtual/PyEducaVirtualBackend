@@ -336,9 +336,6 @@ class AsistenciaController extends Controller
                     ->name('silabus.pdf');
                 return $pdf;
                 break;
-            case 'reporte-semanal':
-
-                break;
             case 'reporte-mensual':
 
                 break;
