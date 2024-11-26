@@ -13,6 +13,7 @@ use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
+use App\Http\Controllers\api\acad\InstitucionesEducativasController as AcadInstitucionesEducativasController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
@@ -112,6 +113,11 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'Perfiles'], function () {
         Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
+    });
+
+    Route::group(['prefix' => 'institucionEducativa'], function () {
+        Route::get('selReglamentoInterno', [AcadInstitucionesEducativasController::class, 'selReglamentoInterno']);
+        Route::put('updReglamentoInterno', [AcadInstitucionesEducativasController::class, 'updReglamentoInterno']);
     });
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
