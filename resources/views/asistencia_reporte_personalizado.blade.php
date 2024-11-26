@@ -7,6 +7,9 @@
     <title>Reporte de Asitencia</title>
 </head>
 <style>
+    html {
+        -webkit-print-color-adjust: exact;
+    }
     body{
         display: flex;
         flex-direction: column;
@@ -22,18 +25,18 @@
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-size: 11px;
     }
-    table {
+    .cuerpo {
         width: 100%;
         border-spacing: 0;
         border-collapse: collapse;
     }
-    th{
+    .cuerpo tr th{
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         background-color: #dbdbdb;
-        font-size: 11px;
+        font-size: 10px;
         margin: 0;
     }
-    td{
+    .cuerpo tr td{
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-size: 9px;
         margin: 0;
@@ -50,39 +53,36 @@
     footer{
         width: 100%;
         font-size: 12px;
-        margin-bottom: 10px;
-        margin-left: 10px;
     }
     .titulo{
         text-align:center;
         font-size:12px;
         font-weight:900;
         margin-top:30px;
-    
     }
-    .pie{
+    .tablas{
+        table-layout: fixed;
         width: 100%;
     }
-    .pie>tr{
-        width: 100%;
-    }
-    .pie>tr>td{
+    .tablas tr td{
         text-align: center;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 9px;
     }
+   
 </style>
 <body>
-    <div class="titulo">REPORTE DE ASISTENCIA</div>
-    <main>
     
-        @foreach ($respuesta as $lista)
+        @foreach ($respuesta as $index => $lista)
+        <main>
+            <div class="titulo">REPORTE DE ASISTENCIA</div>
             <div class=container>
                 <aside>
+                    <div>I.E. : {{$ie}} - Cod. Modular: {{$modular}}</div>
                     <div>Docente : {{$docente}}</div>
-                    <div>Cod. Modular/I.E. : {{$modular}}</div>
-                    <div>DRE/UGEL : {{$dre}}</div>
                     <div>AÑO : {{$year}}</div>
                     <div>MES : {{ strtoupper($lista["mes_calendario"]) }}</div>
-                    <div>FECHA DE REPORTE : {{$fecha_reporte}}</div>
+                    <div>FECHA DE INICIO : 01-{{$lista["mes"]}}-{{$year}}</div>
                     <div>FECHA DE CIERRE : {{$fecha_cierre}}</div>
                 </aside>
                 <aside>
@@ -93,7 +93,7 @@
                     <div>Cerrado por :</div>
                 </aside>
             </div>
-            <table>
+            <table class="cuerpo">
                 <tr>
                     <th rowspan="3" style="border:1px solid black;margin:0;padding:7px;">N°</th>
                     <th rowspan="3" style="border:1px solid black;margin:0;padding:7px;">NOMBRES Y APELLIDOS</th>
@@ -116,7 +116,11 @@
                         <th style="border:1px solid black;margin:0;padding:7px;">{{($indice+1)}}</th>
                         <th style="border:1px solid black;margin:0;padding:7px;">{{$nombre}}</th>
                         @foreach ($lista["asistido"][$indice] as $asistido)
-                        <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$asistido}}</td>
+                            @if ($asistido!="")
+                                <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$asistido}}</td>
+                            @else
+                                <td style="text-align:center;border:1px solid black;background-color: #dbdbdb;margin:0;padding:7px;">{{$asistido}}</td>
+                            @endif
                         @endforeach
                     </tr>
                 @endforeach
@@ -126,7 +130,27 @@
                     
                 @endforeach --}}
             </table>
-            <table>
+            {{-- <table>
+                <tr>
+                    <td>Estado</td>
+                </tr>
+                <tr>
+                    <td>Asistencia</td>
+                </tr>
+                <tr>
+                    <td>Tardanza</td>
+                </tr>
+                <tr>
+                    <td>Inasistencia</td>
+                </tr>
+                <tr>
+                    <td>Tardandaza Justificada</td>
+                </tr>
+                <tr>
+                    <td>Inasistencia Justificada</td>
+                </tr>
+            </table> --}}
+            <table class="cuerpo">
                 <tr>
                     <td>Legenda:</td>
                     <td>[X] Asistio</td>
@@ -137,24 +161,23 @@
                     <td>[-] Sin Registro</td>
                 </tr>
             </table>
+        </main>
+        <footer>
+            <table class="tablas">
+                <tr>
+                    <td>Pagina {{$index + 1}} De {{count($respuesta)}}</td>
+                    <td>Autor: --</td>
+                    <td>{{$fecha_reporte}} </td>
+                </tr>
+            </table>
+        </footer>
+        
+            @pageBreak
         @endforeach
-        <div>
-            <p>Nota de Confidencialidad:</p>
-            <p>
-                Este reporte de asistencia es estrictamente confidencial y está destinado exclusivamente para el uso del docente y el personal autorizado. Conforme a la Ley N° 29733,
-                Ley de Protección de Datos Personales, queda prohibida su reproducción, distribución o utilización con fines distintos a los educativos establecidos, protegiendo así la
-                privacidad de alumnos y docentes
-            </p>
-        </div>
-    </main>
-    <footer>
-        <table class="pie">
-            <tr>
-                <td>1/1</td>
-                <td>Autor: --</td>
-                <td>{{$fecha_reporte}}</td>
-            </tr>
-        </table>
-    </footer>
+        
+    
+    
+
+    
 </body>
 </html>
