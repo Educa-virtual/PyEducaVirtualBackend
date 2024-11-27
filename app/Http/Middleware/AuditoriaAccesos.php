@@ -28,48 +28,84 @@ class AuditoriaAccesos
             $originalContent = $response->getData(true); // Obtiene el contenido como array
 
             // Verifica la presencia de 'user' y modifica la respuesta
-            if (isset($originalContent['user'])) {
-                DB::select(
-                    "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
-                    [
-                        'seg',
-                        'auditoria_accesos',
-                        json_encode([
-                            'iCredId' => $originalContent['user']['iCredId'],
-                            'cIpCliente' => $_SERVER["REMOTE_ADDR"],
-                            'cNavegador' => $agent->browser(),
-                            'cDispositivo' => $agent->deviceType(),
-                            'cSistmaOperativo' => $agent->platform(),
-                        ])
-                    ]
-                );
-            }
+            // if (isset($originalContent['user'])) {
+            //     $userExist = DB::select(
+            //         "EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?",
+            //         [
+            //             'seg',
+            //             'credenciales',
+            //             'cCredUsuario',
+            //             'cCredUsuario=' . $request->user,
+            //         ]
+            //     );
 
-            // Verifica la presencia de 'error' y modifica la respuesta
-            if (isset($originalContent['error'])) {
-                DB::select(
-                    "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
-                    [
-                        'seg',
-                        'auditoria_accesos_fallidos',
-                        json_encode([
-                            'cLogin' => $request->user,
-                            'cPassword' => $request->pass,
-                            'cMotivo' => $originalContent['error'],
-                            'cIpCliente' => $_SERVER["REMOTE_ADDR"],
-                            'cNavegador' => $agent->browser(),
-                            'cDispositivo' => $agent->deviceType(),
-                            'cSistmaOperativo' => $agent->platform(),
-                        ])
-                    ]
-                );
-            }
+            //     DB::select(
+            //         "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
+            //         [
+            //             'seg',
+            //             'auditoria_accesos',
+            //             json_encode([
+            //                 'iCredId' => $originalContent['user']['iCredId'],
+            //                 'cIpCliente' => $this->getIPCliente(),
+            //                 'cNavegador' => $agent->browser(),
+            //                 'cDispositivo' => $agent->deviceType(),
+            //                 'cSistmaOperativo' => $agent->platform(),
+            //             ])
+            //         ]
+            //     );
+            //     $originalContent['extra_info'] = 'Inicio de sesión exitoso';
+            //     $originalContent['userExist'] = $userExist;
+            // }
+
+            // // Verifica la presencia de 'error' y modifica la respuesta
+            // if (isset($originalContent['error'])) {
+            //     DB::select(
+            //         "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
+            //         [
+            //             'seg',
+            //             'auditoria_accesos_fallidos',
+            //             json_encode([
+            //                 'cLogin' => $request->user,
+            //                 'cPassword' => $request->pass,
+            //                 'cMotivo' => $originalContent['error'],
+            //                 'cIpCliente' => $this->getIPCliente(),
+            //                 'cNavegador' => $agent->browser(),
+            //                 'cDispositivo' => $agent->deviceType(),
+            //                 'cSistmaOperativo' => $agent->platform(),
+            //             ])
+            //         ]
+            //     );
+            //     $originalContent['extra_info'] = 'Error de inicio de sesión';
+            // }
 
             // Sobrescribir el contenido de la respuesta
             $response->setData($originalContent);
         }
 
         return $response;
+    }
 
+    function getIPCliente(): String
+    {
+        $ipAddress = '';
+
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            // Check if IP is from shared internet
+            $ipAddress = $_SERVER['HTTP_CLIENT_IP'];
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            // Check if IP is passed from proxy
+            $ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } else {
+            // Check if IP is from remote address
+            $ipAddress = $_SERVER['REMOTE_ADDR'];
+        }
+
+        // Handle multiple IPs (when using proxies)
+        if (strpos($ipAddress, ',') !== false) {
+            $ipList = explode(',', $ipAddress);
+            $ipAddress = trim($ipList[0]);
+        }
+
+        return $ipAddress;
     }
 }
