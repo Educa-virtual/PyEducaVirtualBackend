@@ -299,8 +299,30 @@ class AulaVirtualController extends ApiController
 
     public function obtenerCategorias()
     {
+        
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
+
+            //return $preguntas;
+            return $this->successResponse($preguntas);
+        } catch (Exception $e) {
+
+            return $this->errorResponse($e, 'Error Upssss!');
+        }
+    }
+    public function obtenerEstudiantesMatricula(Request $request)
+    {
+        $iCursoId = '1';
+        $iSemAcadId = '1';
+        $iYAcadId = '1';
+        
+        // $params =[
+        //     $iCursoId,
+        //     $iSemAcadId,
+        //     $iYAcadId
+        // ];
+        try {
+            $preguntas = DB::select('EXEC acad.Sp_SEL_consulta_matriculados ?', [$iCursoId], [$iSemAcadId], [$iYAcadId]);
 
             //return $preguntas;
             return $this->successResponse($preguntas);
@@ -561,6 +583,11 @@ class AulaVirtualController extends ApiController
     {
         // Prepara los parámetros para la consulta. Se obtienen del objeto $request, el cual contiene los datos de la solicitud HTTP.
         // Si los valores no existen, se asigna NULL en su lugar.
+        $iDocenteId = $request->iDocenteId;
+        if ($request->iDocenteId) {
+            $iDocenteId = $this->hashids->decode($iDocenteId);
+            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        }
         $parametros = [
             $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
             $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
