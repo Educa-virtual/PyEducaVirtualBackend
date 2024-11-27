@@ -94,7 +94,7 @@ class PreguntasController extends ApiController
             // pregunta
             $respPregunta = null;
             try {
-                $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta 
+                $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta
                 @_iPreguntaId = ?
                 , @_iCursoId = ?
                 , @_iTipoPregId = ?
@@ -391,7 +391,6 @@ class PreguntasController extends ApiController
         $response->setContent($content);
 
         return $response;
-
     }
 
     public function guardarActualizarEncabezadoPregunta(Request $request)
@@ -423,5 +422,88 @@ class PreguntasController extends ApiController
             DB::rollBack();
             return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
         }
+    }
+
+    public function generarWordEvaluacionByIds(Request $request)
+    {
+        $params = [
+            'iBancoId' => $request->iCursoId,
+            'busqueda' => '',
+            'iCurrPregId' => 0,
+            'cBancoPregunta' => -1,
+            'ids' => $request->ids
+        ];
+
+        // Obtener las preguntas desde el repositorio
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+
+        // Verificar si se encontraron preguntas
+        if (empty($preguntasDB)) {
+            return response()->json(['error' => 'No se encontraron preguntas para los IDs proporcionados.'], 404);
+        }
+
+        $phpTemplateWord = new TemplateProcessor(storage_path('template-eva.docx'));
+
+        // Clonar el bloque de preguntas
+        $phpTemplateWord->cloneBlock('block_preguntas', count($preguntasDB), true, true);
+
+        // Asignar el valor de cantidad de preguntas
+        $phpTemplateWord->setValue('cantidadPreguntas', count($preguntasDB));
+
+        foreach ($preguntasDB as $indexPregunta => $pregunta) {
+            $indice = $indexPregunta + 1;
+            $phpTemplateWord->setValue("index#$indice", $indice);
+
+            // Manejo de la pregunta
+            if (strpos($pregunta->cPregunta, ';base64,')) {
+                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cPregunta, $matches);
+                $imagenBase64 = $matches[1] ?? null;
+
+                if ($imagenBase64) {
+                    // Decodificar y guardar la imagen temporalmente
+                    $imagePath = storage_path("temp_image_$indice.png");
+                    file_put_contents($imagePath, base64_decode(explode(';base64,', $imagenBase64)[1]));
+
+                    $phpTemplateWord->setImageValue("cPregunta#$indice", [
+                        'path' => $imagePath,
+                        'width' => 200,
+                        'height' => 200,
+                        'ratio' => false
+                    ]);
+
+                    // Eliminar la imagen temporal
+                    unlink($imagePath);
+                } else {
+                    $phpTemplateWord->setValue("cPregunta#$indice", 'Imagen no disponible');
+                }
+            } else {
+                $phpTemplateWord->setValue("cPregunta#$indice", strip_tags($pregunta->cPregunta));
+            }
+
+            // Manejo de las alternativas
+            if (!empty($pregunta->alternativas)) {
+                $phpTemplateWord->cloneBlock("block_alternativas#$indice", count($pregunta->alternativas), true, true);
+
+                foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
+                    $altIndice = $indexAlternativa + 1;
+                    $phpTemplateWord->setValue("cAlternativaLetra#$indice#$altIndice", $alternativa->cAlternativaLetra);
+                    $phpTemplateWord->setValue("cAlternativaDescripcion#$indice#$altIndice", strip_tags($alternativa->cAlternativaDescripcion));
+                }
+            }
+        }
+
+        // Configurar respuesta HTTP para descarga
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $response->headers->set('Content-Disposition', 'attachment;filename="preguntas_generated.docx"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        // Generar el archivo y enviar al navegador
+        ob_start();
+        $phpTemplateWord->saveAs('php://output');
+        $content = ob_get_clean();
+        $response->setContent($content);
+
+        return $response;
     }
 }

@@ -61,6 +61,7 @@ class BancoPreguntasController extends ApiController
                 'iNivelCicloId' => $this->decodeId($request->iNivelCicloId),
                 'iDocenteId' => $this->decodeId($request->iDocenteId),
             ];
+            return $paramsEncabezado;
             try {
                 $resp =  PreguntasEvaluacionRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
                 if ($iEncabPregId == 0) {
