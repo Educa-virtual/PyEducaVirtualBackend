@@ -33,15 +33,34 @@ class InstitucionesEducativasController extends Controller
   }
 
 
-  public function selReglamentoInterno()
+  public function selReglamentoInterno(Request $request)
   {
-    $path = storage_path('sample.pdf');
+    $query = DB::select("EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?", [
+      'acad',
+      'institucion_educativas',
+      'cIieeUrlReglamentoInterno',
+      'iIieeId=' . $request->iIieeId
+    ])[0];
 
-    if (!file_exists($path)) {
-      abort(404, 'Archivo no encontrado.');
+    $fileInfo = json_decode($query->cIieeUrlReglamentoInterno);
+
+    if (isset($fileInfo->path) && Storage::disk('file')->exists($fileInfo->path)) {
+
+      // Obtener el contenido del archivo
+      $fileContent = Storage::disk('file')->get($fileInfo->path);
+
+      // Crear una respuesta con la información del archivo y el contenido
+      return response()->json([
+          'name' => $fileInfo->name,
+          'size' => $fileInfo->size,
+          'lastModified' => $fileInfo->lastModified,
+          'mimeType' => $fileInfo->mimeType,
+          'content' => base64_encode($fileContent)
+      ]);
+    } else {
+      // Si el archivo no existe, devolver un error
+      return response()->json(['error' => 'El archivo no se encuentra disponible.'], 404);
     }
-
-    return response()->file($path);
   }
 
   public function updReglamentoInterno(Request $request)
@@ -51,14 +70,6 @@ class InstitucionesEducativasController extends Controller
       // Obtener el archivo del FormData
       $file = $request->file('cIieeUrlReglamentoInterno');
 
-    //   $query = DB::select("EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
-    //     $request->calAcad,
-    //     // 'acad',
-    //     'updateCalAcademico',
-    //     // 'iCalAcadId',
-    //     // $request->iCalAcadId,
-    // ]);
-
       $cIieeNombre = 's';
 
       // Obtener el año y mes actuales con Carbon
@@ -66,15 +77,31 @@ class InstitucionesEducativasController extends Controller
       $month = Carbon::now()->month; // Mes (MM)
 
       // Crear la ruta personalizada dentro de 'storage/app/public'
-      $path = 'DocumentosInstitucional/' . $cIieeNombre . '/' . $year . '/' . $month . '/' . $file->getClientOriginalName();
+      $path = 'DocumentosInstitucional/' . $cIieeNombre . '/' . $year . '/' . $month;
 
 
       // Guardar el archivo en el storage público
-      $filePath = $file->store($path, ['disk' => 'file']);
+      $filePath = $file->storeAs($path, $file->getClientOriginalName(),  ['disk' => 'file']);
+
+      $query = DB::select("EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?", [
+        'acad',
+        'institucion_educativas',
+        json_encode([
+          'cIieeUrlReglamentoInterno' => json_encode([
+            'name' => pathinfo($filePath, PATHINFO_BASENAME),
+            'size' => Storage::disk('file')->size($filePath),
+            'lastModified' => Storage::disk('file')->lastModified($filePath),
+            'mimeType' => $file->getMimeType(),
+            'path' => $filePath,
+          ])
+        ]),
+        json_encode([['COLUMN_NAME' => 'iIieeId', 'VALUE' => $request->input('iIieeId')]])
+
+      ]);
 
       return response()->json([
         'message' => 'Archivo subido exitosamente',
-        'path' => $filePath,
+        'path' => $query,
       ]);
     } else {
       return response()->json([
