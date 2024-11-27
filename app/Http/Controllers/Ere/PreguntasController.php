@@ -346,11 +346,13 @@ class PreguntasController extends ApiController
 
         $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
-        $phpTemplateWord = new TemplateProcessor(storage_path() . DIRECTORY_SEPARATOR .  'template.docx');
+        $phpTemplateWord = new TemplateProcessor(storage_path() . DIRECTORY_SEPARATOR .  'template-ere.docx');
 
         $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
         $phpTemplateWord->cloneBlock('block_preguntas', count($preguntasDB), true, true);
+
+        $phpTemplateWord->setValue('cantidadPreguntas', (count($preguntasDB)));
 
         foreach ($preguntasDB as $indexPregunta => $pregunta) {
             $phpTemplateWord->setValue('index#' . ($indexPregunta + 1), $indexPregunta + 1);
@@ -360,7 +362,7 @@ class PreguntasController extends ApiController
 
                 $imagen = isset($matches[1]) ? $matches[1] : null;
 
-                $phpTemplateWord->setImageValue('cPregunta#' . ($indexPregunta + 1), $imagen);
+                $phpTemplateWord->setImageValue('cPregunta#' . ($indexPregunta + 1), array('path' => $imagen, 'width' => 200, 'height' => 200, 'ratio' => false));
             } else {
                 $phpTemplateWord->setValue('cPregunta#' . ($indexPregunta + 1), strip_tags($pregunta->cPregunta));
             }
