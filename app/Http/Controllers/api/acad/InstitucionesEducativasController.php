@@ -70,14 +70,19 @@ class InstitucionesEducativasController extends Controller
       // Obtener el archivo del FormData
       $file = $request->file('cIieeUrlReglamentoInterno');
 
-      $cIieeNombre = 's';
+      $query = DB::select("EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?", [
+        'acad',
+        'institucion_educativas',
+        'cIieeNombre',
+        'iIieeId=' . $request->input('iIieeId')
+      ])[0];
 
       // Obtener el año y mes actuales con Carbon
       $year = Carbon::now()->year;  // Año (AAAA)
       $month = Carbon::now()->month; // Mes (MM)
 
       // Crear la ruta personalizada dentro de 'storage/app/public'
-      $path = 'DocumentosInstitucional/' . $cIieeNombre . '/' . $year . '/' . $month;
+      $path = 'DocumentosInstitucional/' . $query->cIieeNombre . '/' . $year . '/' . $month;
 
 
       // Guardar el archivo en el storage público
