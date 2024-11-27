@@ -362,7 +362,7 @@ class PreguntasController extends ApiController
 
                 $imagen = isset($matches[1]) ? $matches[1] : null;
 
-                $phpTemplateWord->setImageValue('cPregunta#' . ($indexPregunta + 1), array('path' => $imagen, 'width' => 150, 'height' => 150, 'ratio' => false));
+                $phpTemplateWord->setImageValue('cPregunta#' . ($indexPregunta + 1), array('path' => $imagen, 'width' => 200, 'height' => 200, 'ratio' => false));
             } else {
                 $phpTemplateWord->setValue('cPregunta#' . ($indexPregunta + 1), strip_tags($pregunta->cPregunta));
             }
