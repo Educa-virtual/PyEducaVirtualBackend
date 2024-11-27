@@ -98,9 +98,10 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('list', [FechasImportantesController::class, 'list']);
   });
   Route::group(['prefix' => 'reporte_asistencia'], function () {
-    Route::get('report/{tipoReporte}', [AsistenciaController::class, 'report']);
+    Route::post('reporte_mensual', [AsistenciaController::class, 'report']);
     Route::post('reporte_personalizado', [AsistenciaController::class, 'reporte_personalizado']);
     Route::post('reporte_asistencia_general', [AsistenciaController::class, 'reporteAsistenciaGeneral']);
+    Route::post('reporte_diario', [AsistenciaController::class, 'reporte_diario']);
     //Route::get('reportAExcel/{tipoReporte}', [AsistenciaController::class, 'reportToExcel']);
   });
   Route::group(['prefix' => 'material-educativos'], function () {

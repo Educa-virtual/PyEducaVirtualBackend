@@ -42,6 +42,10 @@ class FechasImportantesController extends Controller
             $iNivelGradoId = $this->hashids->decode($request->iNivelGradoId);
             $iNivelGradoId = count($iNivelGradoId) > 0 ? $iNivelGradoId[0] : $iNivelGradoId;
         }
+        if ($request->iDocenteId) {
+            $iDocenteId = $this->hashids->decode($request->iDocenteId);
+            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        }
 
         $solicitud = [
             $request->opcion,
@@ -51,10 +55,10 @@ class FechasImportantesController extends Controller
             $iYAcadId ?? NULL,
             $iSeccionId ?? NULL,
             $iNivelGradoId ?? NULL,
-    
+            $iDocenteId ?? NULL,
         ];
         
-        $query=DB::select("execute acad.Sp_CRUD_fechas_importantes ?,?,?,?,?,?,?", $solicitud);
+        $query=DB::select("execute acad.Sp_CRUD_fechas_importantes ?,?,?,?,?,?,?,?", $solicitud);
         
         try{
             $response = [
