@@ -25,6 +25,7 @@ use App\Http\Controllers\Ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelTipoController;
 use App\Http\Controllers\Ere\TipoEvaluacionController;
 use App\Http\Controllers\Ere\UgelesController;
+use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -257,3 +258,9 @@ Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 // Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
 
 Route::get('/imprimir', PersonaController::class);
+
+Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
+Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
+Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+
+
