@@ -426,16 +426,20 @@ class PreguntasController extends ApiController
 
     public function generarWordEvaluacionByIds(Request $request)
     {
+        // $params = [
+        //     'iBancoId' => $request->iCursoId,
+        //     'busqueda' => '',
+        //     'iCurrPregId' => 0,
+        //     'cBancoPregunta' => -1,
+        //     'ids' => $request->ids
+        // ];
         $params = [
-            'iBancoId' => $request->iCursoId,
-            'busqueda' => '',
-            'iCurrPregId' => 0,
-            'cBancoPregunta' => -1,
-            'ids' => $request->ids
+            'BancoId' => $request->ids,
+            'iDocenteId' => 1,
+            'iCursoId' => $request->iCursoId, 
         ];
-
         // Obtener las preguntas desde el repositorio
-        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntas($params);
 
         // Verificar si se encontraron preguntas
         if (empty($preguntasDB)) {
@@ -455,8 +459,8 @@ class PreguntasController extends ApiController
             $phpTemplateWord->setValue("index#$indice", $indice);
 
             // Manejo de la pregunta
-            if (strpos($pregunta->cPregunta, ';base64,')) {
-                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cPregunta, $matches);
+            if (strpos($pregunta->cBancoPregunta, ';base64,')) {
+                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cBancoPregunta, $matches);
                 $imagenBase64 = $matches[1] ?? null;
 
                 if ($imagenBase64) {
@@ -477,7 +481,7 @@ class PreguntasController extends ApiController
                     $phpTemplateWord->setValue("cPregunta#$indice", 'Imagen no disponible');
                 }
             } else {
-                $phpTemplateWord->setValue("cPregunta#$indice", strip_tags($pregunta->cPregunta));
+                $phpTemplateWord->setValue("cPregunta#$indice", strip_tags($pregunta->cBancoPregunta));
             }
 
             // Manejo de las alternativas
@@ -486,8 +490,8 @@ class PreguntasController extends ApiController
 
                 foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
                     $altIndice = $indexAlternativa + 1;
-                    $phpTemplateWord->setValue("cAlternativaLetra#$indice#$altIndice", $alternativa->cAlternativaLetra);
-                    $phpTemplateWord->setValue("cAlternativaDescripcion#$indice#$altIndice", strip_tags($alternativa->cAlternativaDescripcion));
+                    $phpTemplateWord->setValue("cAlternativaLetra#$indice#$altIndice", $alternativa->cBancoAltLetra);
+                    $phpTemplateWord->setValue("cAlternativaDescripcion#$indice#$altIndice", strip_tags($alternativa->cBancoAltDescripcion));
                 }
             }
         }
