@@ -75,7 +75,8 @@
     </div>
     <table>
         <tr>
-            <th style="border:1px solid black;margin:0;padding:7px;">-</th>
+            <th style="border:1px solid black;margin:0;padding:7px;"></th>
+            <th style="border:1px solid black"></th>
             @for ($i = 1; $i <= $ultimodia; $i++)
                 <th style="border:1px solid black">{{$i}}</th>
             @endfor
@@ -87,6 +88,7 @@
             <th style="border:1px solid black"></th>
         </tr>
         <tr>
+            <th style="border:1px solid black;margin:0;padding:7px;">N°</th>
             <th style="border:1px solid black;margin:0;padding:7px;">NOMBRES Y APELLIDOS</th>
             @for ($i = 1; $i <= $ultimodia; $i++)
                 <th style="border:1px solid black">{{ $dias_Semana[($i+6)%7] }}</th>
@@ -100,7 +102,8 @@
         </tr>
         @foreach ($query as $list)
             <tr>
-                <th style="border:1px solid black;margin:0;padding:7px;">{{$list->completoalumno}}</th>
+                <th style="border:1px solid black;margin:0;padding:7px;">{{$loop->index+1}}</th>
+                <th style="border:1px solid black;margin:0;padding:7px;">{{strtoupper($list->completoalumno)}}</th>
                 @foreach (json_decode(json_encode($list->diasAsistencia)) as $simbolo)
                     <td style="text-align:center;border:1px solid black;margin:0;padding:7px;">{{$simbolo->cTipoAsiLetra}}</td>
                 @endforeach
