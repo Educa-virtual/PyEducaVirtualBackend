@@ -178,15 +178,15 @@ class CalendarioAcademicosController extends Controller
 
     public function updCalAcademico(Request $request)
     {
-        $query = DB::select("EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
-            $request->calAcad,
-            // 'acad',
-            'updateCalAcademico',
-            // 'iCalAcadId',
-            // $request->iCalAcadId,
-        ]);
+        // $query = DB::select("EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
+        //     $request->calAcad,
+        //     // 'acad',
+        //     'updateCalAcademico',
+        //     // 'iCalAcadId',
+        //     // $request->iCalAcadId,
+        // ]);
 
-        return $this->response($query);
+        return $this->response($request->input('iCalAcadId'));
     }
 
     public function updCalFaseFechas(Request $request)
