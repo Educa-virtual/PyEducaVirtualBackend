@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\seg;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AuditoriaAccesos;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,12 +15,14 @@ use App\Models\User;
 use Hashids\Hashids;
 
 class CredencialescCredUsuariocClaveController extends Controller
-{   
+{
     protected $hashids;
 
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+
+        $this->middleware(AuditoriaAccesos::class)->only(['login']);
     }
 
     public function customAttempt($credentials)

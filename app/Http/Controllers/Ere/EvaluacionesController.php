@@ -258,29 +258,29 @@ class EvaluacionesController extends ApiController
     }
     //!ELIMINAR CURSO
     public function eliminarCursos(Request $request)
-{
-    try {
-        $iEvaluacionId = $request->input('iEvaluacionId');
-        $selectedCursos = $request->input('selectedCursos');
+    {
+        try {
+            $iEvaluacionId = $request->input('iEvaluacionId');
+            $selectedCursos = $request->input('selectedCursos');
 
-        // Valida que los datos existan
-        if (!$iEvaluacionId || empty($selectedCursos)) {
-            return response()->json(['message' => 'Datos incompletos.'], 400);
+            // Valida que los datos existan
+            if (!$iEvaluacionId || empty($selectedCursos)) {
+                return response()->json(['message' => 'Datos incompletos.'], 400);
+            }
+
+            // Elimina los cursos
+            foreach ($selectedCursos as $curso) {
+                DB::table('ere.examen_cursos')
+                    ->where('iEvaluacionId', $iEvaluacionId)
+                    ->where('iCursoId', $curso['iCursoId'])
+                    ->delete();
+            }
+
+            return response()->json(['message' => 'Cursos eliminados correctamente'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error al eliminar cursos', 'error' => $e->getMessage()], 500);
         }
-
-        // Elimina los cursos
-        foreach ($selectedCursos as $curso) {
-            DB::table('ere.examen_cursos')
-                ->where('iEvaluacionId', $iEvaluacionId)
-                ->where('iCursoId', $curso['iCursoId'])
-                ->delete();
-        }
-
-        return response()->json(['message' => 'Cursos eliminados correctamente'], 200);
-    } catch (\Exception $e) {
-        return response()->json(['message' => 'Error al eliminar cursos', 'error' => $e->getMessage()], 500);
     }
-}
     public function obtenerCursosEvaluacion($iEvaluacionId)
     {
         // Llamar al procedimiento almacenado
@@ -409,5 +409,113 @@ class EvaluacionesController extends ApiController
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+    //!AgregarMatrizCompetencia
+    public function obtenerMatrizCompetencias(Request $request)
+    {
+        $campos = 'iCompetenciaId,cCompetenciaNro,cCompetenciaNombre,cCompetenciaDescripcion,iCurrId'; // Campos específicos que necesitas
+        $where = '1=1'; // Condición siempre verdadera para no filtrar los datos
+
+        $params = [
+            'acad',
+            'curriculo_competencias',
+            $campos,
+            $where
+        ];
+
+        try {
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            @nombreEsquema = ?,
+            @nombreTabla = ?,    
+            @campos = ?,        
+            @condicionWhere = ?
+        ', $params);
+
+            // Generamos la respuesta formateada
+            $respuesta = [
+                'selectData' => collect($preguntas)->map(function ($pregunta) {
+                    return [
+                        'iCompetenciaId' => $pregunta->iCompetenciaId,
+                        'cCompetenciaNombre' => $pregunta->cCompetenciaNombre
+                    ];
+                }),
+                'fullData' => $preguntas // Incluye todos los datos por si los necesitas después
+            ];
+
+            return $this->successResponse(
+                $respuesta,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
+    //!AgregarMatrizCapacidad
+    public function obtenerMatrizCapacidades(Request $request)
+    {
+        $campos = 'iCapacidadId,iCompetenciaId,cCapacidadNombre,cCapacidadDescripcion'; // Campos específicos que necesitas
+        $where = '1=1'; // Condición siempre verdadera para no filtrar los datos
+
+        $params = [
+            'acad',
+            'curriculo_capacidades',
+            $campos,
+            $where
+        ];
+
+        try {
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            @nombreEsquema = ?,
+            @nombreTabla = ?,    
+            @campos = ?,        
+            @condicionWhere = ?
+        ', $params);
+
+            // Generamos la respuesta formateada
+            $respuesta = [
+                'selectData' => collect($preguntas)->map(function ($pregunta) {
+                    return [
+                        'iCapacidadId' => $pregunta->iCapacidadId,
+                        'cCapacidadNombre' => $pregunta->cCapacidadNombre
+                    ];
+                }),
+                'fullData' => $preguntas // Incluye todos los datos por si los necesitas después
+            ];
+
+            return $this->successResponse(
+                $respuesta,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
+    //!AgregarMatrizDesempeno
+    public function insertarMatrizDesempeno(Request $request)
+    {
+        // Validar los datos recibidos en la solicitud
+        $validated = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+            'iCompCursoId' => 'required|integer',
+            'iCapacidadId' => 'required|integer',
+            'cDesempenoDescripcion' => 'required|string',
+            'cDesempenoConocimiento' => 'required|string',
+            'iEstado' => 'nullable|integer',
+            'iSesionId' => 'nullable|integer',
+        ]);
+
+        // Llamar al procedimiento almacenado
+        DB::statement('EXEC [ere].[SP_INS_desempenoEvaluacion] ?, ?, ?, ?, ?, ?, ?', [
+            $validated['iEvaluacionId'],
+            $validated['iCompCursoId'],
+            $validated['iCapacidadId'],
+            $validated['cDesempenoDescripcion'],
+            $validated['cDesempenoConocimiento'],
+            $validated['iEstado'] ?? null,
+            $validated['iSesionId'] ?? null,
+        ]);
+
+        // Responder con éxito
+        return response()->json(['message' => 'Datos insertados correctamente'], 201);
     }
 }

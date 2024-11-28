@@ -55,7 +55,7 @@ class InstitucionesEducativasController extends Controller
           'size' => $fileInfo->size,
           'lastModified' => $fileInfo->lastModified,
           'mimeType' => $fileInfo->mimeType,
-          'content' => base64_encode($fileContent)
+          'value' => base64_encode($fileContent)
       ]);
     } else {
       // Si el archivo no existe, devolver un error
