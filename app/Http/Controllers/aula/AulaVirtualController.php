@@ -411,6 +411,36 @@ class AulaVirtualController extends ApiController
 
         // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
+    public function eliminarRptEstudiante (Request $request)
+    {
+        //return $request -> all();
+        // Validar la solicitud
+        // Validar el ID enviado
+        $validatedData = $request->validate([
+            'iForoRptaId' => 'required|integer', // Asegura que el ID sea obligatorio y numérico
+        ]);
+
+        $iForoRptaId = $validatedData['iForoRptaId'];
+
+        try {
+            // Llamar al procedimiento almacenado
+            DB::select('exec aula.SP_DEL_respuestaXidEstudiante @iForoRptaId = ?', [$iForoRptaId]);
+
+            // Responder con éxito
+            return response()->json([
+                'success' => true,
+                'message' => 'Elemento eliminado correctamente',
+            ], 200);
+        } catch (Throwable $e) {
+            // Manejo de errores
+            $message = $this->handleAndLogError($e, 'Error al eliminar');
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 500);
+        }
+        
+    }
     // Guardar respuesta de Foro
     public function guardarRespuesta(Request $request)
     {
