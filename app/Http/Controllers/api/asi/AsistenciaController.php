@@ -30,32 +30,38 @@ class AsistenciaController extends Controller
     }
     public function list(Request $request)
     {
-        if ($request->iCursoId) {
-            $iCursoId = $this->hashids->decode($request->iCursoId);
-            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
-        }
-        if ($request->iSeccionId) {
-            $iSeccionId = $this->hashids->decode($request->iSeccionId);
-            $iSeccionId = count($iSeccionId) > 0 ? $iSeccionId[0] : $iSeccionId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
-        if ($request->iYAcadId) {
-            $iYAcadId = $this->hashids->decode($request->iYAcadId);
-            $iYAcadId = count($iYAcadId) > 0 ? $iYAcadId[0] : $iYAcadId;
-        }
-    
+        $request['iDocenteId'] = is_null($request->iDocenteId)
+            ? null
+            : (is_numeric($request->iDocenteId)
+                ? $request->iDocenteId
+                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
+        $request['iYAcadId'] = is_null($request->iYAcadId)
+            ? null
+            : (is_numeric($request->iYAcadId)
+                ? $request->iYAcadId
+                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
+
+        $request['iSeccionId'] = is_null($request->iSeccionId)
+            ? null
+            : (is_numeric($request->iSeccionId)
+                ? $request->iSeccionId
+                : ($this->hashids->decode($request->iSeccionId)[0] ?? null));
+
+        $request['iCursoId'] = is_null($request->iCursoId)
+            ? null
+            : (is_numeric($request->iCursoId)
+                ? $request->iCursoId
+                : ($this->hashids->decode($request->iCursoId)[0] ?? null));
+
         $solicitud = [
             $request->opcion,
-            $iCursoId ?? NULL,
+            $request->iCursoId ?? NULL,
             $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? NULL,
-            $iSeccionId ?? NULL,
-            $iYAcadId ?? NULL,
+            $request->iSeccionId ?? NULL,
+            $request->iYAcadId ?? NULL,
             $request->iNivelGradoId ?? NULL,
-            $iDocenteId ?? NULL,
+            $request->iDocenteId ?? NULL,
             $request->iGradoId ?? NULL,
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
@@ -125,12 +131,12 @@ class AsistenciaController extends Controller
             : (is_numeric($request->iNivelGradoId)
                 ? $request->iNivelGradoId
                 : ($this->hashids->decode($request->iNivelGradoId)[0] ?? null));
-        
-        
+
+
         $inicio = $request['id'];
         $fecha_inicial = str_pad($inicio, 2, "0", STR_PAD_LEFT);
         $year_actual = date('Y');
-        $combinar = $year_actual."-".$fecha_inicial."-01";
+        $combinar = $year_actual . "-" . $fecha_inicial . "-01";
         $primera_fecha = new DateTime($combinar);
         $primerDia = $primera_fecha->modify("first day of this month");
         $ultima_fecha = new DateTime($combinar);
@@ -232,7 +238,8 @@ class AsistenciaController extends Controller
     {
         return 1;
     }
-    public function reporte_diario(Request $request){
+    public function reporte_diario(Request $request)
+    {
         $request['valorBusqueda'] = is_null($request->valorBusqueda)
             ? null
             : (is_numeric($request->valorBusqueda)
@@ -303,10 +310,10 @@ class AsistenciaController extends Controller
             $inicio,
             $fin,
         ];
-        
+
         $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
-       
+
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -324,14 +331,14 @@ class AsistenciaController extends Controller
         $fechas[0]["mes"] = $mes;
         $fechas[0]["ultimo_dia"] = $dia;
         $fechas[0]["dia"] = $dia_indice;
-        
+
         $datos = [];
-        foreach($query as $key => $indice){
-            $datos["lista"][$key][]=$indice->completoalumno;
-            $valor = json_decode($indice->diasAsistencia,true);
-            $datos["lista"][$key][]=$valor==null ? "":$valor[0]["cTipoAsiLetra"];
+        foreach ($query as $key => $indice) {
+            $datos["lista"][$key][] = $indice->completoalumno;
+            $valor = json_decode($indice->diasAsistencia, true);
+            $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["cTipoAsiLetra"];
         }
-        
+
         $respuesta = [
             "year" => date('Y'),
             "ie" => 'Ricardo German Agip Rubio',
@@ -350,12 +357,11 @@ class AsistenciaController extends Controller
             "dias" => $dias,
             "respuesta" => $datos
         ];
-        
+
         $pdf = Pdf::view('asistencia_reporte_diario', $respuesta)
             ->format(Format::A4)
             ->name('reporte_asistencia.pdf');
         return $pdf;
-        
     }
     public function reporte_personalizado(Request $request)
     {
@@ -436,7 +442,7 @@ class AsistenciaController extends Controller
 
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
 
-        if($meses_restantes==0){
+        if ($meses_restantes == 0) {
             $numero_mes = intval(date("m", strtotime($inicio . "+ " . 0 . " month")));    // Se extrae el mes y se aumenta 1 mes
             $convertir = new DateTime($years . "-" . $numero_mes);
             $ultimo = $convertir->modify("last day of this month"); // Obtenemos el ultimo dia del mes
@@ -455,7 +461,7 @@ class AsistenciaController extends Controller
                 $fechas[0]["nombre"][$key] = $sql->completoalumno;
                 $verificar = json_decode($sql->diasAsistencia);
                 $ver = array_column($verificar, "diaMes");
-                
+
                 // $inas=0;
                 // $asis=0;
                 // $inju=0;
@@ -464,7 +470,7 @@ class AsistenciaController extends Controller
                 // $sin=0;
                 for ($j = 1; $j <= $fechas[0]["ultimo_dia"]; $j++) {
                     $analizar = $mes . "-" . str_pad($j, 2, "0", STR_PAD_LEFT);
-                    
+
                     if (in_array($analizar, $ver)) {
                         $index = array_search($analizar, $ver);
                         $fechas[0]["asistido"][$key][] = $verificar[$index]->cTipoAsiLetra;
@@ -497,44 +503,42 @@ class AsistenciaController extends Controller
                     }
                 }
             }
+        } else {
 
-        }else{
+            for ($i = 0; $i <= $meses_restantes; $i++) {
 
-        for ($i = 0; $i <= $meses_restantes; $i++) {
+                $numero_mes = intval(date("m", strtotime($inicio . "+ " . $i . " month")));    // Se extrae el mes y se aumenta 1 mes
+                $convertir = new DateTime($years . "-" . $numero_mes);
+                $ultimo = $convertir->modify("last day of this month"); // Obtenemos el ultimo dia del mes
+                $extraer_fecha = date($years . '-' . $numero_mes . '-01');
+                $dia_indice = date('w', strtotime($extraer_fecha));
+                $mes = $ultimo->format('m');   // Dar formato al mes
+                $dia = $ultimo->format('d');
+                $mes_calendario = $nombre_mes[$numero_mes - 1];  // Obtener el nombre del mes
 
-            $numero_mes = intval(date("m", strtotime($inicio . "+ " . $i . " month")));    // Se extrae el mes y se aumenta 1 mes
-            $convertir = new DateTime($years . "-" . $numero_mes);
-            $ultimo = $convertir->modify("last day of this month"); // Obtenemos el ultimo dia del mes
-            $extraer_fecha = date($years . '-' . $numero_mes . '-01');
-            $dia_indice = date('w', strtotime($extraer_fecha));
-            $mes = $ultimo->format('m');   // Dar formato al mes
-            $dia = $ultimo->format('d');
-            $mes_calendario = $nombre_mes[$numero_mes - 1];  // Obtener el nombre del mes
+                $fechas[$i]["mes_calendario"] = $mes_calendario;
+                $fechas[$i]["mes"] = $mes;
+                $fechas[$i]["ultimo_dia"] = $dia;
+                $fechas[$i]["dia"] = $dia_indice;
 
-            $fechas[$i]["mes_calendario"] = $mes_calendario;
-            $fechas[$i]["mes"] = $mes;
-            $fechas[$i]["ultimo_dia"] = $dia;
-            $fechas[$i]["dia"] = $dia_indice;
+                foreach ($query as $key => $sql) {
 
-            foreach ($query as $key => $sql) {
+                    $fechas[$i]["nombre"][$key] = $sql->completoalumno;
+                    $verificar = json_decode($sql->diasAsistencia);
+                    $ver = array_column($verificar, "diaMes");
 
-                $fechas[$i]["nombre"][$key] = $sql->completoalumno;
-                $verificar = json_decode($sql->diasAsistencia);
-                $ver = array_column($verificar, "diaMes");
+                    for ($j = 1; $j <= $fechas[$i]["ultimo_dia"]; $j++) {
+                        $analizar = $mes . "-" . str_pad($j, 2, "0", STR_PAD_LEFT);
 
-                for ($j = 1; $j <= $fechas[$i]["ultimo_dia"]; $j++) {
-                    $analizar = $mes . "-" . str_pad($j, 2, "0", STR_PAD_LEFT);
-
-                    if (in_array($analizar, $ver)) {
-                        $index = array_search($analizar, $ver);
-                        $fechas[$i]["asistido"][$key][] = $verificar[$index]->cTipoAsiLetra;
-                    } else {
-                        $fechas[$i]["asistido"][$key][] = "";
+                        if (in_array($analizar, $ver)) {
+                            $index = array_search($analizar, $ver);
+                            $fechas[$i]["asistido"][$key][] = $verificar[$index]->cTipoAsiLetra;
+                        } else {
+                            $fechas[$i]["asistido"][$key][] = "";
+                        }
                     }
                 }
             }
-        }
-
         }
 
 
@@ -561,7 +565,6 @@ class AsistenciaController extends Controller
             ->orientation(Orientation::Landscape)
             ->name('reporte_asistencia.pdf');
         return $pdf;
-        
     }
 
     public function reporteAsistenciaGeneral(Request $request)
