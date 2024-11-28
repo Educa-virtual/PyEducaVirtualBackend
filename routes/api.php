@@ -13,6 +13,7 @@ use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
+use App\Http\Controllers\api\acad\InstitucionesEducativasController as AcadInstitucionesEducativasController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelTipoController;
 use App\Http\Controllers\Ere\TipoEvaluacionController;
 use App\Http\Controllers\Ere\UgelesController;
+use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -118,6 +120,11 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'Perfiles'], function () {
         Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
+    });
+
+    Route::group(['prefix' => 'institucionEducativa'], function () {
+        Route::get('selReglamentoInterno', [AcadInstitucionesEducativasController::class, 'selReglamentoInterno']);
+        Route::put('updReglamentoInterno', [AcadInstitucionesEducativasController::class, 'updReglamentoInterno']);
     });
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
@@ -257,3 +264,9 @@ Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 // Route::post('/opcion_actividades', [ActividadesAprendizajeController::class, 'crud']);
 
 Route::get('/imprimir', PersonaController::class);
+
+Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
+Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
+Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+
+

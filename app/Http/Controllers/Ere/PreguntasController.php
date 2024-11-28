@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Ere;
 
-use App\Repositories\PreguntasRepository;
-use App\Http\Controllers\ApiController;
-use App\Http\Controllers\WordController;
-use App\Repositories\AlternativaPreguntaRespository;
 use DateTime;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\Shared\Html;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Settings;
+use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpWord\Shared\Html;
+use App\Http\Controllers\ApiController;
+use App\Http\Controllers\WordController;
+use PhpOffice\PhpWord\TemplateProcessor;
+use App\Repositories\PreguntasRepository;
+use App\Repositories\AlternativaPreguntaRespository;
 
 class PreguntasController extends ApiController
 {
@@ -94,7 +95,7 @@ class PreguntasController extends ApiController
             // pregunta
             $respPregunta = null;
             try {
-                $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta 
+                $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta
                 @_iPreguntaId = ?
                 , @_iCursoId = ? 
                 , @_iTipoPregId = ?
@@ -344,84 +345,47 @@ class PreguntasController extends ApiController
             'ids' => $request->ids
         ];
 
-        $preguntas = [];
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
-        try {
-            $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+        $phpTemplateWord = new TemplateProcessor(storage_path() . DIRECTORY_SEPARATOR .  'template-ere.docx');
 
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
-            foreach ($preguntasDB as &$pregunta) {
-                if ($pregunta->iEncabPregId == -1) {
-                    $preguntaOutput = '';
-                    $preguntaOutput .= $pregunta->cPregunta;
-                    // verificar si existe textoAyuda
-                    if ($pregunta->cPreguntaTextoAyuda != null && strlen($pregunta->cPreguntaTextoAyuda) > 0) {
-                        $preguntaOutput .= $pregunta->cPreguntaTextoAyuda;
-                    }
+        $phpTemplateWord->cloneBlock('block_preguntas', count($preguntasDB), true, true);
 
-                    if (isset($pregunta->alternativas) && is_array($pregunta->alternativas)) {
-                        foreach ($pregunta->alternativas as &$alternativa) {
-                            $preguntaOutput .= '<div>';
-                            $preguntaOutput .= "<p> {$alternativa->cAlternativaLetra} ) </p> {$alternativa->cAlternativaDescripcion}";
-                            $preguntaOutput .= '</div>';
-                        }
-                    }
-                    array_push($preguntas, $preguntaOutput);
-                    $preguntaOutput = '';
-                } else {
-                    $preguntaOutput = "<h1>{$pregunta->cEncabPregTitulo}</h1>";
-                    $preguntaOutput .= $pregunta->cEncabPregContenido;
-                    foreach ($pregunta->preguntas as &$subPreguntas) {
-                        $preguntaOutput .= $subPreguntas->cPregunta;
-                        // verificar si existe textoAyuda
-                        if ($subPreguntas->cPreguntaTextoAyuda != null && strlen($subPreguntas->cPreguntaTextoAyuda) > 0) {
-                            $preguntaOutput .= $subPreguntas->cPreguntaTextoAyuda;
-                        }
-                        if (isset($subPreguntas->alternativas) && is_array($subPreguntas->alternativas)) {
-                            foreach ($subPreguntas->alternativas as &$alternativa) {
-                                $preguntaOutput .= '<div>';
-                                $preguntaOutput .= "<p> {$alternativa->cAlternativaLetra} ) </p> {$alternativa->cAlternativaDescripcion}";
-                                $preguntaOutput .= '</div>';
-                            }
-                        }
-                    }
+        $phpTemplateWord->setValue('cantidadPreguntas', (count($preguntasDB)));
 
-                    array_push($preguntas, $preguntaOutput);
-                    $preguntaOutput = '';
+        foreach ($preguntasDB as $indexPregunta => $pregunta) {
+            $phpTemplateWord->setValue('index#' . ($indexPregunta + 1), $indexPregunta + 1);
+
+            if (strpos($pregunta->cPregunta, ';base64,')) {
+                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cPregunta, $matches);
+
+                $imagen = isset($matches[1]) ? $matches[1] : null;
+
+                $phpTemplateWord->setImageValue('cPregunta#' . ($indexPregunta + 1), array('path' => $imagen, 'width' => 200, 'height' => 200, 'ratio' => false));
+            } else {
+                $phpTemplateWord->setValue('cPregunta#' . ($indexPregunta + 1), strip_tags($pregunta->cPregunta));
+            }
+
+            if (isset($pregunta->alternativas)) {
+                $phpTemplateWord->cloneBlock('block_alternativas#' . ($indexPregunta + 1), count($pregunta->alternativas), true, true);
+
+                foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
+                    // Reemplazar valores de las alternativas dinámicamente
+                    $phpTemplateWord->setValue('cAlternativaLetra#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), $alternativa->cAlternativaLetra);
+                    $phpTemplateWord->setValue('cAlternativaDescripcion#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), strip_tags($alternativa->cAlternativaDescripcion));
                 }
             }
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), 'Error al generar');
         }
-
-
-        $phpWord = new PhpWord;
-        $phpWord->addTitleStyle(1, ['size' => 24, 'color' => '333333', 'bold' => true]);
-        $phpWord->addTitleStyle(2, ['size' => 18, 'color' => '666666']);
-        $phpWord->addTitleStyle(3, ['size' => 14, 'color' => '999999', 'italic' => true]);
-        $section = $phpWord->addSection();
-
-        foreach ($preguntas as $index => $questionHtml) {
-            // Añadir un salto de página antes de cada pregunta (excepto la primera)
-            if ($index > 0) {
-                $section->addPageBreak();
-            }
-            // sanitizar cierres html
-            $questionHtml =  WordController::sanitizeHtml($questionHtml);
-            // Convertir el HTML de la pregunta a contenido de PHPWord
-            Html::addHtml($section, $questionHtml, false, false);
-        }
-
-        \PhpOffice\PhpWord\Settings::setZipClass(Settings::PCLZIP);
-        $writer = IOFactory::createWriter($phpWord, 'Word2007');
 
         $response = new Response();
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        $response->headers->set('Content-Disposition', 'attachment;filename="preguntas.docx"');
+        $response->headers->set('Content-Disposition', 'attachment;filename="preguntas_generated.docx"');
         $response->headers->set('Cache-Control', 'max-age=0');
 
         ob_start();
-        $writer->save('php://output');
+        $phpTemplateWord->saveAs('php://output');
         $content = ob_get_contents();
         ob_end_clean();
 
@@ -459,5 +423,88 @@ class PreguntasController extends ApiController
             DB::rollBack();
             return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
         }
+    }
+
+    public function generarWordEvaluacionByIds(Request $request)
+    {
+        $params = [
+            'iBancoId' => $request->iCursoId,
+            'busqueda' => '',
+            'iCurrPregId' => 0,
+            'cBancoPregunta' => -1,
+            'ids' => $request->ids
+        ];
+
+        // Obtener las preguntas desde el repositorio
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+
+        // Verificar si se encontraron preguntas
+        if (empty($preguntasDB)) {
+            return response()->json(['error' => 'No se encontraron preguntas para los IDs proporcionados.'], 404);
+        }
+
+        $phpTemplateWord = new TemplateProcessor(storage_path('template-eva.docx'));
+
+        // Clonar el bloque de preguntas
+        $phpTemplateWord->cloneBlock('block_preguntas', count($preguntasDB), true, true);
+
+        // Asignar el valor de cantidad de preguntas
+        $phpTemplateWord->setValue('cantidadPreguntas', count($preguntasDB));
+
+        foreach ($preguntasDB as $indexPregunta => $pregunta) {
+            $indice = $indexPregunta + 1;
+            $phpTemplateWord->setValue("index#$indice", $indice);
+
+            // Manejo de la pregunta
+            if (strpos($pregunta->cPregunta, ';base64,')) {
+                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cPregunta, $matches);
+                $imagenBase64 = $matches[1] ?? null;
+
+                if ($imagenBase64) {
+                    // Decodificar y guardar la imagen temporalmente
+                    $imagePath = storage_path("temp_image_$indice.png");
+                    file_put_contents($imagePath, base64_decode(explode(';base64,', $imagenBase64)[1]));
+
+                    $phpTemplateWord->setImageValue("cPregunta#$indice", [
+                        'path' => $imagePath,
+                        'width' => 200,
+                        'height' => 200,
+                        'ratio' => false
+                    ]);
+
+                    // Eliminar la imagen temporal
+                    unlink($imagePath);
+                } else {
+                    $phpTemplateWord->setValue("cPregunta#$indice", 'Imagen no disponible');
+                }
+            } else {
+                $phpTemplateWord->setValue("cPregunta#$indice", strip_tags($pregunta->cPregunta));
+            }
+
+            // Manejo de las alternativas
+            if (!empty($pregunta->alternativas)) {
+                $phpTemplateWord->cloneBlock("block_alternativas#$indice", count($pregunta->alternativas), true, true);
+
+                foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
+                    $altIndice = $indexAlternativa + 1;
+                    $phpTemplateWord->setValue("cAlternativaLetra#$indice#$altIndice", $alternativa->cAlternativaLetra);
+                    $phpTemplateWord->setValue("cAlternativaDescripcion#$indice#$altIndice", strip_tags($alternativa->cAlternativaDescripcion));
+                }
+            }
+        }
+
+        // Configurar respuesta HTTP para descarga
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        $response->headers->set('Content-Disposition', 'attachment;filename="preguntas_generated.docx"');
+        $response->headers->set('Cache-Control', 'max-age=0');
+
+        // Generar el archivo y enviar al navegador
+        ob_start();
+        $phpTemplateWord->saveAs('php://output');
+        $content = ob_get_clean();
+        $response->setContent($content);
+
+        return $response;
     }
 }

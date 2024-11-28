@@ -4,11 +4,13 @@ use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\ForosController;
+use App\Http\Controllers\aula\NotificacionController;
 use App\Http\Controllers\aula\ProgramacionActividadesController;
 use App\Http\Controllers\aula\TareaCabeceraGruposController;
 use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
+use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'contenidos'], function () {
@@ -29,6 +31,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::get('obtenerRespuestaForo', [AulaVirtualController::class, 'obtenerRespuestaForo']);
             Route::post('calificarForoDocente', [AulaVirtualController::class, 'calificarForoDocente']);
             Route::post('guardarComentarioRespuesta', [AulaVirtualController::class, 'guardarComentarioRespuesta']);
+            Route::get('obtenerEstudiantesMatricula', [AulaVirtualController::class, 'obtenerEstudiantesMatricula']);
+
         });
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
     });
@@ -68,5 +72,9 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'foros'], function () {
         Route::post('obtenerForoxiForoId', [ForosController::class, 'obtenerForoxiForoId']);
         Route::post('actualizarForo', [ForosController::class, 'actualizarForo']);
+    });
+
+    Route::group(['prefix' => 'notificacion'], function () {
+        Route::post('mostrar_notificaciones', [NotificacionController::class, 'mostrar_notificaciones']);
     });
 });

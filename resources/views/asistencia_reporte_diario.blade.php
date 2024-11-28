@@ -49,6 +49,24 @@
         margin-bottom: 10px;
         margin-left: 10px;
     }
+    .subtitulo{
+        border:1px solid black;
+        margin:0;
+        padding:7px;
+        background-color: #dbdbdb;
+        font-weight: 900;
+    }
+    .celda{
+        border:1px solid black;
+        margin:0;
+        padding:7px;
+        background-color: #dbdbdb;
+    }
+    .contenido{
+        border:1px solid black;
+        margin:0;
+        padding:7px;
+    }
     </style>
 </head>
 <body>
@@ -74,13 +92,30 @@
             </aside>
         </div>
         
-        <table>
+        <table class="cuerpo">
             <tr>
-                <td style="border:1px solid black;margin:0;padding:7px;">Nombres Y Apellidos</td>
-                <td style="border:1px solid black;margin:0;padding:7px;" >{{$fecha_actual}}</td>
+                <td class="subtitulo">Nro</td>
+                <td class="subtitulo">Nombres Y Apellidos</td>
+                <td class="subtitulo">{{$fecha_actual}}</td>
             </tr>
+            @foreach($respuesta["lista"] as $key => $index)
             <tr>
-                
+                <td class="celda">{{$key+1}}</th>
+                <td class="celda">{{$index[0]}}</th>
+                <td class="contenido">{{$index[1]}}</td>
+            </tr>
+            @endforeach
+            
+        </table>
+        <table class="cuerpo">
+            <tr>
+                <td>Legenda:</td>
+                <td>[X] Asistio</td>
+                <td>[I] Inasistencia</td>
+                <td>[J] Inasistencia Justificada</td>
+                <td>[T] Tardanza</td>
+                <td>[P] Tardanza Justificada</td>
+                <td>[-] Sin Registro</td>
             </tr>
         </table>
     </main>
