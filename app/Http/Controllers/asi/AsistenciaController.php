@@ -202,6 +202,10 @@ class AsistenciaController extends Controller
 
             $convertir = json_decode(json_encode($registro), true);
 
+            if(!is_array($convertir)){
+                $convertir = [];
+            }
+
             $unir = array_merge($filtrar, $convertir);
 
             usort($unir, function ($a, $b) {
@@ -215,20 +219,21 @@ class AsistenciaController extends Controller
             "ultimodia" => $ultimo,
             "query" => $query,
             "dias_Semana" => $unir_dias,
-            "year" => "2024",
-            "docente" => "RICARDO GERMAN AGIP RUBIO",
+            "year" => date('Y'),
+            "docente" => $request->nombrecompleto,
             "mes" => "2024-10-01 2024-10-31",
             "modular" => "000005600",
             "dre" => "DRE MOQUEGUA UGEL",
             "fecha_reporte" => "2024-10-01",
             "fecha_cierre" => "2024-10-31",
-            "nivel" => "SECUNDARIO",
+            "nivel" => $request->cNivelTipoNombre,
             "periodo" => "",
-            "grado" => "1ro.",
-            "seccion" => "Sección A",
+            "grado" => $request->cGradoAbreviacion,
+            "ciclo" => $request->cCicloRomanos,
+            "seccion" => $request->cSeccion,
             "turno" => "Mañana",
         ];
-
+    
         $pdf = Pdf::loadView('asistencia_reporte_mensual', $respuesta)
             ->setPaper('a4', 'landscape')
             ->stream('silabus.pdf');
@@ -527,6 +532,9 @@ class AsistenciaController extends Controller
 
                     $fechas[$i]["nombre"][$key] = $sql->completoalumno;
                     $verificar = json_decode($sql->diasAsistencia);
+                    if(!is_array($verificar)){
+                        $verificar = [];
+                    }
                     $ver = array_column($verificar, "diaMes");
 
                     for ($j = 1; $j <= $fechas[$i]["ultimo_dia"]; $j++) {
