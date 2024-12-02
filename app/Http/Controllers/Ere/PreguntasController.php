@@ -31,9 +31,8 @@ class PreguntasController extends ApiController
         $iEncabPregId = $request->encabezado['iEncabPregId'];
 
         DB::beginTransaction();
-        // Verificar si estan llegando aqui los data.iCursoId, Con esto si llega el dato desde front
+        // Verificar si `iCursoId`, Con esto si llega el dato desde front
         $iCursoId = $request->iCursoId ?? null;
-        $iDesempenoId = $request->iDesempenoId ?? null;
         // encabezado
 
         $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
@@ -44,6 +43,7 @@ class PreguntasController extends ApiController
                 'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
+                'iCursoId' => $request->iCursoId,
                 'iNivelGradoId' => $request->iNivelGradoId,
                 'iColumnValue' => $request->iEspecialistaId,
                 'cColumnName' => 'iEspecialistaId',
@@ -74,12 +74,12 @@ class PreguntasController extends ApiController
             $segundos = $pregunta['iSegundos'];
             $fechaActual->setTime($hora, $minutos, $segundos);
             $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
+            //$iCursoId = 1; // Cambiar esto por el curso que se quiere guardar
 
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 $iPreguntaId,
                 (int) $iCursoId, //Esto es  el iCursoId desde el front
-                (int) $iDesempenoId, //Esto es  el iDesempenoId desde el front
                 (int)$pregunta['iTipoPregId'],
                 $pregunta['cPregunta'],
                 $pregunta['cPreguntaTextoAyuda'] ?? '',
@@ -98,7 +98,6 @@ class PreguntasController extends ApiController
                 $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta
                 @_iPreguntaId = ?
                 , @_iCursoId = ? 
-                , @_iDesempenoId = ?
                 , @_iTipoPregId = ?
                 , @_cPregunta = ?
                 , @_cPreguntaTextoAyuda = ?

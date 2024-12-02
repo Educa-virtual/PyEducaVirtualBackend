@@ -75,7 +75,7 @@ class TareasController extends ApiController
         ];
 
         try {
-            $data = DB::select('exec aula.SP_SEL_tareas
+            $data = DB::select('exec aula.SP_aulaCrudTareas
             ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -146,19 +146,8 @@ class TareasController extends ApiController
         ];
         //return $parametros;
         try {
-            switch ($request->opcion) {
-                case 'GUARDARxProgActxiTarea':
-                    $data = DB::select('exec aula.SP_INS_tareas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    break;
-                case 'ACTUALIZAR_TITULO_TAREA':
-                case 'ACTUALIZARxProgActxiTarea':
-                case 'ACTUALIZARxiTareaId':
-                    $data = DB::select('exec aula.SP_UPD_tareas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    break;
-                case 'ELIMINARxiTareaid':
-                    $data = DB::select('exec aula.SP_DEL_tareas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    break;
-            }
+            $data = DB::select('exec aula.SP_aulaCrudTareas
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaId > 0) {
 
@@ -213,12 +202,11 @@ class TareasController extends ApiController
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
-    {
+    public function update(Request $request){
 
         $request->validate(
-            ['opcion' => 'required'],
-            ['opcion.required' => 'Hubo un problema al obtener la acción']
+            [ 'opcion' => 'required' ],
+            [ 'opcion.required' => 'Hubo un problema al obtener la acción' ]
         );
 
         $request['iTareaId'] = is_null($request->iTareaId)
@@ -249,11 +237,11 @@ class TareasController extends ApiController
             $request->dtActualizado             ?? NULL,
 
         ];
-
+        
         try {
             $data = DB::select('exec aula.SP_aulaCrudTareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
+            
             if ($data[0]->iTareaId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
@@ -268,6 +256,7 @@ class TareasController extends ApiController
         }
 
         return new JsonResponse($response, $codeResponse);
+        
     }
 
     public function delete(Request $request)
