@@ -19,7 +19,7 @@ use App\Http\Controllers\doc\MaterialEducativosController;
 use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
 use App\Http\Controllers\acad\TipoIndicadorLogrosController;
 use App\Http\Controllers\api\acad\GradoAcademicosController;
-use App\Http\Controllers\api\asi\AsistenciaController;
+use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\doc\CargaNoLectivasController;
 use App\Http\Controllers\doc\DetalleCargaNoLectivasController;
