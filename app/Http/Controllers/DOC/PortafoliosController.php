@@ -64,11 +64,7 @@ class PortafoliosController extends Controller
                     WHERE c.iCredId = '" . $request->iCredId . "'
             ");
 
-            foreach ($data as $key => $portafolio) {
-                $portafolio->reglamento = count($reglamento) > 0 ? $reglamento[0]->cIieeUrlReglamentoInterno : null;
-            }
-
-            $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data];
+            $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data, 'reglamento' => $reglamento];
             $codeResponse = 200;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
