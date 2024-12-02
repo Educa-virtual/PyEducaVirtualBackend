@@ -133,6 +133,6 @@ Route::group(['prefix' => 'docente'], function () {
   });
   Route::group(['prefix' => 'cuadernos-campo'], function () {
     Route::post('obtenerCuadernosCampo', [CuadernosCampoController::class, 'obtenerCuadernosCampo']);
-    Route::post('guardarFichas', [CuadernosCampoController::class, 'guardarFichas']);
+    Route::post('guardarFichasCuadernosCampo', [CuadernosCampoController::class, 'guardarFichasCuadernosCampo']);
   });
 });
