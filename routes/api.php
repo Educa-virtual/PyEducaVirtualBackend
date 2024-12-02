@@ -25,8 +25,8 @@ use App\Http\Controllers\Ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelTipoController;
 use App\Http\Controllers\Ere\TipoEvaluacionController;
 use App\Http\Controllers\Ere\UgelesController;
+use App\Http\Controllers\seg\AuditoriaController;
 use App\Http\Controllers\seg\CredencialesController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -128,9 +128,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
         Route::post('calendarioAcademicos/addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
         Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
-        Route::post('calendarioAcademicos/updateCalendario', [ CalendarioAcademicosController::class,'updateCalendario']);
-        Route::post('calendarioAcademicos/deleteCalendario',[ CalendarioAcademicosController::class,'deleteCalendario']); 
-    
+        Route::post('calendarioAcademicos/updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']);
+        Route::post('calendarioAcademicos/deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']);
+
         /*
          * * Peticiones de información de varios calendarios
         */
@@ -153,7 +153,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
-        
+
         //* GET: Dias laborales para configurar un calendario
         Route::get('selTurnosModalidades', [CalendarioAcademicosController::class, 'selTurnosModalidades']);
 
@@ -191,11 +191,11 @@ Route::group(['prefix' => 'acad'], function () {
          * * Peticiones con información para guardar información de un
          * * calendario 
          */
-       // * POST: Fases promocionales de un calendario académico
-       Route::post('insCalFasesProm', [CalendarioAcademicosController::class, 'insCalFasesProm']);
-       
-       // * POST: Calendario académico
-       Route::post('insCalAcademico', [CalendarioAcademicosController::class, 'insCalAcademico']);
+        // * POST: Fases promocionales de un calendario académico
+        Route::post('insCalFasesProm', [CalendarioAcademicosController::class, 'insCalFasesProm']);
+
+        // * POST: Calendario académico
+        Route::post('insCalAcademico', [CalendarioAcademicosController::class, 'insCalAcademico']);
 
         // * POST: Dias Laborales de un calendario
         Route::post('insCalDiasLaborales', [CalendarioAcademicosController::class, 'insCalDiasLaborales']);
@@ -221,7 +221,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         //* PUT: Periodos académicos de un calendario
         Route::put('updCalFasesProm', [CalendarioAcademicosController::class, 'updCalFasesProm']);
-        
+
         // //* PUT: Periodos académicos de un calendario
         // Route::put('updCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'updCalPeriodosAcademicos']);
 
@@ -246,6 +246,17 @@ Route::group(['prefix' => 'acad'], function () {
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
     });
 });
+
+Route::group(['prefix' => 'seg'], function () {
+    Route::group(['prefix' => 'auditoria'], function () {
+        Route::get('sel_auditoria_accesos', [AuditoriaController::class, 'sel_auditoria_accesos']);
+        Route::get('sel_auditoria_accesos_fallidos', [AuditoriaController::class, 'sel_auditoria_accesos_fallidos']);
+        Route::get('sel_auditoria', [AuditoriaController::class, 'sel_auditoria']);
+        Route::get('sel_auditoria_backend', [AuditoriaController::class, 'sel_auditoria_backend']);
+    });
+});
+
+
 Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
 Route::post('/verificar', [MailController::class, 'index']);
 Route::post('/verificar_codigo', [MailController::class, 'comparar']);
@@ -262,5 +273,3 @@ Route::get('/imprimir', PersonaController::class);
 Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
 Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
-
-
