@@ -7,8 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
-use Spatie\LaravelPdf\Facades\Pdf;
-use Spatie\Browsershot\Browsershot;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SilabosController extends Controller
@@ -117,16 +116,18 @@ class SilabosController extends Controller
             $parametros
         );
 
-        $html = view('silabus_reporte', ["query" => $query[0]])->render();
+        //$html = view('silabus_reporte', ["query" => $query[0]])->render();
 
-        $pdf = Browsershot::html($html)->pdf();
-
-         return response()->streamDownload(function () use ($pdf) {
-            echo $pdf;
-        }, 'Silabo.pdf', [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="archivo.pdf"',
-        ]);
+        //$pdf = Browsershot::html($html)->pdf();
+        $pdf = Pdf::loadView('silabus_reporte', ["query" => $query[0]])
+        ->stream('silabus.pdf');
+        return $pdf;
+        //  return response()->streamDownload(function () use ($pdf) {
+            
+        // }, 'Silabo.pdf', [
+        //     'Content-Type' => 'application/pdf',
+        //     'Content-Disposition' => 'inline; filename="archivo.pdf"',
+        // ]);
 
     }
 }
