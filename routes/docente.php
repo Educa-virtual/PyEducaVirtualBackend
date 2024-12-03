@@ -19,10 +19,12 @@ use App\Http\Controllers\doc\MaterialEducativosController;
 use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
 use App\Http\Controllers\acad\TipoIndicadorLogrosController;
 use App\Http\Controllers\api\acad\GradoAcademicosController;
-use App\Http\Controllers\api\asi\AsistenciaController;
+use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\doc\CargaNoLectivasController;
+use App\Http\Controllers\doc\CuadernosCampoController;
 use App\Http\Controllers\doc\DetalleCargaNoLectivasController;
+use App\Http\Controllers\doc\PortafoliosController;
 use App\Http\Controllers\doc\TiposCargaNoLectivasController;
 use Illuminate\Support\Facades\Route;
 
@@ -124,5 +126,13 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('store', [CargaNoLectivasController::class, 'store']);
     Route::post('update', [CargaNoLectivasController::class, 'update']);
     Route::post('delete', [CargaNoLectivasController::class, 'delete']);
+  });
+  Route::group(['prefix' => 'portafolios'], function () {
+    Route::post('obtenerPortafolios', [PortafoliosController::class, 'obtenerPortafolios']);
+    Route::post('guardarItinerario', [PortafoliosController::class, 'guardarItinerario']);
+  });
+  Route::group(['prefix' => 'cuadernos-campo'], function () {
+    Route::post('obtenerCuadernosCampo', [CuadernosCampoController::class, 'obtenerCuadernosCampo']);
+    Route::post('guardarFichasCuadernosCampo', [CuadernosCampoController::class, 'guardarFichasCuadernosCampo']);
   });
 });
