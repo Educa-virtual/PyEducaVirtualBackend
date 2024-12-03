@@ -8,6 +8,7 @@ use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\api\acad\ActividadesAprendizajeController;
 use App\Http\Controllers\api\acad\BibliografiaController;
 use App\http\Controllers\api\acad\CalendarioAcademicosController;
+use App\http\Controllers\api\acad\GestionInstitucionalController;
 use App\http\Controllers\api\acad\PeriodoAcademicosController;
 use App\Http\Controllers\CredencialController;
 
@@ -95,7 +96,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('obtenerPerfiles', [SelectPerfilesController::class, 'obtenerPerfiles']);
     });
 
-    Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
+    Route::post('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
     Route::post('calendarioAcademico/addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
     Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
     Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
@@ -103,6 +104,11 @@ Route::group(['prefix' => 'acad'], function () {
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
     Route::post('calendarioAcademicos/updateCalendario', [ CalendarioAcademicosController::class,'updateCalendario']);
     Route::post('calendarioAcademicos/deleteCalendario',[ CalendarioAcademicosController::class,'deleteCalendario']); 
+    Route::post('calendarioAcademicos/searchGradoCiclo',[ CalendarioAcademicosController::class,'searchGradoCiclo']); 
+
+    Route::post('gestionInstitucional/listarPersonalIes',[ GestionInstitucionalController::class,'listarPersonalIes']);
+    Route::post('gestionInstitucional/insertMaestroDetalle',[ GestionInstitucionalController::class,'insertMaestroDetalle']); 
+    Route::post('gestionInstitucional/insertMaestro',[ GestionInstitucionalController::class,'insertMaestro']);  
 
 
 

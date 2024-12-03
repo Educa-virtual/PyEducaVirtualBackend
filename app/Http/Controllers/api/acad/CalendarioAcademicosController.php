@@ -260,7 +260,7 @@ class CalendarioAcademicosController extends Controller
         $request->_opcion,
         ];
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select("EXEC acad.Sp_ACAD_CRUD_CALENDARIO ?,?", 
+        $query = DB::select("EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", 
         $solicitud);
 
         try {
@@ -391,7 +391,7 @@ class CalendarioAcademicosController extends Controller
         
         $estado = 500;
         }
-
+        return $response;
     }
     
     public function deleteCalendario(Request $request)
@@ -432,8 +432,42 @@ class CalendarioAcademicosController extends Controller
 
         return new JsonResponse($response, $estado);
     }
-}
 
+
+    public function searchGradoCiclo(Request $request)
+    {
+    //    $json = json_encode($request->json);
+    //    $opcion = $request->_opcion;
+
+        $solicitud = [
+            $request-> iNivelTipoId, //NVARCHAR(128),       -- Nombre del esquema        
+        ];
+        
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select("EXEC acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?", $solicitud);
+    //  [$json, $opcion ]);
+
+        try {
+        $response = [
+            'validated' => true,
+            'message' => 'se obtuvo la información',
+            'data' => $query,
+        ];
+
+        $estado = 200;
+        } catch (Exception $e) {
+        $response = [
+            'validated' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ];
+        
+        $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+}
 
 
 
