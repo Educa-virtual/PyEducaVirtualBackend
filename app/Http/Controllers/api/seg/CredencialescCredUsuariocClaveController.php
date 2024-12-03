@@ -54,24 +54,33 @@ class CredencialescCredUsuariocClaveController extends Controller
         $duracion =  DB::select('select DATEDIFF(minute, dtCredRegistro, GETDATE()) as duracion from seg.credenciales where cCredUsuario = ?', [$credentials['cCredUsuario']]);
 
         if (!$user = $this->customAttempt($credentials)) {
-            if ((int)$intentos[0]->iCredIntentos === 3 && (int)$duracion[0]->duracion < 5 ) {
+            if ((int)$intentos[0]->iCredIntentos === 3 && (int)$duracion[0]->duracion < 5) {
                 return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, vuelva a intentar en 5 minutos.'], 401);
             } else {
-                if((int)$duracion[0]->duracion>=5 || (int)$intentos[0]->iCredIntentos>=5){
+                if ((int)$duracion[0]->duracion >= 5 || (int)$intentos[0]->iCredIntentos >= 5) {
                     return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
                 }
                 DB::update('update seg.credenciales set iCredIntentos =  (iCredIntentos + 1), dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
             }
-            
         }
-        if($user = $this->customAttempt($credentials) && (int)$duracion[0]->duracion>=5 && (int)$intentos[0]->iCredIntentos>=5){
+        if ($user = $this->customAttempt($credentials) && (int)$duracion[0]->duracion >= 5 && (int)$intentos[0]->iCredIntentos >= 5) {
             return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
         }
         if (!$user = $this->customAttempt($credentials)) {
             return response()->json(['validated' => false, 'message' => 'Verifica tu usuario y contraseña'], 401);
-        }
-        else{
-            DB::update('update seg.credenciales set iCredIntentos =  0, dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
+        } else {
+            $vencimiento = DB::select("
+                SELECT 
+                    DATEDIFF(DAY, c.dtCredRegistro,GETDATE() ) AS iDias
+                FROM seg.credenciales AS c 
+                WHERE c.cCredUsuario = '" . $credentials['cCredUsuario'] . "'
+            ");
+            if ($vencimiento[0]->iDias <= 60 && $vencimiento[0]->iDias >= 0) {
+                DB::update('update seg.credenciales set iCredIntentos =  0, dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
+            }
+            else{
+                return response()->json(['validated' => false, 'message' => 'Debe de actualizar su contraseña'], 401);
+            }
         }
 
         $token = JWTAuth::fromUser($user);
