@@ -318,7 +318,73 @@ class CalendarioAcademicosController extends Controller
     }
 
 
+
+
     // no tocar
+
+    public function updateCalAcademico(Request $request)
+    {
+        $solicitud = [
+            $request->json,
+            $request->_opcion,
+        ];
+
+        $query = DB::select(
+            "EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
+            $solicitud
+        );
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+    public function deleteCalAcademico(Request $request)
+    {
+        $solicitud = [
+            $request->json,
+            $request->_opcion,
+        ];
+
+        $query = DB::select(
+            "EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
+            $solicitud
+        );
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
     public function addCalAcademico(Request $request)
     {
         $solicitud = [
@@ -328,6 +394,38 @@ class CalendarioAcademicosController extends Controller
 
         $query = DB::select(
             "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
+            $solicitud
+        );
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
+    public function searchAcademico(Request $request)
+    {
+        $solicitud = [
+            $request->json,
+            $request->_opcion,
+        ];
+
+        $query = DB::select(
+            "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
             $solicitud
         );
 
