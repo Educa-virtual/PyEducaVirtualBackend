@@ -411,6 +411,36 @@ class AulaVirtualController extends ApiController
 
         // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
+    public function eliminarRptEstudiante (Request $request)
+    {
+        //return $request -> all();
+        // Validar la solicitud
+        // Validar el ID enviado
+        $validatedData = $request->validate([
+            'iForoRptaId' => 'required|string', // Asegura que el ID sea obligatorio y numérico
+        ]);
+
+        $iForoRptaId = $validatedData['iForoRptaId'];
+
+        try {
+            // Llamar al procedimiento almacenado
+            DB::select('exec aula.SP_DEL_respuestaXidEstudiante @iForoRptaId = ?', [$iForoRptaId]);
+
+            // Responder con éxito
+            return response()->json([
+                'success' => true,
+                'message' => 'Elemento eliminado correctamente',
+            ], 200);
+        } catch (Throwable $e) {
+            // Manejo de errores
+            $message = $this->handleAndLogError($e, 'Error al eliminar');
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 500);
+        }
+        
+    }
     // Guardar respuesta de Foro
     public function guardarRespuesta(Request $request)
     {
@@ -670,5 +700,40 @@ class AulaVirtualController extends ApiController
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
+    }
+    public function maestroDetalle(Request $request)
+    {
+        $solicitud = [
+
+            $request->Esquema,       //-- Esquema de la tabla maestra
+            $request->TablaMaestra, //NVARCHAR(128),   -- Nombre de la tabla maestra
+            $request->DatosJSONMaestro, // NVARCHAR(MAX), -- Datos en formato JSON para la tabla maestra
+            $request->TablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
+            $request->DatosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
+            $request->campoFK // NVARCHAR(128)
+    
+        ];
+
+        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
+        $solicitud);
+
+        try {
+        $response = [
+            'validated' => true,
+            'message' => 'se obtuvo la información',
+            'data' => $query,
+        ];
+
+        $estado = 201;
+        } catch (Exception $e) {
+        $response = [
+            'validated' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ];
+        $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
     }
 }

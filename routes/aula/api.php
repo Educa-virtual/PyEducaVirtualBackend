@@ -7,6 +7,7 @@ use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
 use App\Http\Controllers\aula\NotificacionEstudianteController;
 use App\Http\Controllers\aula\ProgramacionActividadesController;
+use App\Http\Controllers\aula\ResultadoController;
 use App\Http\Controllers\aula\TareaCabeceraGruposController;
 use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
@@ -24,6 +25,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::post('asignar-estudiantes', [AulaVirtualController::class, 'asignarEstudiantes']);
         });
         Route::group(['prefix' => 'foro'], function () {
+            Route::post('maestroDetalle', [AulaVirtualController::class, 'maestroDetalle']);
             Route::post('guardarForo', [AulaVirtualController::class, 'guardarForo']);
             Route::post('obtenerCategorias', [AulaVirtualController::class, 'obtenerCategorias']);
             Route::post('obtenerCalificacion', [AulaVirtualController::class, 'obtenerCalificacion']);
@@ -33,6 +35,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::post('calificarForoDocente', [AulaVirtualController::class, 'calificarForoDocente']);
             Route::post('guardarComentarioRespuesta', [AulaVirtualController::class, 'guardarComentarioRespuesta']);
             Route::get('obtenerEstudiantesMatricula', [AulaVirtualController::class, 'obtenerEstudiantesMatricula']);
+            Route::delete('eliminarRptEstudiante', [AulaVirtualController::class, 'eliminarRptEstudiante']);            
 
         });
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
@@ -68,6 +71,12 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('guardarCalificacionTareaCabeceraGruposDocente', [TareaCabeceraGruposController::class, 'guardarCalificacionTareaCabeceraGruposDocente']);
         Route::post('transferenciaTareaCabeceraGrupos', [TareaCabeceraGruposController::class, 'transferenciaTareaCabeceraGrupos']);
         Route::post('entregarEstudianteTareaGrupal', [TareaCabeceraGruposController::class, 'entregarEstudianteTareaGrupal']);
+    });
+
+    Route::group(['prefix' => 'Resultado'], function () {
+        Route::get('obtenerResultados', [ResultadoController::class, 'obtenerResultados']);
+        Route::post('guardarCalfcEstudiante', [ResultadoController::class, 'guardarCalfcEstudiante']);
+        
     });
 
     Route::group(['prefix' => 'foros'], function () {

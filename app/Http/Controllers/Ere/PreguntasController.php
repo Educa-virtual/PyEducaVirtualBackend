@@ -31,7 +31,8 @@ class PreguntasController extends ApiController
         $iEncabPregId = $request->encabezado['iEncabPregId'];
 
         DB::beginTransaction();
-
+        // Verificar si `iCursoId`, Con esto si llega el dato desde front
+        $iCursoId = $request->iCursoId ?? null;
         // encabezado
 
         $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
@@ -73,12 +74,12 @@ class PreguntasController extends ApiController
             $segundos = $pregunta['iSegundos'];
             $fechaActual->setTime($hora, $minutos, $segundos);
             $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
-            $iCursoId = 1;
+            //$iCursoId = 1; // Cambiar esto por el curso que se quiere guardar
 
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 $iPreguntaId,
-                (int) $iCursoId,
+                (int) $iCursoId, //Esto es  el iCursoId desde el front
                 (int)$pregunta['iTipoPregId'],
                 $pregunta['cPregunta'],
                 $pregunta['cPreguntaTextoAyuda'] ?? '',
@@ -96,7 +97,7 @@ class PreguntasController extends ApiController
             try {
                 $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta
                 @_iPreguntaId = ?
-                , @_iCursoId = ?
+                , @_iCursoId = ? 
                 , @_iTipoPregId = ?
                 , @_cPregunta = ?
                 , @_cPreguntaTextoAyuda = ?

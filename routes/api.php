@@ -8,6 +8,7 @@ use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\api\acad\ActividadesAprendizajeController;
 use App\Http\Controllers\api\acad\BibliografiaController;
 use App\http\Controllers\api\acad\CalendarioAcademicosController;
+use App\http\Controllers\api\acad\GestionInstitucionalController;
 use App\http\Controllers\api\acad\PeriodoAcademicosController;
 use App\Http\Controllers\CredencialController;
 
@@ -101,6 +102,12 @@ Route::group(['prefix' => 'ere'], function () {
         Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
         //!Agregando CopiarEvaluacion
         Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
+        //!ObtenerMatrizCompetencia
+        Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
+        //!ObtenerMatrizCapacidad
+        Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
+        //!InsertarMatrizDesempeno
+        Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -109,7 +116,7 @@ Route::group(['prefix' => 'ere'], function () {
 Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'AutenticarU'], function () {
-        Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
+    Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
     });
 
     Route::group(['prefix' => 'Perfiles'], function () {
@@ -120,16 +127,32 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('selReglamentoInterno', [AcadInstitucionesEducativasController::class, 'selReglamentoInterno']);
         Route::put('updReglamentoInterno', [AcadInstitucionesEducativasController::class, 'updReglamentoInterno']);
     });
+/*
+    Route::group(['prefix' => 'gestionInstitucional'], function () {
+        Route::post('listarPersonalIes', [GestionInstitucionalController::class, 'listarPersonalIes']);
+        //procendimiento generales
+        Route::post('insertMaestroDetalle', [GestionInstitucionalController::class, 'insertMaestroDetalle']);
+        Route::post('insertMaestro', [GestionInstitucionalController::class, 'insertMaestro']);
+        Route::post('updateMaestro', [GestionInstitucionalController::class, 'updateMaestro']);
+        Route::post('deleteMaestro', [GestionInstitucionalController::class, 'deleteMaestro']);
+    });*/
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
-        Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
-        Route::post('calendarioAcademico/addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
-        Route::post('calendarioAcademico/searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
-        Route::post('calendarioAcademico/addYear', [CalendarioAcademicosController::class, 'addYear']);
-        Route::post('calendarioAcademicos/addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
-        Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
-        Route::post('calendarioAcademicos/updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']);
-        Route::post('calendarioAcademicos/deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']);
+        Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); 
+        Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); 
+        Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']); 
+        Route::post('searchAcademico', [CalendarioAcademicosController::class, 'searchAcademico']);
+        
+        Route::post('searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
+        Route::post('updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']);
+        Route::post('deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']);
+
+        Route::post('addYear', [CalendarioAcademicosController::class, 'addYear']);
+
+        Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
+        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
+        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']);
+        
 
         /*
          * * Peticiones de información de varios calendarios

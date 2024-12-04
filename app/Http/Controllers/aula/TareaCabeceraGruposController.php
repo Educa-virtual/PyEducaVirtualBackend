@@ -62,7 +62,7 @@ class TareaCabeceraGruposController extends Controller
 
         try {
             // Se ejecuta la consulta almacenada (stored procedure) con los parámetros definidos anteriormente
-            $data = DB::select('exec aula.SP_aulaCrudTareaCabeceraGrupos
+            $data = DB::select('exec aula.SP_SEL_tareaCabeceraGrupos
             ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             // Si se obtiene la información, se recorre y se realiza el proceso de codificación de los IDs
@@ -122,8 +122,15 @@ class TareaCabeceraGruposController extends Controller
 
         try {
             // Llamada al procedimiento almacenado 'SP_aulaCrudTareaCabeceraGrupos' usando los parámetros preparados
-            $data = DB::select('exec aula.SP_aulaCrudTareaCabeceraGrupos
-            ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            switch ($request->opcion) {
+                case 'GUARDAR-ESTUDIANTESxiTareaId':
+                    $data = DB::select('exec aula.SP_INS_tareaCabeceraGrupos ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ACTUALIZAR-ESTUDIANTESxiTareaId':
+                    $data = DB::select('exec aula.SP_UPD_tareaCabeceraGrupos ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+               
+            }
 
             // Verificación de si se obtuvo un resultado válido
             if ($data[0]->iTareaCabGrupoId > 0) {
