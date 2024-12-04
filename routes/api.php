@@ -249,10 +249,10 @@ Route::group(['prefix' => 'acad'], function () {
 
 Route::group(['prefix' => 'seg'], function () {
     Route::group(['prefix' => 'auditoria'], function () {
-        Route::get('sel_auditoria_accesos', [AuditoriaController::class, 'sel_auditoria_accesos']);
-        Route::get('sel_auditoria_accesos_fallidos', [AuditoriaController::class, 'sel_auditoria_accesos_fallidos']);
-        Route::get('sel_auditoria', [AuditoriaController::class, 'sel_auditoria']);
-        Route::get('sel_auditoria_backend', [AuditoriaController::class, 'sel_auditoria_backend']);
+        Route::get('selAuditoriaAccesos', [AuditoriaController::class, 'selAuditoriaAccesos']);
+        Route::get('selAuditoriaAccesosFallidos', [AuditoriaController::class, 'selAuditoriaAccesosFallidos']);
+        Route::get('selAuditoria', [AuditoriaController::class, 'selAuditoria']);
+        Route::get('selAuditoriaMiddleware', [AuditoriaController::class, 'selAuditoriaMiddleware']);
     });
 });
 

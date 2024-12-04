@@ -12,58 +12,33 @@ use Illuminate\Support\Facades\Mail;
 
 class AuditoriaController extends Controller
 {
-  public function response($query)
+  public const schema = 'seg';
+
+  public function selAuditoriaAccesos()
   {
-    $response = [
-      'validated' => true,
-      'message' => '',
-      'data' => [],
-    ];
-    $estado = 200;
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_accesos', '*')->sortByDesc('dtFecha')->values();
 
-    try {
-      $response['message'] = 'Se obtuvo la información';
-      $response['data'] = $query;
-    } catch (Exception $e) {
-      $response['message'] = $e->getMessage();
-      $estado = 500;
-    }
-
-    return new JsonResponse($response, $estado);
+    return parent::response($query);
   }
-
-  public function sel_auditoria_accesos(Request $request)
+  
+  public function selAuditoriaAccesosFallidos()
   {
-    $query = collect(DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?', [
-      'seg',
-      'V_' . $request->table,
-      '*',
-    ]))->sortByDesc('dtFecha')->values();
-    return $this->response($query);
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_accesos_fallidos', '*')->sortByDesc('dtFecha')->values();
+
+    return parent::response($query);
   }
 
-  public function sel_auditoria_accesos_fallidos() {
-    $query = collect(DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
-      'seg',
-      'V_CalendariosAcademicos',
-      '*',
-    ]))->sortByDesc('cYearNombre')->values();
-    return $this->response($query);
+  public function selAuditoria()
+  {
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria', '*')->sortByDesc('dtFecha')->values();
+
+    return parent::response($query);
   }
-  public function sel_auditoria() {
-    $query = collect(DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
-      'seg',
-      'V_CalendariosAcademicos',
-      '*',
-    ]))->sortByDesc('cYearNombre')->values();
-    return $this->response($query);
-  }
-  public function sel_auditoria_backend() {
-    $query = collect(DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
-      'seg',
-      'V_CalendariosAcademicos',
-      '*',
-    ]))->sortByDesc('cYearNombre')->values();
-    return $this->response($query);
+
+  public function selAuditoriaMiddleware()
+  {
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_middleware', '*')->sortByDesc('dtFecha')->values();
+
+    return parent::response($query);
   }
 }
