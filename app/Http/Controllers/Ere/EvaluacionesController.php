@@ -509,51 +509,19 @@ class EvaluacionesController extends ApiController
             'iSesionId' => 'nullable|integer',
         ]);
 
-        try {
-            // Ejecutar el procedimiento almacenado y obtener el resultado
-            $result = DB::select('EXEC [ere].[SP_INS_desempenoEvaluacion] ?, ?, ?, ?, ?, ?, ?', [
-                $validated['iEvaluacionId'],
-                $validated['iCompCursoId'],
-                $validated['iCapacidadId'],
-                $validated['cDesempenoDescripcion'],
-                $validated['cDesempenoConocimiento'],
-                $validated['iEstado'] ?? null,
-                $validated['iSesionId'] ?? null,
-            ]);
+        // Llamar al procedimiento almacenado
+        DB::statement('EXEC [ere].[SP_INS_desempenoEvaluacion] ?, ?, ?, ?, ?, ?, ?', [
+            $validated['iEvaluacionId'],
+            $validated['iCompCursoId'],
+            $validated['iCapacidadId'],
+            $validated['cDesempenoDescripcion'],
+            $validated['cDesempenoConocimiento'],
+            $validated['iEstado'] ?? null,
+            $validated['iSesionId'] ?? null,
+        ]);
 
-            // Verificar si se obtuvo un resultado
-            if (empty($result)) {
-                return response()->json([
-                    'status' => 'Error',
-                    'message' => 'El procedimiento almacenado no devolvió ningún resultado',
-                ], 500);
-            }
-
-            // Extraer el ID retornado
-            $iDesempenoId = $result[0]->iDesempenoId ?? null;
-
-            if (!$iDesempenoId) {
-                return response()->json([
-                    'status' => 'Error',
-                    'message' => 'No se generó un iDesempenoId',
-                ], 500);
-            }
-
-            // Responder con éxito y el ID generado
-            return response()->json([
-                'status' => 'Success',
-                'data' => [
-                    'iDesempenoId' => $iDesempenoId,
-                ],
-            ], 201);
-        } catch (\Exception $e) {
-            // Manejo de errores
-            return response()->json([
-                'status' => 'Error',
-                'message' => 'Error al insertar los datos',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        // Responder con éxito
+        return response()->json(['message' => 'Datos insertados correctamente'], 201);
     }
 
     public function generarPdfMatrizbyEvaluacionId(Request $request)

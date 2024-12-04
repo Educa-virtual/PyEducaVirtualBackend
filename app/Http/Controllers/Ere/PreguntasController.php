@@ -31,9 +31,8 @@ class PreguntasController extends ApiController
         $iEncabPregId = $request->encabezado['iEncabPregId'];
 
         DB::beginTransaction();
-        // Verificar si estan llegando aqui los data.iCursoId, Con esto si llega el dato desde front
+        // Verificar si `iCursoId`, Con esto si llega el dato desde front
         $iCursoId = $request->iCursoId ?? null;
-        $iDesempenoId = $request->iDesempenoId ?? null;
         // encabezado
 
         $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
@@ -44,6 +43,7 @@ class PreguntasController extends ApiController
                 'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
+                'iCursoId' => $request->iCursoId,
                 'iNivelGradoId' => $request->iNivelGradoId,
                 'iColumnValue' => $request->iEspecialistaId,
                 'cColumnName' => 'iEspecialistaId',
@@ -74,12 +74,12 @@ class PreguntasController extends ApiController
             $segundos = $pregunta['iSegundos'];
             $fechaActual->setTime($hora, $minutos, $segundos);
             $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
+            //$iCursoId = 1; // Cambiar esto por el curso que se quiere guardar
 
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 $iPreguntaId,
                 (int) $iCursoId, //Esto es  el iCursoId desde el front
-                (int) $iDesempenoId, //Esto es  el iDesempenoId desde el front
                 (int)$pregunta['iTipoPregId'],
                 $pregunta['cPregunta'],
                 $pregunta['cPreguntaTextoAyuda'] ?? '',
@@ -98,7 +98,6 @@ class PreguntasController extends ApiController
                 $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta
                 @_iPreguntaId = ?
                 , @_iCursoId = ? 
-                , @_iDesempenoId = ?
                 , @_iTipoPregId = ?
                 , @_cPregunta = ?
                 , @_cPreguntaTextoAyuda = ?
@@ -428,16 +427,20 @@ class PreguntasController extends ApiController
 
     public function generarWordEvaluacionByIds(Request $request)
     {
+        // $params = [
+        //     'iBancoId' => $request->iCursoId,
+        //     'busqueda' => '',
+        //     'iCurrPregId' => 0,
+        //     'cBancoPregunta' => -1,
+        //     'ids' => $request->ids
+        // ];
         $params = [
-            'iBancoId' => $request->iCursoId,
-            'busqueda' => '',
-            'iCurrPregId' => 0,
-            'cBancoPregunta' => -1,
-            'ids' => $request->ids
+            'BancoId' => $request->ids,
+            'iDocenteId' => 1,
+            'iCursoId' => $request->iCursoId, 
         ];
-
         // Obtener las preguntas desde el repositorio
-        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntas($params);
 
         // Verificar si se encontraron preguntas
         if (empty($preguntasDB)) {
@@ -457,8 +460,8 @@ class PreguntasController extends ApiController
             $phpTemplateWord->setValue("index#$indice", $indice);
 
             // Manejo de la pregunta
-            if (strpos($pregunta->cPregunta, ';base64,')) {
-                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cPregunta, $matches);
+            if (strpos($pregunta->cBancoPregunta, ';base64,')) {
+                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cBancoPregunta, $matches);
                 $imagenBase64 = $matches[1] ?? null;
 
                 if ($imagenBase64) {
@@ -479,7 +482,7 @@ class PreguntasController extends ApiController
                     $phpTemplateWord->setValue("cPregunta#$indice", 'Imagen no disponible');
                 }
             } else {
-                $phpTemplateWord->setValue("cPregunta#$indice", strip_tags($pregunta->cPregunta));
+                $phpTemplateWord->setValue("cPregunta#$indice", strip_tags($pregunta->cBancoPregunta));
             }
 
             // Manejo de las alternativas
@@ -488,8 +491,8 @@ class PreguntasController extends ApiController
 
                 foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
                     $altIndice = $indexAlternativa + 1;
-                    $phpTemplateWord->setValue("cAlternativaLetra#$indice#$altIndice", $alternativa->cAlternativaLetra);
-                    $phpTemplateWord->setValue("cAlternativaDescripcion#$indice#$altIndice", strip_tags($alternativa->cAlternativaDescripcion));
+                    $phpTemplateWord->setValue("cAlternativaLetra#$indice#$altIndice", $alternativa->cBancoAltLetra);
+                    $phpTemplateWord->setValue("cAlternativaDescripcion#$indice#$altIndice", strip_tags($alternativa->cBancoAltDescripcion));
                 }
             }
         }

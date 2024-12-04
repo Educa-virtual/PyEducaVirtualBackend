@@ -417,7 +417,7 @@ class AulaVirtualController extends ApiController
         // Validar la solicitud
         // Validar el ID enviado
         $validatedData = $request->validate([
-            'iForoRptaId' => 'required|integer', // Asegura que el ID sea obligatorio y numérico
+            'iForoRptaId' => 'required|string', // Asegura que el ID sea obligatorio y numérico
         ]);
 
         $iForoRptaId = $validatedData['iForoRptaId'];
@@ -700,5 +700,40 @@ class AulaVirtualController extends ApiController
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
+    }
+    public function maestroDetalle(Request $request)
+    {
+        $solicitud = [
+
+            $request->Esquema,       //-- Esquema de la tabla maestra
+            $request->TablaMaestra, //NVARCHAR(128),   -- Nombre de la tabla maestra
+            $request->DatosJSONMaestro, // NVARCHAR(MAX), -- Datos en formato JSON para la tabla maestra
+            $request->TablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
+            $request->DatosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
+            $request->campoFK // NVARCHAR(128)
+    
+        ];
+
+        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
+        $solicitud);
+
+        try {
+        $response = [
+            'validated' => true,
+            'message' => 'se obtuvo la información',
+            'data' => $query,
+        ];
+
+        $estado = 201;
+        } catch (Exception $e) {
+        $response = [
+            'validated' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ];
+        $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
     }
 }

@@ -10,6 +10,7 @@ use App\Models\eval\NivelLogroAlcanzadoEvaluacion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 
 class EvaluacionEstudiantesController extends ApiController
 {
@@ -87,5 +88,36 @@ class EvaluacionEstudiantesController extends ApiController
             $mensaje = $this->handleAndLogError($e, 'Error en el proceso de calificación');
             return $this->errorResponse(null, $mensaje);
         }
+    }
+
+    public function guardarRespuestaxiEstudianteId(Request $request)
+    {
+
+        $evaluacion_respuestas = DB::select(
+            "
+            SELECT MAX(iEvalRptaId) as iEvalRptaId
+            FROM eval.evaluacion_respuestas
+            WHERE iEstudianteId ='" . $request->iEstudianteId . "' AND iEvalPregId = '" . $request->iEvalPregId . "'
+            "
+        );
+        if ($evaluacion_respuestas[0]->iEvalRptaId > 0) {
+            $rpta = DB::update(
+                "
+                UPDATE eval.evaluacion_respuestas
+                SET jEvalRptaEstudiante = '" . $request->jEvalRptaEstudiante . "'
+                WHERE iEvalRptaId = '" . $evaluacion_respuestas[0]->iEvalRptaId . "'
+                "
+            );
+            if ($rpta) {
+                $response = ['validated' => true, 'mensaje' => 'se guardó la respuesta'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'no se guardó la respuesta'];
+                $codeResponse = 500;
+            }
+        } else {
+            //INSERTAR
+        }
+        return new JsonResponse($response, $codeResponse);
     }
 }
