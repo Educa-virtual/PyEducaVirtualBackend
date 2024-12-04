@@ -500,7 +500,6 @@ class CalendarioAcademicosController extends Controller
 
     public function updateCalendario(Request $request)
     {
-
         //    $json = json_encode($request->json);
         //    $opcion = $request->_opcion;
         $condiciones = json_encode(

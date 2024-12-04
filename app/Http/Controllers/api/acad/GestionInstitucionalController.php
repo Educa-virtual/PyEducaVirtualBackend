@@ -109,6 +109,95 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }
 
+
+
+    public function updateMaestro(Request $request)
+    {
+        //    $json = json_encode($request->json);
+        //    $opcion = $request->_opcion;
+        $condiciones = json_encode(
+            [
+                'COLUMN_NAME' => $request->campo,
+                'VALUE' => $request->condicion
+            ]
+        );
+
+        $solicitud = [
+            $request->esquema,     // NVARCHAR(128),          -- Esquema de la tabla
+            $request->tabla,     // NVARCHAR(128),           -- Nombre de la tabla
+            $request->json,  // NVARCHAR(MAX),       -- Datos en formato JSON para la actualización
+            $condiciones // NVARCHAR(MAX)  -- JSON con condiciones para el WHERE (Array de condiciones AND)
+        ];
+
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+        $response = [
+            'validated' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ];
+        
+        $estado = 500;
+        }
+        return new JsonResponse($response, $estado);
+    }
+
+    public function deleteMaestro(Request $request)
+    {
+        //    $json = json_encode($request->json);
+        //    $opcion = $request->_opcion;
+
+        $solicitud = [
+            $request->esquema, //NVARCHAR(128),       -- Nombre del esquema
+            $request->tabla, // NVARCHAR(128),   -- Nombre de la tabla principal
+            $request->campo, //NVARCHAR(128),       -- Nombre del campo ID de la tabla principal
+            $request->valorId, // BIGINT,              -- Valor del ID a eliminar
+            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)        
+        ];
+
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC grl.SP_DEL_RegistroConTransaccion ?,?,?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
+
 }
 
 
