@@ -51,5 +51,9 @@ class ResultadoController extends Controller
 
         return new JsonResponse($response,$estado);
     }
+    public function guardarCalfcEstudiante(Request $request){
+        //return 1;
+       // return $request->all();
+    }
 
 }
