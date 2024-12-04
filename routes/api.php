@@ -99,14 +99,16 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
         // ACTUALIZAAR En routes/api.php o routes/web.php
         Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
-        //!Agregando CopiarEvaluacion
+        //Agregando CopiarEvaluacion
         Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
-        //!ObtenerMatrizCompetencia
+        //ObtenerMatrizCompetencia
         Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
-        //!ObtenerMatrizCapacidad
+        //ObtenerMatrizCapacidad
         Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
-        //!InsertarMatrizDesempeno
+        //InsertarMatrizDesempeno
         Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
+        //Matriz Descargar
+        Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -126,6 +128,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('selReglamentoInterno', [AcadInstitucionesEducativasController::class, 'selReglamentoInterno']);
         Route::put('updReglamentoInterno', [AcadInstitucionesEducativasController::class, 'updReglamentoInterno']);
     });
+
+    Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
         Route::get('calendarioAcademico/selCalAcademico', [CalendarioAcademicosController::class, 'selCalAcademico']);
@@ -268,5 +272,3 @@ Route::get('/imprimir', PersonaController::class);
 Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
 Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
-
-
