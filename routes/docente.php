@@ -19,10 +19,12 @@ use App\Http\Controllers\doc\MaterialEducativosController;
 use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
 use App\Http\Controllers\acad\TipoIndicadorLogrosController;
 use App\Http\Controllers\api\acad\GradoAcademicosController;
-use App\Http\Controllers\api\asi\AsistenciaController;
+use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\doc\CargaNoLectivasController;
+use App\Http\Controllers\doc\CuadernosCampoController;
 use App\Http\Controllers\doc\DetalleCargaNoLectivasController;
+use App\Http\Controllers\doc\PortafoliosController;
 use App\Http\Controllers\doc\TiposCargaNoLectivasController;
 use Illuminate\Support\Facades\Route;
 
@@ -97,8 +99,12 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'fechas_importantes'], function () {
     Route::post('list', [FechasImportantesController::class, 'list']);
   });
-  Route::group(['prefix' => 'reporte_mensual'], function () {
-    Route::get('report/{tipoReporte}', [AsistenciaController::class, 'report']);
+  Route::group(['prefix' => 'reporte_asistencia'], function () {
+    Route::post('reporte_mensual', [AsistenciaController::class, 'report']);
+    Route::post('reporte_personalizado', [AsistenciaController::class, 'reporte_personalizado']);
+    Route::post('reporte_asistencia_general', [AsistenciaController::class, 'reporteAsistenciaGeneral']);
+    Route::post('reporte_diario', [AsistenciaController::class, 'reporte_diario']);
+    //Route::get('reportAExcel/{tipoReporte}', [AsistenciaController::class, 'reportToExcel']);
   });
   Route::group(['prefix' => 'material-educativos'], function () {
     Route::post('list', [MaterialEducativosController::class, 'list']);
@@ -120,5 +126,13 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('store', [CargaNoLectivasController::class, 'store']);
     Route::post('update', [CargaNoLectivasController::class, 'update']);
     Route::post('delete', [CargaNoLectivasController::class, 'delete']);
+  });
+  Route::group(['prefix' => 'portafolios'], function () {
+    Route::post('obtenerPortafolios', [PortafoliosController::class, 'obtenerPortafolios']);
+    Route::post('guardarItinerario', [PortafoliosController::class, 'guardarItinerario']);
+  });
+  Route::group(['prefix' => 'cuadernos-campo'], function () {
+    Route::post('obtenerCuadernosCampo', [CuadernosCampoController::class, 'obtenerCuadernosCampo']);
+    Route::post('guardarFichasCuadernosCampo', [CuadernosCampoController::class, 'guardarFichasCuadernosCampo']);
   });
 });

@@ -181,6 +181,7 @@ class AulaVirtualController extends ApiController
                     'iNivelGradoId' => $this->hashids->encode($row->iNivelGradoId),
                     'iSemAcadId' => $this->hashids->encode($row->iSemAcadId),
                     'iCurrId' => $this->hashids->encode($row->iCurrId),
+                    'iSeccionId' => $this->hashids->encode($row->iSeccionId),
                 ];
             }
 
@@ -269,6 +270,7 @@ class AulaVirtualController extends ApiController
 
                 // Asigna el primer resultado de la respuesta a la variable evaluación
                 $evaluacion = $resp[0];
+                $evaluacion->iEstado = (int) $evaluacion->iEstado;
             } catch (Throwable $e) {
                 // Maneja cualquier error que ocurra durante la obtención de datos y retorna un mensaje de error
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
@@ -297,8 +299,30 @@ class AulaVirtualController extends ApiController
 
     public function obtenerCategorias()
     {
+        
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
+
+            //return $preguntas;
+            return $this->successResponse($preguntas);
+        } catch (Exception $e) {
+
+            return $this->errorResponse($e, 'Error Upssss!');
+        }
+    }
+    public function obtenerEstudiantesMatricula(Request $request)
+    {
+        $iCursoId = '1';
+        $iSemAcadId = '1';
+        $iYAcadId = '1';
+        
+        // $params =[
+        //     $iCursoId,
+        //     $iSemAcadId,
+        //     $iYAcadId
+        // ];
+        try {
+            $preguntas = DB::select('EXEC acad.Sp_SEL_consulta_matriculados ?', [$iCursoId], [$iSemAcadId], [$iYAcadId]);
 
             //return $preguntas;
             return $this->successResponse($preguntas);
@@ -386,6 +410,36 @@ class AulaVirtualController extends ApiController
         return new JsonResponse($response, $codeResponse);
 
         // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+    }
+    public function eliminarRptEstudiante (Request $request)
+    {
+        //return $request -> all();
+        // Validar la solicitud
+        // Validar el ID enviado
+        $validatedData = $request->validate([
+            'iForoRptaId' => 'required|string', // Asegura que el ID sea obligatorio y numérico
+        ]);
+
+        $iForoRptaId = $validatedData['iForoRptaId'];
+
+        try {
+            // Llamar al procedimiento almacenado
+            DB::select('exec aula.SP_DEL_respuestaXidEstudiante @iForoRptaId = ?', [$iForoRptaId]);
+
+            // Responder con éxito
+            return response()->json([
+                'success' => true,
+                'message' => 'Elemento eliminado correctamente',
+            ], 200);
+        } catch (Throwable $e) {
+            // Manejo de errores
+            $message = $this->handleAndLogError($e, 'Error al eliminar');
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 500);
+        }
+        
     }
     // Guardar respuesta de Foro
     public function guardarRespuesta(Request $request)
@@ -559,6 +613,11 @@ class AulaVirtualController extends ApiController
     {
         // Prepara los parámetros para la consulta. Se obtienen del objeto $request, el cual contiene los datos de la solicitud HTTP.
         // Si los valores no existen, se asigna NULL en su lugar.
+        $iDocenteId = $request->iDocenteId;
+        if ($request->iDocenteId) {
+            $iDocenteId = $this->hashids->decode($iDocenteId);
+            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        }
         $parametros = [
             $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
             $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
@@ -588,5 +647,93 @@ class AulaVirtualController extends ApiController
 
         // Retorna una respuesta JSON con el mensaje y el código HTTP correspondiente.
         return new JsonResponse($response, $codeResponse);
+    }
+
+    public function guardarComentarioRespuesta(Request $request)
+    {
+
+        $request->validate([
+            'cForoRptaPadre' => 'required|string',
+            'iForoRptaId' => 'required|string'
+        ]);
+
+        $request['iEstudianteId'] = is_null($request->iEstudianteId)
+            ? null
+            : (is_numeric($request->iEstudianteId)
+                ? $request->iEstudianteId
+                : ($this->hashids->decode($request->iEstudianteId)[0] ?? null));
+
+        $request['iDocenteId'] = is_null($request->iDocenteId)
+            ? null
+            : (is_numeric($request->iDocenteId)
+                ? $request->iDocenteId
+                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
+
+        $request['iForoRptaId'] = is_null($request->iForoRptaId)
+            ? null
+            : (is_numeric($request->iForoRptaId)
+                ? $request->iForoRptaId
+                : ($this->hashids->decode($request->iForoRptaId)[0] ?? null));
+
+        $data = [
+            $request->iEstudianteId     ?? NULL,
+            $request->iDocenteId        ?? NULL,
+            $request->iForoRptaId       ?? NULL,
+            $request->cForoRptaPadre    ?? NULL
+        ];
+        //return $data;
+        try {
+            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaPadre]
+               ?,?,?,?', $data);
+            DB::commit();
+            if ($resp[0]->id > 0) {
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (Exception $e) {
+            $this->handleAndLogError($e);
+            DB::rollBack();
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+    public function maestroDetalle(Request $request)
+    {
+        $solicitud = [
+
+            $request->Esquema,       //-- Esquema de la tabla maestra
+            $request->TablaMaestra, //NVARCHAR(128),   -- Nombre de la tabla maestra
+            $request->DatosJSONMaestro, // NVARCHAR(MAX), -- Datos en formato JSON para la tabla maestra
+            $request->TablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
+            $request->DatosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
+            $request->campoFK // NVARCHAR(128)
+    
+        ];
+
+        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
+        $solicitud);
+
+        try {
+        $response = [
+            'validated' => true,
+            'message' => 'se obtuvo la información',
+            'data' => $query,
+        ];
+
+        $estado = 201;
+        } catch (Exception $e) {
+        $response = [
+            'validated' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ];
+        $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
     }
 }

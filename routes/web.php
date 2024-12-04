@@ -14,3 +14,4 @@ Route::get('/', function () {
 Route::get('/word', [TestWordController::class, 'word']);
 
 Route::get('generarWordBancoPreguntasSeleccionadas', [PreguntasController::class, 'generarWordBancoPreguntasByIds']);
+Route::get('generarWordEvaluacionByIds', [PreguntasController::class, 'generarWordEvaluacionByIds']);

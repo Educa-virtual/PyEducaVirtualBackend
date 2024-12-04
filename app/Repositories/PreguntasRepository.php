@@ -25,8 +25,8 @@ class PreguntasRepository
             $params['ids'] ?? '',
             $params['iEncabPregId'] ?? 0
         ];
-
-        $preguntasDB = DB::select('exec ere.SP_SEL_banco_preguntas @_iCursoId = ?,
+        dd($params);
+        $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursoId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
              @_iEncabPregId = ? 
             ', $params);
@@ -47,6 +47,26 @@ class PreguntasRepository
 
         return $preguntas;
     }
+    public static function obtenerBancoPreguntas($params)
+    {
+
+        $params = [
+            $params['BancoId'] ?? 0,
+            $params['iDocenteId'] ?? '',
+            $params['iCursoId'] ?? '',
+        ];
+ 
+        $preguntasDB = DB::select('exec eval.SP_SEL_preguntasEvaluacionx @BancoId = ?,
+             @iDocenteId = ?, @iCursoId = ? 
+            ', $params);
+        $preguntas = [];
+        foreach ($preguntasDB as $item) {
+            $item->alternativas = json_decode($item->alternativas);
+            array_push($preguntas, $item);
+        }
+        
+        return $preguntas;
+    }
 
     public static function guardarActualizarPreguntaEncabezado($data)
     {
@@ -62,7 +82,7 @@ class PreguntasRepository
         ];
 
         $result = DB::select(
-            'exec ere.Sp_INS_UPD_encabezado_pregunta @_iEncabPregId  = ?
+            'exec ere.SP_INS_UPD_encabezadoPregunta @_iEncabPregId  = ?
                 , @_cEncabPregTitulo = ?
                 , @_cEncabPregContenido = ?
                 , @_iCursoId = ?

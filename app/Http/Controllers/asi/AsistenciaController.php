@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\api\asi;
+namespace App\Http\Controllers\asi;
 
 use App\Http\Controllers\Controller;
-use DateTime;
-use Exception;
+use Illuminate\Http\Request;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use DateTime;
+use Exception;
 
 class AsistenciaController extends Controller
 {
@@ -130,6 +130,7 @@ class AsistenciaController extends Controller
 
 
         $inicio = $request['id'];
+        
         $fecha_inicial = str_pad($inicio, 2, "0", STR_PAD_LEFT);
         $year_actual = date('Y');
         $combinar = $year_actual . "-" . $fecha_inicial . "-01";
@@ -181,22 +182,29 @@ class AsistenciaController extends Controller
 
         $json_registro = [];
 
+        
+
         for ($i = 1; $i <= $ultimo; $i++) {
             $json_registro[] = ["diaMes" => strval($i), "cTipoAsiLetra" => ""];
         }
-
+       
         foreach ($query as $index => $valor) {
             $registro = json_decode($valor->diasAsistencia);
             $paquete = [];
-            foreach ($registro as $fila) {
+            
+            foreach ((array) $registro as $fila) {
                 $paquete[] = $fila->diaMes;
             }
-
+    
             $filtrar = array_filter($json_registro, function ($valor) use ($paquete) {
                 return !in_array($valor["diaMes"], $paquete);
             });
 
             $convertir = json_decode(json_encode($registro), true);
+
+            if(!is_array($convertir)){
+                $convertir = [];
+            }
 
             $unir = array_merge($filtrar, $convertir);
 
@@ -211,20 +219,21 @@ class AsistenciaController extends Controller
             "ultimodia" => $ultimo,
             "query" => $query,
             "dias_Semana" => $unir_dias,
-            "year" => "2024",
-            "docente" => "RICARDO GERMAN AGIP RUBIO",
+            "year" => date('Y'),
+            "docente" => $request->nombrecompleto,
             "mes" => "2024-10-01 2024-10-31",
             "modular" => "000005600",
             "dre" => "DRE MOQUEGUA UGEL",
             "fecha_reporte" => "2024-10-01",
             "fecha_cierre" => "2024-10-31",
-            "nivel" => "SECUNDARIO",
+            "nivel" => $request->cNivelTipoNombre,
             "periodo" => "",
-            "grado" => "1ro.",
-            "seccion" => "Sección A",
+            "grado" => $request->cGradoAbreviacion,
+            "ciclo" => $request->cCicloRomanos,
+            "seccion" => $request->cSeccion,
             "turno" => "Mañana",
         ];
-
+    
         $pdf = Pdf::loadView('asistencia_reporte_mensual', $respuesta)
             ->setPaper('a4', 'landscape')
             ->stream('silabus.pdf');
@@ -523,6 +532,9 @@ class AsistenciaController extends Controller
 
                     $fechas[$i]["nombre"][$key] = $sql->completoalumno;
                     $verificar = json_decode($sql->diasAsistencia);
+                    if(!is_array($verificar)){
+                        $verificar = [];
+                    }
                     $ver = array_column($verificar, "diaMes");
 
                     for ($j = 1; $j <= $fechas[$i]["ultimo_dia"]; $j++) {
@@ -596,3 +608,4 @@ class AsistenciaController extends Controller
         }
     }
 }
+

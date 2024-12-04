@@ -24,7 +24,7 @@ class TestWordController extends Controller
 
     public function word()
     {
-        $preguntasDB  = DB::select('exec ere.SP_SEL_banco_preguntas @_iCursoId = ?,
+        $preguntasDB  = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursoId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?
             ', [1, '', 0, -1]);
 

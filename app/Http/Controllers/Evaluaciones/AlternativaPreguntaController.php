@@ -53,7 +53,7 @@ class AlternativaPreguntaController extends ApiController
         ];
 
         try {
-            $resp = DB::select('exec ere.SP_INS_UPD_alternativa_pregunta
+            $resp = DB::select('exec ere.SP_INS_UPD_alternativaPregunta
                 @_iAlternativaId = ?
                 , @_iPreguntaId = ?
                 , @_cAlternativaDescripcion = ?
