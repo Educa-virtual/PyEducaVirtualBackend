@@ -101,6 +101,12 @@ Route::group(['prefix' => 'ere'], function () {
         Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
         //!Agregando CopiarEvaluacion
         Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
+        //!ObtenerMatrizCompetencia
+        Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
+        //!ObtenerMatrizCapacidad
+        Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
+        //!InsertarMatrizDesempeno
+        Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
