@@ -138,16 +138,18 @@ Route::group(['prefix' => 'acad'], function () {
     });*/
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
-        Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); 
-        Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); 
-        Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']); 
-        Route::post('searchAcademico', [CalendarioAcademicosController::class, 'searchAcademico']);
+        Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); // procedimiento especifico EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?
+        Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); //procedimiento especifico EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?
+        Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']); // procedimiento especifico EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
+        Route::post('searchAcademico', [CalendarioAcademicosController::class, 'searchAcademico']); // procedimiento especifico EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         
-        Route::post('searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
-        Route::post('updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']);
-        Route::post('deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']);
+        Route::post('searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']); // procedimiento general
+        Route::post('updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']); // procedimiento general
+        Route::post('deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']); // procediiento general
 
-        Route::post('addYear', [CalendarioAcademicosController::class, 'addYear']);
+        Route::post('addYear', [CalendarioAcademicosController::class, 'addYear']); // procedimiento especifico SP_INS_TablaYearXopcion
+        Route::post('updateYear', [CalendarioAcademicosController::class, 'updateYear']); // procedimiento especifico SP_UPD_TablaYearXopcion
+        Route::post('deleteYear', [CalendarioAcademicosController::class, 'deleteYear']); // procedimiento especifico SP_DEL_TablaYearXopcion
 
         Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
         Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);

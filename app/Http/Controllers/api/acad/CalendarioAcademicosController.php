@@ -559,7 +559,6 @@ class CalendarioAcademicosController extends Controller
 
     public function addYear(Request $request)
     {
-
         //    $json = json_encode($request->json);
         //    $opcion = $request->_opcion;
 
@@ -570,7 +569,7 @@ class CalendarioAcademicosController extends Controller
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select(
-            "EXEC grl.Sp_CRUD_YEAR ?,?",
+            "EXEC SP_INS_TablaYearXopcion?,?",
             $solicitud
         );
         //  [$json, $opcion ]);
@@ -595,6 +594,83 @@ class CalendarioAcademicosController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+
+    public function updateYear(Request $request)
+    {
+        //    $json = json_encode($request->json);
+        //    $opcion = $request->_opcion;
+
+        $solicitud = [
+            $request->json,
+            $request->_opcion,
+        ];
+
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC SP_UPD_TablaYearXopcion?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
+    public function DELEteYear(Request $request)
+    {
+        //    $json = json_encode($request->json);
+        //    $opcion = $request->_opcion;
+
+        $solicitud = [
+            $request->json,
+            $request->_opcion,
+        ];
+
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC SP_DEL_TablaYearXopcion?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
 
     public function updateCalendario(Request $request)
     {
