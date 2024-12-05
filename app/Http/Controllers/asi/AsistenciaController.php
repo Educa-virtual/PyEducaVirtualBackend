@@ -20,44 +20,135 @@ class AsistenciaController extends Controller
     protected $iNivelGradoId;
     protected $iDocenteId;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
+
+    // Decodifica los id enviados por el frontend
+    private function decodificar($id){
+        return is_null($id) ? null : (is_numeric($id) ? $id : ($this->hashids->decode($id)[0] ?? null));
+    }
+     
+    // Obtener las fechas de las areas curriculares para registrar la asistencia
+    public function obtenerCursoHorario(Request $request){
+
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
+
+        $solicitud = [
+            'buscar_curso_horario',
+            $iDocenteId ?? NULL,
+            $iYAcadId ?? NULL,
+            $iCursoId ?? NULL,
+            $iSeccionId ?? NULL,
+        ];
+
+        $query=DB::select("execute acad.Sp_SEL_buscar_cursos_horario ?,?,?,?,?", $solicitud);
+        
+        try{
+            $response = [
+                'validated' => true, 
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+
+        } catch(Exception $e){
+            $response = [
+                'validated' => true, 
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response,$estado);
+    }
+    public function obtenerAsistencia(Request $request){
+        // Se Decodifica los id hasheados que son enviados por el frontend
+        $iSedeId = $this->decodificar($request["iSedeId"]);
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
+        $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        
+        $solicitud = [
+            $iSedeId ?? NULL,
+            $iCursoId ?? NULL,
+            $iYAcadId ?? NULL,
+            $iSeccionId ?? NULL,
+            $iNivelGradoId ?? NULL,
+            $iDocenteId ?? NULL,
+        ];
+        
+        $query=DB::select("execute asi.Sp_SEL_fechas_asistencia ?,?,?,?,?,?", $solicitud);
+        
+        try{
+            $response = [
+                'validated' => true, 
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+
+        } catch(Exception $e){
+            $response = [
+                'validated' => true, 
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response,$estado);
+    }
+    public function obtenerFestividad(Request $request){
+        $solicitud = [
+            'buscar_festividades',
+        ];
+        
+        $query = DB::select("EXECUTE acad.Sp_SEL_fechas_importantes ?",$solicitud);
+       
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => true,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
     }
     public function list(Request $request)
     {
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
-
-        $request['iSeccionId'] = is_null($request->iSeccionId)
-            ? null
-            : (is_numeric($request->iSeccionId)
-                ? $request->iSeccionId
-                : ($this->hashids->decode($request->iSeccionId)[0] ?? null));
-
-        $request['iCursoId'] = is_null($request->iCursoId)
-            ? null
-            : (is_numeric($request->iCursoId)
-                ? $request->iCursoId
-                : ($this->hashids->decode($request->iCursoId)[0] ?? null));
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
 
         $solicitud = [
             $request->opcion,
-            $request->iCursoId ?? NULL,
+            $iCursoId,
             $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? NULL,
-            $request->iSeccionId ?? NULL,
-            $request->iYAcadId ?? NULL,
+            $iSeccionId,
+            $iYAcadId,
             $request->iNivelGradoId ?? NULL,
-            $request->iDocenteId ?? NULL,
+            $iDocenteId,
             $request->iGradoId ?? NULL,
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
