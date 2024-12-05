@@ -25,12 +25,6 @@
             font-size: 14px;
             padding: 7px;
         }
-        table{
-            margin-left: 50px;
-            margin-right: 50px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
         th{
             font-family: Arial, Helvetica, sans-serif;
             border: 1px solid black;
@@ -53,6 +47,9 @@
         .bordes{
             border: 1px solid black;
         }
+        .page-break {
+	    page-break-after: always;
+	    }
     </style>
 </head>
 <body>
@@ -127,7 +124,7 @@
             </tr>
         </table>
     </div>
-    @pageBreak
+    <div class="page-break"></div>
     <div class="hojas">
         <table class="bordes">
             <caption>V. METODOLOGÍA</caption>
@@ -180,7 +177,7 @@
             @endif
         </table>
     </div>
-    @pageBreak
+    <div class="page-break"></div>
     <div class="hojas">
         <table>
             <caption>VII. CRONOGRAMA - DESARROLLO DE APRENDIZAJE</caption>
@@ -250,7 +247,7 @@
                 
         </table>
     </div>
-    @pageBreak
+    <div class="page-break"></div>
     <div class="hojas">
         <table>
             <caption>IX. EVALUACIÓN</caption>
