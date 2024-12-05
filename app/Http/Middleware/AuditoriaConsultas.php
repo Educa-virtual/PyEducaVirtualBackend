@@ -22,16 +22,6 @@ class AuditoriaConsultas
     if ($request->header('iCredId')) {
       # code...
       $query = DB::select('EXEC seg.SP_UPD_IniciarAuditoriaBackend');
-
-      // $queries = [];
-      // DB::listen(function ($query) use (&$queries) {
-      //   $queries[] = [
-      //     'sql' => $query->sql,
-      //     'process_id' => DB::select('EXEC seg.SP_UPD_IniciarAuditoriaBackend'),
-      //     'bindings' => $query->bindings,
-      //     'time' => $query->time,
-      //   ];
-      // });
     }
 
 
@@ -44,7 +34,6 @@ class AuditoriaConsultas
       # code...
       DB::statement('EXEC seg.SP_UPD_DetenerAuditoriaBackend');
 
-      $originalContent = $response->getData(true);
   
       DB::select('EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?', [
         'seg',
@@ -59,8 +48,6 @@ class AuditoriaConsultas
       ]);
   
       // $originalContent['request'] = $queries;
-  
-      $response->setData($originalContent);
     }
 
     return $response;

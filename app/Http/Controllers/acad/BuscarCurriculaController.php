@@ -25,11 +25,40 @@ class BuscarCurriculaController extends Controller
     public function Curricula(Request $request){
 
         $solicitud = [
+            'buscar_curricula',
             $request["iDocenteId"] ?? 1,
             $request["iYAcadId"] ?? 3,
         ];
         
-        $query = DB::select("EXECUTE acad.Sp_SEL_buscar_cursos ?,?",$solicitud);
+        $query = DB::select("EXECUTE acad.Sp_SEL_buscar_cursos ?,?,?",$solicitud);
+       
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => true,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+    public function obtenerActividad(){
+        $solicitud = [
+            'buscar_tipo_actividad',
+            NULL,
+            NULL,
+        ];
+        
+        $query = DB::select("EXECUTE acad.Sp_SEL_buscar_cursos ?,?,?",$solicitud);
        
         try {
             $response = [

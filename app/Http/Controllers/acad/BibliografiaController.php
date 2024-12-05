@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
-use Spatie\LaravelPdf\Facades\Pdf;
 
 class BibliografiaController extends Controller
 {
