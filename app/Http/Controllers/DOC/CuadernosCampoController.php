@@ -65,7 +65,7 @@ class CuadernosCampoController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function guardarFichas(Request $request)
+    public function guardarFichasCuadernosCampo (Request $request)
     {
         $request['iSilaboId'] = is_null($request->iSilaboId)
             ? null

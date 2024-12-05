@@ -31,6 +31,12 @@ class PortafoliosController extends Controller
                 ? $request->iYAcadId
                 : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
 
+        $request['iCredId'] = is_null($request->iCredId)
+            ? null
+            : (is_numeric($request->iCredId)
+                ? $request->iCredId
+                : ($this->hashids->decode($request->iCredId)[0] ?? null));
+
         try {
             $data = DB::select("
                 SELECT 
@@ -48,7 +54,17 @@ class PortafoliosController extends Controller
                     WHERE p.iDocenteId = '" . $request->iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
             ");
 
-            $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data];
+            $reglamento = DB::select("
+                SELECT 
+                    ie.cIieeUrlReglamentoInterno
+                    FROM seg.credenciales AS c 
+                    INNER JOIN seg.credenciales_entidades AS ce ON ce.iCredId = c.iCredId
+                    INNER JOIN acad.sedes AS s ON s.iSedeId = ce.iSedeId
+                    INNER JOIN acad.institucion_educativas AS ie ON ie.iIieeId = s.iIieeId
+                    WHERE c.iCredId = '" . $request->iCredId . "'
+            ");
+
+            $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data, 'reglamento' => $reglamento];
             $codeResponse = 200;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
@@ -88,18 +104,17 @@ class PortafoliosController extends Controller
 
                     WHERE p.iDocenteId = '" . $request->iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
             ");
-            
-            if(count($data)>0){
-               $query = DB::update("
+
+            if (count($data) > 0) {
+                $query = DB::update("
                     UPDATE doc.portafolios 
-                    SET cPortafolioItinerario = '".$request->cPortafolioItinerario."'
-                    WHERE iPortafolioId = '".$data[0]->iPortafolioId."'
+                    SET cPortafolioItinerario = '" . $request->cPortafolioItinerario . "'
+                    WHERE iPortafolioId = '" . $data[0]->iPortafolioId . "'
                 ");
-            }
-            else{
+            } else {
                 $query = DB::update("
                     INSERT INTO doc.portafolios (iDocenteId,iYAcadId,cPortafolioItinerario)
-                    VALUES ('".$request->iDocenteId."','".$request->iYAcadId."','".$request->cPortafolioItinerario."')
+                    VALUES ('" . $request->iDocenteId . "','" . $request->iYAcadId . "','" . $request->cPortafolioItinerario . "')
                 ");
             }
             $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.', 'query' => $query];
