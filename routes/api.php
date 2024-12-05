@@ -100,14 +100,16 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
         // ACTUALIZAAR En routes/api.php o routes/web.php
         Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
-        //!Agregando CopiarEvaluacion
+        //Agregando CopiarEvaluacion
         Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
-        //!ObtenerMatrizCompetencia
+        //ObtenerMatrizCompetencia
         Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
-        //!ObtenerMatrizCapacidad
+        //ObtenerMatrizCapacidad
         Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
-        //!InsertarMatrizDesempeno
+        //InsertarMatrizDesempeno
         Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
+        //Matriz Descargar
+        Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -136,6 +138,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('updateMaestro', [GestionInstitucionalController::class, 'updateMaestro']);
         Route::post('deleteMaestro', [GestionInstitucionalController::class, 'deleteMaestro']);
     });*/
+
+    Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
         Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); 

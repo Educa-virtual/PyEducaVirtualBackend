@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Ere;
 
+use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\ApiController;
 use Exception;
@@ -10,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 //use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\Ere\EreEvaluacion;
 //use Carbon\Carbon;
+
+use Spatie\LaravelPdf\Enums\Orientation;
+use Spatie\LaravelPdf\Facades\Pdf;
+use Spatie\LaravelPdf\Enums\Format;
 
 class EvaluacionesController extends ApiController
 {
@@ -247,7 +252,7 @@ class EvaluacionesController extends ApiController
             foreach ($selectedCursos as $curso) {
                 DB::table('ere.examen_cursos')->insert([
                     'iEvaluacionId' => $iEvaluacionId,
-                    'iCursoId' => $curso['iCursoId']
+                    'iCursoNivelGradId' => $curso['iCursoNivelGradId']
                 ]);
             }
 
@@ -272,7 +277,7 @@ class EvaluacionesController extends ApiController
             foreach ($selectedCursos as $curso) {
                 DB::table('ere.examen_cursos')
                     ->where('iEvaluacionId', $iEvaluacionId)
-                    ->where('iCursoId', $curso['iCursoId'])
+                    ->where('iCursoNivelGradId', $curso['iCursoNivelGradId'])
                     ->delete();
             }
 
@@ -285,12 +290,12 @@ class EvaluacionesController extends ApiController
     {
         // Llamar al procedimiento almacenado
         //Se cambio el nombre SP_SEL_CursosEvaluacion
-        $cursos = DB::select('EXEC ere.SP_SEL_cursosEvaluacion ?', [$iEvaluacionId]);
+        $cursos = DB::select('EXEC ere.SP_SEL_CursosEvaluacion ?', [$iEvaluacionId]);
 
         // Devolver la respuesta en formato JSON
         return response()->json([
             'cursos' => $cursos,
-            'message' => 'Cursos clasificados correctamente.',
+            'message' => 'Cursos registrado correctamente.',
             'status' => true
         ]);
     }
@@ -518,4 +523,81 @@ class EvaluacionesController extends ApiController
         // Responder con éxito
         return response()->json(['message' => 'Datos insertados correctamente'], 201);
     }
+
+    public function generarPdfMatrizbyEvaluacionId(Request $request)
+    {
+        // Obtener el parámetro iEvaluacionId de la solicitud
+        $iEvaluacionId = $request->query('iEvaluacionId');
+
+        // Validar si se recibió el parámetro
+        if (!$iEvaluacionId) {
+            return response()->json([
+                'message' => 'El parámetro iEvaluacionId no fue recibido.',
+                'status' => 'error'
+            ], 400); // Código HTTP 400: Bad Request
+        }
+
+        // Aquí puedes realizar una consulta para verificar si existe el ID en la base de datos
+        // $evaluacion = Evaluacion::find($iEvaluacionId);
+
+        if (!$iEvaluacionId) {
+            return response()->json([
+                'message' => 'La evaluación no existe con el ID proporcionado.',
+                'status' => 'error'
+            ], 404); // Código HTTP 404: Not Found
+        }
+
+        // Si todo está correcto, devolver un mensaje de éxito
+        return response()->json([
+            'message' => "El ID $iEvaluacionId se recibió correctamente.",
+            'status' => 'success'
+        ]);
+        // $iEvaluacionId = $request->input('iEvaluacionId'); // Obtener el ID de la evaluación
+
+        // // Supongamos que generas el reporte con esos datos, por ejemplo:
+        // $asistencias = $this->obtenerAsistenciasPorEvaluacionId($iEvaluacionId); // Método para obtener las asistencias
+
+        // // Ahora generamos el PDF
+        // $pdf = Pdf::loadView('pdfEre.matrizReporte', compact('asistencias', 'evaluacion'))
+        //     ->orientation('landscape')
+        //     ->name('reporte_matriz.pdf');
+
+        // // Retornamos el PDF para descarga
+        // return $pdf->download('reporte_matriz.pdf');
+    }
+
+
+
+
+    // public function generarPdfMatriz(Request $request)
+    // {
+    //     // Obtener el parámetro iEvaluacionId
+    //     $iEvaluacionId = $request->query('iEvaluacionId');
+
+    //     // Validar si se recibió el parámetro
+    //     if (!$iEvaluacionId) {
+    //         return response()->json([
+    //             'message' => 'El parámetro iEvaluacionId no fue recibido.',
+    //             'status' => 'error'
+    //         ], 400);
+    //     }
+
+    //     // Buscar la evaluación en la base de datos
+    //     //$evaluacion = Evaluacion::find($iEvaluacionId);
+
+    //     if (!$iEvaluacionId) {
+    //         return response()->json([
+    //             'message' => 'La evaluación no existe con el ID proporcionado.',
+    //             'status' => 'error'
+    //         ], 404);
+    //     }
+
+    //     // Generar el PDF utilizando Spatie Laravel PDF
+    //     $pdf = Pdf::loadView('pdf.matriz', ['evaluacion' => $iEvaluacionId])
+    //         ->format(Format::A4)
+    //         ->orientation(Orientation::Portrait);
+
+    //     // Descargar el PDF como respuesta
+    //     return $pdf->download('matriz-evaluacion-' . $iEvaluacionId . '.pdf');
+    // }
 }
