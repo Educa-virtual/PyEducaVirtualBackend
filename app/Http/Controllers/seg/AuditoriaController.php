@@ -14,30 +14,38 @@ class AuditoriaController extends Controller
 {
   public const schema = 'seg';
 
-  public function selAuditoriaAccesos()
+  public function selAuditoriaAccesos(Request $request)
   {
-    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_accesos', '*')->sortByDesc('dtFecha')->values();
+    $where = 'CAST(dtFecha as DATE) >= CAST('. "'" . $request->filtroFechaInicio . "'" .' as DATE) AND CAST(dtFecha as DATE) <= CAST('. "'" . $request->filtroFechaFin . "'" .' as DATE)';
+
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_accesos', '*', $where)->sortByDesc('dtFecha')->values();
 
     return parent::response($query);
   }
   
-  public function selAuditoriaAccesosFallidos()
+  public function selAuditoriaAccesosFallidos(Request $request)
   {
-    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_accesos_fallidos', '*')->sortByDesc('dtFecha')->values();
+    $where = 'CAST(dtFecha as DATE) >= CAST('. "'" . $request->filtroFechaInicio . "'" .' as DATE) AND CAST(dtFecha as DATE) <= CAST('. "'" . $request->filtroFechaFin . "'" .' as DATE)';
+
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_accesos_fallidos', '*', $where)->sortByDesc('dtFecha')->values();
 
     return parent::response($query);
   }
 
-  public function selAuditoria()
+  public function selAuditoria(Request $request)
   {
-    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria', '*')->sortByDesc('dtFecha')->values();
+    $where = 'CAST(dtFecha as DATE) >= CAST('. "'" . $request->filtroFechaInicio . "'" .' as DATE) AND CAST(dtFecha as DATE) <= CAST('. "'" . $request->filtroFechaFin . "'" .' as DATE)';
+
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria', '*', $where)->sortByDesc('dtFecha')->values();
 
     return parent::response($query);
   }
 
-  public function selAuditoriaMiddleware()
+  public function selAuditoriaMiddleware(Request $request)
   {
-    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_middleware', '*')->sortByDesc('dtFecha')->values();
+    $where = 'CAST(dtFecha as DATE) >= CAST('. "'" . $request->filtroFechaInicio . "'" .' as DATE) AND CAST(dtFecha as DATE) <= CAST('. "'" . $request->filtroFechaFin . "'" .' as DATE)';
+
+    $query = parent::selDesdeTablaOVista(self::schema, 'V_auditoria_middleware', '*', $where)->sortByDesc('dtFecha')->values();
 
     return parent::response($query);
   }
