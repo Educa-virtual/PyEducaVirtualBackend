@@ -18,7 +18,6 @@ class PersonasController extends Controller
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
 
-        $this->middleware(AuditoriaConsultas::class)->only(['guardarPersonasxDatosPersonales']);
     }
 
     public function list(Request $request)
