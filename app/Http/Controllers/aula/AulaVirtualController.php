@@ -298,8 +298,7 @@ class AulaVirtualController extends ApiController
     }
 
     public function obtenerCategorias()
-    {
-        
+    {        
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
