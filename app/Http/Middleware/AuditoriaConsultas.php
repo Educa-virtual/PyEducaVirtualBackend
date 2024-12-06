@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -20,20 +21,8 @@ class AuditoriaConsultas
   {
 
     if ($request->header('iCredId')) {
-      # code...
       $query = DB::select('EXEC seg.SP_UPD_IniciarAuditoriaBackend');
-
-      // $queries = [];
-      // DB::listen(function ($query) use (&$queries) {
-      //   $queries[] = [
-      //     'sql' => $query->sql,
-      //     'process_id' => DB::select('EXEC seg.SP_UPD_IniciarAuditoriaBackend'),
-      //     'bindings' => $query->bindings,
-      //     'time' => $query->time,
-      //   ];
-      // });
     }
-
 
     /**
      * @var \Illuminate\Http\JsonResponse $response
@@ -41,11 +30,8 @@ class AuditoriaConsultas
     $response = $next($request);
 
     if ($request->header('iCredId')) {
-      # code...
       DB::statement('EXEC seg.SP_UPD_DetenerAuditoriaBackend');
 
-      $originalContent = $response->getData(true);
-  
       DB::select('EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?', [
         'seg',
         'auditorias_middleware',
@@ -57,10 +43,7 @@ class AuditoriaConsultas
           'VALUE' => $query[0]->proceso_id,
         ])
       ]);
-  
-      // $originalContent['request'] = $queries;
-  
-      $response->setData($originalContent);
+
     }
 
     return $response;
