@@ -26,7 +26,10 @@ use App\Http\Controllers\Ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelTipoController;
 use App\Http\Controllers\Ere\TipoEvaluacionController;
 use App\Http\Controllers\Ere\UgelesController;
+use App\Http\Controllers\seg\AuditoriaAccesosController;
+use App\Http\Controllers\seg\AuditoriaAccesosFallidosController;
 use App\Http\Controllers\seg\AuditoriaController;
+use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 
@@ -276,10 +279,10 @@ Route::group(['prefix' => 'acad'], function () {
 
 Route::group(['prefix' => 'seg'], function () {
     Route::group(['prefix' => 'auditoria'], function () {
-        Route::get('selAuditoriaAccesos', [AuditoriaController::class, 'selAuditoriaAccesos']);
-        Route::get('selAuditoriaAccesosFallidos', [AuditoriaController::class, 'selAuditoriaAccesosFallidos']);
+        Route::get('selAuditoriaAccesos', [AuditoriaAccesosController::class, 'selAuditoriaAccesos']);
+        Route::get('selAuditoriaAccesosFallidos', [AuditoriaAccesosFallidosController::class, 'selAuditoriaAccesosFallidos']);
         Route::get('selAuditoria', [AuditoriaController::class, 'selAuditoria']);
-        Route::get('selAuditoriaMiddleware', [AuditoriaController::class, 'selAuditoriaMiddleware']);
+        Route::get('selAuditoriaMiddleware', [AuditoriaMiddlewareController::class, 'selAuditoriaMiddleware']);
     });
 });
 

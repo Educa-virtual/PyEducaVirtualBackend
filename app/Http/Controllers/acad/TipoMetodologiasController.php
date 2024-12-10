@@ -45,7 +45,7 @@ class TipoMetodologiasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_TIPO_METODOLOGIAS
+            $data = DB::select('exec acad.Sp_SEL_tipoMetodologias
                 ?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
