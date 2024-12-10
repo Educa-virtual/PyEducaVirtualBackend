@@ -13,9 +13,6 @@ use App\Models\Ere\EreEvaluacion;
 use Hashids\Hashids;
 
 //use Carbon\Carbon;
-use Spatie\LaravelPdf\Enums\Orientation;
-use Spatie\LaravelPdf\Facades\Pdf;
-use Spatie\LaravelPdf\Enums\Format;
 
 class EvaluacionesController extends ApiController
 {
@@ -779,9 +776,9 @@ class EvaluacionesController extends ApiController
         ];
 
         // Generar el PDF con los datos proporcionados
-        $pdf = PDF::loadView('pdf.muestra', $pdfData);
+        //$pdf = PDF::loadView('pdf.muestra', $pdfData);
 
         // Descargar el PDF
-        return $pdf->download('matriz_evaluacion.pdf');
+        //return $pdf->download('matriz_evaluacion.pdf');
     }
 }
