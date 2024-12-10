@@ -32,7 +32,9 @@ class PreguntasController extends ApiController
 
         DB::beginTransaction();
         // Verificar si `iCursoId`, Con esto si llega el dato desde front
-        $iCursoId = $request->iCursoId ?? null;
+        //$iCursoId = $request->iCursoId ?? null;
+        $iCursosNivelGradId = $request->iCursosNivelGradId ?? null;
+        $iDesempenoId = $request->iDesempenoId ?? null;
         // encabezado
 
         $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
@@ -79,7 +81,9 @@ class PreguntasController extends ApiController
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 $iPreguntaId,
-                (int) $iCursoId, //Esto es  el iCursoId desde el front
+                //(int) $iCursoId, //Esto es  el iCursoId desde el front
+                (int) $iCursosNivelGradId,
+                (int) $iDesempenoId,
                 (int)$pregunta['iTipoPregId'],
                 $pregunta['cPregunta'],
                 $pregunta['cPreguntaTextoAyuda'] ?? '',
@@ -97,7 +101,8 @@ class PreguntasController extends ApiController
             try {
                 $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta
                 @_iPreguntaId = ?
-                , @_iCursoId = ? 
+                , @_iCursosNivelGradId = ? 
+                , @_iDesempenoId = ?
                 , @_iTipoPregId = ?
                 , @_cPregunta = ?
                 , @_cPreguntaTextoAyuda = ?

@@ -1,5 +1,5 @@
 <!-- resources/views/pdfEre/reporteMatriz.blade.php -->
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -46,4 +46,68 @@
         </tbody>
     </table>
 </body>
+</html> --}}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Matriz de Evaluación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #000;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">Matriz de Evaluación: {{ $evaluacion }}</div>
+    <div class="header">Descripción: {{ $descripcion }}</div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Competencia</th>
+                <th>Capacidad</th>
+                <th>Desempeño</th>
+                <th>Pregunta</th>
+                <th>Clave</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($preguntas as $pregunta)
+                <tr>
+                    <td>{{ $pregunta->cCompetenciaNombre }}</td>
+                    <td>{{ $pregunta->cCapacidadNombre }}</td>
+                    <td>{{ $pregunta->cDesempenoDescripcion }}</td>
+                    <td>{{ $pregunta->cPregunta }}</td>
+                    <td>{{ $pregunta->cPreguntaClave }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+</body>
 </html>
+

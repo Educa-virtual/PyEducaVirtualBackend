@@ -55,7 +55,7 @@ class PreguntasRepository
             $params['iDocenteId'] ?? '',
             $params['iCursoId'] ?? '',
         ];
- 
+
         $preguntasDB = DB::select('exec eval.SP_SEL_preguntasEvaluacionx @BancoId = ?,
              @iDocenteId = ?, @iCursoId = ? 
             ', $params);
@@ -64,7 +64,7 @@ class PreguntasRepository
             $item->alternativas = json_decode($item->alternativas);
             array_push($preguntas, $item);
         }
-        
+
         return $preguntas;
     }
 
@@ -102,7 +102,7 @@ class PreguntasRepository
 
         $campos = 'cEncabPregTitulo, cEncabPregContenido';
         $where = '1=1 ';
-        $where .= " AND iCursoId = {$params['iCursoId']}";
+        //$where .= " AND iCursoId = {$params['iCursoId']}";//Aqui se paso en Eval
         $schema =  $params['schema'] ?? 'ere';
         if ($schema === 'ere') {
             $campos .= ' ,iEncabPregId';
@@ -114,6 +114,7 @@ class PreguntasRepository
             $campos .= ' ,idEncabPregId';
             $where .= " AND iNivelCicloId = {$params['iNivelCicloId']}";
             $where .= " AND iDocenteId = {$params['iDocenteId']}";
+            $where .= " AND iCursoId = {$params['iCursoId']}";
         }
 
         $params = [
