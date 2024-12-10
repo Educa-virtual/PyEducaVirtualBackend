@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\DB;
 class FechasImportantesController extends Controller
 {
     protected $hashids;
-    protected $iCursoId;
+    
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
+    // PARA ELIMINAR TODO EL DOCUMENTO
     public function list(Request $request){
 
+        // Se Decodifica los id hasheados que son enviados por el frontend
         if ($request->iSedeId) {
             $iSedeId = $this->hashids->decode($request->iSedeId);
             $iSedeId = count($iSedeId) > 0 ? $iSedeId[0] : $iSedeId;
@@ -48,7 +50,6 @@ class FechasImportantesController extends Controller
         }
 
         $solicitud = [
-            $request->opcion,
             $iSedeId ?? NULL,
             $iIieeId ?? NULL,
             $iCursoId ?? NULL,
@@ -58,7 +59,7 @@ class FechasImportantesController extends Controller
             $iDocenteId ?? NULL,
         ];
         
-        $query=DB::select("execute acad.Sp_CRUD_fechas_importantes ?,?,?,?,?,?,?,?", $solicitud);
+        $query=DB::select("execute asi.Sp_SEL_fechas_asistencia ?,?,?,?,?,?,?", $solicitud);
         
         try{
             $response = [

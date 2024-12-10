@@ -429,16 +429,8 @@ class PreguntasController extends ApiController
             return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
         }
     }
-
     public function generarWordEvaluacionByIds(Request $request)
     {
-        // $params = [
-        //     'iBancoId' => $request->iCursoId,
-        //     'busqueda' => '',
-        //     'iCurrPregId' => 0,
-        //     'cBancoPregunta' => -1,
-        //     'ids' => $request->ids
-        // ];
         $params = [
             'BancoId' => $request->ids,
             'iDocenteId' => 1,
@@ -453,6 +445,10 @@ class PreguntasController extends ApiController
         }
 
         $phpTemplateWord = new TemplateProcessor(storage_path('template-eva.docx'));
+
+        // Asignar valores de Año y Curso
+        $phpTemplateWord->setValue('curso', $request->curso ?? 'Curso no especificado');
+        $phpTemplateWord->setValue('anio', $request->anio ?? date('Y'));
 
         // Clonar el bloque de preguntas
         $phpTemplateWord->cloneBlock('block_preguntas', count($preguntasDB), true, true);

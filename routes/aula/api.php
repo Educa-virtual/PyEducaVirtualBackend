@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
+use App\Http\Controllers\aula\NotificacionEstudianteController;
 use App\Http\Controllers\aula\ProgramacionActividadesController;
 use App\Http\Controllers\aula\ResultadoController;
 use App\Http\Controllers\aula\TareaCabeceraGruposController;
@@ -75,6 +76,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'Resultado'], function () {
         Route::get('obtenerResultados', [ResultadoController::class, 'obtenerResultados']);
         Route::post('guardarCalfcEstudiante', [ResultadoController::class, 'guardarCalfcEstudiante']);
+        Route::post('obtenerCalificacionesFinalesReporte', [ResultadoController::class, 'obtenerCalificacionesFinalesReporte']);
+        Route::post('habilitarCalificacion', [ResultadoController::class, 'habilitarCalificacion']);
         
     });
 
@@ -83,7 +86,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('actualizarForo', [ForosController::class, 'actualizarForo']);
     });
 
-    Route::group(['prefix' => 'notificacion'], function () {
-        Route::post('mostrar_notificaciones', [NotificacionController::class, 'mostrar_notificaciones']);
+    Route::group(['prefix' => 'notificacion_docente'], function () {
+        Route::post('mostrar_notificacion', [NotificacionController::class, 'mostrar_notificacion']);
+    });
+    Route::group(['prefix' => 'notificacion_estudiante'], function () {
+        Route::post('mostrar_notificacion', [NotificacionEstudianteController::class, 'mostrar_notificacion']);
     });
 });

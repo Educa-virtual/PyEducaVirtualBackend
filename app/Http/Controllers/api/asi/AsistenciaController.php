@@ -9,11 +9,7 @@ use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Spatie\LaravelPdf\Enums\Orientation;
-use Spatie\LaravelPdf\Facades\Pdf;
-use Spatie\LaravelPdf\Enums\Format;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AsistenciaController extends Controller
 {
@@ -54,7 +50,7 @@ class AsistenciaController extends Controller
                 : ($this->hashids->decode($request->iCursoId)[0] ?? null));
 
         $solicitud = [
-            $request->opcion,
+            'CONSULTAR_ASISTENCIA_FECHA',
             $request->iCursoId ?? NULL,
             $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? NULL,
@@ -66,7 +62,7 @@ class AsistenciaController extends Controller
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-
+        
         $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         try {
@@ -229,9 +225,9 @@ class AsistenciaController extends Controller
             "turno" => "Mañana",
         ];
 
-        $pdf = Pdf::view('asistencia_reporte_mensual', $respuesta)
-            ->orientation(Orientation::Landscape)
-            ->name('silabus.pdf');
+        $pdf = Pdf::loadView('asistencia_reporte_mensual', $respuesta)
+            ->setPaper('a4', 'landscape')
+            ->stream('silabus.pdf');
         return $pdf;
     }
     public function reportToExcel()
@@ -339,6 +335,9 @@ class AsistenciaController extends Controller
             $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["cTipoAsiLetra"];
         }
 
+        $formato_fecha = new DateTime($inicio);
+        $fecha_fija = $formato_fecha->format('Y-m-d');
+
         $respuesta = [
             "year" => date('Y'),
             "ie" => 'Ricardo German Agip Rubio',
@@ -353,14 +352,13 @@ class AsistenciaController extends Controller
             "ciclo" => $request->cCicloRomanos,
             "seccion" => $request->cSeccion,
             "turno" => "Mañana",
-            "fecha_actual" => $inicio,
+            "fecha_actual" => $fecha_fija,
             "dias" => $dias,
             "respuesta" => $datos
         ];
 
-        $pdf = Pdf::view('asistencia_reporte_diario', $respuesta)
-            ->format(Format::A4)
-            ->name('reporte_asistencia.pdf');
+        $pdf = Pdf::loadView('asistencia_reporte_diario', $respuesta)
+        ->stream('reporte_asistencia.pdf');
         return $pdf;
     }
     public function reporte_personalizado(Request $request)
@@ -561,9 +559,9 @@ class AsistenciaController extends Controller
             "respuesta" => $fechas
         ];
 
-        $pdf = Pdf::view('asistencia_reporte_personalizado', $respuesta)
-            ->orientation(Orientation::Landscape)
-            ->name('reporte_asistencia.pdf');
+        $pdf = Pdf::loadView('asistencia_reporte_personalizado', $respuesta)
+            ->setPaper('a4', 'landscape')
+            ->stream('reporte_asistencia.pdf');
         return $pdf;
     }
 
@@ -584,9 +582,9 @@ class AsistenciaController extends Controller
         switch ($request->opcion) {
             case 'reporte-diario':
                 $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?", $solicitud);
-                $pdf = Pdf::view('asistencia_reporte_mensual', '')
-                    ->orientation(Orientation::Landscape)
-                    ->name('silabus.pdf');
+                $pdf = Pdf::loadView('asistencia_reporte_mensual', '')
+                    ->setPaper('a4', 'landscape')
+                    ->stream('silabus.pdf');
                 return $pdf;
                 break;
             case 'reporte-mensual':
