@@ -47,7 +47,7 @@ class TipoBibliografiasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_TIPO_BIBLIOGRAFIAS
+            $data = DB::select('exec acad.Sp_SEL_tipoBibliografias
                 ?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
