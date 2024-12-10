@@ -8,11 +8,11 @@ use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
 
-class AuditoriaController extends Controller
+class AuditoriaMiddlewareController extends Controller
 {
   public const schema = 'seg';
 
-  public function selAuditoria(Request $request)
+  public function selAuditoriaMiddleware(Request $request)
   {
     try {
       // Validar los datos del request para asegurar consistencia
@@ -26,7 +26,7 @@ class AuditoriaController extends Controller
       // Usar `selDesdeTablaOVista` para realizar la consulta
       $query = $this->selDesdeTablaOVista(
         self::schema,
-        'V_auditoria',
+        'V_auditoria_middleware',
         '*',
         $where,
       );

@@ -4,15 +4,17 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuditoriaConsultas
 {
   /**
+   * Middleware para gestionar procesos de auditoría en la base de datos
+   * 
+   * Este middleware inicia, detiene y registra auditorías basadas en una
+   * cabecera específica (`iCredId`) presente en la solicitud HTTP
+   * 
    * Handle an incoming request.
    *
    * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
@@ -20,6 +22,7 @@ class AuditoriaConsultas
   public function handle(Request $request, Closure $next): Response
   {
 
+    // Si la cabecera iCredId está presente, inicia la auditoría
     if ($request->header('iCredId')) {
       $query = DB::select('EXEC seg.SP_UPD_IniciarAuditoriaBackend');
     }
@@ -29,6 +32,7 @@ class AuditoriaConsultas
      */
     $response = $next($request);
 
+    // Si la cabecera iCredId está presente, detiene la auditoría y adjunta el iCredId a las consultas procesadas
     if ($request->header('iCredId')) {
       DB::statement('EXEC seg.SP_UPD_DetenerAuditoriaBackend');
 
