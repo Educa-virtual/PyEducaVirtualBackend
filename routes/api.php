@@ -80,7 +80,8 @@ Route::group(['prefix' => 'ere'], function () {
         //! Ruta para actualizar la evaluación
         Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
         //! Ruta para obtener las participaciones
-        Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        //Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        Route::get('obtenerParticipaciones/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerParticipaciones']);
         //Nuevo Ver con Datos completos
         Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
         //Obtener Cursos
@@ -107,6 +108,11 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
         //InsertarMatrizDesempeno
         Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
+        //ObtenerEspecialistas
+        Route::get('obtenerEspDrem', [EvaluacionesController::class, 'obtenerEspDrem']);
+        //Obtener por el iGradoId los Cursos del Especialista
+        Route::get('obtenerEspDremCurso', [EvaluacionesController::class, 'obtenerEspDremCurso']);
+
         //Matriz Descargar
         Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
     });
