@@ -107,6 +107,50 @@ class AsistenciaController extends Controller
 
         return new JsonResponse($response,$estado);
     }
+    public function obtenerEstudiante(Request $request){
+        // Se Decodifica los id hasheados que son enviados por el frontend
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
+        $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        
+        $solicitud = [
+            $request->opcion,
+            $iCursoId,
+            $request->dtCtrlAsistencia ?? NULL,
+            $request->asistencia_json ?? NULL,
+            $iSeccionId,
+            $iYAcadId,
+            $iNivelGradoId ?? NULL,
+            $iDocenteId,
+            $request->iGradoId ?? NULL,
+            $request->inicio ?? NULL,
+            $request->fin ?? NULL,
+        ];
+    
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+  
+        try{
+            $response = [
+                'validated' => true, 
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+
+        } catch(Exception $e){
+            $response = [
+                'validated' => true, 
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response,$estado);
+    }
     public function obtenerFestividad(Request $request){
         $solicitud = [
             'buscar_festividades',
@@ -133,7 +177,7 @@ class AsistenciaController extends Controller
 
         return new JsonResponse($response, $estado);
     }
-    public function list(Request $request)
+    public function guardarAsistencia(Request $request)
     {
         $iCursoId = $this->decodificar($request["iCursoId"]);
         $iYAcadId = $this->decodificar($request["iYAcadId"]);
@@ -155,7 +199,7 @@ class AsistenciaController extends Controller
             $request->fin ?? NULL,
         ];
         
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $query = DB::select("execute asi.Sp_INS_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
         
         try {
             $response = [
@@ -176,6 +220,49 @@ class AsistenciaController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+    // public function list(Request $request)
+    // {
+    //     $iCursoId = $this->decodificar($request["iCursoId"]);
+    //     $iYAcadId = $this->decodificar($request["iYAcadId"]);
+    //     $iDocenteId = $this->decodificar($request["iDocenteId"]);
+    //     $iSeccionId = $this->decodificar($request["iSeccionId"]);
+    //     $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        
+    //     $solicitud = [
+    //         $request->opcion,
+    //         $iCursoId,
+    //         $request->dtCtrlAsistencia ?? NULL,
+    //         $request->asistencia_json ?? NULL,
+    //         $iSeccionId,
+    //         $iYAcadId,
+    //         $iNivelGradoId ?? NULL,
+    //         $iDocenteId,
+    //         $request->iGradoId ?? NULL,
+    //         $request->inicio ?? NULL,
+    //         $request->fin ?? NULL,
+    //     ];
+        
+    //     $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        
+    //     try {
+    //         $response = [
+    //             'validated' => true,
+    //             'message' => 'se obtuvo la información',
+    //             'data' => $query,
+    //         ];
+
+    //         $estado = 200;
+    //     } catch (Exception $e) {
+    //         $response = [
+    //             'validated' => true,
+    //             'message' => $e->getMessage(),
+    //             'data' => [],
+    //         ];
+    //         $estado = 500;
+    //     }
+
+    //     return new JsonResponse($response, $estado);
+    // }
     public function report(Request $request)
     {
         $request['valorBusqueda'] = is_null($request->valorBusqueda)
@@ -270,7 +357,7 @@ class AsistenciaController extends Controller
             $request->fin ?? NULL,
         ];
 
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         $json_registro = [];
 
@@ -404,7 +491,7 @@ class AsistenciaController extends Controller
             $fin,
         ];
 
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -530,7 +617,7 @@ class AsistenciaController extends Controller
             $fin,
         ];
 
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -556,42 +643,12 @@ class AsistenciaController extends Controller
                 $verificar = json_decode($sql->diasAsistencia);
                 $ver = array_column($verificar, "diaMes");
 
-                // $inas=0;
-                // $asis=0;
-                // $inju=0;
-                // $tard=0;
-                // $taju=0;
-                // $sin=0;
                 for ($j = 1; $j <= $fechas[0]["ultimo_dia"]; $j++) {
                     $analizar = $mes . "-" . str_pad($j, 2, "0", STR_PAD_LEFT);
 
                     if (in_array($analizar, $ver)) {
                         $index = array_search($analizar, $ver);
                         $fechas[0]["asistido"][$key][] = $verificar[$index]->cTipoAsiLetra;
-                        // if($verificar[$index]->cTipoAsiLetra == "I"){
-                        //     $inas+=1;
-                        //     $fechas[0]["ina"][$j]=$inas;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "X"){
-                        //     $asis+=1;
-                        //     $fechas[0]["asi"][$j]=$asis;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "J"){
-                        //     $inju+=1;
-                        //     $fechas[0]["inaju"][$j]=$inju;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "T"){
-                        //     $tard+=1;
-                        //     $fechas[0]["tar"][$j]=$tard;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "P"){
-                        //     $taju+=1;
-                        //     $fechas[0]["tarju"][$j]=$taju;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "-"){
-                        //     $sin+=1;
-                        //     $fechas[0]["sin"][$j]=$sin;
-                        // }
                     } else {
                         $fechas[0]["asistido"][$key][] = "";
                     }

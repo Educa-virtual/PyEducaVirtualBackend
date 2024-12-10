@@ -66,6 +66,7 @@ Route::group(['prefix' => 'docente'], function () {
   });
   Route::group(['prefix' => 'tipo-bibliografias'], function () {
     Route::post('list', [TipoBibliografiasController::class, 'list']);
+    Route::post('store', [TipoBibliografiasController::class, 'store']);
   });
   Route::group(['prefix' => 'silabo-actividad-aprendizajes'], function () {
     Route::post('list', [SilaboActividadAprendizajesController::class, 'list']);
@@ -89,7 +90,9 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('list', [PersonaController::class, 'list']);
   });
   Route::group(['prefix' => 'asistencia'], function () {
-    Route::post('list', [AsistenciaController::class, 'list']);
+    //Route::post('list', [AsistenciaController::class, 'list']);
+    Route::post('guardarAsistencia', [AsistenciaController::class, 'guardarAsistencia']);
+    Route::post('obtenerEstudiante', [AsistenciaController::class, 'obtenerEstudiante']);
     Route::post('obtenerFestividad', [AsistenciaController::class, 'obtenerFestividad']);
   });
   Route::group(['prefix' => 'estudiante'], function () {

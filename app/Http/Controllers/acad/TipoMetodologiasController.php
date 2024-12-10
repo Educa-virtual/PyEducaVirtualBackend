@@ -38,10 +38,8 @@ class TipoMetodologiasController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $iTipoMetId                         ?? NULL,
             $request->cTipoMetNombre            ?? NULL,
-
             $request->iCredId
 
         ];
