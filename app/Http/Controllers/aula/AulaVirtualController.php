@@ -412,19 +412,14 @@ class AulaVirtualController extends ApiController
     }
     public function eliminarRptEstudiante (Request $request)
     {
-        //return $request -> all();
-        // Validar la solicitud
-        // Validar el ID enviado
-        $validatedData = $request->validate([
-            'iForoRptaId' => 'required|string', // Asegura que el ID sea obligatorio y numérico
+        $validated = $request->validate([
+            'iForoRptaId' => 'required|string',
         ]);
-
-        $iForoRptaId = $validatedData['iForoRptaId'];
-
+        $params = [$request ['iForoRptaId']];
+        //return $params;
         try {
             // Llamar al procedimiento almacenado
-            DB::select('exec aula.SP_DEL_respuestaXidEstudiante @iForoRptaId = ?', [$iForoRptaId]);
-
+            DB::select('exec aula.SP_DEL_respuestaXidEstudiante @iForoRptaId = ?', $params);
             // Responder con éxito
             return response()->json([
                 'success' => true,
@@ -607,7 +602,6 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($foro, 'Datos obtenidos correctamente');
         }
     }
-
     public function calificarForoDocente(Request $request)
     {
         // Prepara los parámetros para la consulta. Se obtienen del objeto $request, el cual contiene los datos de la solicitud HTTP.
@@ -647,7 +641,6 @@ class AulaVirtualController extends ApiController
         // Retorna una respuesta JSON con el mensaje y el código HTTP correspondiente.
         return new JsonResponse($response, $codeResponse);
     }
-
     public function guardarComentarioRespuesta(Request $request)
     {
 
