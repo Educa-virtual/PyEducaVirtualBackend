@@ -135,4 +135,31 @@ class ResultadoController extends Controller
 
         return new JsonResponse($response,$estado);
     }
+    public function obtenerReporteFinalNotas (){
+        //return 1;
+        // try {
+        //     $preguntas = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
+
+        //     //return $preguntas;
+        //     return $this->successResponse($preguntas);
+        // } catch (Exception $e) {
+
+        //     return $this->errorResponse($e, 'Error Upssss!');
+        // }
+        try { 
+            // Ejecutar el procedimiento almacenado usando DB::select
+            $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
+            
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+
+            return $response;
+           
+       }       
+       catch (\Exception $e) {
+        $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+        $estado = 500;
+        }
+        return new JsonResponse($response,$estado);
+    }
 }
