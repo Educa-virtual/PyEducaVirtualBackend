@@ -5,11 +5,11 @@ namespace App\Http\Controllers\asi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class AsistenciaController extends Controller
 {
@@ -45,7 +45,7 @@ class AsistenciaController extends Controller
             $iSeccionId ?? NULL,
         ];
 
-        $query=DB::select("execute acad.Sp_SEL_buscar_cursos_horario ?,?,?,?,?", $solicitud);
+        $query = DB::select("execute acad.Sp_SEL_buscar_cursos_horario ?,?,?,?,?", $solicitud);
         
         try{
             $response = [
@@ -139,7 +139,8 @@ class AsistenciaController extends Controller
         $iYAcadId = $this->decodificar($request["iYAcadId"]);
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
         $iSeccionId = $this->decodificar($request["iSeccionId"]);
-
+        $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        
         $solicitud = [
             $request->opcion,
             $iCursoId,
@@ -147,15 +148,15 @@ class AsistenciaController extends Controller
             $request->asistencia_json ?? NULL,
             $iSeccionId,
             $iYAcadId,
-            $request->iNivelGradoId ?? NULL,
+            $iNivelGradoId ?? NULL,
             $iDocenteId,
             $request->iGradoId ?? NULL,
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-
+        
         $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
-
+        
         try {
             $response = [
                 'validated' => true,
@@ -330,10 +331,6 @@ class AsistenciaController extends Controller
             ->stream('silabus.pdf');
         return $pdf;
     }
-    public function reportToExcel()
-    {
-        return 1;
-    }
     public function reporte_diario(Request $request)
     {
         $request['valorBusqueda'] = is_null($request->valorBusqueda)
@@ -408,7 +405,6 @@ class AsistenciaController extends Controller
         ];
 
         $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
-
 
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -668,35 +664,5 @@ class AsistenciaController extends Controller
         return $pdf;
     }
 
-    public function reporteAsistenciaGeneral(Request $request)
-    {
-
-        $solicitud = [
-            $request->opcion ?? 'REPORTE_DIARIO',
-            $request->iCursoId ?? 1,
-            $request->dtCtrlAsistencia ?? '2024-11-01',
-            $request->asistencia_json ?? 1,
-            $request->iSeccionId ?? 2,
-            $request->iYAcadId ?? 3,
-            $request->iNivelGradoId ?? 1,
-            $request->iDocenteId ?? 1,
-        ];
-
-        switch ($request->opcion) {
-            case 'reporte-diario':
-                $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?", $solicitud);
-                $pdf = Pdf::loadView('asistencia_reporte_mensual', '')
-                    ->setPaper('a4', 'landscape')
-                    ->stream('silabus.pdf');
-                return $pdf;
-                break;
-            case 'reporte-mensual':
-
-                break;
-            case 'reporte-personalizado':
-
-                break;
-        }
-    }
 }
 

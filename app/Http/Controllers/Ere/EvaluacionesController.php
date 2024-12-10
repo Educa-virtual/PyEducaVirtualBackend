@@ -12,10 +12,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Ere\EreEvaluacion;
 //use Carbon\Carbon;
 
-use Spatie\LaravelPdf\Enums\Orientation;
-use Spatie\LaravelPdf\Facades\Pdf;
-use Spatie\LaravelPdf\Enums\Format;
-
 class EvaluacionesController extends ApiController
 {
     public function obtenerEvaluaciones()

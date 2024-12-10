@@ -139,5 +139,6 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'buscar_curso'], function () {
     Route::post('curricula', [BuscarCurriculaController::class, 'curricula']);
     Route::post('curriculaHorario', [BuscarCurriculaController::class, 'curriculaHorario']);
+    Route::post('obtenerActividad', [BuscarCurriculaController::class, 'obtenerActividad']);
   });
 });

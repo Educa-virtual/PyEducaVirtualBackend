@@ -50,7 +50,7 @@ class AsistenciaController extends Controller
                 : ($this->hashids->decode($request->iCursoId)[0] ?? null));
 
         $solicitud = [
-            $request->opcion,
+            'CONSULTAR_ASISTENCIA_FECHA',
             $request->iCursoId ?? NULL,
             $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? NULL,
@@ -62,7 +62,7 @@ class AsistenciaController extends Controller
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-
+        
         $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         try {
