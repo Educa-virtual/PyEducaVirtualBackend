@@ -195,7 +195,7 @@ class CalendarioAcademicosController extends Controller
             'acad',
             'calendario_academicos',
             $request->calAcademico,
-            $request->iCalAcadId,
+            $request->iCalAcadId
         ]);
 
         return $this->response([]);
@@ -326,7 +326,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         $query = DB::select(
@@ -357,7 +357,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         $query = DB::select(
@@ -389,7 +389,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         $query = DB::select(
@@ -421,7 +421,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         $query = DB::select(
@@ -462,7 +462,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         $query = DB::select(
@@ -529,7 +529,7 @@ class CalendarioAcademicosController extends Controller
     {
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         $query = DB::select(
@@ -561,15 +561,14 @@ class CalendarioAcademicosController extends Controller
     {
         //    $json = json_encode($request->json);
         //    $opcion = $request->_opcion;
-
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select(
-            "EXEC SP_INS_TablaYearXopcion?,?",
+            "EXEC grl.SP_INS_TablaYearXopcion ?,?",
             $solicitud
         );
         //  [$json, $opcion ]);
@@ -597,17 +596,15 @@ class CalendarioAcademicosController extends Controller
 
     public function updateYear(Request $request)
     {
-        //    $json = json_encode($request->json);
-        //    $opcion = $request->_opcion;
-
         $solicitud = [
             $request->json,
-            $request->_opcion,
+            $request->_opcion
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select(
-            "EXEC SP_UPD_TablaYearXopcion?,?",
+            "EXEC grl.SP_UPD_TablaYearXopcion ?,?",
+          
             $solicitud
         );
         //  [$json, $opcion ]);
@@ -616,7 +613,7 @@ class CalendarioAcademicosController extends Controller
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
-                'data' => $query,
+                'data' => $query
             ];
 
             $estado = 201;
@@ -624,7 +621,7 @@ class CalendarioAcademicosController extends Controller
             $response = [
                 'validated' => false,
                 'message' => $e->getMessage(),
-                'data' => [],
+                'data' => []
             ];
 
             $estado = 500;
@@ -633,7 +630,7 @@ class CalendarioAcademicosController extends Controller
         return new JsonResponse($response, $estado);
     }
 
-    public function DELEteYear(Request $request)
+    public function deleteYear(Request $request)
     {
         //    $json = json_encode($request->json);
         //    $opcion = $request->_opcion;
@@ -645,7 +642,7 @@ class CalendarioAcademicosController extends Controller
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select(
-            "EXEC SP_DEL_TablaYearXopcion?,?",
+            "EXEC grl.SP_DEL_TablaYearXopcion ?,?",
             $solicitud
         );
         //  [$json, $opcion ]);

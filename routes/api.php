@@ -127,7 +127,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('selReglamentoInterno', [AcadInstitucionesEducativasController::class, 'selReglamentoInterno']);
         Route::put('updReglamentoInterno', [AcadInstitucionesEducativasController::class, 'updReglamentoInterno']);
     });
-/*
+
     Route::group(['prefix' => 'gestionInstitucional'], function () {
         Route::post('listarPersonalIes', [GestionInstitucionalController::class, 'listarPersonalIes']);
         //procendimiento generales
@@ -135,7 +135,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('insertMaestro', [GestionInstitucionalController::class, 'insertMaestro']);
         Route::post('updateMaestro', [GestionInstitucionalController::class, 'updateMaestro']);
         Route::post('deleteMaestro', [GestionInstitucionalController::class, 'deleteMaestro']);
-    });*/
+    });
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
         Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); // procedimiento especifico EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?
@@ -151,9 +151,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('updateYear', [CalendarioAcademicosController::class, 'updateYear']); // procedimiento especifico SP_UPD_TablaYearXopcion
         Route::post('deleteYear', [CalendarioAcademicosController::class, 'deleteYear']); // procedimiento especifico SP_DEL_TablaYearXopcion
 
-        Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
-        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
-        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']);
+        Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']); // procedimiento especifico  acad.SP_INS_stepAmbienteAcademicoDesdeJsonOpcion
+        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);// procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
+        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']);// procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
         
 
         /*
