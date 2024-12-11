@@ -76,6 +76,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'Resultado'], function () {
         Route::get('obtenerResultados', [ResultadoController::class, 'obtenerResultados']);
         Route::post('guardarCalfcEstudiante', [ResultadoController::class, 'guardarCalfcEstudiante']);
+        Route::post('obtenerCalificacionesFinalesReporte', [ResultadoController::class, 'obtenerCalificacionesFinalesReporte']);
+        Route::post('habilitarCalificacion', [ResultadoController::class, 'habilitarCalificacion']);
         
     });
 

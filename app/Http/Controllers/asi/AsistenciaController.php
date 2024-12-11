@@ -5,11 +5,11 @@ namespace App\Http\Controllers\asi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class AsistenciaController extends Controller
 {
@@ -20,51 +20,144 @@ class AsistenciaController extends Controller
     protected $iNivelGradoId;
     protected $iDocenteId;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
-    public function list(Request $request)
-    {
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
 
-        $request['iSeccionId'] = is_null($request->iSeccionId)
-            ? null
-            : (is_numeric($request->iSeccionId)
-                ? $request->iSeccionId
-                : ($this->hashids->decode($request->iSeccionId)[0] ?? null));
+    // Decodifica los id enviados por el frontend
+    private function decodificar($id){
+        return is_null($id) ? null : (is_numeric($id) ? $id : ($this->hashids->decode($id)[0] ?? null));
+    }
+     
+    // Obtener las fechas de las areas curriculares para registrar la asistencia
+    public function obtenerCursoHorario(Request $request){
 
-        $request['iCursoId'] = is_null($request->iCursoId)
-            ? null
-            : (is_numeric($request->iCursoId)
-                ? $request->iCursoId
-                : ($this->hashids->decode($request->iCursoId)[0] ?? null));
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
 
         $solicitud = [
+            'buscar_curso_horario',
+            $iDocenteId ?? NULL,
+            $iYAcadId ?? NULL,
+            $iCursoId ?? NULL,
+            $iSeccionId ?? NULL,
+        ];
+
+        $query = DB::select("execute acad.Sp_SEL_buscar_cursos_horario ?,?,?,?,?", $solicitud);
+        
+        try{
+            $response = [
+                'validated' => true, 
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+
+        } catch(Exception $e){
+            $response = [
+                'validated' => true, 
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response,$estado);
+    }
+    public function obtenerAsistencia(Request $request){
+        // Se Decodifica los id hasheados que son enviados por el frontend
+        $iSedeId = $this->decodificar($request["iSedeId"]);
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
+        $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        
+        $solicitud = [
+            $iSedeId ?? NULL,
+            $iCursoId ?? NULL,
+            $iYAcadId ?? NULL,
+            $iSeccionId ?? NULL,
+            $iNivelGradoId ?? NULL,
+            $iDocenteId ?? NULL,
+        ];
+        
+        $query=DB::select("execute asi.Sp_SEL_fechas_asistencia ?,?,?,?,?,?", $solicitud);
+        
+        try{
+            $response = [
+                'validated' => true, 
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+
+        } catch(Exception $e){
+            $response = [
+                'validated' => true, 
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response,$estado);
+    }
+    public function obtenerEstudiante(Request $request){
+        // Se Decodifica los id hasheados que son enviados por el frontend
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
+        $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        
+        $solicitud = [
             $request->opcion,
-            $request->iCursoId ?? NULL,
+            $iCursoId,
             $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? NULL,
-            $request->iSeccionId ?? NULL,
-            $request->iYAcadId ?? NULL,
-            $request->iNivelGradoId ?? NULL,
-            $request->iDocenteId ?? NULL,
+            $iSeccionId,
+            $iYAcadId,
+            $iNivelGradoId ?? NULL,
+            $iDocenteId,
             $request->iGradoId ?? NULL,
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
+    
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+  
+        try{
+            $response = [
+                'validated' => true, 
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+            $estado = 200;
 
+        } catch(Exception $e){
+            $response = [
+                'validated' => true, 
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response,$estado);
+    }
+    public function obtenerFestividad(Request $request){
+        $solicitud = [
+            'buscar_festividades',
+        ];
+        
+        $query = DB::select("EXECUTE acad.Sp_SEL_fechas_importantes ?",$solicitud);
+       
         try {
             $response = [
                 'validated' => true,
@@ -84,6 +177,92 @@ class AsistenciaController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+    public function guardarAsistencia(Request $request)
+    {
+        $iCursoId = $this->decodificar($request["iCursoId"]);
+        $iYAcadId = $this->decodificar($request["iYAcadId"]);
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iSeccionId = $this->decodificar($request["iSeccionId"]);
+        $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        
+        $solicitud = [
+            $request->opcion,
+            $iCursoId,
+            $request->dtCtrlAsistencia ?? NULL,
+            $request->asistencia_json ?? NULL,
+            $iSeccionId,
+            $iYAcadId,
+            $iNivelGradoId ?? NULL,
+            $iDocenteId,
+            $request->iGradoId ?? NULL,
+            $request->inicio ?? NULL,
+            $request->fin ?? NULL,
+        ];
+        
+        $query = DB::select("execute asi.Sp_INS_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 200;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => true,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+    // public function list(Request $request)
+    // {
+    //     $iCursoId = $this->decodificar($request["iCursoId"]);
+    //     $iYAcadId = $this->decodificar($request["iYAcadId"]);
+    //     $iDocenteId = $this->decodificar($request["iDocenteId"]);
+    //     $iSeccionId = $this->decodificar($request["iSeccionId"]);
+    //     $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        
+    //     $solicitud = [
+    //         $request->opcion,
+    //         $iCursoId,
+    //         $request->dtCtrlAsistencia ?? NULL,
+    //         $request->asistencia_json ?? NULL,
+    //         $iSeccionId,
+    //         $iYAcadId,
+    //         $iNivelGradoId ?? NULL,
+    //         $iDocenteId,
+    //         $request->iGradoId ?? NULL,
+    //         $request->inicio ?? NULL,
+    //         $request->fin ?? NULL,
+    //     ];
+        
+    //     $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        
+    //     try {
+    //         $response = [
+    //             'validated' => true,
+    //             'message' => 'se obtuvo la información',
+    //             'data' => $query,
+    //         ];
+
+    //         $estado = 200;
+    //     } catch (Exception $e) {
+    //         $response = [
+    //             'validated' => true,
+    //             'message' => $e->getMessage(),
+    //             'data' => [],
+    //         ];
+    //         $estado = 500;
+    //     }
+
+    //     return new JsonResponse($response, $estado);
+    // }
     public function report(Request $request)
     {
         $request['valorBusqueda'] = is_null($request->valorBusqueda)
@@ -178,7 +357,7 @@ class AsistenciaController extends Controller
             $request->fin ?? NULL,
         ];
 
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         $json_registro = [];
 
@@ -238,10 +417,6 @@ class AsistenciaController extends Controller
             ->setPaper('a4', 'landscape')
             ->stream('silabus.pdf');
         return $pdf;
-    }
-    public function reportToExcel()
-    {
-        return 1;
     }
     public function reporte_diario(Request $request)
     {
@@ -316,8 +491,7 @@ class AsistenciaController extends Controller
             $fin,
         ];
 
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
-
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -443,7 +617,7 @@ class AsistenciaController extends Controller
             $fin,
         ];
 
-        $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
 
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
@@ -469,42 +643,12 @@ class AsistenciaController extends Controller
                 $verificar = json_decode($sql->diasAsistencia);
                 $ver = array_column($verificar, "diaMes");
 
-                // $inas=0;
-                // $asis=0;
-                // $inju=0;
-                // $tard=0;
-                // $taju=0;
-                // $sin=0;
                 for ($j = 1; $j <= $fechas[0]["ultimo_dia"]; $j++) {
                     $analizar = $mes . "-" . str_pad($j, 2, "0", STR_PAD_LEFT);
 
                     if (in_array($analizar, $ver)) {
                         $index = array_search($analizar, $ver);
                         $fechas[0]["asistido"][$key][] = $verificar[$index]->cTipoAsiLetra;
-                        // if($verificar[$index]->cTipoAsiLetra == "I"){
-                        //     $inas+=1;
-                        //     $fechas[0]["ina"][$j]=$inas;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "X"){
-                        //     $asis+=1;
-                        //     $fechas[0]["asi"][$j]=$asis;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "J"){
-                        //     $inju+=1;
-                        //     $fechas[0]["inaju"][$j]=$inju;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "T"){
-                        //     $tard+=1;
-                        //     $fechas[0]["tar"][$j]=$tard;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "P"){
-                        //     $taju+=1;
-                        //     $fechas[0]["tarju"][$j]=$taju;
-                        // }
-                        // if($verificar[$index]->cTipoAsiLetra == "-"){
-                        //     $sin+=1;
-                        //     $fechas[0]["sin"][$j]=$sin;
-                        // }
                     } else {
                         $fechas[0]["asistido"][$key][] = "";
                     }
@@ -577,35 +721,5 @@ class AsistenciaController extends Controller
         return $pdf;
     }
 
-    public function reporteAsistenciaGeneral(Request $request)
-    {
-
-        $solicitud = [
-            $request->opcion ?? 'REPORTE_DIARIO',
-            $request->iCursoId ?? 1,
-            $request->dtCtrlAsistencia ?? '2024-11-01',
-            $request->asistencia_json ?? 1,
-            $request->iSeccionId ?? 2,
-            $request->iYAcadId ?? 3,
-            $request->iNivelGradoId ?? 1,
-            $request->iDocenteId ?? 1,
-        ];
-
-        switch ($request->opcion) {
-            case 'reporte-diario':
-                $query = DB::select("execute asi.Sp_CRUD_control_asistencias ?,?,?,?,?,?,?,?", $solicitud);
-                $pdf = Pdf::loadView('asistencia_reporte_mensual', '')
-                    ->setPaper('a4', 'landscape')
-                    ->stream('silabus.pdf');
-                return $pdf;
-                break;
-            case 'reporte-mensual':
-
-                break;
-            case 'reporte-personalizado':
-
-                break;
-        }
-    }
 }
 

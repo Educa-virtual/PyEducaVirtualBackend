@@ -48,7 +48,7 @@ class RecursoDidacticosController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_DIDACTICOS
+            $data = DB::select('exec acad.Sp_SEL_recursoDidacticos
                 ?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {

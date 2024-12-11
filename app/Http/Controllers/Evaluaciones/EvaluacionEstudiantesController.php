@@ -92,32 +92,48 @@ class EvaluacionEstudiantesController extends ApiController
 
     public function guardarRespuestaxiEstudianteId(Request $request)
     {
-
         $evaluacion_respuestas = DB::select(
             "
-            SELECT MAX(iEvalRptaId) as iEvalRptaId
-            FROM eval.evaluacion_respuestas
-            WHERE iEstudianteId ='" . $request->iEstudianteId . "' AND iEvalPregId = '" . $request->iEvalPregId . "'
-            "
+        SELECT MAX(iEvalRptaId) as iEvalRptaId
+        FROM eval.evaluacion_respuestas
+        WHERE iEstudianteId = '" . $request->iEstudianteId . "' AND iEvalPregId = '" . $request->iEvalPregId . "'
+        "
         );
+
         if ($evaluacion_respuestas[0]->iEvalRptaId > 0) {
+            // Actualizar respuesta existente
             $rpta = DB::update(
                 "
-                UPDATE eval.evaluacion_respuestas
-                SET jEvalRptaEstudiante = '" . $request->jEvalRptaEstudiante . "'
-                WHERE iEvalRptaId = '" . $evaluacion_respuestas[0]->iEvalRptaId . "'
-                "
+            UPDATE eval.evaluacion_respuestas
+            SET jEvalRptaEstudiante = '" . $request->jEvalRptaEstudiante . "'
+            WHERE iEvalRptaId = '" . $evaluacion_respuestas[0]->iEvalRptaId . "'
+            "
             );
+
             if ($rpta) {
-                $response = ['validated' => true, 'mensaje' => 'se guardó la respuesta'];
+                $response = ['validated' => true, 'mensaje' => 'Se actualizó la respuesta.'];
                 $codeResponse = 200;
             } else {
-                $response = ['validated' => false, 'mensaje' => 'no se guardó la respuesta'];
+                $response = ['validated' => false, 'mensaje' => 'No se pudo actualizar la respuesta.'];
                 $codeResponse = 500;
             }
         } else {
-            //INSERTAR
+            // Insertar nueva respuesta
+
+            $data = DB::select(
+                'exec eval.Sp_INS_evaluacionRespuestasCalificacionxiEstudianteId ?,?,?',
+                [$request->iEstudianteId, $request->iEvalPregId, $request->jEvalRptaEstudiante]
+            );
+
+            if ($data[0]->iEvalRptaId) {
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la respuesta.'];
+                $codeResponse = 200; // Código para creación exitosa
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se pudo guardar la respuesta.'];
+                $codeResponse = 500;
+            }
         }
+
         return new JsonResponse($response, $codeResponse);
     }
 }

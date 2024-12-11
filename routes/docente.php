@@ -11,6 +11,7 @@ use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\acad\TipoBibliografiasController;
 use App\Http\Controllers\acad\TipoMetodologiasController;
 use App\Http\Controllers\acad\BibliografiaController;
+use App\Http\Controllers\acad\BuscarCurriculaController;
 use App\Http\Controllers\api\acad\EstudiantesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\FechasImportantesController;
@@ -65,6 +66,7 @@ Route::group(['prefix' => 'docente'], function () {
   });
   Route::group(['prefix' => 'tipo-bibliografias'], function () {
     Route::post('list', [TipoBibliografiasController::class, 'list']);
+    Route::post('store', [TipoBibliografiasController::class, 'store']);
   });
   Route::group(['prefix' => 'silabo-actividad-aprendizajes'], function () {
     Route::post('list', [SilaboActividadAprendizajesController::class, 'list']);
@@ -88,7 +90,10 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('list', [PersonaController::class, 'list']);
   });
   Route::group(['prefix' => 'asistencia'], function () {
-    Route::post('list', [AsistenciaController::class, 'list']);
+    //Route::post('list', [AsistenciaController::class, 'list']);
+    Route::post('guardarAsistencia', [AsistenciaController::class, 'guardarAsistencia']);
+    Route::post('obtenerEstudiante', [AsistenciaController::class, 'obtenerEstudiante']);
+    Route::post('obtenerFestividad', [AsistenciaController::class, 'obtenerFestividad']);
   });
   Route::group(['prefix' => 'estudiante'], function () {
     Route::post('list', [EstudiantesController::class, 'list']);
@@ -96,10 +101,9 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'silabus_reporte'], function () {
     Route::post('report', [SilabosController::class, 'report']);
   });
-  Route::group(['prefix' => 'fechas_importantes'], function () {
-    Route::post('list', [FechasImportantesController::class, 'list']);
-  });
   Route::group(['prefix' => 'reporte_asistencia'], function () {
+    Route::post('obtenerCursoHorario', [AsistenciaController::class, 'obtenerCursoHorario']);
+    Route::post('obtenerAsistencia', [AsistenciaController::class, 'obtenerAsistencia']);
     Route::post('reporte_mensual', [AsistenciaController::class, 'report']);
     Route::post('reporte_personalizado', [AsistenciaController::class, 'reporte_personalizado']);
     Route::post('reporte_asistencia_general', [AsistenciaController::class, 'reporteAsistenciaGeneral']);
@@ -134,5 +138,10 @@ Route::group(['prefix' => 'docente'], function () {
   Route::group(['prefix' => 'cuadernos-campo'], function () {
     Route::post('obtenerCuadernosCampo', [CuadernosCampoController::class, 'obtenerCuadernosCampo']);
     Route::post('guardarFichasCuadernosCampo', [CuadernosCampoController::class, 'guardarFichasCuadernosCampo']);
+  });
+  Route::group(['prefix' => 'buscar_curso'], function () {
+    Route::post('curricula', [BuscarCurriculaController::class, 'curricula']);
+    Route::post('curriculaHorario', [BuscarCurriculaController::class, 'curriculaHorario']);
+    Route::post('obtenerActividad', [BuscarCurriculaController::class, 'obtenerActividad']);
   });
 });

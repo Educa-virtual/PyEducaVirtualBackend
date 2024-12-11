@@ -251,7 +251,7 @@ class TareasController extends ApiController
         ];
 
         try {
-            $data = DB::select('exec aula.SP_aulaCrudTareas
+            $data = DB::select('exec aula.SP_UPD_tareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaId > 0) {
@@ -321,7 +321,7 @@ class TareasController extends ApiController
         ];
         //return $parametros;
         try {
-            $data = DB::select('exec aula.SP_aulaCrudTareas
+            $data = DB::select('exec aula.SP_DEL_tareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaId > 0) {
@@ -380,7 +380,7 @@ class TareasController extends ApiController
         ];
 
         try {
-            $data = DB::select('exec aula.SP_aulaCrudTareas
+            $data = DB::select('exec aula.SP_UPD_tareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iTareaId > 0) {

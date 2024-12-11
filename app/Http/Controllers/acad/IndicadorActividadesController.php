@@ -73,7 +73,7 @@ class IndicadorActividadesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_INDICADOR_ACTIVIDADES
+            $data = DB::select('exec acad.Sp_SEL_indicadorActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             switch ($request->opcion) {
@@ -142,8 +142,21 @@ class IndicadorActividadesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_INDICADOR_ACTIVIDADES
+            switch ($request->opcion) {
+                case 'GUARDARxiSilaboActAprendIdxiTipoIndLogId':
+                    $data = DB::select('exec acad.Sp_INS_indicadorActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ACTUALIZARxiIndActId':
+                    $data = DB::select('exec acad.Sp_UPD_indicadorActividades
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ELIMINARxiIndActId':
+                    $data = DB::select('exec acad.Sp_DEL_indicadorActividades
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+            }
+
 
             if ($data[0]->iIndActId > 0) {
 

@@ -26,7 +26,10 @@ use App\Http\Controllers\Ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelTipoController;
 use App\Http\Controllers\Ere\TipoEvaluacionController;
 use App\Http\Controllers\Ere\UgelesController;
+use App\Http\Controllers\seg\AuditoriaAccesosController;
+use App\Http\Controllers\seg\AuditoriaAccesosFallidosController;
 use App\Http\Controllers\seg\AuditoriaController;
+use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 
@@ -100,14 +103,16 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
         // ACTUALIZAAR En routes/api.php o routes/web.php
         Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
-        //!Agregando CopiarEvaluacion
+        //Agregando CopiarEvaluacion
         Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
-        //!ObtenerMatrizCompetencia
+        //ObtenerMatrizCompetencia
         Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
-        //!ObtenerMatrizCapacidad
+        //ObtenerMatrizCapacidad
         Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
-        //!InsertarMatrizDesempeno
+        //InsertarMatrizDesempeno
         Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
+        //Matriz Descargar
+        Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -136,6 +141,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('updateMaestro', [GestionInstitucionalController::class, 'updateMaestro']);
         Route::post('deleteMaestro', [GestionInstitucionalController::class, 'deleteMaestro']);
     });
+
+    Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
         Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); // procedimiento especifico EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?
@@ -274,10 +281,10 @@ Route::group(['prefix' => 'acad'], function () {
 
 Route::group(['prefix' => 'seg'], function () {
     Route::group(['prefix' => 'auditoria'], function () {
-        Route::get('sel_auditoria_accesos', [AuditoriaController::class, 'sel_auditoria_accesos']);
-        Route::get('sel_auditoria_accesos_fallidos', [AuditoriaController::class, 'sel_auditoria_accesos_fallidos']);
-        Route::get('sel_auditoria', [AuditoriaController::class, 'sel_auditoria']);
-        Route::get('sel_auditoria_backend', [AuditoriaController::class, 'sel_auditoria_backend']);
+        Route::get('selAuditoriaAccesos', [AuditoriaAccesosController::class, 'selAuditoriaAccesos']);
+        Route::get('selAuditoriaAccesosFallidos', [AuditoriaAccesosFallidosController::class, 'selAuditoriaAccesosFallidos']);
+        Route::get('selAuditoria', [AuditoriaController::class, 'selAuditoria']);
+        Route::get('selAuditoriaMiddleware', [AuditoriaMiddlewareController::class, 'selAuditoriaMiddleware']);
     });
 });
 
