@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -161,5 +162,28 @@ class ResultadoController extends Controller
         $estado = 500;
         }
         return new JsonResponse($response,$estado);
+    }
+    public function reporteDeLogros(){
+        
+        
+        try { 
+            // Ejecutar el procedimiento almacenado usando DB::select
+            $data01 = DB:: select('');
+            $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
+            dd($data);
+            //$response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            //$estado = 200;
+
+            $pdf = PDF::loadView('aula.nivelDeLogroReporte', $data)
+                ->setPaper('a4', 'landscape')
+                ->stream('reporteLogro.pdf');
+            return $pdf;
+           
+       }       
+       catch (\Exception $e) {
+        $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+        $estado = 500;
+        }
+        // return new JsonResponse($response,$estado);
     }
 }
