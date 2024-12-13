@@ -38,12 +38,18 @@
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         background-color: #dbdbdb;
         font-size: 10px;
-        margin: 0;
+        margin: 2;
     }
     td{
         font-family: Verdana, Geneva, Tahoma, sans-serif;
         font-size: 10px;
-        margin: 0;
+        margin: 2;
+        text-align: center;
+    }
+    .logro{
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 10px;
+        margin: 2;
     }
     .container{
         display: flex;
@@ -78,60 +84,89 @@
         text-align: center;
         line-height: 30px;
     }
+    .id{
+        width: 30px;
+        text-align: center;
+    }
 </style>
 <body>
 
     <header class="table-header">
-        <table>
+        <table style="width: 100%; text-align: center;">
             <tr>
-                <td></td>
-                <td>
-                    "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
-                    Junín y Ayacucho"
-                </td>
-                <td></td>
+            <td style="width: 20%; text-align: center;">
+                <img src="logo1.png" alt="Logo 1" style="width: 80px; height: auto;">
+            </td>
+            <td style="width: 60%; text-align: center;">
+                "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
+                Junín y Ayacucho"
+            </td>
+            <td style="width: 20%; text-align: center;">
+                <img src="./img/Logo-buho.png" alt="Logo 2" style="width: 10px; height: auto;">
+            </td>
             </tr>
         </table>
     </header>
+    <br>
+    <br>
+    <div class="titulo" >REPORTE DE LOGRO DE APRENDIZAJE</div>
+    <div class="titulo" >Curso: </div>
     <main>
-    <div class="titulo">REPORTE DE LOGRO DE APRENDIZAJE</div>
-    <table>
-        <tr>
-            <td>Docente : {{$docente}}</td><td>Gestion :</td>
-        </tr>
-        <tr>
-            <td>Cod. Modular/I.E. : {{$modular}}</td><td>Nivel : {{$nivel}}</td>
-        </tr>
-        <tr>
-            <td>DRE/UGEL : {{$dre}}</td><td>Fase / Periodo:</td>
-        </tr>
-        <tr>
-            <td>AÑO : {{$year}}</td><td>Ciclo - Grado : {{$ciclo}} - {{$grado}}</td>
-        </tr>
-        <tr>
-            <td>MES : {{$mes}}</td><td>Seccion - Turno : {{$seccion}} - {{$turno}}</td>
-        </tr>
-        <tr>
-            <td>FECHA DE REPORTE : {{$fecha_reporte}}</td><td>Cerrado por :</td>
-        </tr>
-        <tr>
-            <td>FECHA DE CIERRE : {{$fecha_cierre}}</td>
-        </tr>
-    </table>
-    
-    <!-- <table>
-        <tr>
-            <td>Legenda:</td>
-            <td>[X] Asistio</td>
-            <td>[I] Inasistencia</td>
-            <td>[J] Inasistencia Justificada</td>
-            <td>[T] Tardanza</td>
-            <td>[P] Tardanza Justificada</td>
-            <td>[-] Sin Registro</td>
-        </tr>
-    </table> -->
-    </main>
-    
+        <div class="container">
+            <aside>
+                <div>Cod-M : </div>
+                <div>Docente : </div>                
+                <div>Año : </div>
+                <div>Nivel Educativo : </div>
+            </aside>
+            <aside>
+                <div>Sección - Turno :</div>
+                <div>Ciclo - Grado : </div>
+                <div>Fase / Periodo:</div>
+            </aside>
+        </div>
+        <table border="1" class="cuerpo">
+            <tr>
+                <th rowspan="2">Nro</th>
+                <th rowspan="2">Nombres Y Apellidos</th>
+                <th colspan="5">AÑO 2024</th>                
+            </tr>
+            <tr>
+                <th>TRIM I</th>
+                <th>TRIM II</th>
+                <th>TRIM III</th>
+                <th>TRIM IV</th>
+                <th>CONCLUSIÓN DESCRIPTIVA</th>
+            </tr>
+            <tbody>
+                @php
+                $item = 1; 
+                @endphp
+                @foreach($preguntas as $pregunta) <!-- Cambié $respuesta['preguntas'] por $preguntas -->
+                    <tr>
+                        <td>{{ $item++ }}</td>
+                        <td>{{ $pregunta['completoalumno'] }}</td>
+                        <td>{{ $pregunta['Trimestre_I']}}</td>
+                        <td>{{ $pregunta['Trimestre_II']}}</td>
+                        <td>{{ $pregunta['Trimestre_III']}}</td>
+                        <td>{{ $pregunta['Trimestre_IV']}}</td>
+                        <td>{{$pregunta['Conclusion_descriptiva']}} </td>
+                        
+                    </tr>
+                @endforeach
+            </tbody>            
+        </table>        
+        <br><br>
+        <table>
+            <tr>
+                <td>Legenda:</td>
+                <td>[AD] Logro destacado</td>
+                <td>[A] Logro esperado</td>
+                <td>[B] En Proceso</td>
+                <td>[C] En Inicio</td>
+            </tr>
+        </table>
+    </main>    
     <script type="text/php">
         if ( isset($pdf) ) {
             $pdf->page_script('
