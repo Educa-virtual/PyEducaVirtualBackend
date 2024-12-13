@@ -197,6 +197,78 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }
 
+    public function reporteHorasNivelGrado(Request $request)
+    {
+       
+        $solicitud = [
+            $request->iNivelTipoId, //INT,
+            $request->iProgId, //INT,
+            $request->iConfigId, //INT,
+            $request->iYAcadId, //INT        
+        ];
+
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC acad.SP_SEL_generarHorasGradosSeccionesCiclosXiNivelTipoId ?,?,?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+    public function reporteSeccionesNivelGrado(Request $request)
+    {
+       
+        $solicitud = [
+            $request->iNivelTipoId, //INT,
+            $request->iConfigId, //INT,      
+        ];
+
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC acad.SP_SEL_generarGradosSeccionesXiNivelTipoIdXiConfigId ?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
 
 }
 
