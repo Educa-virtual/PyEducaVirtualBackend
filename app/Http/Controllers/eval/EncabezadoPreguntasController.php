@@ -99,7 +99,7 @@ class EncabezadoPreguntasController extends Controller
                 case 'GUARDARxEncabezadoPreguntas':
                     $data = DB::select('exec eval.Sp_INS_encabezadoPreguntas ?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->idEncabPregId > 0) {
-                        $data = $this->encodeId($data);
+                       // $data = $this->encodeId($data);
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'Se guardó la información', 'data' => $data],
                             200

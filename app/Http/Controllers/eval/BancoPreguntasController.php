@@ -102,7 +102,7 @@ class BancoPreguntasController extends Controller
 
         try {
             switch ($request->opcion) {
-                case 'CONSULTAR':
+                case 'CONSULTARxiEvaluacionId':
                     $data = DB::select('exec eval.Sp_SEL_bancoPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
                     return new JsonResponse(
