@@ -44,6 +44,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
         Route::resource('rubrica', InstrumentosEvaluacionController::class);
         Route::get('obtenerRubricas', [InstrumentosEvaluacionController::class, 'obtenerRubricas']);
+        Route::get('obtenerRubrica', [InstrumentosEvaluacionController::class, 'obtenerRubrica']);
     });
 
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
