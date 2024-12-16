@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\eval\EvaluacionesController;
+use App\Http\Controllers\eval\BancoAlternativasController;
+use App\Http\Controllers\eval\EncabezadoPreguntasController;
+use App\Http\Controllers\eval\EvaluacionPreguntasController;
+use App\Http\Controllers\eval\EvaluacionRespuestasController;
 use App\Http\Controllers\Evaluaciones\BancoPreguntasController;
 use App\Http\Controllers\Evaluaciones\EscalaCalificacionesController;
 use App\Http\Controllers\Evaluaciones\EvaluacionController;
@@ -9,6 +14,7 @@ use App\Http\Controllers\Evaluaciones\LogrosController;
 use App\Http\Controllers\Evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
 use App\Http\Controllers\Evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController ;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'tipo-preguntas'], function () {
@@ -44,11 +50,31 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
         Route::resource('rubrica', InstrumentosEvaluacionController::class);
         Route::get('obtenerRubricas', [InstrumentosEvaluacionController::class, 'obtenerRubricas']);
+        Route::get('obtenerRubrica', [InstrumentosEvaluacionController::class, 'obtenerRubrica']);
     });
 
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
 
     Route::group(['prefix' => 'escala-calificaciones'], function () {
         Route::post('list', [EscalaCalificacionesController::class, 'list']);
+    });
+
+    Route::group(['prefix' => 'banco-alternativas'], function () {
+        Route::post('handleCrudOperation', [BancoAlternativasController::class, 'handleCrudOperation']);
+    });
+    Route::group(['prefix' => 'banco-preguntas'], function () {
+        Route::post('handleCrudOperation', [EvaluacionesBancoPreguntasController::class, 'handleCrudOperation']);
+    });
+    Route::group(['prefix' => 'encabezado-preguntas'], function () {
+        Route::post('handleCrudOperation', [EncabezadoPreguntasController::class, 'handleCrudOperation']);
+    });
+    Route::group(['prefix' => 'evaluaciones'], function () {
+        Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']);
+    });
+    Route::group(['prefix' => 'evaluacion-preguntas'], function () {
+        Route::post('handleCrudOperation', [EvaluacionPreguntasController::class, 'handleCrudOperation']);
+    });
+    Route::group(['prefix' => 'evaluacion-respuestas'], function () {
+        Route::post('handleCrudOperation', [EvaluacionRespuestasController::class, 'handleCrudOperation']);
     });
 });

@@ -35,6 +35,8 @@ class PreguntasController extends ApiController
         //$iCursoId = $request->iCursoId ?? null;
         $iCursosNivelGradId = $request->iCursosNivelGradId ?? null;
         $iDesempenoId = $request->iDesempenoId ?? null;
+        $iNivelGradoId = $request->iNivelGradoId ?? null;
+        $iEspecialistaId = $request->iEspecialistaId ?? null;
         // encabezado
 
         $iEncabPregId = (int) $request->encabezado['iEncabPregId'];
@@ -84,6 +86,8 @@ class PreguntasController extends ApiController
                 //(int) $iCursoId, //Esto es  el iCursoId desde el front
                 (int) $iCursosNivelGradId,
                 (int) $iDesempenoId,
+                (int) $iNivelGradoId,
+                (int) $iEspecialistaId,
                 (int)$pregunta['iTipoPregId'],
                 $pregunta['cPregunta'],
                 $pregunta['cPreguntaTextoAyuda'] ?? '',
@@ -103,6 +107,8 @@ class PreguntasController extends ApiController
                 @_iPreguntaId = ?
                 , @_iCursosNivelGradId = ? 
                 , @_iDesempenoId = ?
+                , @_iNivelGradoId = ?
+                , @_iEspecialistaId = ?
                 , @_iTipoPregId = ?
                 , @_cPregunta = ?
                 , @_cPreguntaTextoAyuda = ?
@@ -250,14 +256,15 @@ class PreguntasController extends ApiController
     {
 
         $params = [
-            'iCursoId' => $request->iCursoId ?? 0,
+
+            'iCursosNivelGradId' => $request->iCursosNivelGradId ?? 0,
             'busqueda' => $request->busqueda ?? '',
             'iTipoPregId' => $request->iTipoPregId ?? 0,
             'bPreguntaEstado' => $request->bPreguntaEstado ?? -1,
             'iEncabPregId' => $request->iEncabPregId  ?? 0
         ];
 
-
+        //return $params;
         try {
             $preguntas = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
@@ -343,7 +350,7 @@ class PreguntasController extends ApiController
     {
 
         $params = [
-            'iCursoId' => $request->iCursoId,
+            'iCursosNivelGradId' => $request->iCursosNivelGradId,
             'busqueda' => '',
             'iTipoPregId' => 0,
             'bPreguntaEstado' => -1,
