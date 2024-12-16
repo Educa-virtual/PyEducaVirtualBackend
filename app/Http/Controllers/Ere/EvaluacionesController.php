@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 //use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\Ere\EreEvaluacion;
 use Hashids\Hashids;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 //use Carbon\Carbon;
 
 class EvaluacionesController extends ApiController
@@ -174,42 +174,7 @@ class EvaluacionesController extends ApiController
 
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
-    //!ESTE ES EL VERDADERO
-    // public function obtenerParticipaciones(Request $request)
-    // {
-    //     // Obtener el ID de evaluación del parámetro de consulta
-    //     $iEvaluacionId = $request->query('iEvaluacionId');
 
-    //     // Verificar si el ID no es nulo antes de hacer la consulta
-    //     if ($iEvaluacionId === null) {
-    //         return response()->json(['error' => 'ID de evaluación no proporcionado'], 400);
-    //     }
-
-    //     try {
-    //         // Filtrar las participaciones por el ID de evaluación y obtener la información adicional de las instituciones
-    //         $participaciones = DB::table('acad.institucion_educativas')
-    //             ->join('acad.nivel_tipos', 'acad.institucion_educativas.iNivelTipoId', '=', 'acad.nivel_tipos.iNivelTipoId')
-    //             ->join('grl.distritos', 'acad.institucion_educativas.iDsttId', '=', 'grl.distritos.iDsttId')
-    //             ->join('grl.provincias', 'grl.distritos.iPrvnId', '=', 'grl.provincias.iPrvnId')
-    //             ->leftJoin('ere.iiee_participa_evaluaciones', 'acad.institucion_educativas.iIieeId', '=', 'ere.iiee_participa_evaluaciones.iIieeId')
-    //             ->select(
-    //                 'acad.institucion_educativas.iIieeId',
-    //                 'acad.institucion_educativas.cIieeCodigoModular',
-    //                 'acad.institucion_educativas.cIieeNombre',
-    //                 'acad.nivel_tipos.cNivelTipoNombre',
-    //                 'grl.distritos.cDsttNombre',
-    //                 'grl.provincias.cPrvnNombre',
-    //                 'ere.iiee_participa_evaluaciones.iEvaluacionId'
-    //             )
-    //             ->where('ere.iiee_participa_evaluaciones.iEvaluacionId', $iEvaluacionId) // Filtrar por ID de evaluación
-    //             ->get();
-
-    //         return response()->json(['data' => $participaciones]);
-    //     } catch (Exception $e) {
-    //         return response()->json(['error' => 'Error al obtener las participaciones', 'message' => $e->getMessage()], 500);
-    //     }
-    // }
-    //!
     public function obtenerParticipaciones($iEvaluacionId)
     {
         // Llamar al procedimiento almacenado
@@ -302,7 +267,7 @@ class EvaluacionesController extends ApiController
     {
         // Llamar al procedimiento almacenado
         //Se cambio el nombre SP_SEL_CursosEvaluacion
-        $cursos = DB::select('EXEC ere.SP_SEL_CursosEvaluacion ?', [$iEvaluacionId]);
+        $cursos = DB::select('EXEC ere.SP_SEL_cursosEvaluacion ?', [$iEvaluacionId]);
 
         // Devolver la respuesta en formato JSON
         return response()->json([
@@ -573,85 +538,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    //!
-    // public function obtenerEspDremCurso(Request $request)
-    // {
-    //     $esquema = 'acad';
-    //     $tabla = 'especialistas_DRE';
-
-    //     // Campos de la tabla especialistas_DRE que necesitas
-    //     $campos = 'iEspecialistaId, dtEspecialistaInicio, dtEspecialistaRslDesignacion, iDocenteId, iCursosNivelGradId';
-
-    //     // Obtener iPersId de la solicitud
-    //     $iPersId = $request->input('iPersId'); // Valor dinámico recibido desde el frontend
-    //     //$iPersId = 4;
-    //     if (!$iPersId) {
-    //         return $this->errorResponse(null, 'El parámetro iPersId es obligatorio.');
-    //     }
-
-    //     try {
-    //         // Obtener el iDocenteId relacionado con el iPersId
-    //         $iDocenteId = DB::table('acad.docentes')
-    //             ->where('iPersId', $iPersId)
-    //             ->value('iDocenteId');
-
-    //         if (!$iDocenteId) {
-    //             return $this->errorResponse(null, 'No se encontró un docente relacionado con el iPersId proporcionado.');
-    //         }
-
-    //         // Construir la condición WHERE para la consulta de especialistas_DRE
-    //         $where = "iDocenteId = $iDocenteId";
-
-    //         // Parámetros del procedimiento almacenado
-    //         $params = [
-    //             $esquema,
-    //             $tabla,
-    //             $campos,
-    //             $where
-    //         ];
-
-    //         // Ejecutar la consulta principal
-    //         $especialistas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
-    //     @nombreEsquema = ?, 
-    //     @nombreTabla = ?, 
-    //     @campos = ?, 
-    //     @condicionWhere = ?', $params);
-
-    //         if (empty($especialistas)) {
-    //             return $this->errorResponse(null, 'No se encontraron datos para el Especialista relacionado con el iDocenteId.');
-    //         }
-
-    //         // Transformar los datos para incluir relaciones (cursos y grados)
-    //         $especialistas = collect($especialistas)->map(function ($especialista) {
-    //             // Obtener información adicional de cursos y grados
-    //             $cursoNivelGrado = DB::table('acad.cursos_niveles_grados as cng')
-    //                 ->join('acad.cursos as c', 'cng.iCursoId', '=', 'c.iCursoId')
-    //                 ->join('acad.grados as g', 'cng.iNivelGradoId', '=', 'g.iGradoId')
-    //                 ->select(
-    //                     'cng.iCursoId',
-    //                     'c.cCursoNombre',
-    //                     'c.cCursoDescripcion',
-    //                     'g.cGradoNombre',
-    //                     'g.cGradoAbreviacion',
-    //                     'g.cGradoRomanos'
-    //                 )
-    //                 ->where('cng.iCursosNivelGradId', $especialista->iCursosNivelGradId)
-    //                 ->first();
-
-    //             // Combinar los datos básicos del especialista con los datos relacionados
-    //             return array_merge((array) $especialista, (array) $cursoNivelGrado);
-    //         });
-
-    //         return $this->successResponse(
-    //             $especialistas,
-    //             'Datos obtenidos correctamente.'
-    //         );
-    //     } catch (Exception $e) {
-    //         return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
-    //     }
-    // }
-
-    //!
 
     public function obtenerEspDremCurso(Request $request)
     {
@@ -714,71 +600,88 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
         }
     }
-    //! ****
+
     public function generarPdfMatrizbyEvaluacionId(Request $request)
     {
-        // // Obtener el parámetro iEvaluacionId de la solicitud
-        // $iEvaluacionId = $request->query('iEvaluacionId');
 
-        // // Validar si se recibió el parámetro
-        // if (!$iEvaluacionId) {
-        //     return response()->json([
-        //         'message' => 'El parámetro iEvaluacionId no fue recibido.',
-        //         'status' => 'error'
-        //     ], 400); // Código HTTP 400: Bad Request
-        // }
-        // if (!$iEvaluacionId) {
-        //     return response()->json([
-        //         'message' => 'La evaluación no existe con el ID proporcionado.',
-        //         'status' => 'error'
-        //     ], 404); // Código HTTP 404: Not Found
-        // }
+        // Acceder a los datos enviados desde Angular
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $nombreEvaluacion = $request->input('nombreEvaluacion');
+        $areaId = $request->input('areaId'); // Esto se comparará con 'iCursosNivelGradId'
+        $ids = $request->input('ids');  // Esto se comparará con 'iPreguntaId'
+        $seccion = $request->input('seccion');
+        $grado = $request->input('grado');
+        $nivel = $request->input('nivel');
+        $nombreCurso = $request->input('nombreCurso');
 
-        // // Si todo está correcto, devolver un mensaje de éxito
-        // return response()->json([
-        //     'message' => "El ID $iEvaluacionId se recibió correctamente.",
-        //     'status' => 'success'
-        // ]);
-        // $query = DB::select('EXEC ere.SP_SEL_preguntasXiEvaluacionId ?', [$iEvaluacionId]);
-        // $pdfData = [
-        //     'evaluacion' => $query[0]->cEvaluacionNombre,
-        //     'descripcion' => $query[0]->cEvaluacionDescripcion,
-        //     'preguntas' => $query,  // El array de preguntas
-        // ];
+        // Aquí tomaremos los datos de la tabla "ere.preguntas"
+        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
 
-        // // Generar el PDF con la vista correspondiente
-        // $pdf = PDF::loadView('pdfEre.matrizReporte', $pdfData);
-
-        // // Retornar el PDF con nombre
-        // return $pdf->download('matriz_evaluacioncccccc.pdf');
-        //!
-        // Obtener el parámetro iEvaluacionId
-        $iEvaluacionId = $request->query('iEvaluacionId');
-
-        // Validar si se recibió el parámetro
-        if (!$iEvaluacionId) {
-            return response()->json([
-                'message' => 'El parámetro iEvaluacionId no fue recibido.',
-                'status' => 'error'
-
-            ], 400);
+        // Verificar si se obtuvieron resultados
+        if (empty($preguntas)) {
+            return response()->json(['error' => 'No se encontraron preguntas para la evaluación especificada'], 404);
         }
 
-        // Datos de ejemplo para el PDF
-        $pdfData = [
-            'evaluacion' => 'Evaluación de ejemplo: ' . $iEvaluacionId,
-            'descripcion' => 'Descripción de la evaluación.',
-            'preguntas' => [
-                'Pregunta 1: ¿Cuál es el capital de Francia?',
-                'Pregunta 2: ¿Quién descubrió América?',
-                'Pregunta 3: ¿Cuál es la fórmula del agua?',
-            ],
+        // Filtrar las preguntas según los parámetros recibidos
+        $datos = [];
+        foreach ($preguntas as $key => $pregunta) {
+            // Filtrar por areaId (compara con iCursosNivelGradId)
+            if ($areaId && $pregunta->iCursosNivelGradId != $areaId) {
+
+                continue; // Si no coincide, omitir esta pregunta
+            }
+
+            // Filtrar por ids (compara con iPreguntaId)
+            if ($ids && !in_array($pregunta->iPreguntaId, explode(',', $ids))) {
+
+                continue; // Si no coincide, omitir esta pregunta
+            }
+
+            // Si pasa los filtros, agregar la pregunta a los datos
+            $datos['preguntas'][$key] = [
+                'evaluacion_nombre' => $pregunta->cEvaluacionNombre,
+                'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
+                'competencia_nombre' => $pregunta->cCompetenciaNombre,
+                'competencia_descripcion' => $pregunta->cCompetenciaDescripcion,
+                'capacidad_nombre' => $pregunta->cCapacidadNombre,
+                'capacidad_descripcion' => $pregunta->cCapacidadDescripcion,
+                'desempeno_descripcion' => $pregunta->cDesempenoDescripcion,
+                'curso_nombre' => $pregunta->cCursoNombre,
+                'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
+                'nivel_nombre' => $pregunta->cNivelNombre,
+                'pregunta' => $pregunta->cPregunta,
+                'pregunta_clave' => $pregunta->cPreguntaClave,
+                'pregunta_texto_ayuda' => $pregunta->cPreguntaTextoAyuda,
+                'pregunta_nivel' => $pregunta->iPreguntaNivel,
+                'iPreguntaId' => $pregunta->iPreguntaId,
+                'iCursosNivelGradId' => $pregunta->iCursosNivelGradId,
+                'iEvaluacionId' => $pregunta->iEvaluacionId
+            ];
+        }
+
+        // Verificar si se encontraron preguntas después del filtro
+        if (empty($datos['preguntas'])) {
+            return response()->json(['error' => 'No se encontraron preguntas que coincidan con los filtros especificados'], 404);
+        }
+
+        // Preparar los datos para el PDF o la respuesta
+        $respuesta = [
+            'iEvaluacionId' => $iEvaluacionId,
+            'nombreEvaluacion' => $nombreEvaluacion,
+            'areaId' => $areaId,
+            'ids' => $ids,
+            'seccion' => $seccion,
+            'grado' => $grado,
+            'nivel' => $nivel,
+            'nombreCurso' => $nombreCurso,
+            'preguntas' => $datos['preguntas'],
         ];
+        // Generar el PDF con los datos recibidos
+        $pdf = PDF::loadView('pdfEre.matrizReporte', $respuesta)
+            ->setPaper('a4', 'landscape')  // Asegúrate de tener el tamaño de papel correcto
+            ->stream('matriz_evaluacion.pdf');  // Puedes cambiar 'stream' por 'download' si quieres forzar la descarga
 
-        // Generar el PDF con los datos proporcionados
-        //$pdf = PDF::loadView('pdf.muestra', $pdfData);
-
-        // Descargar el PDF
-        //return $pdf->download('matriz_evaluacion.pdf');
+        // Retornar el PDF como respuesta
+        return $pdf;
     }
 }
