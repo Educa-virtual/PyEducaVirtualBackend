@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 
 class ResultadoController extends Controller
 {
-
+    //private apiUrl = 'http://localhost:8000/api'; // Backend URL
     protected $hashids;
 
     public function __construct()
@@ -134,5 +135,99 @@ class ResultadoController extends Controller
         }
 
         return new JsonResponse($response,$estado);
+    }
+    public function obtenerReporteFinalNotas (){
+        //return 1;
+        // try {
+        //     $preguntas = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
+
+        //     //return $preguntas;
+        //     return $this->successResponse($preguntas);
+        // } catch (Exception $e) {
+
+        //     return $this->errorResponse($e, 'Error Upssss!');
+        // }
+        try { 
+            // Ejecutar el procedimiento almacenado usando DB::select
+            $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
+            
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+
+            return $response;
+           
+       }       
+       catch (\Exception $e) {
+        $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+        $estado = 500;
+        }
+        return new JsonResponse($response,$estado);
+    }
+    public function reporteDeLogros(){
+       
+            // Ejecutar el procedimiento almacenado usando DB::select
+            //$data01 = DB:: select('');
+        $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
+
+        $datos = [];
+        foreach ($data as $key => $pregunta) {
+            
+            // Si pasa los filtros, agregar la pregunta a los datos
+            $datos['preguntas'][$key] = [
+                'completoalumno' => $pregunta->completoalumno,
+                'Trimestre_I' => $pregunta->iEscalaCalifIdPeriodo1,
+                'Trimestre_II' => $pregunta->iEscalaCalifIdPeriodo2,
+                'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
+                'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
+                'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
+                // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
+                // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
+            ];
+        }
+        $data = [
+            
+            'preguntas' => $datos['preguntas'],
+        ];
+        //return $data;
+
+        $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
+            ->setPaper('a4', 'landscape')
+            ->stream('reporteLogro.pdf');
+
+        return $pdf;
+           
+       
+        // return new JsonResponse($response,$estado);
+    
+        // try {
+        //     // Obtener los datos del procedimiento almacenado
+        //     $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
+    
+        //     // Verifica que haya datos antes de generar el PDF
+        //     // if (empty($data)) {
+        //     //     return response()->json([
+        //     //         'validated' => false,
+        //     //         'message' => 'No hay datos disponibles para generar el reporte.',
+        //     //     ], 404);
+        //     // }
+        //     $pdf = PDF::loadView('aula.nivelDeLogroReporte', $data)
+        //         ->setPaper('a4', 'landscape')
+        //         ->stream('reporteLogro.pdf');
+
+        //     return $pdf;
+    
+        //     // Generar el PDF
+        //     // $pdf = PDF::loadView('aula.nivelDeLogroReporte', ['data' => $data])
+        //     //     ->setPaper('a4', 'landscape');
+    
+        //     // // Retornar el PDF como respuesta
+        //     // return $pdf->stream('reporteLogro.pdf');
+    
+        // } catch (\Exception $e) {
+        //     return response()->json([
+        //         'validated' => false,
+        //         'message' => 'Error al generar el reporte: ' . $e->getMessage(),
+        //     ], 500);
+        // }
     }
 }

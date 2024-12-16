@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\eval\EvaluacionesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -185,18 +186,25 @@ class ProgramacionActividadesController extends Controller
             //$request->iCredId
 
         ];
-
+        
         try {
             $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
-            switch ($request->opcion) {
+            
+                switch ($request->opcion) {
                 case 'GUARDARxProgActxiTarea':
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
                         $resp = new TareasController();
                     }
                     return $resp->store($request);
+                    break;
+                case 'GUARDARxProgActxiEvaluacionId':
+                    if ($data[0]->iProgActId > 0) {
+                        $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
+                        $resp = new EvaluacionesController();
+                    }
+                    return $resp->handleCrudOperation($request);
                     break;
                 default:
                     if ($data[0]->iProgActId > 0) {
