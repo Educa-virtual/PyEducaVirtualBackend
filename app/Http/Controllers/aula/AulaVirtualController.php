@@ -451,55 +451,63 @@ class AulaVirtualController extends ApiController
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
         }
 
-        $iDocenteId = $request->iDocenteId;
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
+        // $iDocenteId = $request->iDocenteId;
+        // if ($request->iDocenteId) {
+        //     $iDocenteId = $this->hashids->decode($iDocenteId);
+        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        // }
 
         $data = [
             $request->iEstudianteId,
             $iForoId,
-            null,
-            // $iForoRptaPadre ?? null,
-            $iDocenteId ?? null,
-            $request->cForoRptaRespuesta,
-            $request->nForoRptaNota ?? null,
-            $request->dtForoRptaPublicacion ?? null,
-            $request->cForoRptaDocente ?? null,
-            $request->iEstado ?? null,
-            $request->iSesionId ?? null,
-            $request->dtCreado ?? null,
-            $request->dtActualizado ?? null
+            //null,
+            //$iForoRptaPadre ?? null,
+            //$iDocenteId ?? null,
+            $request->cForoRptaRespuesta
+            //$request->nForoRptaNota ?? null,
+            // $request->dtForoRptaPublicacion ?? null,
+            // $request->cForoRptaDocente ?? null,
+            // $request->iEstado ?? null,
+            // $request->iSesionId ?? null,
+            // $request->dtCreado ?? null,
+            // $request->dtActualizado ?? null
             //$request->iEscalaCalifId ?? null
         ];
-        return $data;
+        //return $data;
         try {
+            // $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
+            //     @iForoId = ?,
+            //     @iEstudianteId = ?,
+            //     @iForoRptaPadre = ?,
+            //     @iDocenteId = ?,
+            //     @cForoRptaRespuesta = ?,
+            //     @nForoRptaNota = ?,
+            //     @cForoRptaDocente = ?,
+            //     @dtActualizado = ?,
+            //     @dtForoRptaPublicacion = ?,
+            //     @iEstado = ?,
+            //     @iSesionId = ?,
+            //     @dtCreado = ?,
+            //     @iEscalaCalifId = ?', $data);
             $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
-                @iForoId = ?,
                 @iEstudianteId = ?,
-                @iForoRptaPadre = ?,
-                @iDocenteId = ?,
-                @cForoRptaRespuesta = ?,
-                @nForoRptaNota = ?,
-                @cForoRptaDocente = ?,
-                @dtActualizado = ?,
-                @dtForoRptaPublicacion = ?,
-                @iEstado = ?,
-                @iSesionId = ?,
-                @dtCreado = ?,
-                @iEscalaCalifId = ?', $data);
+                @iForoId = ?,
+                @cForoRptaRespuesta = ?', $data);
 
             //return $resp;
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $resp];
+            $estado = 200;
 
-            DB::commit();
-            if ($resp[0]->id > 0) {
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+            return $response;
+
+            // DB::commit();
+            // if ($resp[0]->id > 0) {
+            //     $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+            //     $codeResponse = 200;
+            // } else {
+            //     $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+            //     $codeResponse = 500;
+            // }
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
