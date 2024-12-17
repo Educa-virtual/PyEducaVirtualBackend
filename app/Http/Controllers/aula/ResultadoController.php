@@ -180,8 +180,7 @@ class ResultadoController extends Controller
             $iCursoId = $this->hashids->decode($iCursoId);             
             $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
         }
-        try{
-            $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
+        $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
             
             $datos = [];
             foreach ($data as $key => $pregunta) {
@@ -209,12 +208,41 @@ class ResultadoController extends Controller
                 ->stream('reporteLogro.pdf');
 
             return $pdf;
-        }catch(\Exception $e) {
-                    return response()->json([
-                        'validated' => false,
-                        'message' => 'Error al generar el reporte: ' . $e->getMessage(),
-                    ], 500);
-        }
+        // try{
+        //     $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
+            
+        //     $datos = [];
+        //     foreach ($data as $key => $pregunta) {
+                
+        //         // Si pasa los filtros, agregar la pregunta a los datos
+        //         $datos['preguntas'][$key] = [
+        //             'completoalumno' => $pregunta->completoalumno,
+        //             'Trimestre_I' => $pregunta->iEscalaCalifIdPeriodo1,
+        //             'Trimestre_II' => $pregunta->iEscalaCalifIdPeriodo2,
+        //             'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
+        //             'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
+        //             'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
+        //             // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
+        //             // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
+        //         ];
+        //     }
+        //     $data = [
+                
+        //         'preguntas' => $datos['preguntas'],
+        //     ];
+        //     //return $data;
+
+        //     $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
+        //         ->setPaper('a4', 'landscape')
+        //         ->stream('reporteLogro.pdf');
+
+        //     return $pdf;
+        // }catch(\Exception $e) {
+        //             return response()->json([
+        //                 'validated' => false,
+        //                 'message' => 'Error al generar el reporte: ' . $e->getMessage(),
+        //             ], 500);
+        // }
         
 
         

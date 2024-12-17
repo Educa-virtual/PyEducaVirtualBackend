@@ -79,7 +79,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('obtenerCalificacionesFinalesReporte', [ResultadoController::class, 'obtenerCalificacionesFinalesReporte']);
         Route::post('habilitarCalificacion', [ResultadoController::class, 'habilitarCalificacion']);
         Route::get('obtenerReporteFinalNotas', [ResultadoController::class, 'obtenerReporteFinalNotas']);
-        Route::get('reporteDeLogros', [ResultadoController::class, 'reporteDeLogros']);
+        Route::post('reporteDeLogros', [ResultadoController::class, 'reporteDeLogros']);
         
         
     });
