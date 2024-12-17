@@ -460,35 +460,12 @@ class AulaVirtualController extends ApiController
         $data = [
             $request->iEstudianteId,
             $iForoId,
-            //null,
-            //$iForoRptaPadre ?? null,
-            //$iDocenteId ?? null,
             $request->cForoRptaRespuesta
-            //$request->nForoRptaNota ?? null,
-            // $request->dtForoRptaPublicacion ?? null,
-            // $request->cForoRptaDocente ?? null,
-            // $request->iEstado ?? null,
-            // $request->iSesionId ?? null,
-            // $request->dtCreado ?? null,
-            // $request->dtActualizado ?? null
-            //$request->iEscalaCalifId ?? null
+          
         ];
         //return $data;
         try {
-            // $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
-            //     @iForoId = ?,
-            //     @iEstudianteId = ?,
-            //     @iForoRptaPadre = ?,
-            //     @iDocenteId = ?,
-            //     @cForoRptaRespuesta = ?,
-            //     @nForoRptaNota = ?,
-            //     @cForoRptaDocente = ?,
-            //     @dtActualizado = ?,
-            //     @dtForoRptaPublicacion = ?,
-            //     @iEstado = ?,
-            //     @iSesionId = ?,
-            //     @dtCreado = ?,
-            //     @iEscalaCalifId = ?', $data);
+           
             $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
                 @iEstudianteId = ?,
                 @iForoId = ?,
@@ -500,14 +477,6 @@ class AulaVirtualController extends ApiController
 
             return $response;
 
-            // DB::commit();
-            // if ($resp[0]->id > 0) {
-            //     $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-            //     $codeResponse = 200;
-            // } else {
-            //     $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-            //     $codeResponse = 500;
-            // }
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
