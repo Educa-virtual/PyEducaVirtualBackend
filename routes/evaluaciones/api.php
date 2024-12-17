@@ -77,4 +77,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'evaluacion-respuestas'], function () {
         Route::post('handleCrudOperation', [EvaluacionRespuestasController::class, 'handleCrudOperation']);
     });
+    Route::group(['prefix' => 'evaluacion-promedios'], function () {
+        Route::post('guardarConclusionxiEvalPromId', [EvaluacionesController::class, 'guardarConclusionxiEvalPromId']);
+    });
 });

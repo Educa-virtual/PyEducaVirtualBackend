@@ -166,4 +166,23 @@ class EvaluacionesController extends Controller
             );
         }
     }
+
+    public function guardarConclusionxiEvalPromId(Request $request){
+        $data = DB::update(
+            "   UPDATE eval.evaluacion_promedios
+                SET cConclusionDescriptiva = '" . $request->cConclusionDescriptiva . "'
+                WHERE iEvalPromId = '" . $request->iEvalPromId . "'
+            "
+        );
+
+        if ($data) {
+            $response = ['validated' => true, 'mensaje' => 'Se actualizó la respuesta.'];
+            $codeResponse = 200;
+        } else {
+            $response = ['validated' => false, 'mensaje' => 'No se pudo actualizar la respuesta.'];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
 }
