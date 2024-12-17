@@ -440,7 +440,7 @@ class AulaVirtualController extends ApiController
     {
         //return $request -> all();
         $request->validate([
-            //'iEstudianteId' => 'required|integer',
+            'iEstudianteId' => 'required|integer',
             'cForoRptaRespuesta' => 'required|string',
             'iForoId' => 'required|string'
         ]);
@@ -458,7 +458,7 @@ class AulaVirtualController extends ApiController
         }
 
         $data = [
-            $request->iEstudianteId ?? null,
+            $request->iEstudianteId,
             $iForoId,
             null,
             // $iForoRptaPadre ?? null,
@@ -470,25 +470,28 @@ class AulaVirtualController extends ApiController
             $request->iEstado ?? null,
             $request->iSesionId ?? null,
             $request->dtCreado ?? null,
-            $request->dtActualizado ?? null,
-            $request->iEscalaCalifId ?? null
+            $request->dtActualizado ?? null
+            //$request->iEscalaCalifId ?? null
         ];
-        //return $data;
+        return $data;
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaForo]
-                @iEstudianteId = ?,
+            $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
                 @iForoId = ?,
+                @iEstudianteId = ?,
                 @iForoRptaPadre = ?,
                 @iDocenteId = ?,
                 @cForoRptaRespuesta = ?,
                 @nForoRptaNota = ?,
-                @dtForoRptaPublicacion = ?,
                 @cForoRptaDocente = ?,
+                @dtActualizado = ?,
+                @dtForoRptaPublicacion = ?,
                 @iEstado = ?,
                 @iSesionId = ?,
                 @dtCreado = ?,
-                @dtActualizado = ?,
                 @iEscalaCalifId = ?', $data);
+
+            //return $resp;
+
             DB::commit();
             if ($resp[0]->id > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
