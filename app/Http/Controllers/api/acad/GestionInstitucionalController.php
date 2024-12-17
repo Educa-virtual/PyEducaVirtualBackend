@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\api\acad;
 
 use App\Http\Controllers\Controller;
+use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GestionInstitucionalController extends Controller
 {
@@ -197,7 +199,117 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }
 
+    public function reporteHorasNivelGrado(Request $request)
+    {
+       
+        $solicitud = [
+            $request->iNivelTipoId, //INT,
+            $request->iProgId, //INT,
+            $request->iConfigId, //INT,
+            $request->iYAcadId, //INT        
+        ];
 
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC acad.SP_SEL_generarHorasGradosSeccionesCiclosXiNivelTipoId ?,?,?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+    public function reporteSeccionesNivelGrado(Request $request)
+    {
+       
+        $solicitud = [
+            $request->iNivelTipoId, //INT,
+            $request->iConfigId, //INT,      
+        ];
+
+        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+        $query = DB::select(
+            "EXEC acad.SP_SEL_generarGradosSeccionesXiNivelTipoIdXiConfigId ?,?",
+            $solicitud
+        );
+        //  [$json, $opcion ]);
+
+        try {
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
+    public function reportePDFResumenAmbientes(Request $request)
+    {
+        // Decodificar JSON a un arreglo asociativo
+        $secciones = $request->secciones;
+        $r_horas = $request->r_horas;
+        
+
+    
+        switch($request->iNivelTipoId){
+            case 3:
+                $title = 'Primaria'; break;
+            case 4: 
+                $title = 'Secundaria'; break;
+            
+            default :
+                $title = 'Sin nivel';
+                break;
+        }
+       
+        $respuesta = [
+            "totalHorasPendientes" => $request->totalHorasPendientes,
+            "title" => $title,
+            "fecha" => date("F j, Y, g:i a"),
+            "total_aulas" => $request->total_aulas,
+            "r_horas" =>  $r_horas,
+            "secciones" =>  $secciones,
+            "dre" => "DRE MOQUEGUA UGEL",
+            "totalHoras" => $request->totalHoras,
+            "bConfigEsBilingue" => $request->bConfigEsBilingue,
+            "contador" => 1
+           
+        ];
+
+        $pdf = Pdf::loadView('resumen_reporte_ambientes_primaria', $respuesta)
+            ->setPaper('a4', 'landscape')
+            ->stream('reporte.pdf');
+        return $pdf;
+    }
 }
 
 
