@@ -38,6 +38,9 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('publicar', [EvaluacionController::class, 'publicarEvaluacion']);
         Route::post('anular-publicacion', [EvaluacionController::class, 'anularPublicacionEvaluacion']);
 
+        Route::post('actualizarEvaluacion', [EvaluacionController::class, 'actualizarEvaluacion']);
+
+
         Route::group(['prefix' => 'estudiantes'], function () {
             Route::resource('', EvaluacionEstudiantesController::class);
             Route::get('obtenerEvaluacionRespuestasEstudiante', [EvaluacionEstudiantesController::class, 'obtenerEvaluacionRespuestasEstudiante']);

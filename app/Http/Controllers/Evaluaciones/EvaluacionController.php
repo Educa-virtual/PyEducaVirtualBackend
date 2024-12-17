@@ -127,6 +127,28 @@ class EvaluacionController extends ApiController
         }
     }
 
+    public function actualizarEvaluacion(Request $request){
+        try {
+
+            $params = ['eval','evaluaciones',$request->data];
+
+            $params[] = json_encode([
+                'COLUMN_NAME' => 'iEvaluacionId',
+                'VALUE' => $request->iEvaluacionId,
+            ]);
+            
+            // Construir los placeholders dinámicos
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+            
+            // $data = DB::select("exec grl.SP_UPD_EnTablaConJSON $placeholders", $params);
+
+            return $this->successResponse($request->all(), 'Datos obtenidos correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            return $this->errorResponse(null, $message);
+        }
+    }
+
 
     public function eliminarPreguntaEvulacion($id)
     {
