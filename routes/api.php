@@ -142,6 +142,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('deleteMaestro', [GestionInstitucionalController::class, 'deleteMaestro']);
         Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']); 
         Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']); 
+        Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']); 
+
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
