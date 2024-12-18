@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Dompdf\Options;
 
 class ResultadoController extends Controller
 {
@@ -168,18 +169,35 @@ class ResultadoController extends Controller
         }
         
     }
-    public function reporteDeLogros(Request $request){
+    public function reporteDeLogros(){
         // Validación de los parámetros de entrada
-        $request->validate([
-            'iIeCursoId' => 'required | string ', 
-        ]);
+        // $request->validate([
+        //     'iIeCursoId' => 'required | string ', 
+        // ]);
          //return $request->iCursoId;
-        $iCursoId = $request->iIeCursoId;
+        $iCursoId = 1;// $request->iIeCursoId;
         // Si se pasa un valor para iCursoId, decodificarlo
-        if ($request->iIeCursoId) {
-            $iCursoId = $this->hashids->decode($iCursoId);             
-            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
-        }
+        // if ($request->iIeCursoId) {
+        //     $iCursoId = $this->hashids->decode($iCursoId);             
+        //     $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
+        // }
+
+        //$cPersNombreLargo = "Docente";
+        //CARGAR LOGOS 
+        $imagePath = public_path('images\logo_IE\dremo.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $region = 'data:image/jpeg;base64,' . $imageData;
+    
+        $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $insignia = 'data:image/jpeg;base64,' . $imageData;
+        //'data:image/jpeg;base64,' . $imageData;
+    
+        $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $virtual = 'data:image/jpeg;base64,' . $imageData;
+
+
         $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
             
             $datos = [];
@@ -193,6 +211,9 @@ class ResultadoController extends Controller
                     'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
                     'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
                     'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
+                 
+                   
+                    
                     // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
                     // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
                 ];
@@ -200,6 +221,10 @@ class ResultadoController extends Controller
             $data = [
                 
                 'preguntas' => $datos['preguntas'],
+                "imageLogo" => $region,// Ruta absoluta
+                "logoVirtual" => $virtual,// Ruta absoluta
+                "logoInsignia" => $insignia,// Ruta absoluta
+                "cPersNombreLargo" =>$pregunta->completoalumno,
             ];
             //return $data;
 
