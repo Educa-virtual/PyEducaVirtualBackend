@@ -43,10 +43,36 @@ class InstrumentosEvaluacionController extends ApiController
     public function obtenerRubrica(Request $request){
         try {
 
-            $params = ['eval','V_InstrumentosEvaluacion','*'];
+            $params = ['eval','V_Instrumentos','*'];
 
             if (!is_null($request->iInstrumentoId)) {
                 $params[] = 'iInstrumentoId=' . $request->iInstrumentoId;
+            }
+
+            // Construir los placeholders dinámicos
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+            $data = DB::select("exec grl.SP_SEL_DesdeTablaOVista $placeholders", $params);
+
+            foreach ($data as $key => $item) {
+                $criterios = $item->criterios ?? '[]';
+                $data[$key]->criterios  = json_decode($criterios, true);
+            }
+
+            return $this->successResponse($data, 'Datos obtenidos correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            return $this->errorResponse(null, $message);
+        }
+    }
+
+    public function obtenerRubricaEvaluacion(Request $request){
+        try {
+
+            $params = ['eval','V_InstrumentosEvaluacion','*'];
+
+            if (!is_null($request->iEvaluacionId)) {
+                $params[] = 'iEvaluacionId=' . $request->iEvaluacionId . ' AND iInstrumentoId IS NOT NULL';
             }
 
             // Construir los placeholders dinámicos
@@ -82,7 +108,7 @@ class InstrumentosEvaluacionController extends ApiController
 
         try {
 
-            $params = ['eval','V_InstrumentosEvaluacion','*'];
+            $params = ['eval','V_Instrumentos','*'];
 
             if (!is_null($request->filtroYear)) {
                 $params[] = 'YEAR(dtInstrumentoCreacion)=' . $request->filtroYear;

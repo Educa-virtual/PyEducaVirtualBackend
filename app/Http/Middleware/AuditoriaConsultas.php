@@ -30,6 +30,7 @@ class AuditoriaConsultas
     /**
      * @var \Illuminate\Http\JsonResponse $response
      */
+
     $response = $next($request);
 
     // Si la cabecera iCredId está presente, detiene la auditoría y adjunta el iCredId a las consultas procesadas
