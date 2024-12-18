@@ -169,12 +169,14 @@ class ResultadoController extends Controller
         }
         
     }
-    public function reporteDeLogros(){
+    public function reporteDeLogros(Request $request){
         // Validación de los parámetros de entrada
         // $request->validate([
         //     'iIeCursoId' => 'required | string ', 
         // ]);
          //return $request->iCursoId;
+         return $request-> iDocenteId;
+         
         $iCursoId = 1;// $request->iIeCursoId;
         // Si se pasa un valor para iCursoId, decodificarlo
         // if ($request->iIeCursoId) {
@@ -197,7 +199,7 @@ class ResultadoController extends Controller
         $imageData = base64_encode(file_get_contents($imagePath));
         $virtual = 'data:image/jpeg;base64,' . $imageData;
 
-
+        $data_curso = DB:: select('',[]);
         $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
             
             $datos = [];
@@ -225,6 +227,7 @@ class ResultadoController extends Controller
                 "logoVirtual" => $virtual,// Ruta absoluta
                 "logoInsignia" => $insignia,// Ruta absoluta
                 "cPersNombreLargo" =>$pregunta->completoalumno,
+                "imageLogo" =>$region,
             ];
             //return $data;
 

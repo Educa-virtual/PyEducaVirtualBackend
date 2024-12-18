@@ -125,7 +125,8 @@
         line-height: -2px;
     }
     .titulo{
-        margin-top: 50px; /* Deja espacio para la cabecera */
+        margin: 3px;
+        margin-top: 30px; /* Deja espacio para la cabecera */
         width: 100%; /* Ancho del contenedor */
         text-align:center;
         height: auto; /* Ajusta la altura automáticamente según el contenido */
@@ -138,6 +139,7 @@
         white-space: normal; /* Permite múltiples líneas */
     }
     .header-titulo {
+        margin-top: -10px;
         position: fixed;
         top: 0; /* Ubica el contenedor en la parte superior */
         left: 25%; /* Centra horizontalmente desde la izquierda */
@@ -193,15 +195,16 @@
         "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
         Junín y Ayacucho"
         </div>
+        
         <div class="logo-izquierda">
             <img src="{{$logoInsignia}} " style="height: 60px;">
         </div>
         <div class="logo-derecha">
-            <img >
+            <img src="{{$logoVirtual}} " style="height: 50px;" >
         </div>
         
-
-        <div class="titulo">REPORTE DE LOGRO DE APRENDIZAJE </div>  
+        <div class="titulo"><u>REPORTE DE LOGRO DE APRENDIZAJE</u> </div>  
+        <div style="text-align:center;font-size:10px; margin: 5px;">Curso : COMUNICACIÓN</div>
         <div class="table-flotante-izquierda">
             <aside>
                 <div>Cod-M : </div>
@@ -216,14 +219,11 @@
                 <div>Ciclo - Grado : </div>
                 <div>Fase / Periodo:</div>
             </aside>
-        </div>
-
-        
+        </div>        
     </header>
-
     <main>
     <div class="marca-agua">
-        <img src=" ">
+        <img src="{{$imageLogo}} ">
     </div>
         
         <table border="1" class="cuerpo">
