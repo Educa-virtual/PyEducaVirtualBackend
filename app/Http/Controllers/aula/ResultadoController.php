@@ -281,4 +281,33 @@ class ResultadoController extends Controller
         //     ], 500);
         // }
     }
+    public function reporteDeLogroFinalXAño(){
+        $iIeCursoId = 1;
+        $iSeccionId = 2;
+        $iYAcadId = 3;
+        $params = [
+            $iIeCursoId,
+            $iSeccionId,
+            $iYAcadId
+        ];
+        
+        try {
+            // Ejecutar el procedimiento almacenado
+            $data = DB::select('EXEC [aula].[SP_SEL_listarEstudiantesCursoSeccionYAcad] ?,?,?', $params);
+            // Preparar la respuesta
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+
+            return $response;
+        } catch (\Exception $e) {
+            // Manejo de excepción y respuesta de error
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'data' => [],
+            ];
+            $estado = 500;
+            return new JsonResponse($response, $estado);
+        }
+    }
 }
