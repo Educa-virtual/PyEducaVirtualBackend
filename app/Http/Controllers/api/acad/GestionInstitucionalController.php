@@ -8,7 +8,9 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Options;
 
 class GestionInstitucionalController extends Controller
 {
@@ -277,9 +279,29 @@ class GestionInstitucionalController extends Controller
         // Decodificar JSON a un arreglo asociativo
         $secciones = $request->secciones;
         $r_horas = $request->r_horas;
+        $perfil = $request->perfil;
+        $configuracion = $request->configuracion;
+ 
         
+        $cTipoSectorNombre = $perfil["cTipoSectorNombre"];
+        $cPersNombreLargo = $perfil["cPersNombreLargo"];
+        $cPersDocumento = $perfil["cPersDocumento"];
+        $cPerfilNombre = $perfil["cPerfilNombre"];
+        $cNivelTipoNombre = $perfil["cNivelTipoNombre"];
+        $cNivelNombre = $perfil["cNivelNombre"];
+        $cIieeNombre = $perfil["cIieeNombre"];
+        $cIieeCodigoModular = $perfil["cIieeCodigoModular"];
+     
+        $cYAcadNombre = $configuracion[0]["cYAcadNombre"];
+        // $cEstadoConfigNombre = $perfil["cEstadoConfigNombre"];
+        // $cSedeNombre = $perfil["cSedeNombre"];
+        // $cModalServId = $perfil["cModalServId"];
+        // $cYAcadNombre = $perfil["cYAcadNombre"];
+        // $iProgId = $perfil["iProgId"];
 
-    
+
+  
+
         switch($request->iNivelTipoId){
             case 3:
                 $title = 'Primaria'; break;
@@ -291,6 +313,20 @@ class GestionInstitucionalController extends Controller
                 break;
         }
        
+   
+        $imagePath = public_path('images\logo_IE\dremo.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $region = 'data:image/jpeg;base64,' . $imageData;
+
+        $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $insignia = 'data:image/jpeg;base64,' . $imageData;
+
+        $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $virtual = 'data:image/jpeg;base64,' . $imageData;
+
+ 
         $respuesta = [
             "totalHorasPendientes" => $request->totalHorasPendientes,
             "title" => $title,
@@ -301,10 +337,23 @@ class GestionInstitucionalController extends Controller
             "dre" => "DRE MOQUEGUA UGEL",
             "totalHoras" => $request->totalHoras,
             "bConfigEsBilingue" => $request->bConfigEsBilingue,
-            "contador" => 1
+            "contador" => 1,
+            "imageLogo" => $region,// Ruta absoluta
+            "logoVirtual" => $virtual,// Ruta absoluta
+            "logoInsignia" => $insignia,// Ruta absoluta
+            "cIieeCodigoModular" => $cIieeCodigoModular,
+            "cIieeNombre" =>$cIieeNombre,
+            "cNivelNombre" =>$cNivelNombre,
+            "cYAcadNombre" => $cYAcadNombre, 
+            "cPersNombreLargo" =>$cPersNombreLargo,
+            "cNivelTipoNombre" =>$cNivelTipoNombre, 
+            // "cPerfilNombre" =>$cPerfilNombre, 
+            // "cPersDocumento" =>$cPersDocumento, 
+            // "cPersNombreLargo" =>$cPersNombreLargo,
+            // "cTipoSectorNombre" =>$cTipoSectorNombre,
            
         ];
-
+//portrait landscape
         $pdf = Pdf::loadView('resumen_reporte_ambientes_primaria', $respuesta)
             ->setPaper('a4', 'landscape')
             ->stream('reporte.pdf');
