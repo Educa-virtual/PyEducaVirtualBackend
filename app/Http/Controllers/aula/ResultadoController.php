@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class ResultadoController extends Controller
@@ -192,6 +191,7 @@ class ResultadoController extends Controller
         $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
         $insignia = 'data:image/jpeg;base64,' . $imageData;
+        //'data:image/jpeg;base64,' . $imageData;
     
         $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
@@ -211,10 +211,7 @@ class ResultadoController extends Controller
                     'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
                     'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
                     'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
-                    "imageLogo" => $region,// Ruta absoluta
-                    "logoVirtual" => $virtual,// Ruta absoluta
-                    "logoInsignia" => $insignia,// Ruta absoluta
-                    "cPersNombreLargo" =>$pregunta->completoalumno,
+                 
                    
                     
                     // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
@@ -224,6 +221,10 @@ class ResultadoController extends Controller
             $data = [
                 
                 'preguntas' => $datos['preguntas'],
+                "imageLogo" => $region,// Ruta absoluta
+                "logoVirtual" => $virtual,// Ruta absoluta
+                "logoInsignia" => $insignia,// Ruta absoluta
+                "cPersNombreLargo" =>$pregunta->completoalumno,
             ];
             //return $data;
 

@@ -193,11 +193,14 @@
         "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
         Junín y Ayacucho"
         </div>
-        
         <div class="logo-izquierda">
             <img src="{{$logoInsignia}} " style="height: 60px;">
         </div>
-    
+        <div class="logo-derecha">
+            <img >
+        </div>
+        
+
         <div class="titulo">REPORTE DE LOGRO DE APRENDIZAJE </div>  
         <div class="table-flotante-izquierda">
             <aside>
@@ -219,6 +222,9 @@
     </header>
 
     <main>
+    <div class="marca-agua">
+        <img src=" ">
+    </div>
         
         <table border="1" class="cuerpo">
             <tr>
