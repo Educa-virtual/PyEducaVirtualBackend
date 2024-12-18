@@ -139,11 +139,6 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('selReglamentoInterno', [AcadInstitucionesEducativasController::class, 'selReglamentoInterno']);
         Route::put('updReglamentoInterno', [AcadInstitucionesEducativasController::class, 'updReglamentoInterno']);
     });
-<<<<<<< HEAD
-    /*
-=======
-
->>>>>>> 3666ad51d1911747ae9bcabc20116694d5ed8e4a
     Route::group(['prefix' => 'gestionInstitucional'], function () {
         Route::post('listarPersonalIes', [GestionInstitucionalController::class, 'listarPersonalIes']);
         //procendimiento generales
@@ -160,16 +155,6 @@ Route::group(['prefix' => 'acad'], function () {
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
-<<<<<<< HEAD
-        Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']);
-        Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']);
-        Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']);
-        Route::post('searchAcademico', [CalendarioAcademicosController::class, 'searchAcademico']);
-
-        Route::post('searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']);
-        Route::post('updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']);
-        Route::post('deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']);
-=======
         Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); // procedimiento especifico EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); //procedimiento especifico EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']); // procedimiento especifico EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
@@ -178,23 +163,15 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']); // procedimiento general
         Route::post('updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']); // procedimiento general
         Route::post('deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']); // procediiento general
->>>>>>> 3666ad51d1911747ae9bcabc20116694d5ed8e4a
 
         Route::post('addYear', [CalendarioAcademicosController::class, 'addYear']); // procedimiento especifico SP_INS_TablaYearXopcion
         Route::post('updateYear', [CalendarioAcademicosController::class, 'updateYear']); // procedimiento especifico SP_UPD_TablaYearXopcion
         Route::post('deleteYear', [CalendarioAcademicosController::class, 'deleteYear']); // procedimiento especifico SP_DEL_TablaYearXopcion
 
-<<<<<<< HEAD
-        Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']);
-        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);
-        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']);
-
-=======
         Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']); // procedimiento especifico  acad.SP_INS_stepAmbienteAcademicoDesdeJsonOpcion
         Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);// procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
         Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']);// procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
         
->>>>>>> 3666ad51d1911747ae9bcabc20116694d5ed8e4a
 
         /*
          * * Peticiones de información de varios calendarios
