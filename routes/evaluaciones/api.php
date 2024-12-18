@@ -38,7 +38,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('publicar', [EvaluacionController::class, 'publicarEvaluacion']);
         Route::post('anular-publicacion', [EvaluacionController::class, 'anularPublicacionEvaluacion']);
 
-        Route::post('actualizarEvaluacion', [EvaluacionController::class, 'actualizarEvaluacion']);
+        Route::post('actualizarRubricaEvaluacion', [EvaluacionController::class, 'actualizarRubricaEvaluacion']);
+        Route::post('deleteRubricaEvaluacion', [EvaluacionController::class, 'deleteRubricaEvaluacion']);
 
 
         Route::group(['prefix' => 'estudiantes'], function () {
@@ -54,6 +55,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::resource('rubrica', InstrumentosEvaluacionController::class);
         Route::get('obtenerRubricas', [InstrumentosEvaluacionController::class, 'obtenerRubricas']);
         Route::get('obtenerRubrica', [InstrumentosEvaluacionController::class, 'obtenerRubrica']);
+        Route::get('obtenerRubricaEvaluacion', [InstrumentosEvaluacionController::class, 'obtenerRubricaEvaluacion']);
     });
 
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
