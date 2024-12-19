@@ -614,6 +614,7 @@ class EvaluacionesController extends ApiController
         $nivel = $request->input('nivel');
         $nombreCurso = $request->input('nombreCurso');
 
+
         // Aquí tomaremos los datos de la tabla "ere.preguntas"
         $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
 
@@ -683,5 +684,62 @@ class EvaluacionesController extends ApiController
 
         // Retornar el PDF como respuesta
         return $pdf;
+    }
+    public function insertarPreguntaSeleccionada(Request $request)
+    {
+        // Validar el payload recibido
+        $validated = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+            'preguntas' => 'required|array',
+            'preguntas.*.iPreguntaId' => 'required|integer',
+        ]);
+
+        // Recorrer las preguntas seleccionadas y formatear los datos para la inserción
+        $dataToInsert = array_map(function ($pregunta) use ($validated) {
+            return [
+                'iPreguntaId' => $pregunta['iPreguntaId'],
+                'iEvaluacionId' => $validated['iEvaluacionId'],
+            ];
+        }, $validated['preguntas']);
+
+        // Insertar los datos en la tabla
+        DB::table('ere.evaluacion_preguntas')->insert($dataToInsert);
+
+        // Retornar una respuesta de éxito
+        return response()->json([
+            'message' => 'Preguntas seleccionadas guardadas exitosamente.',
+        ]);
+    }
+    public function obtenerPreguntaSeleccionada(Request $request)
+    {
+        $validatedData = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+        ]);
+
+        $preguntas = DB::table('ere.evaluacion_preguntas')
+            ->join('ere.preguntas', 'ere.evaluacion_preguntas.iPreguntaId', '=', 'ere.preguntas.iPreguntaId')
+            ->where('ere.evaluacion_preguntas.iEvaluacionId', $validatedData['iEvaluacionId'])
+            ->select('ere.preguntas.*', 'ere.evaluacion_preguntas.iEvalPregId')
+            ->get();
+
+        return response()->json($preguntas, 200);
+    }
+    /**
+     * Obtener preguntas por EvaluacionId y iPreguntaId
+     * 
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function obtenerPreguntaInformacion(Request $request)
+    {
+        // Obtener los parámetros del request
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $iPreguntaIds = $request->input('iPreguntaIds'); // Recibe la cadena de IDs separados por comas
+
+        // Llamar al procedimiento almacenado con los parámetros
+        $result = DB::select('EXEC ere.SP_SEL_preguntasXiEvaluacionId ?, ?', [$iEvaluacionId, $iPreguntaIds]);
+
+        // Retornar el resultado como JSON
+        return response()->json($result);
     }
 }
