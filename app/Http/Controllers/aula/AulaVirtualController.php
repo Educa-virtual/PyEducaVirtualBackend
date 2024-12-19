@@ -440,7 +440,7 @@ class AulaVirtualController extends ApiController
     {
         //return $request -> all();
         $request->validate([
-            //'iEstudianteId' => 'required|integer',
+            'iEstudianteId' => 'required|integer',
             'cForoRptaRespuesta' => 'required|string',
             'iForoId' => 'required|string'
         ]);
@@ -451,52 +451,32 @@ class AulaVirtualController extends ApiController
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
         }
 
-        $iDocenteId = $request->iDocenteId;
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
+        // $iDocenteId = $request->iDocenteId;
+        // if ($request->iDocenteId) {
+        //     $iDocenteId = $this->hashids->decode($iDocenteId);
+        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        // }
 
         $data = [
-            $request->iEstudianteId ?? null,
+            $request->iEstudianteId,
             $iForoId,
-            null,
-            // $iForoRptaPadre ?? null,
-            $iDocenteId ?? null,
-            $request->cForoRptaRespuesta,
-            $request->nForoRptaNota ?? null,
-            $request->dtForoRptaPublicacion ?? null,
-            $request->cForoRptaDocente ?? null,
-            $request->iEstado ?? null,
-            $request->iSesionId ?? null,
-            $request->dtCreado ?? null,
-            $request->dtActualizado ?? null,
-            $request->iEscalaCalifId ?? null
+            $request->cForoRptaRespuesta
+          
         ];
         //return $data;
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaForo]
+           
+            $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
                 @iEstudianteId = ?,
                 @iForoId = ?,
-                @iForoRptaPadre = ?,
-                @iDocenteId = ?,
-                @cForoRptaRespuesta = ?,
-                @nForoRptaNota = ?,
-                @dtForoRptaPublicacion = ?,
-                @cForoRptaDocente = ?,
-                @iEstado = ?,
-                @iSesionId = ?,
-                @dtCreado = ?,
-                @dtActualizado = ?,
-                @iEscalaCalifId = ?', $data);
-            DB::commit();
-            if ($resp[0]->id > 0) {
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+                @cForoRptaRespuesta = ?', $data);
+
+            //return $resp;
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $resp];
+            $estado = 200;
+
+            return $response;
+
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();

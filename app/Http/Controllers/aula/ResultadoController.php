@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Dompdf\Options;
 
 class ResultadoController extends Controller
 {
@@ -136,65 +137,143 @@ class ResultadoController extends Controller
 
         return new JsonResponse($response,$estado);
     }
-    public function obtenerReporteFinalNotas (){
-        //return 1;
-        // try {
-        //     $preguntas = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
-
-        //     //return $preguntas;
-        //     return $this->successResponse($preguntas);
-        // } catch (Exception $e) {
-
-        //     return $this->errorResponse($e, 'Error Upssss!');
-        // }
-        try { 
-            // Ejecutar el procedimiento almacenado usando DB::select
-            $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
-            
+    public function obtenerReporteFinalNotas (Request $request){
+       // Validación de los parámetros de entrada
+        $request->validate([
+            'iIeCursoId' => 'required | string ', 
+        ]);
+        // return $request->iCursoId;
+        $iCursoId = $request->iIeCursoId;
+        // Si se pasa un valor para iCursoId, decodificarlo
+        if ($request->iIeCursoId) {
+            $iCursoId = $this->hashids->decode($iCursoId);             
+            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
+        }
+        try {
+            // Ejecutar el procedimiento almacenado
+            $data = DB::select('EXEC [acad].[Sp_SEL_reporteFinalDeNotas] ?', [$iCursoId]);
+            // Preparar la respuesta
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;
 
             return $response;
-           
-       }       
-       catch (\Exception $e) {
-        $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-        $estado = 500;
-        }
-        return new JsonResponse($response,$estado);
-    }
-    public function reporteDeLogros(){
-       
-            // Ejecutar el procedimiento almacenado usando DB::select
-            //$data01 = DB:: select('');
-        $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
-
-        $datos = [];
-        foreach ($data as $key => $pregunta) {
-            
-            // Si pasa los filtros, agregar la pregunta a los datos
-            $datos['preguntas'][$key] = [
-                'completoalumno' => $pregunta->completoalumno,
-                'Trimestre_I' => $pregunta->iEscalaCalifIdPeriodo1,
-                'Trimestre_II' => $pregunta->iEscalaCalifIdPeriodo2,
-                'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
-                'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
-                'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
-                // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
-                // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
+        } catch (\Exception $e) {
+            // Manejo de excepción y respuesta de error
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'data' => [],
             ];
+            $estado = 500;
+            return new JsonResponse($response, $estado);
         }
-        $data = [
+        
+    }
+    public function reporteDeLogros(Request $request){
+        // Validación de los parámetros de entrada
+        // $request->validate([
+        //     'iIeCursoId' => 'required | string ', 
+        // ]);
+         //return $request->iCursoId;
+         return $request-> iDocenteId;
+         
+        $iCursoId = 1;// $request->iIeCursoId;
+        // Si se pasa un valor para iCursoId, decodificarlo
+        // if ($request->iIeCursoId) {
+        //     $iCursoId = $this->hashids->decode($iCursoId);             
+        //     $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
+        // }
+
+        //$cPersNombreLargo = "Docente";
+        //CARGAR LOGOS 
+        $imagePath = public_path('images\logo_IE\dremo.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $region = 'data:image/jpeg;base64,' . $imageData;
+    
+        $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $insignia = 'data:image/jpeg;base64,' . $imageData;
+        //'data:image/jpeg;base64,' . $imageData;
+    
+        $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $virtual = 'data:image/jpeg;base64,' . $imageData;
+
+        $data_curso = DB:: select('',[]);
+        $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
             
-            'preguntas' => $datos['preguntas'],
-        ];
-        //return $data;
+            $datos = [];
+            foreach ($data as $key => $pregunta) {
+                
+                // Si pasa los filtros, agregar la pregunta a los datos
+                $datos['preguntas'][$key] = [
+                    'completoalumno' => $pregunta->completoalumno,
+                    'Trimestre_I' => $pregunta->iEscalaCalifIdPeriodo1,
+                    'Trimestre_II' => $pregunta->iEscalaCalifIdPeriodo2,
+                    'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
+                    'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
+                    'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
+                 
+                   
+                    
+                    // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
+                    // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
+                ];
+            }
+            $data = [
+                
+                'preguntas' => $datos['preguntas'],
+                "imageLogo" => $region,// Ruta absoluta
+                "logoVirtual" => $virtual,// Ruta absoluta
+                "logoInsignia" => $insignia,// Ruta absoluta
+                "cPersNombreLargo" =>$pregunta->completoalumno,
+                "imageLogo" =>$region,
+            ];
+            //return $data;
 
-        $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
-            ->setPaper('a4', 'landscape')
-            ->stream('reporteLogro.pdf');
+            $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
+                ->setPaper('a4', 'landscape')
+                ->stream('reporteLogro.pdf');
 
-        return $pdf;
+            return $pdf;
+        // try{
+        //     $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
+            
+        //     $datos = [];
+        //     foreach ($data as $key => $pregunta) {
+                
+        //         // Si pasa los filtros, agregar la pregunta a los datos
+        //         $datos['preguntas'][$key] = [
+        //             'completoalumno' => $pregunta->completoalumno,
+        //             'Trimestre_I' => $pregunta->iEscalaCalifIdPeriodo1,
+        //             'Trimestre_II' => $pregunta->iEscalaCalifIdPeriodo2,
+        //             'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
+        //             'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
+        //             'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
+        //             // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
+        //             // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
+        //         ];
+        //     }
+        //     $data = [
+                
+        //         'preguntas' => $datos['preguntas'],
+        //     ];
+        //     //return $data;
+
+        //     $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
+        //         ->setPaper('a4', 'landscape')
+        //         ->stream('reporteLogro.pdf');
+
+        //     return $pdf;
+        // }catch(\Exception $e) {
+        //             return response()->json([
+        //                 'validated' => false,
+        //                 'message' => 'Error al generar el reporte: ' . $e->getMessage(),
+        //             ], 500);
+        // }
+        
+
+        
            
        
         // return new JsonResponse($response,$estado);
@@ -229,5 +308,34 @@ class ResultadoController extends Controller
         //         'message' => 'Error al generar el reporte: ' . $e->getMessage(),
         //     ], 500);
         // }
+    }
+    public function reporteDeLogroFinalXAño(){
+        $iIeCursoId = 1;
+        $iSeccionId = 2;
+        $iYAcadId = 3;
+        $params = [
+            $iIeCursoId,
+            $iSeccionId,
+            $iYAcadId
+        ];
+        
+        try {
+            // Ejecutar el procedimiento almacenado
+            $data = DB::select('EXEC [aula].[SP_SEL_listarEstudiantesCursoSeccionYAcad] ?,?,?', $params);
+            // Preparar la respuesta
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+
+            return $response;
+        } catch (\Exception $e) {
+            // Manejo de excepción y respuesta de error
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'data' => [],
+            ];
+            $estado = 500;
+            return new JsonResponse($response, $estado);
+        }
     }
 }

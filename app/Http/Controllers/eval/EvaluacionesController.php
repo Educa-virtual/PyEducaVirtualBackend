@@ -145,11 +145,12 @@ class EvaluacionesController extends Controller
                             500
                         );
                     }
-                case 'ACTUALIZAR':
+                case 'ACTUALIZARxProgActxiEvaluacionId':
                     $data = DB::select('exec eval.Sp_UPD_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEvaluacionId > 0) {
+                        $data = $this->encodeId($data);
                         return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se actualizó la información', 'data' => null],
+                            ['validated' => true, 'message' => 'Se actualizó la información', 'data' => $data],
                             200
                         );
                     } else {
@@ -165,5 +166,24 @@ class EvaluacionesController extends Controller
                 500
             );
         }
+    }
+
+    public function guardarConclusionxiEvalPromId(Request $request){
+        $data = DB::update(
+            "   UPDATE eval.evaluacion_promedios
+                SET cConclusionDescriptiva = '" . $request->cConclusionDescriptiva . "'
+                WHERE iEvalPromId = '" . $request->iEvalPromId . "'
+            "
+        );
+
+        if ($data) {
+            $response = ['validated' => true, 'mensaje' => 'Se actualizó la respuesta.'];
+            $codeResponse = 200;
+        } else {
+            $response = ['validated' => false, 'mensaje' => 'No se pudo actualizar la respuesta.'];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
     }
 }
