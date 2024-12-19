@@ -169,20 +169,26 @@ class ResultadoController extends Controller
         }
         
     }
+    //Para imprimir el reporte de logros alcanzados por trimestre
     public function reporteDeLogros(Request $request){
         // Validación de los parámetros de entrada
-        // $request->validate([
-        //     'iIeCursoId' => 'required | string ', 
-        // ]);
+        $request->validate([
+            'iIeCursoId' => 'required|string ',
+            'idDocCursoId' => 'required|string ', 
+        ]);
          //return $request->iCursoId;
-         return $request-> iDocenteId;
          
-        $iCursoId = 1;// $request->iIeCursoId;
+        $idDocCursoId = $request-> idDocCursoId;
+        if ($request->idDocCursoId) {
+            $idDocCursoId = $this->hashids->decode($idDocCursoId);             
+            $idDocCursoId = count($idDocCursoId) > 0 ? $idDocCursoId[0] : $idDocCursoId;
+        }
+        $iCursoId = $request->iIeCursoId;
         // Si se pasa un valor para iCursoId, decodificarlo
-        // if ($request->iIeCursoId) {
-        //     $iCursoId = $this->hashids->decode($iCursoId);             
-        //     $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
-        // }
+        if ($request->iIeCursoId) {
+            $iCursoId = $this->hashids->decode($iCursoId);             
+            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
+        }
 
         //$cPersNombreLargo = "Docente";
         //CARGAR LOGOS 
@@ -199,129 +205,74 @@ class ResultadoController extends Controller
         $imageData = base64_encode(file_get_contents($imagePath));
         $virtual = 'data:image/jpeg;base64,' . $imageData;
 
-        $data_curso = DB:: select('',[]);
-        $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
+        // $data_curso = DB:: select('EXEC aula.SP_SEL_listarDatosXidDocCursoId',[$idDocente]);
+        // return $data_curso;
+        $data_header = DB:: select('EXEC aula.SP_SEL_listarDatosXidDocCursoId ?',[$idDocCursoId]);
+        $datos1 = [];
+            foreach ($data_header as $header){
+                $datos1 =[
+                    'cod_Mod' => $header -> cIieeCodigoModular,
+                    'docente' => $header -> docente,
+                    'año' => $header -> cYAcadNombre,
+                    'nivel_educativo' => $header -> iNivelId,
+                    'Seccion_turno' => $header -> cSeccionNombre,
+                    'ciclo_grado' => $header -> cGradoNombre,                    
+                    'curso' => $header -> cCursoNombre,
+                ];
+            }
             
-            $datos = [];
+        //return $datos1;
+        $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
+        $datos = [];
             foreach ($data as $key => $pregunta) {
                 
                 // Si pasa los filtros, agregar la pregunta a los datos
-                $datos['preguntas'][$key] = [
+                $datos['data'][$key] = [
+
                     'completoalumno' => $pregunta->completoalumno,
                     'Trimestre_I' => $pregunta->iEscalaCalifIdPeriodo1,
                     'Trimestre_II' => $pregunta->iEscalaCalifIdPeriodo2,
                     'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
                     'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
                     'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
-                 
-                   
-                    
-                    // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
-                    // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
                 ];
             }
-            $data = [
-                
-                'preguntas' => $datos['preguntas'],
-                "imageLogo" => $region,// Ruta absoluta
-                "logoVirtual" => $virtual,// Ruta absoluta
-                "logoInsignia" => $insignia,// Ruta absoluta
-                "cPersNombreLargo" =>$pregunta->completoalumno,
-                "imageLogo" =>$region,
-            ];
-            //return $data;
-
-            $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
-                ->setPaper('a4', 'landscape')
-                ->stream('reporteLogro.pdf');
-
-            return $pdf;
-        // try{
-        //     $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
-            
-        //     $datos = [];
-        //     foreach ($data as $key => $pregunta) {
-                
-        //         // Si pasa los filtros, agregar la pregunta a los datos
-        //         $datos['preguntas'][$key] = [
-        //             'completoalumno' => $pregunta->completoalumno,
-        //             'Trimestre_I' => $pregunta->iEscalaCalifIdPeriodo1,
-        //             'Trimestre_II' => $pregunta->iEscalaCalifIdPeriodo2,
-        //             'Trimestre_III' => $pregunta->iEscalaCalifIdPeriodo3,
-        //             'Trimestre_IV' => $pregunta->iEscalaCalifIdPeriodo4,
-        //             'Conclusion_descriptiva' => $pregunta->cDetMatConclusionDescPromedio,
-        //             // 'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
-        //             // 'competencia_nombre' => $pregunta->cCompetenciaNombre,
-        //         ];
-        //     }
-        //     $data = [
-                
-        //         'preguntas' => $datos['preguntas'],
-        //     ];
-        //     //return $data;
-
-        //     $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
-        //         ->setPaper('a4', 'landscape')
-        //         ->stream('reporteLogro.pdf');
-
-        //     return $pdf;
-        // }catch(\Exception $e) {
-        //             return response()->json([
-        //                 'validated' => false,
-        //                 'message' => 'Error al generar el reporte: ' . $e->getMessage(),
-        //             ], 500);
-        // }
+        $data = [
+            'headers' => $datos1,
+            'preguntas' => $datos['data'],
+            "imageLogo" => $region,// Ruta absoluta
+            "logoVirtual" => $virtual,// Ruta absoluta
+            "logoInsignia" => $insignia,// Ruta absoluta
+            "cPersNombreLargo" =>$pregunta->completoalumno,
+            "imageLogo" =>$region,
+        ];
         
+        $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
+            ->setPaper('a4', 'landscape')
+            ->stream('reporteLogro.pdf');
 
-        
-           
-       
-        // return new JsonResponse($response,$estado);
-    
-        // try {
-        //     // Obtener los datos del procedimiento almacenado
-        //     $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas');
-    
-        //     // Verifica que haya datos antes de generar el PDF
-        //     // if (empty($data)) {
-        //     //     return response()->json([
-        //     //         'validated' => false,
-        //     //         'message' => 'No hay datos disponibles para generar el reporte.',
-        //     //     ], 404);
-        //     // }
-        //     $pdf = PDF::loadView('aula.nivelDeLogroReporte', $data)
-        //         ->setPaper('a4', 'landscape')
-        //         ->stream('reporteLogro.pdf');
-
-        //     return $pdf;
-    
-        //     // Generar el PDF
-        //     // $pdf = PDF::loadView('aula.nivelDeLogroReporte', ['data' => $data])
-        //     //     ->setPaper('a4', 'landscape');
-    
-        //     // // Retornar el PDF como respuesta
-        //     // return $pdf->stream('reporteLogro.pdf');
-    
-        // } catch (\Exception $e) {
-        //     return response()->json([
-        //         'validated' => false,
-        //         'message' => 'Error al generar el reporte: ' . $e->getMessage(),
-        //     ], 500);
-        // }
+        return $pdf;
     }
-    public function reporteDeLogroFinalXAño(){
-        $iIeCursoId = 1;
+    //para imprimir el reporte de logros alcanzados durante el año
+    public function reporteDeLogroFinalXYear(Request $request){
+        // @iSedeId INT,
+        // @iSeccionId INT,
+        // @iYAcadId INT,
+        // @iNivelGradoId INT
+        $iSedeId = $request -> iSedeId;
         $iSeccionId = 2;
         $iYAcadId = 3;
+        $iNivelGradoId = 3;
         $params = [
-            $iIeCursoId,
+            $iSedeId,
             $iSeccionId,
-            $iYAcadId
+            $iYAcadId,
+            $iNivelGradoId
         ];
         
         try {
             // Ejecutar el procedimiento almacenado
-            $data = DB::select('EXEC [aula].[SP_SEL_listarEstudiantesCursoSeccionYAcad] ?,?,?', $params);
+            $data = DB::select('EXEC [aula].[SP_SEL_listarEstudiantesSedeSeccionYAcad] ?,?,?,?', $params);
             // Preparar la respuesta
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;

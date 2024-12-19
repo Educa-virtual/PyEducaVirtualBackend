@@ -82,7 +82,7 @@
     }
     .table-flotante-izquierda {
         margin-top:2px;
-        width: 45%; /* Ajusta el ancho de las tablas */
+        width: 100%; /* Ajusta el ancho de las tablas */
         float: left;/*  Permite que las tablas estén una al lado de la otra */
         margin-right: 10px; /* Espacio entre las tablas */
         margin-left: 20px;
@@ -92,7 +92,7 @@
     .table-flotante-derecha {
         /* border: 1px solid black; Bordes externos */
         margin-top:2px;
-        width: 45%; /* Ajusta el ancho de las tablas */
+        width: 60%; /* Ajusta el ancho de las tablas */
         float: right; /*Permite que las tablas estén una al lado de la otra */
         margin-left: 10px; /* Espacio entre las tablas */
         margin-right: 20px;
@@ -204,20 +204,21 @@
         </div>
         
         <div class="titulo"><u>REPORTE DE LOGRO DE APRENDIZAJE</u> </div>  
-        <div style="text-align:center;font-size:10px; margin: 5px;">Curso : COMUNICACIÓN</div>
+        <div style="text-align:center;font-size:10px; margin: 5px;">Curso : {{ $headers['curso'] }}</div>
         <div class="table-flotante-izquierda">
+           
             <aside>
-                <div>Cod-M : </div>
-                <div>Docente : </div>                
-                <div>Año : </div>
-                <div>Nivel Educativo : </div>
+                <div>Cod-M : {{$headers['cod_Mod']}} </div>
+                <div>Docente :  {{ $headers['docente'] }} </div>                
+                <div>Año : {{ $headers['año'] }} </div>
             </aside>
+            
         </div>    
         <div class="table-flotante-derecha">
             <aside>
-                <div>Sección - Turno :</div>
-                <div>Ciclo - Grado : </div>
-                <div>Fase / Periodo:</div>
+                <div>Sección - Turno : {{ $headers['Seccion_turno'] }}</div>
+                <div>Ciclo - Grado : {{ $headers['ciclo_grado'] }}</div>
+                <div>Fase / Periodo / Nivel Educativo : {{ $headers['curso'] }}  {{ $headers['nivel_educativo'] }}</div>
             </aside>
         </div>        
     </header>
@@ -273,7 +274,7 @@
             $pdf->page_script('
                 $font = $fontMetrics->get_font("Verdana, Geneva, Tahoma, sans-serif", "normal");
                 $pdf->text(70, 570, "Página $PAGE_NUM de $PAGE_COUNT", $font, 10);
-                $pdf->text(370, 570, "Autor:", $font, 10);
+                $pdf->text(370, 570, "Autor:{{ $headers['docente'] }}", $font, 10);
                 $pdf->text(670, 570, date("Y-m-d H:m:s"), $font, 10);
             ');
         }
