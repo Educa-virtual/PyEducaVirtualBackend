@@ -118,8 +118,12 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerEspDremCurso', [EvaluacionesController::class, 'obtenerEspDremCurso']);
         //Matriz Descargar
         Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
-        //ObtenerBancoPreguntasere
-        Route::get('obtenerBancoPreguntasere', [EvaluacionesController::class, 'obtenerBancoPreguntasere']);
+        //Insertar pregunta seleccionada
+        Route::post('insertarPreguntaSeleccionada', [EvaluacionesController::class, 'insertarPreguntaSeleccionada']);
+        //Obtener pregunta seleccionada
+        Route::get('obtenerPreguntaSeleccionada', [EvaluacionesController::class, 'obtenerPreguntaSeleccionada']);
+        //Obtener preguntas por EvaluacionId y preguntaId
+        Route::get('obtenerPreguntaInformacion', [EvaluacionesController::class, 'obtenerPreguntaInformacion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

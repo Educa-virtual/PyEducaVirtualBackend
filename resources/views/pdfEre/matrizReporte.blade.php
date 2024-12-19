@@ -156,8 +156,8 @@
             <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['desempeno_descripcion'] }}</td>
             <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['pregunta_nivel'] }}</td>
             <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['pregunta_clave'] }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['iPreguntaId'] }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['iEvaluacionId'] }}</td>
+            {{-- <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['iPreguntaId'] }}</td>
+            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['iEvaluacionId'] }}</td> --}}
         </tr>
     @endforeach
 </tbody>
