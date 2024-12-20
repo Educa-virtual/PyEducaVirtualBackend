@@ -110,7 +110,7 @@
     .logo-derecha { 
         position: fixed;
         height: 30px;
-        top: -10;
+        top: -16;
         left: 0cm;
         right: 0cm;
         text-align: right;
@@ -119,7 +119,7 @@
     .logo-izquierda {
         position: fixed;
         height: 30px;
-        top: -12;
+        top: -19;
         left: 0cm;
         right: 0cm;
         text-align: left;

@@ -203,19 +203,21 @@
             <img src="{{$logoVirtual}} " style="height: 50px;" >
         </div>
         
-        <div class="titulo"><u>REPORTE DE LOGRO DE APRENDIZAJE</u> </div>  
-        <div style="text-align:center;font-size:10px; margin: 5px;">Grado :</div>
+        <div class="titulo"><u>REPORTE FINAL DE LOGROS DE APRENDIZAJE</u> </div>  
+        <br>
         <div class="table-flotante-izquierda">
            
             <aside>
                 <div>Cod-M : {{$headers['cod_Mod']}} </div>
-                <div>Docente :  {{ $headers['docente'] }} </div>                
+                <div>Estudiante : {{$estudiante['Estudiante']}} </div>
+                <div>Tutor :  {{ $headers['docente'] }} </div>                
                 <div>Año : {{ $headers['año'] }} </div>
             </aside>
             
         </div>    
         <div class="table-flotante-derecha">
             <aside>
+                <div>Nivel Educativo: {{ $headers['Seccion_turno'] }}</div>
                 <div>Sección - Turno : {{ $headers['Seccion_turno'] }}</div>
                 <div>Ciclo - Grado : {{ $headers['ciclo_grado'] }}</div>
                 <div>Fase / Periodo / Nivel Educativo : {{ $headers['curso'] }}  {{ $headers['nivel_educativo'] }}</div>
@@ -236,10 +238,27 @@
             <tr>
                 <th>TRIM I</th>
                 <th>TRIM II</th>
-                <th>TRIM III</th>
-                <th>TRIM IV</th>
+                <th>TRIM III</th>    
+                <th>Promedio Final</th>             
                 <th>CONCLUSIÓN DESCRIPTIVA</th>
-            </tr> 
+            </tr>
+            <tbody>
+                @php
+                $item = 1; 
+                @endphp
+                @foreach($cursos as $curso) <!-- Cambié $respuesta['preguntas'] por $preguntas -->
+                    <tr>
+                        <td>{{ $item++ }}</td>
+                        <td style="text-align:left;">{{ $curso['cCursoNombre'] }}</td>
+                        <td>{{ $curso['iCalifIdPeriodo1'] ?? 'N/A'}}</td>
+                        <td>{{ $curso['iCalifIdPeriodo2'] ?? 'N/A'}}</td>                        
+                        <td>{{ $curso['iCalifIdPeriodo3'] ?? 'N/A'}}</td>
+                        <td>{{ $curso['iPromedio'] ?? 'N/A'}}</td>
+                        <td style="text-align:left;">{{$curso['cDetMatConclusionDescPromedio'] ?? 'N/A'}} </td>
+            
+                    </tr>
+                @endforeach
+            </tbody>
         </table>        
         <br><br>
         <table>

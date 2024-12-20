@@ -291,17 +291,15 @@ class ResultadoController extends Controller
     }
     //para descargar el reporte final de logros alcanzados durante el año
     public function generarReporteDeLogrosAlcanzadosXYear(Request $request){
+        //return $request ->all();
+        // Decodificar el JSON a un array asociativo
         
-        // $iSedeId = 1;
-        // $iSeccionId = 2;
-        // $iYAcadId = 3;
-        // $iNivelGradoId = 3;
-        // $params = [
-        //     $iSedeId,
-        //     $iSeccionId,
-        //     $iYAcadId,
-        //     $iNivelGradoId
-        // ];
+        $datosEstudiante = $request->datosEstudiante;
+        $datosCursoEstudiante = $request->datosCursoEstudiante;
+
+        $datosArray = json_decode($datosEstudiante, true);
+        $datosArray01 = json_decode($datosCursoEstudiante, true);
+
         $idDocCursoId = 1;
         
         //CARGAR LOGOS 
@@ -339,9 +337,11 @@ class ResultadoController extends Controller
             "imageLogo" => $region,// Ruta absoluta
             "logoVirtual" => $virtual,// Ruta absoluta
             "logoInsignia" => $insignia,// Ruta absoluta
-            //"cPersNombreLargo" =>$pregunta->completoalumno,
+            "estudiante" =>$datosArray,
             "imageLogo" =>$region,
-        ];
+            "cursos" => $datosArray01,
+        ]; 
+        //return $data;
         
         $pdf = PDF::loadView('aula.nivelDeLogrosXYearReporte', $data)
             ->setPaper('a4', 'landscape')
