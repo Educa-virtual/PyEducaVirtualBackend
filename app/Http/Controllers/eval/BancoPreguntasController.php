@@ -114,11 +114,17 @@ class BancoPreguntasController extends Controller
                 case 'GUARDARxBancoPreguntas':
                     $data = DB::select('exec eval.Sp_INS_bancoPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iBancoId > 0) {
-                        $request['iBancoId'] = $this->hashids->encode($data[0]->iBancoId);
-                        $resp = new EvaluacionPreguntasController();
-                        return $resp->handleCrudOperation($request);
-                    }
-                     else {
+                        if ($request->iTipoPregId < 3) {
+                            $request['iBancoId'] = $this->hashids->encode($data[0]->iBancoId);
+                            $resp = new EvaluacionPreguntasController();
+                            return $resp->handleCrudOperation($request);
+                        } else {
+                            return new JsonResponse(
+                                ['validated' => true, 'message' => 'Se guardó la información', 'data' => $data],
+                                200
+                            );
+                        }
+                    } else {
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
                             500
@@ -138,12 +144,19 @@ class BancoPreguntasController extends Controller
                         );
                     }
                 case 'ACTUALIZAR':
+                case 'ACTUALIZARxBancoPreguntas':
                     $data = DB::select('exec eval.Sp_UPD_bancoPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iBancoId > 0) {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se actualizó la información', 'data' => null],
-                            200
-                        );
+                        if ($request->iTipoPregId < 3) {
+                            $request['iBancoId'] = $this->hashids->encode($data[0]->iBancoId);
+                            $resp = new EvaluacionPreguntasController();
+                            return $resp->handleCrudOperation($request);
+                        } else {
+                            return new JsonResponse(
+                                ['validated' => true, 'message' => 'Se actualizó la información', 'data' => $data],
+                                200
+                            );
+                        }
                     } else {
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
