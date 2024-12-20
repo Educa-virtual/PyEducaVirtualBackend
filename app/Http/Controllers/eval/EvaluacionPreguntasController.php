@@ -111,7 +111,7 @@ class EvaluacionPreguntasController extends Controller
                             500
                         );
                     }
-                case 'ELIMINAR':
+                case 'EliminarxiEvalPregId':
                     $data = DB::select('exec eval.Sp_DEL_evaluacionPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEvalPregId > 0) {
                         return new JsonResponse(
@@ -124,16 +124,14 @@ class EvaluacionPreguntasController extends Controller
                             500
                         );
                     }
-                case 'ACTUALIZAR':
+                case 'ACTUALIZARxBancoPreguntas':
                     $data = DB::select('exec eval.Sp_UPD_evaluacionPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEvalPregId > 0) {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se actualizó la información', 'data' => null],
-                            200
-                        );
+                        $resp = new BancoAlternativasController();
+                        return $resp->handleCrudOperation($request);
                     } else {
                         return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
+                            ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
                             500
                         );
                     }

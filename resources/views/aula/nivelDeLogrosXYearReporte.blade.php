@@ -204,7 +204,7 @@
         </div>
         
         <div class="titulo"><u>REPORTE DE LOGRO DE APRENDIZAJE</u> </div>  
-        <div style="text-align:center;font-size:10px; margin: 5px;">Curso : {{ $headers['curso'] }}</div>
+        <div style="text-align:center;font-size:10px; margin: 5px;">Grado :</div>
         <div class="table-flotante-izquierda">
            
             <aside>
@@ -230,7 +230,7 @@
         <table border="1" class="cuerpo">
             <tr>
                 <th rowspan="2" class="cabecera-table">Nro</th>
-                <th rowspan="2" class="cabecera-table">Nombres Y Apellidos</th>
+                <th rowspan="2" class="cabecera-table">Área Curricular</th>
                 <th colspan="5" class="cabecera-table">AÑO 2024</th>                
             </tr>
             <tr>
@@ -239,24 +239,7 @@
                 <th>TRIM III</th>
                 <th>TRIM IV</th>
                 <th>CONCLUSIÓN DESCRIPTIVA</th>
-            </tr>
-            <tbody>
-                @php
-                $item = 1; 
-                @endphp
-                @foreach($preguntas as $pregunta) <!-- Cambié $respuesta['preguntas'] por $preguntas -->
-                    <tr>
-                        <td>{{ $item++ }}</td>
-                        <td style="text-align:left;">{{ $pregunta['completoalumno'] }}</td>
-                        <td>{{ $pregunta['Trimestre_I']}}</td>
-                        <td>{{ $pregunta['Trimestre_II']}}</td>
-                        <td>{{ $pregunta['Trimestre_III']}}</td>
-                        <td>{{ $pregunta['Trimestre_IV']}}</td>
-                        <td style="text-align:left;">{{$pregunta['Conclusion_descriptiva']}} </td>
-            
-                    </tr>
-                @endforeach
-            </tbody>            
+            </tr> 
         </table>        
         <br><br>
         <table>

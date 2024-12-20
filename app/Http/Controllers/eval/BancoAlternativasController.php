@@ -110,17 +110,17 @@ class BancoAlternativasController extends Controller
                             $request->iCredId                   ?? NULL
                         ];
                         $data = DB::select('exec eval.Sp_INS_bancoAlternativas ?,?,?,?,?,?,?,?,?', $json_alternativas);
-                        if ($data[0]->iBancoAltId > 0) {
-                            return new JsonResponse(
-                                ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
-                                200
-                            );
-                        } else {
-                            return new JsonResponse(
-                                ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
-                                500
-                            );
-                        }
+                    }
+                    if ($data[0]->iBancoAltId > 0) {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
+                            200
+                        );
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
+                            500
+                        );
                     }
                     break;
                 case 'ELIMINAR':

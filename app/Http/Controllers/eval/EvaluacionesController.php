@@ -145,11 +145,12 @@ class EvaluacionesController extends Controller
                             500
                         );
                     }
-                case 'ACTUALIZAR':
+                case 'ACTUALIZARxProgActxiEvaluacionId':
                     $data = DB::select('exec eval.Sp_UPD_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEvaluacionId > 0) {
+                        $data = $this->encodeId($data);
                         return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se actualizó la información', 'data' => null],
+                            ['validated' => true, 'message' => 'Se actualizó la información', 'data' => $data],
                             200
                         );
                     } else {
