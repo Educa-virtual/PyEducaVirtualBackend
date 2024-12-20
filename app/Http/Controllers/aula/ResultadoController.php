@@ -289,4 +289,64 @@ class ResultadoController extends Controller
             return new JsonResponse($response, $estado);
         }
     }
+    //para descargar el reporte final de logros alcanzados durante el año
+    public function generarReporteDeLogrosAlcanzadosXYear(Request $request){
+        
+        // $iSedeId = 1;
+        // $iSeccionId = 2;
+        // $iYAcadId = 3;
+        // $iNivelGradoId = 3;
+        // $params = [
+        //     $iSedeId,
+        //     $iSeccionId,
+        //     $iYAcadId,
+        //     $iNivelGradoId
+        // ];
+        $idDocCursoId = 1;
+        
+        //CARGAR LOGOS 
+        $imagePath = public_path('images\logo_IE\dremo.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $region = 'data:image/jpeg;base64,' . $imageData;
+    
+        $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $insignia = 'data:image/jpeg;base64,' . $imageData;
+        //'data:image/jpeg;base64,' . $imageData;
+    
+        $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $virtual = 'data:image/jpeg;base64,' . $imageData;
+        //obtener la cabecera de reporte de logros
+        $data_header = DB:: select('EXEC aula.SP_SEL_listarDatosXidDocCursoId ?',[$idDocCursoId]);
+        $datos1 = [];
+            foreach ($data_header as $header){
+                $datos1 =[
+                    'cod_Mod' => $header -> cIieeCodigoModular,
+                    'docente' => $header -> docente,
+                    'año' => $header -> cYAcadNombre,
+                    'nivel_educativo' => $header -> iNivelId,
+                    'Seccion_turno' => $header -> cSeccionNombre,
+                    'ciclo_grado' => $header -> cGradoNombre,                    
+                    'curso' => $header -> cCursoNombre,
+                ];
+            }
+
+        //$data = DB::select('EXEC [aula].[SP_SEL_listarEstudiantesSedeSeccionYAcad] ?,?,?,?', $params);
+        $data = [
+            'headers' => $datos1,
+            //'preguntas' => $datos['data'],
+            "imageLogo" => $region,// Ruta absoluta
+            "logoVirtual" => $virtual,// Ruta absoluta
+            "logoInsignia" => $insignia,// Ruta absoluta
+            //"cPersNombreLargo" =>$pregunta->completoalumno,
+            "imageLogo" =>$region,
+        ];
+        
+        $pdf = PDF::loadView('aula.nivelDeLogrosXYearReporte', $data)
+            ->setPaper('a4', 'landscape')
+            ->stream('reporteLogro.pdf');
+
+        return $pdf;
+    } 
 }
