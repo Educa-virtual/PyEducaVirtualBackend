@@ -753,8 +753,8 @@ class EvaluacionesController extends ApiController
     {
         // Validar los datos de entrada
         $validatedData = $request->validate([
-            'iEvaluacionId' => 'required|integer',
-            'iCursosNivelGradId' => 'required|integer', // Asegurarse de que ambos parámetros estén presentes
+            'iEvaluacionId' => 'required',
+            'iCursosNivelGradId' => 'required', // Asegurarse de que ambos parámetros estén presentes
         ]);
 
         try {
@@ -762,7 +762,7 @@ class EvaluacionesController extends ApiController
             $resultado = DB::table('ere.evaluacion_preguntas')
                 ->join('ere.preguntas', 'ere.evaluacion_preguntas.iPreguntaId', '=', 'ere.preguntas.iPreguntaId')
                 ->where('ere.evaluacion_preguntas.iEvaluacionId', $validatedData['iEvaluacionId'])
-                ->where('ere.preguntas.iCursosNivelGradId', $validatedData['iCursosNivelGradId'])
+                ->whereIn('ere.preguntas.iCursosNivelGradId', $validatedData['iCursosNivelGradId'])
                 ->select(
                     'ere.preguntas.iPreguntaId', // Otras columnas que necesites
                     'ere.preguntas.cPregunta',  // Por ejemplo, el texto de la pregunta
