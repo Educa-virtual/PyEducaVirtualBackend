@@ -124,6 +124,8 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerPreguntaSeleccionada', [EvaluacionesController::class, 'obtenerPreguntaSeleccionada']);
         //Obtener preguntas por EvaluacionId y preguntaId
         Route::get('obtenerPreguntaInformacion', [EvaluacionesController::class, 'obtenerPreguntaInformacion']);
+        //Obtener conteo por curso
+        Route::get('obtenerConteoPorCurso', [EvaluacionesController::class, 'obtenerConteoPorCurso']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

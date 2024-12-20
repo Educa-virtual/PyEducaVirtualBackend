@@ -90,11 +90,49 @@
             width: 50px; /* Tamaño del logo */
             height: auto; /* Mantiene la proporción del logo */
         }
-
+.header-titulo {
+        margin-top: -10px;
+        position: fixed;
+        top: 7px; /* Ubica el contenedor en la parte superior */
+        left: 25%; /* Centra horizontalmente desde la izquierda */
+        text-align: center;  /* Centrado */
+        width: 50%; /* Ancho del contenedor */
+        height: auto; /* Ajusta la altura automáticamente según el contenido */
+        line-height: -2px;
+        font-size: 12px;  /* Tamaño de la fuente */
+        font-family: 'Verdana', Geneva, Tahoma, sans-serif;
+        line-height: 1.2; /* Espaciado reducido entre líneas */
+       /* border: 2px solid #ccc;  Opcional: añade un borde para visualizar mejor */
+        overflow-wrap: break-word; /* Asegura que el texto se ajuste al ancho */
+        word-wrap: break-word; /* Compatibilidad para navegadores más antiguos */
+        white-space: normal; /* Permite múltiples líneas */
+    }
+    .logo-derecha { 
+        position: fixed;
+        height: 30px;
+        top: -10;
+        left: 0cm;
+        right: 0cm;
+        text-align: right;
+        line-height: -2px;
+ }
+    .logo-izquierda {
+        position: fixed;
+        height: 30px;
+        top: -12;
+        left: 0cm;
+        right: 0cm;
+        text-align: left;
+        line-height: -2px;
+    }
+    .matriz td{
+        font-family: 'Roboto', sans-serif;
+        
+    }
 </style>
 <body>
 
-    <header class="table-header">
+    {{-- <header class="table-header">
         <table>
             <tr>
                 <td></td>
@@ -102,30 +140,47 @@
                     "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
                     Junín y Ayacucho"
                 </td>
-                <td></td>
+                <td>  <img src="{{$imageLogo}} " style="height: 1px;"></td>
                 <td>
-                    <img src="logo.png" alt="Logo" class="logo">
+                     <img src="{{$logoVirtual}} " style="height: 50px;" >
                 </td>
             </tr>
         </table>
-    </header>
+    </header> --}}
+
+<div  class="header-titulo" style="text-align: center;">
+        "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
+        Junín y Ayacucho"
+        </div>
+        
+        <div class="logo-izquierda">
+            <img src="{{$imageLogo}} " style="height: 60px;">
+        </div>
+        <div class="logo-derecha">
+            <img src="{{$logoVirtual}} " style="height: 50px;" >
+        </div>
     <main>
 
 
-    <div class="titulo">Matriz de la {{ $nombreEvaluacion }}</div>
-    <table>
-
+    <div class="titulo">MATRIZ DE LA {{ $nombreEvaluacion }}</div>
+    <table class="matriz">
         <tr>
-            <td>Nombre de la evaluación: {{$nombreEvaluacion}}  </td>
+            <td>NOMBRE DE LA EVALUACIÓN: {{ $nombreEvaluacion }}</td>
         </tr>
         <tr>
-            <td>Área: {{$nombreCurso}}</td>
+            <td>ÁREA: {{ $nombreCurso }}</td>
         </tr>
         <tr>
-            <td>Nivel: {{ $nivel }} </td>
+            <td>NIVEL: {{ $nivel }}</td>
         </tr>
         <tr>
-            <td>Grado: {{ $grado }}</td>
+            <td>GRADO: {{ $grado }}</td>
+        </tr>
+        <tr>
+            <td>FECHA: {{ $dtCreado }}</td>
+        </tr>
+    <tr>
+            <td>NOMBRE DEL ESPECIALISTA: {{ $especialista }}</td>
         </tr>
         
     </table>
@@ -134,14 +189,12 @@
     <table>
 <thead style="text-align: center; border: 1px solid #000;  border-collapse: collapse;">
     <tr>
-        <th style="border: 1px solid #000;font-size:14px;">Item</th>
-        <th style="border: 1px solid #000;font-size:14px;">Competencia</th>
-        <th style="border: 1px solid #000;font-size:14px;">Capacidad</th>
-        <th style="border: 1px solid #000;font-size:14px;">Desempeño</th>
-        <th style="border: 1px solid #000;font-size:14px;">Nivel</th>
-        <th style="border: 1px solid #000;font-size:14px;">Clave</th>
-        <th style="border: 1px solid #000;font-size:14px;">Id Pregunta</th>
-        <th style="border: 1px solid #000;font-size:14px;">Id Evaluacion</th>
+        <th style="border: 1px solid #000;font-size:14px;">Nº</th>
+        <th style="border: 1px solid #000; font-size: 14px;">COMPETENCIA</th>
+        <th style="border: 1px solid #000; font-size: 14px;">CAPACIDAD</th>
+        <th style="border: 1px solid #000; font-size: 14px;">DESEMPEÑO</th>
+        <th style="border: 1px solid #000; font-size: 14px;">NIVEL / PESO</th>
+        <th style="border: 1px solid #000; font-size: 14px;">CLAVE</th>
     </tr>
 </thead>
 <tbody style="text-align: center;border: 1px solid #000; vertical-align: middle; border-collapse: collapse; ">
@@ -150,14 +203,12 @@
     @endphp
     @foreach($preguntas as $pregunta) <!-- Cambié $respuesta['preguntas'] por $preguntas -->
         <tr>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $item++ }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['competencia_nombre'] }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['capacidad_nombre'] }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['desempeno_descripcion'] }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['pregunta_nivel'] }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['pregunta_clave'] }}</td>
-            {{-- <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['iPreguntaId'] }}</td>
-            <td style="border: 1px solid #000 ;font-size:14px;">{{ $pregunta['iEvaluacionId'] }}</td> --}}
+            <td style="border: 1px solid #000; font-size:14px; ">{{ $item++ }}</td>
+            <td style="border: 1px solid #000; font-size:14px; ">{{ $pregunta['competencia_nombre'] }}</td>
+            <td style="border: 1px solid #000; font-size:14px; ">{{ $pregunta['capacidad_nombre'] }}</td>
+            <td style="border: 1px solid #000; font-size:14px; ">{{ $pregunta['desempeno_descripcion'] }}</td>
+            <td style="border: 1px solid #000; font-size:14px; ">{{ $pregunta['pregunta_nivel'] }}</td>
+            <td style="border: 1px solid #000; font-size:14px; text-transform: uppercase; ">{{ $pregunta['pregunta_clave'] }}</td>
         </tr>
     @endforeach
 </tbody>
