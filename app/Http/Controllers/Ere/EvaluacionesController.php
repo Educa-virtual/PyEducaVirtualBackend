@@ -613,6 +613,8 @@ class EvaluacionesController extends ApiController
         $grado = $request->input('grado');
         $nivel = $request->input('nivel');
         $nombreCurso = $request->input('nombreCurso');
+        $especialista = $request->input('especialista');
+
 
         // Aquí tomaremos los datos de la tabla "ere.preguntas"
         $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
@@ -624,6 +626,8 @@ class EvaluacionesController extends ApiController
 
         // Filtrar las preguntas según los parámetros recibidos
         $datos = [];
+        $dtCreado = null; // Variable para almacenar el dtCreado
+
         foreach ($preguntas as $key => $pregunta) {
             // Filtrar por areaId (compara con iCursosNivelGradId)
             if ($areaId && $pregunta->iCursosNivelGradId != $areaId) {
@@ -655,14 +659,32 @@ class EvaluacionesController extends ApiController
                 'pregunta_nivel' => $pregunta->iPreguntaNivel,
                 'iPreguntaId' => $pregunta->iPreguntaId,
                 'iCursosNivelGradId' => $pregunta->iCursosNivelGradId,
-                'iEvaluacionId' => $pregunta->iEvaluacionId
+                'iEvaluacionId' => $pregunta->iEvaluacionId,
+                'dtCreado' => $dtCreado, // Fecha de creación como dato independiente
             ];
-        }
 
+            // Capturar el valor de dtCreado de la primera pregunta
+            if ($dtCreado === null) {
+                $dtCreado = $pregunta->dtCreado;
+            }
+        }
+        // Formatear dtCreado para que solo muestre la fecha (sin la hora)
+        if ($dtCreado !== null) {
+            $dtCreado = \Carbon\Carbon::parse($dtCreado)->format('Y-m-d'); // Formato "Año-Mes-Día"
+        }
         // Verificar si se encontraron preguntas después del filtro
         if (empty($datos['preguntas'])) {
             return response()->json(['error' => 'No se encontraron preguntas que coincidan con los filtros especificados'], 404);
         }
+        //CARGAR LOGOS
+        $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $virtual = 'data:image/jpeg;base64,' . $imageData;
+
+        $imagePath = public_path('images\logo_IE\dremo.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $region = 'data:image/jpeg;base64,' . $imageData;
+
 
         // Preparar los datos para el PDF o la respuesta
         $respuesta = [
@@ -675,6 +697,10 @@ class EvaluacionesController extends ApiController
             'nivel' => $nivel,
             'nombreCurso' => $nombreCurso,
             'preguntas' => $datos['preguntas'],
+            "logoVirtual" => $virtual, // Ruta absoluta
+            "imageLogo" => $region, // Ruta absoluta
+            'dtCreado' => $dtCreado,
+            'especialista' => $especialista
         ];
         // Generar el PDF con los datos recibidos
         $pdf = PDF::loadView('pdfEre.matrizReporte', $respuesta)
@@ -683,5 +709,95 @@ class EvaluacionesController extends ApiController
 
         // Retornar el PDF como respuesta
         return $pdf;
+    }
+    public function insertarPreguntaSeleccionada(Request $request)
+    {
+        // Validar el payload recibido
+        $validated = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+            'preguntas' => 'required|array',
+            'preguntas.*.iPreguntaId' => 'required|integer',
+        ]);
+
+        // Recorrer las preguntas seleccionadas y formatear los datos para la inserción
+        $dataToInsert = array_map(function ($pregunta) use ($validated) {
+            return [
+                'iPreguntaId' => $pregunta['iPreguntaId'],
+                'iEvaluacionId' => $validated['iEvaluacionId'],
+            ];
+        }, $validated['preguntas']);
+
+        // Insertar los datos en la tabla
+        DB::table('ere.evaluacion_preguntas')->insert($dataToInsert);
+
+        // Retornar una respuesta de éxito
+        return response()->json([
+            'message' => 'Preguntas seleccionadas guardadas exitosamente.',
+        ]);
+    }
+    public function obtenerPreguntaSeleccionada(Request $request)
+    {
+        $validatedData = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+        ]);
+
+        $preguntas = DB::table('ere.evaluacion_preguntas')
+            ->join('ere.preguntas', 'ere.evaluacion_preguntas.iPreguntaId', '=', 'ere.preguntas.iPreguntaId')
+            ->where('ere.evaluacion_preguntas.iEvaluacionId', $validatedData['iEvaluacionId'])
+            ->select('ere.preguntas.*', 'ere.evaluacion_preguntas.iEvalPregId')
+            ->get();
+
+        return response()->json($preguntas, 200);
+    }
+    public function obtenerConteoPorCurso(Request $request)
+    {
+        // Validar los datos de entrada
+        $validatedData = $request->validate([
+            'iEvaluacionId' => 'required',
+            'iCursosNivelGradId' => 'required', // Asegurarse de que ambos parámetros estén presentes
+        ]);
+
+        try {
+            // Consulta para obtener las preguntas seleccionadas por iEvaluacionId e iCursosNivelGradId
+            $resultado = DB::table('ere.evaluacion_preguntas')
+                ->join('ere.preguntas', 'ere.evaluacion_preguntas.iPreguntaId', '=', 'ere.preguntas.iPreguntaId')
+                ->where('ere.evaluacion_preguntas.iEvaluacionId', $validatedData['iEvaluacionId'])
+                ->whereIn('ere.preguntas.iCursosNivelGradId', $validatedData['iCursosNivelGradId'])
+                ->select(
+                    'ere.preguntas.iPreguntaId', // Otras columnas que necesites
+                    'ere.preguntas.cPregunta',  // Por ejemplo, el texto de la pregunta
+                    'ere.preguntas.iCursosNivelGradId', // Para asegurarse de que la comparación sea válida
+                )
+                ->get();
+
+            // Verificar si se encontraron resultados
+            if ($resultado->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron preguntas para la evaluación y nivel de curso especificados.'], 404);
+            }
+
+            // Si hay resultados, devolver los datos
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return response()->json(['error' => 'Hubo un problema al obtener las preguntas: ' . $e->getMessage()], 500);
+        }
+    }
+    /**
+     * Obtener preguntas por EvaluacionId y iPreguntaId
+     * 
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function obtenerPreguntaInformacion(Request $request)
+    {
+        // Obtener los parámetros del request
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $iPreguntaIds = $request->input('iPreguntaIds'); // Recibe la cadena de IDs separados por comas
+
+        // Llamar al procedimiento almacenado con los parámetros
+        $result = DB::select('EXEC ere.SP_SEL_preguntasXiEvaluacionId ?, ?', [$iEvaluacionId, $iPreguntaIds]);
+
+        // Retornar el resultado como JSON
+        return response()->json($result);
     }
 }
