@@ -69,12 +69,21 @@ class InstrumentosEvaluacionController extends ApiController
     public function obtenerRubricaEvaluacion(Request $request){
         try {
 
-            $params = ['eval','V_InstrumentosEvaluacion','*'];
+            $params = ['eval','V_Instrumentos','*'];
+
+            $where = '';
 
             if (!is_null($request->iEvaluacionId)) {
-                $params[] = 'iEvaluacionId=' . $request->iEvaluacionId . ' AND iInstrumentoId IS NOT NULL';
+                $where .= 'iEvaluacionId=' . $request->iEvaluacionId . ' AND iInstrumentoId IS NOT NULL';
+                
             }
 
+            if(isset($request->iEstudianteId) AND !is_null($request->iEstudianteId) AND is_numeric($request->iEstudianteId)){
+                $where .= ' AND iEstudianteId=' . $request->iEstudianteId;
+                $params[1] = 'V_InstrumentoEvaluacionCalificada';
+            }
+            
+            $params[] = $where;
             // Construir los placeholders dinámicos
             $placeholders = implode(',', array_fill(0, count($params), '?'));
 

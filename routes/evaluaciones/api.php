@@ -40,7 +40,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 
         Route::post('actualizarRubricaEvaluacion', [EvaluacionController::class, 'actualizarRubricaEvaluacion']);
         Route::post('deleteRubricaEvaluacion', [EvaluacionController::class, 'deleteRubricaEvaluacion']);
-
+        
+        Route::post('guardarActualizarCalificacionRubricaEvaluacion', [EvaluacionController::class, 'guardarActualizarCalificacionRubricaEvaluacion']);
 
         Route::group(['prefix' => 'estudiantes'], function () {
             Route::resource('', EvaluacionEstudiantesController::class);

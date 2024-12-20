@@ -150,6 +150,48 @@ class EvaluacionController extends ApiController
         }
     }
 
+
+    public function guardarActualizarCalificacionRubricaEvaluacion(Request $request)
+    {
+        try {
+
+            $params = ['eval', 'nivel_logro_alcanzado_evaluaciones'];
+
+
+            if (!isset($request->iNivelLogroAlcId)) {
+
+                $params[] = json_encode([
+                    'iNivelEvaId' => $request->iNivelEvaId,
+                    'iEstudianteId' => $request->iEstudianteId,
+                    'iEvaluacionId' => $request->iEvaluacionId,
+                ]);
+
+                $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+                $data = DB::select("exec grl.SP_INS_EnTablaDesdeJSON $placeholders", $params);
+            } else {
+
+                $params[] = json_encode([
+                    'iNivelEvaId' => $request->iNivelEvaId,
+                ]);
+
+                $params[] = json_encode([
+                    'COLUMN_NAME' => 'iNivelLogroAlcId',
+                    'VALUE' => $request->iNivelLogroAlcId,
+                ]);
+
+                $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+                $data = DB::select("exec grl.SP_UPD_EnTablaConJSON $placeholders", $params);
+            }
+
+            return $this->successResponse($data, 'Datos obtenidos correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos' . $e);
+            return $this->errorResponse(null, $message);
+        }
+    }
+
     public function deleteRubricaEvaluacion(Request $request)
     {
         try {
