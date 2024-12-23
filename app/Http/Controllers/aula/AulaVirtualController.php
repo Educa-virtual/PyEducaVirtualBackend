@@ -153,11 +153,11 @@ class AulaVirtualController extends ApiController
         $iSilaboId = $this->hashids->decode($iSilaboId);
         $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
 
-        $params = [$iSilaboId];
+        $params = [$iSilaboId, $request->perfil];
 
         $contenidos = [];
         try {
-            $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?', $params);
+            $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?, @_perfil = ?', $params);
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
@@ -298,7 +298,7 @@ class AulaVirtualController extends ApiController
     }
 
     public function obtenerCategorias()
-    {        
+    {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
@@ -314,7 +314,7 @@ class AulaVirtualController extends ApiController
         $iCursoId = '1';
         $iSemAcadId = '1';
         $iYAcadId = '1';
-        
+
         // $params =[
         //     $iCursoId,
         //     $iSemAcadId,
@@ -410,12 +410,12 @@ class AulaVirtualController extends ApiController
 
         // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
-    public function eliminarRptEstudiante (Request $request)
+    public function eliminarRptEstudiante(Request $request)
     {
         $validated = $request->validate([
             'iForoRptaId' => 'required|string',
         ]);
-        $params = [$request ['iForoRptaId']];
+        $params = [$request['iForoRptaId']];
         //return $params;
         try {
             // Llamar al procedimiento almacenado
@@ -433,7 +433,6 @@ class AulaVirtualController extends ApiController
                 'message' => $message,
             ], 500);
         }
-        
     }
     // Guardar respuesta de Foro
     public function guardarRespuesta(Request $request)
@@ -461,11 +460,11 @@ class AulaVirtualController extends ApiController
             $request->iEstudianteId,
             $iForoId,
             $request->cForoRptaRespuesta
-          
+
         ];
         //return $data;
         try {
-           
+
             $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
                 @iEstudianteId = ?,
                 @iForoId = ?,
@@ -476,7 +475,6 @@ class AulaVirtualController extends ApiController
             $estado = 200;
 
             return $response;
-
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
@@ -683,27 +681,29 @@ class AulaVirtualController extends ApiController
             $request->TablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
             $request->DatosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
             $request->campoFK // NVARCHAR(128)
-    
+
         ];
 
-        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
-        $solicitud);
+        $query = DB::select(
+            "EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
+            $solicitud
+        );
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
