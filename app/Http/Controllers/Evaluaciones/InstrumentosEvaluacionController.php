@@ -69,7 +69,7 @@ class InstrumentosEvaluacionController extends ApiController
     public function obtenerRubricaEvaluacion(Request $request){
         try {
 
-            $params = ['eval','V_Instrumentos','*'];
+            $params = ['eval','V_InstrumentosEvaluacion','*'];
 
             $where = '';
 
@@ -283,7 +283,9 @@ class InstrumentosEvaluacionController extends ApiController
 
         DB::commit();
 
-        return $this->successResponse(null, 'Cambios realizados correctamente');
+        return $this->successResponse([
+            'iInstrumentoId' => $iInstrumentoId,
+        ], 'Cambios realizados correctamente');
     }
 
     final public function destroy(Request $request, $id)
