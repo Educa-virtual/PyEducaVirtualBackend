@@ -71,10 +71,19 @@ class InstrumentosEvaluacionController extends ApiController
 
             $params = ['eval','V_InstrumentosEvaluacion','*'];
 
+            $where = '';
+
             if (!is_null($request->iEvaluacionId)) {
-                $params[] = 'iEvaluacionId=' . $request->iEvaluacionId . ' AND iInstrumentoId IS NOT NULL';
+                $where .= 'iEvaluacionId=' . $request->iEvaluacionId . ' AND iInstrumentoId IS NOT NULL';
+                
             }
 
+            if(isset($request->iEstudianteId) AND !is_null($request->iEstudianteId) AND is_numeric($request->iEstudianteId)){
+                $where .= ' AND iEstudianteId=' . $request->iEstudianteId;
+                $params[1] = 'V_InstrumentoEvaluacionCalificada';
+            }
+            
+            $params[] = $where;
             // Construir los placeholders dinámicos
             $placeholders = implode(',', array_fill(0, count($params), '?'));
 
@@ -274,7 +283,9 @@ class InstrumentosEvaluacionController extends ApiController
 
         DB::commit();
 
-        return $this->successResponse(null, 'Cambios realizados correctamente');
+        return $this->successResponse([
+            'iInstrumentoId' => $iInstrumentoId,
+        ], 'Cambios realizados correctamente');
     }
 
     final public function destroy(Request $request, $id)

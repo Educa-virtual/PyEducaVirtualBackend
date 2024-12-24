@@ -3,6 +3,7 @@
 use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
+use App\Http\Controllers\aula\AnuncioController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
 use App\Http\Controllers\aula\NotificacionEstudianteController;
@@ -83,6 +84,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::get('reporteDeLogroFinalXYear', [ResultadoController::class, 'reporteDeLogroFinalXYear']); 
         Route::get('generarReporteDeLogrosAlcanzadosXYear', [ResultadoController::class, 'generarReporteDeLogrosAlcanzadosXYear']);
         
+    });
+    Route::group(['prefix' => 'Anuncio'], function (){
+        Route::post('guardarAnuncio', [AnuncioController::class, 'guardarAnuncio']);
+        Route::get('obtenerAnunciosXDocente', [AnuncioController::class, 'obtenerAnunciosXDocente']);
     });
 
     Route::group(['prefix' => 'foros'], function () {
