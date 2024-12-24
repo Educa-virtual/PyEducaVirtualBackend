@@ -22,8 +22,6 @@ class AnuncioController extends Controller
     }
     public function guardarAnuncio(Request $request){
         
-        //return $request -> all();
-
         $request->validate([
             'cForoDescripcion' => 'required|string',
             'iForoCatId' => 'required|integer',
@@ -35,22 +33,14 @@ class AnuncioController extends Controller
         }
         
         $data = [
-            null,
-            $request->iForoCatId,
             $idDocCursoId,
+            $request->iForoCatId,
             $request->cForoTitulo ?? NULL,
             $request->cForoDescripcion,
-            $request->dtForoInicio ?? NULL,
-            $request->dtForoInicio ?? NULL,
-            $request->dtForoFin ?? NULL,
-            $request->cForoUrl ?? NULL,
-            $request->iEstado ?? NULL,
-            1,
-
         ];
         
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
+            $resp = DB::select('EXEC [aula].[SP_INS_insertarAnunciosPorCategoria] ?, ?, ?, ?', $data);
 
             DB::commit();
             if ($resp[0]->id > 0) {
@@ -86,7 +76,7 @@ class AnuncioController extends Controller
         ];
         try {
             // Ejecutar el procedimiento almacenado
-            $data = DB::select('EXEC [aula].[SP_INS_obtenerAnunciosPorCategoria] ?,?', $params);
+            $data = DB::select('EXEC [aula].[SP_SEL_obtenerAnunciosPorCategoria] ?,?', $params);
             // Preparar la respuesta
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;
