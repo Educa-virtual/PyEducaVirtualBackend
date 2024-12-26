@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\eval\EvaluacionesController;
 use App\Http\Controllers\eval\BancoAlternativasController;
 use App\Http\Controllers\eval\EncabezadoPreguntasController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Evaluaciones\TipoEvaluacionController as EvaluacionesTi
 use App\Http\Controllers\Evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController ;
+use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'tipo-preguntas'], function () {
@@ -40,7 +42,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 
         Route::post('actualizarRubricaEvaluacion', [EvaluacionController::class, 'actualizarRubricaEvaluacion']);
         Route::post('deleteRubricaEvaluacion', [EvaluacionController::class, 'deleteRubricaEvaluacion']);
-
+        
+        Route::post('guardarActualizarCalificacionRubricaEvaluacion', [EvaluacionController::class, 'guardarActualizarCalificacionRubricaEvaluacion']);
 
         Route::group(['prefix' => 'estudiantes'], function () {
             Route::resource('', EvaluacionEstudiantesController::class);
@@ -85,4 +88,25 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'evaluacion-promedios'], function () {
         Route::post('guardarConclusionxiEvalPromId', [EvaluacionesController::class, 'guardarConclusionxiEvalPromId']);
     });
+});
+
+Route::group(['prefix' => 'virtual'], function () {
+    Route::get('getData', [ApiController::class, 'selDesdeTablaOVista']);
+    // Route::get('getData', function (Request $request) {
+    //     return response()->json([
+    //         'esquema' => $request->esquema,
+    //         'tabla' => $request->tabla,
+    //     ]);
+
+    //     $controller = app(ApiController::class);
+
+    //     return $controller->selDesdeTablaOVista(
+    //         $request->esquema,
+    //         $request->tabla, 
+    //     );
+    // });
+    
+    Route::post('insertData', [ApiController::class, 'insEnTablaDesdeJSON']);
+    Route::put('updateData', [ApiController::class, 'updEnTablaConJSON']);
+    Route::delete('deleteData', [ApiController::class, 'delRegistroConTransaccion']);
 });
