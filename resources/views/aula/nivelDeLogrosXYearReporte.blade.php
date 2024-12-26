@@ -259,7 +259,16 @@
                     </tr>
                 @endforeach
             </tbody>
-        </table>        
+        </table>
+        <br>
+        <div>
+            CONCLUSIÓN DESCRIPTIVA FINAL
+        </div>
+        <table>
+           <td border="1" style="text-align:left;">
+                <div>- {{$estudiante['cMatrConclusionDescriptiva'] ?? 'N/A'}} </div>
+           </td>
+        </table>       
         <br><br>
         <table>
             <tr>
