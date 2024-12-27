@@ -208,7 +208,7 @@
         <div class="table-flotante-izquierda">
            
             <aside>
-                <div>Cod-M : {{$headers['cod_Mod']}} </div>
+                <div>Cod-M : {{$headers['cod_Mod']}} / </div>
                 <div>Estudiante : {{$estudiante['Estudiante']}} </div>
                 <div>Tutor :  {{ $headers['docente'] }} </div>                
                 <div>Año : {{ $headers['año'] }} </div>
@@ -217,10 +217,10 @@
         </div>    
         <div class="table-flotante-derecha">
             <aside>
-                <div>Nivel Educativo: {{ $headers['Seccion_turno'] }}</div>
-                <div>Sección - Turno : {{ $headers['Seccion_turno'] }}</div>
+                <div>Nivel Educativo: </div>
+                <div>Sección - Turno : {{ $headers['Seccion_turno'] }} / </div>
                 <div>Ciclo - Grado : {{ $headers['ciclo_grado'] }}</div>
-                <div>Fase / Periodo / Nivel Educativo : {{ $headers['curso'] }}  {{ $headers['nivel_educativo'] }}</div>
+                <div>Fase / Periodo / Nivel Educativo :  {{ $headers['nivel_educativo'] }} /</div>
             </aside>
         </div>        
     </header>
