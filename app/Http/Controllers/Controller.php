@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\DataReturnStrategy;
+use App\Helpers\JsonResponseStrategy;
 use Exception;
 use App\Helpers\ResponseHandler;
 use Illuminate\Http\JsonResponse;
@@ -47,45 +49,75 @@ abstract class Controller extends BaseController
      * ```
      */
 
-    public function selDesdeTablaOVista(Request $request): Collection|JsonResponse
+    public function selDesdeTablaOVista(Request $request, DataReturnStrategy $strategy): Collection|JsonResponse
     {
+
+        if (isset($request->esquema) && isset($request->tabla)) {
+
+            $params = [$request->esquema, $request->tabla, $request->campos];
+
+            if (isset($request->where)) {
+                $params[] = $request->where;
+            }
+
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+            $formattedQuery = collect();
+
+            try {
+                $query = collect(DB::select("EXEC grl.SP_SEL_DesdeTablaOVista $placeholders", $params));
+
+                return $strategy->handle($query);
+            } catch (Exception $e) {
+                return ResponseHandler::error('Error al obtener los datos.', 500, $e->getMessage());
+            }
+        }
+
+        foreach ($request->all() as $query) {
+            if (!isset($query['esquema']) or !isset($query['tabla'])) {
+                return ResponseHandler::error('Error en la solicitud de los datos.');
+            }
+        }
+        return response()->json('Es un array de objetos');
+
+
+
+
         if (is_array($request->data)) {
             $formattedQuery = collect(); // Usar Collection en lugar de un arreglo
 
             foreach ($request->data as $registro) {
-                foreach ($registro as $key => $value) {
-                    $params = [$request->esquema, $request->tabla];
+                $params = [$request->esquema, $request->tabla];
 
-                    if (is_string($registro['campos'])) {
-                        $params[] = $registro['campos'];
-                    }
-                    if (is_string($registro['where'])) {
-                        $params[] = $registro['where'];
-                    }
+                if (is_string($registro['campos'])) {
+                    $params[] = $registro['campos'];
+                }
+                if (is_string($registro['where'])) {
+                    $params[] = $registro['where'];
+                }
 
-                    $placeholders = implode(',', array_fill(0, count($params), '?'));
+                $placeholders = implode(',', array_fill(0, count($params), '?'));
 
-                    try {
-                        // Ejecutar la consulta
-                        $query = collect(DB::select("EXEC grl.SP_SEL_DesdeTablaOVista $placeholders", $params));
+                try {
+                    // Ejecutar la consulta
+                    $query = collect(DB::select("EXEC grl.SP_SEL_DesdeTablaOVista $placeholders", $params));
 
-                        // Formatear los valores JSON dentro de cada elemento de la colección
-                        $formattedQuery = $formattedQuery->merge($query->map(function ($item) {
-                            $formattedItem = collect(); // Colección para el item actual
+                    // Formatear los valores JSON dentro de cada elemento de la colección
+                    $formattedQuery = $formattedQuery->merge($query->map(function ($item) {
+                        $formattedItem = collect(); // Colección para el item actual
 
-                            foreach ((array)$item as $key => $value) { // Castear a array para iterar
-                                if (is_string($value) && json_decode($value) !== null) {
-                                    $formattedItem->put($key, json_decode($value, true));
-                                } else {
-                                    $formattedItem->put($key, $value);
-                                }
+                        foreach ((array)$item as $key => $value) { // Castear a array para iterar
+                            if (is_string($value) && json_decode($value) !== null) {
+                                $formattedItem->put($key, json_decode($value, true));
+                            } else {
+                                $formattedItem->put($key, $value);
                             }
+                        }
 
-                            return $formattedItem;
-                        }));
-                    } catch (Exception $e) {
-                        return ResponseHandler::error('Error al obtener los datos.', 500, $e->getMessage());
-                    }
+                        return $formattedItem;
+                    }));
+                } catch (Exception $e) {
+                    return ResponseHandler::error('Error al obtener los datos.', 500, $e->getMessage());
                 }
             }
 

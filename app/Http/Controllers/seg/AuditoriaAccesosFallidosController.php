@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\seg;
 
+use App\Helpers\CollectionStrategy;
 use Exception;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHandler;
@@ -34,7 +35,7 @@ class AuditoriaAccesosFallidosController extends Controller
       ]);
 
 
-      $query = $this->selDesdeTablaOVista($request);
+      $query = $this->selDesdeTablaOVista($request, new CollectionStrategy());
 
       if ($query instanceof Collection) {
         $query = $query->sortByDesc('dtFecha')->values();

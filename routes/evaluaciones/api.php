@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\JsonResponseStrategy;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\eval\EvaluacionesController;
 use App\Http\Controllers\eval\BancoAlternativasController;
@@ -91,20 +92,10 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 });
 
 Route::group(['prefix' => 'virtual'], function () {
-    Route::get('getData', [ApiController::class, 'selDesdeTablaOVista']);
-    // Route::get('getData', function (Request $request) {
-    //     return response()->json([
-    //         'esquema' => $request->esquema,
-    //         'tabla' => $request->tabla,
-    //     ]);
-
-    //     $controller = app(ApiController::class);
-
-    //     return $controller->selDesdeTablaOVista(
-    //         $request->esquema,
-    //         $request->tabla, 
-    //     );
-    // });
+    Route::get('getData', function (Request $request) {
+        $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
+        return (new ApiController)->selDesdeTablaOVista($request, $strategy);
+    });
     
     Route::post('insertData', [ApiController::class, 'insEnTablaDesdeJSON']);
     Route::put('updateData', [ApiController::class, 'updEnTablaConJSON']);
