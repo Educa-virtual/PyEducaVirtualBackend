@@ -127,15 +127,9 @@ class CredencialescCredUsuariocClaveController extends Controller
 							ORDER BY iModuloOrden ASC
                             ");
         $years = DB::select("
-                            SELECT 
-                             iYearId
-                            ,cYearNombre
-                            ,cYearOficial
-                                                            
-                            FROM grl.years
-                           
-                                                        
-                            ORDER BY cYearNombre DESC
+                            SELECT  y.iYearId    ,y.cYearNombre       ,y.cYearOficial  ,
+(select top(1) iYAcadId from acad.year_academicos WHERE iYearId= y.iYearId) as iYAcadId
+ FROM grl.years as y ORDER BY y.cYearNombre DESC
                             ");
 
         $user->modulos = $modulos;
