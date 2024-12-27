@@ -49,22 +49,52 @@ abstract class Controller extends BaseController
 
     public function selDesdeTablaOVista(Request $request): Collection|JsonResponse
     {
-        $params = [$request->esquema, $request->tabla, $request->data ?? '*'];
+        if (is_array($request->data)) {
+            $formattedQuery = collect(); // Usar Collection en lugar de un arreglo
 
-        if (!is_null($request->condicionWhere)) {
-            $params[] = $request->condicionWhere;
-        }
+            foreach ($request->data as $registro) {
+                foreach ($registro as $key => $value) {
+                    $params = [$request->esquema, $request->tabla];
 
-        // Construir los placeholders dinámicos
-        $placeholders = implode(',', array_fill(0, count($params), '?'));
+                    if (is_string($registro['campos'])) {
+                        $params[] = $registro['campos'];
+                    }
+                    if (is_string($registro['where'])) {
+                        $params[] = $registro['where'];
+                    }
 
-        try {
-            // Retorna directamente los datos como colección
-            return collect(DB::select("EXEC grl.SP_SEL_DesdeTablaOVista $placeholders", $params));
-        } catch (Exception $e) {
-            return ResponseHandler::error('Error al obtener los datos.', 500, $e->getMessage());
+                    $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+                    try {
+                        // Ejecutar la consulta
+                        $query = collect(DB::select("EXEC grl.SP_SEL_DesdeTablaOVista $placeholders", $params));
+
+                        // Formatear los valores JSON dentro de cada elemento de la colección
+                        $formattedQuery = $formattedQuery->merge($query->map(function ($item) {
+                            $formattedItem = collect(); // Colección para el item actual
+
+                            foreach ((array)$item as $key => $value) { // Castear a array para iterar
+                                if (is_string($value) && json_decode($value) !== null) {
+                                    $formattedItem->put($key, json_decode($value, true));
+                                } else {
+                                    $formattedItem->put($key, $value);
+                                }
+                            }
+
+                            return $formattedItem;
+                        }));
+                    } catch (Exception $e) {
+                        return ResponseHandler::error('Error al obtener los datos.', 500, $e->getMessage());
+                    }
+                }
+            }
+
+            return $formattedQuery; // Retornar la colección
+        } else {
+            return ResponseHandler::error('Error al obtener los datos.');
         }
     }
+
 
 
     public function insEnTablaDesdeJSON(Request $request): Collection|JsonResponse
@@ -148,11 +178,11 @@ abstract class Controller extends BaseController
 
                     $params = [$request->esquema, $request->tabla, $request->campoId];
 
-                    if (isset($registro['valorId']) AND !is_null($registro['valorId'])) {
+                    if (isset($registro['valorId']) and !is_null($registro['valorId'])) {
                         $params[] = $registro['valorId'];
                     }
 
-                    if (isset($registro['tablaHija']) AND !is_null($registro['tablaHija']) AND $registro['tablaHija'] != NULL ) {
+                    if (isset($registro['tablaHija']) and !is_null($registro['tablaHija']) and $registro['tablaHija'] != NULL) {
                         $params[] = $registro['tablaHija'];
                     }
 
