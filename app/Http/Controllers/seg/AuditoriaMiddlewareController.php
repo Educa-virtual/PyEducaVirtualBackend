@@ -24,12 +24,16 @@ class AuditoriaMiddlewareController extends Controller
       $where = 'CAST(dtFecha as DATE) >= CAST(' . "'" . $validated['filtroFechaInicio'] . "'" . ' as DATE) AND CAST(dtFecha as DATE) <= CAST(' . "'" . $validated['filtroFechaFin'] . "'" . ' as DATE)';
 
       // Usar `selDesdeTablaOVista` para realizar la consulta
-      $query = $this->selDesdeTablaOVista(
-        self::schema,
-        'V_auditoria_middleware',
-        '*',
-        $where,
-      );
+
+      $request->merge([
+        'esquema' => self::schema,
+        'tabla' => 'V_auditoria_middleware',
+        'campos' => '*',
+        'condicionWhere' => $where,
+      ]);
+
+
+      $query = $this->selDesdeTablaOVista($request);
 
       if ($query instanceof Collection) {
         $query = $query->sortByDesc('dtFecha')->values();

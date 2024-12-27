@@ -12,10 +12,14 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Ere\EreEvaluacion;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
-//use Carbon\Carbon;
+use Carbon\Carbon;
 
 class EvaluacionesController extends ApiController
 {
+    public function __construct()
+    {
+        $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
     public function obtenerEvaluaciones()
     {
 
@@ -40,6 +44,7 @@ class EvaluacionesController extends ApiController
 
     public function guardarEvaluacion(Request $request)
     {
+        // $iBiblioId = $this->hashids->decode($request->iBiblioId);
         $params = [
             $request->idTipoEvalId,
             $request->iNivelEvalId,
@@ -799,5 +804,47 @@ class EvaluacionesController extends ApiController
 
         // Retornar el resultado como JSON
         return response()->json($result);
+    }
+
+    //guardar fecha inicio fin de cursos
+    public function guardarInicioFinalExmAreas(Request $request)
+    {
+        // Validar los datos enviados desde el frontend
+        $request->validate([
+            'iEvaluacionId' => 'required|integer', // ID de evaluación obligatorio
+            'fechaIniFin' => 'required|array', // Debe ser un array
+            'fechaIniFin.*.iCursoNivelGradId' => 'required|integer', // Cada objeto debe tener iCursoNivelGradId
+            'fechaIniFin.*.fechaInicio' => 'required|date', // Validar que sea una fecha válida
+            'fechaIniFin.*.fechaFin' => 'required|date', // Validar que sea una fecha válida
+        ]);
+
+        // Obtener los datos validados
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $cursos = $request->input('fechaIniFin'); // Array de objetos con fechas y cursos
+
+        try {
+            // Iterar sobre cada curso y ejecutar el procedimiento almacenado
+            foreach ($cursos as $curso) {
+                DB::statement('EXEC ere.SP_UPD_actualizarFechasExamenCursos ?, ?, ?, ?', [
+                    $iEvaluacionId,
+                    $curso['iCursoNivelGradId'],
+                    $curso['fechaInicio'],
+                    $curso['fechaFin'],
+                ]);
+            }
+
+            // Devolver una respuesta de éxito
+            return response()->json([
+                'success' => true,
+                'message' => 'Fechas de examen actualizadas correctamente.',
+            ], 200);
+        } catch (\Exception $e) {
+            // Manejo de errores en caso de que falle el procedimiento almacenado
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar las fechas de examen.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

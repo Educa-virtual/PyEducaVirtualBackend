@@ -584,32 +584,51 @@ class AulaVirtualController extends ApiController
     {
         // Prepara los parámetros para la consulta. Se obtienen del objeto $request, el cual contiene los datos de la solicitud HTTP.
         // Si los valores no existen, se asigna NULL en su lugar.
-        $iDocenteId = $request->iDocenteId;
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
-        $parametros = [
-            $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
-            $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
-            $request->iEscalaCalifId ?? NULL    // ID de la escala de calificación (si existe)
+        // $request ->validate([
+        //     'iEstudianteId' =>'required|integer',
+        // ]);
+        $iEstudianteId = $request->iEstudianteId;
+        $iForoId = $request ->iForoId;
+        $cForoRptDocente = $request ->cForoRptDocente;
+
+        $params = [
+            $iEstudianteId,
+            $iForoId,
+            $cForoRptDocente,
         ];
+        
+        //return $params;
+        // $iDocenteId = $request->iDocenteId;
+        // if ($request->iDocenteId) {
+        //     $iDocenteId = $this->hashids->decode($iDocenteId);
+        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        // }
+        
+        // $parametros = [
+        //     $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
+        //     $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
+        //     $request->iEscalaCalifId ?? NULL    // ID de la escala de calificación (si existe)
+        // ];
 
         try {
             // Llama al procedimiento almacenado 'Sp_UPD_calificarDocenteForoRespuestas' en la base de datos,
             // pasándole los parámetros preparados. Este procedimiento se encarga de actualizar la calificación.
-            $data = DB::select('exec aula.Sp_UPD_calificarDocenteForoRespuestas ?,?,?', $parametros);
+            $data = DB::select('exec aula.Sp_UPD_calificarDocenteForoRespuestasEstudiante ?,?,?', $params);
 
-            // Si la respuesta de la base de datos tiene un ID válido de respuesta de foro, significa que la operación fue exitosa.
-            if ($data[0]->iForoRptaId > 0) {
-                // Crea un mensaje de éxito y asigna un código de respuesta HTTP 200 (OK).
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                // Si el ID no es válido, significa que no se pudo guardar la información, y se asigna un código de error 500.
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+
+            return $response;
+            // // Si la respuesta de la base de datos tiene un ID válido de respuesta de foro, significa que la operación fue exitosa.
+            // if ($data[0]->iForoRptaId > 0) {
+            //     // Crea un mensaje de éxito y asigna un código de respuesta HTTP 200 (OK).
+            //     $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+            //     $codeResponse = 200;
+            // } else {
+            //     // Si el ID no es válido, significa que no se pudo guardar la información, y se asigna un código de error 500.
+            //     $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+            //     $codeResponse = 500;
+            // }
         } catch (\Exception $e) {
             // Si ocurre una excepción, se captura y se envía un mensaje de error con los detalles del mismo.
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
