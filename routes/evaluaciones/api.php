@@ -92,7 +92,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 });
 
 Route::group(['prefix' => 'virtual'], function () {
-    Route::get('getData', function (Request $request) {
+    Route::post('getData', function (Request $request) {
         $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
         return (new ApiController)->selDesdeTablaOVista($request, $strategy);
     });
