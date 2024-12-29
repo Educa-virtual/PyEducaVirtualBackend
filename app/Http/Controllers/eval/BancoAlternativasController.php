@@ -93,7 +93,6 @@ class BancoAlternativasController extends Controller
                     );
                     break;
                 case 'GUARDARxBancoPreguntas':
-
                     foreach ($request->alternativas as $key => $value) {
 
                         $json_alternativas = [
@@ -137,18 +136,59 @@ class BancoAlternativasController extends Controller
                         );
                     }
                 case 'ACTUALIZAR':
-                    $data = DB::select('exec eval.Sp_UPD_bancoAlternativas ?,?,?,?,?,?,?,?,?', $parametros);
+                case 'ACTUALIZARxBancoPreguntas':
+                    DB::update("
+                    UPDATE eval.banco_alternativas
+                    SET 
+                    iEstado = 0
+                    WHERE 
+                    iBancoId = '" . $request->iBancoId . "'
+                    ");
+
+                    foreach ($request->alternativas as $key => $value) {
+                        if ($value['iBancoAltId'] > 0) {
+                            $json_alternativas = [
+                                'ACTUALIZARxBancoPreguntas',
+                                '-',
+
+                                $value['iBancoAltId']               ?? NULL,
+                                $request->iBancoId             ?? NULL,
+                                $value['cBancoAltLetra']            ?? NULL,
+                                $value['cBancoAltDescripcion']      ?? NULL,
+                                $value['bBancoAltRptaCorrecta']     ?? NULL,
+                                $value['cBancoAltExplicacionRpta']  ?? NULL,
+
+                                $request->iCredId                   ?? NULL
+                            ];
+                            $data = DB::select('exec eval.Sp_UPD_bancoAlternativas ?,?,?,?,?,?,?,?,?', $json_alternativas);
+                        } else {
+                            $json_alternativas = [
+                                'GUARDARxBancoPreguntas',
+                                '-',
+                                $value['iBancoAltId']               ?? NULL,
+                                $request->iBancoId                  ?? NULL,
+                                $value['cBancoAltLetra']            ?? NULL,
+                                $value['cBancoAltDescripcion']      ?? NULL,
+                                $value['bBancoAltRptaCorrecta']     ?? NULL,
+                                $value['cBancoAltExplicacionRpta']  ?? NULL,
+
+                                $request->iCredId                   ?? NULL
+                            ];
+                            $data = DB::select('exec eval.Sp_INS_bancoAlternativas ?,?,?,?,?,?,?,?,?', $json_alternativas);
+                        }
+                    }
                     if ($data[0]->iBancoAltId > 0) {
                         return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se actualizó la información', 'data' => null],
+                            ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
                             200
                         );
                     } else {
                         return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
+                            ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
                             500
                         );
                     }
+                    break;
             }
         } catch (\Exception $e) {
             return new JsonResponse(

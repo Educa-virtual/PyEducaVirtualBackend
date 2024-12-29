@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\JsonResponseStrategy;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\eval\EvaluacionesController;
 use App\Http\Controllers\eval\BancoAlternativasController;
@@ -91,22 +92,29 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 });
 
 Route::group(['prefix' => 'virtual'], function () {
-    Route::get('getData', [ApiController::class, 'selDesdeTablaOVista']);
-    // Route::get('getData', function (Request $request) {
-    //     return response()->json([
-    //         'esquema' => $request->esquema,
-    //         'tabla' => $request->tabla,
-    //     ]);
+    Route::post('getData', [ApiController::class, 'getData']);
+    Route::post('insertData', [ApiController::class, 'insertData']);
+    Route::post('updateData', [ApiController::class, 'updateData']);
+    Route::post('deleteData', [ApiController::class, 'deleteData']);
 
-    //     $controller = app(ApiController::class);
+    // Route::post('getData', function (Request $request) {
+    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
+    //     return (new ApiController)->selDesdeTablaOVista($request, $strategy);
+    // });
 
-    //     return $controller->selDesdeTablaOVista(
-    //         $request->esquema,
-    //         $request->tabla, 
-    //     );
+    // Route::post('insertData', function (Request $request) {
+    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
+    //     return (new ApiController)->insEnTablaDesdeJSON($request, $strategy);
+    // });
+
+    // Route::post('updateData', function (Request $request) {
+    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
+    //     return (new ApiController)->updEnTablaConJSON($request, $strategy);
     // });
     
-    Route::post('insertData', [ApiController::class, 'insEnTablaDesdeJSON']);
-    Route::put('updateData', [ApiController::class, 'updEnTablaConJSON']);
-    Route::delete('deleteData', [ApiController::class, 'delRegistroConTransaccion']);
+    // Route::post('deleteData', function (Request $request) {
+    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
+    //     return (new ApiController)->delRegistroConTransaccion($request, $strategy);
+    // });
+
 });
