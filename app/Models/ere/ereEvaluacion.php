@@ -57,7 +57,7 @@ class ereEvaluacion extends Model
 
     public static function guardarEvaluaciones($params)
     {
-        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
+        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
     }
     public static function actualizarEvaluacion(array $params)
     {

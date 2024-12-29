@@ -76,14 +76,14 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
         Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
         Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
-        //!Agregando participacion y eliminando participacion, IE
+        //Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
         Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
         //Agregando participacion nuevo
         Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
-        //! Ruta para actualizar la evaluación
+        // Ruta para actualizar la evaluación
         Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
-        //! Ruta para obtener las participaciones
+        // Ruta para obtener las participaciones
         //Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
         Route::get('obtenerParticipaciones/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerParticipaciones']);
         //Nuevo Ver con Datos completos
@@ -92,7 +92,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
         //Insertar Cursos
         Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
-        //!Eliminar Cursos
+        //Eliminar Cursos
         Route::delete('eliminarCursos', [EvaluacionesController::class, 'eliminarCursos']);
         //Ver Cursos
         Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
@@ -154,10 +154,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('insertMaestro', [GestionInstitucionalController::class, 'insertMaestro']);
         Route::post('updateMaestro', [GestionInstitucionalController::class, 'updateMaestro']);
         Route::post('deleteMaestro', [GestionInstitucionalController::class, 'deleteMaestro']);
-        Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']); 
-        Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']); 
-        Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']); 
-
+        Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']);
+        Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']);
+        Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']);
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
@@ -167,7 +166,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); //procedimiento especifico EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']); // procedimiento especifico EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('searchAcademico', [CalendarioAcademicosController::class, 'searchAcademico']); // procedimiento especifico EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
-        
+
         Route::post('searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']); // procedimiento general
         Route::post('updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']); // procedimiento general
         Route::post('deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']); // procediiento general
@@ -177,9 +176,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('deleteYear', [CalendarioAcademicosController::class, 'deleteYear']); // procedimiento especifico SP_DEL_TablaYearXopcion
 
         Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']); // procedimiento especifico  acad.SP_INS_stepAmbienteAcademicoDesdeJsonOpcion
-        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);// procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
-        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']);// procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
-        
+        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); // procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
+        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']); // procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
+
 
         /*
          * * Peticiones de información de varios calendarios

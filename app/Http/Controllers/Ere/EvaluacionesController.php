@@ -14,6 +14,8 @@ use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
+use function Laravel\Prompts\select;
+
 class EvaluacionesController extends ApiController
 {
     public function __construct()
@@ -23,7 +25,7 @@ class EvaluacionesController extends ApiController
     public function obtenerEvaluaciones()
     {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iSesionId';
         $where = '';
         $params = [
             'ere',
@@ -44,7 +46,10 @@ class EvaluacionesController extends ApiController
 
     public function guardarEvaluacion(Request $request)
     {
-        // $iBiblioId = $this->hashids->decode($request->iBiblioId);
+        $iSesionId = $this->hashids->decode($request->iSesionId);
+        if (!empty($iSesionId) && is_array($iSesionId)) {
+            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        }
         $params = [
             $request->idTipoEvalId,
             $request->iNivelEvalId,
@@ -58,7 +63,8 @@ class EvaluacionesController extends ApiController
             $request->cEvaluacionObs,
             $request->dtEvaluacionLiberarMatriz,
             $request->dtEvaluacionLiberarCuadernillo,
-            $request->dtEvaluacionLiberarResultados
+            $request->dtEvaluacionLiberarResultados,
+            $iSesionId
         ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
@@ -125,6 +131,10 @@ class EvaluacionesController extends ApiController
     }
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
+        $iSesionId = $this->hashids->decode($request->iSesionId);
+        if (!empty($iSesionId) && is_array($iSesionId)) {
+            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        }
         // Validar solo los campos opcionales
         $request->validate([
             'idTipoEvalId' => 'nullable|integer',
@@ -139,7 +149,8 @@ class EvaluacionesController extends ApiController
             'cEvaluacionObs' => 'nullable|string|max:255',
             'dtEvaluacionLiberarMatriz' => 'nullable|string',
             'dtEvaluacionLiberarCuadernillo' => 'nullable|string',
-            'dtEvaluacionLiberarResultados' => 'nullable|string'
+            'dtEvaluacionLiberarResultados' => 'nullable|string',
+            'iSesionId' => 'nullable|string',
         ]);
         // Preparar los valores para la llamada al procedimiento
         $params = [
@@ -156,27 +167,27 @@ class EvaluacionesController extends ApiController
             'cEvaluacionObs' => $request->input('cEvaluacionObs', null),
             'dtEvaluacionLiberarMatriz' => $request->input('dtEvaluacionLiberarMatriz', null),
             'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
-            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null)
+            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
+            'iSesionId' => $iSesionId,
         ];
-
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
         DB::statement('EXEC ere.SP_UPD_evaluaciones
-        @iEvaluacionId = :iEvaluacionId, 
-        @idTipoEvalId = :idTipoEvalId, 
-        @iNivelEvalId = :iNivelEvalId, 
-        @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
-        @cEvaluacionNombre = :cEvaluacionNombre, 
-        @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
-        @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
-        @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
-        @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
-        @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
-        @cEvaluacionObs = :cEvaluacionObs, 
-        @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
-        @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
-        @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados', $params);
-
+            @iEvaluacionId = :iEvaluacionId, 
+            @idTipoEvalId = :idTipoEvalId, 
+            @iNivelEvalId = :iNivelEvalId, 
+            @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
+            @cEvaluacionNombre = :cEvaluacionNombre, 
+            @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
+            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
+            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
+            @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
+            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
+            @cEvaluacionObs = :cEvaluacionObs, 
+            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
+            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
+            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
+            @iSesionId = :iSesionId', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
@@ -512,9 +523,7 @@ class EvaluacionesController extends ApiController
             'iDesempenoId' => $iDesempenoId,
         ], 201);
     }
-
     //!Obtener Especialista y Grado cursos
-
     public function obtenerEspDrem(Request $request)
     {
         $campos = 'iEspecialistaId,dtEspecialistaInicio,dtEspecialistaRslDesignacion,iDocenteId,iCursosNivelGradId'; // Campos específicos que necesitas
@@ -543,7 +552,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-
     public function obtenerEspDremCurso(Request $request)
     {
         // Validar los parámetros de entrada
@@ -605,7 +613,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
         }
     }
-
     public function generarPdfMatrizbyEvaluacionId(Request $request)
     {
 
@@ -622,7 +629,8 @@ class EvaluacionesController extends ApiController
 
 
         // Aquí tomaremos los datos de la tabla "ere.preguntas"
-        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
+        //        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
+        $preguntas = DB::select("EXEC ere.SP_SEl_evaluacionPreguntas ?", [$iEvaluacionId]);
 
         // Verificar si se obtuvieron resultados
         if (empty($preguntas)) {
@@ -655,9 +663,9 @@ class EvaluacionesController extends ApiController
                 'capacidad_nombre' => $pregunta->cCapacidadNombre,
                 'capacidad_descripcion' => $pregunta->cCapacidadDescripcion,
                 'desempeno_descripcion' => $pregunta->cDesempenoDescripcion,
-                'curso_nombre' => $pregunta->cCursoNombre,
-                'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
-                'nivel_nombre' => $pregunta->cNivelNombre,
+                //'curso_nombre' => $pregunta->cCursoNombre,
+                //'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
+                //'nivel_nombre' => $pregunta->cNivelNombre,
                 'pregunta' => $pregunta->cPregunta,
                 'pregunta_clave' => $pregunta->cPreguntaClave,
                 'pregunta_texto_ayuda' => $pregunta->cPreguntaTextoAyuda,
@@ -673,6 +681,7 @@ class EvaluacionesController extends ApiController
                 $dtCreado = $pregunta->dtCreado;
             }
         }
+
         // Formatear dtCreado para que solo muestre la fecha (sin la hora)
         if ($dtCreado !== null) {
             $dtCreado = \Carbon\Carbon::parse($dtCreado)->format('Y-m-d'); // Formato "Año-Mes-Día"
