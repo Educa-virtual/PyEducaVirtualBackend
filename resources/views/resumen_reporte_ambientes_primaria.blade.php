@@ -226,10 +226,10 @@
             <th colspan="4" style="border:1px  solid black;margin:0;padding:5px">Descripción de ambientes</th>
         </tr>
         <tr>
-                <td>Educación Bilingüe:</td>
-                <td >{{$bConfigEsBilingue}} </td>
                 <td >Total de ambientes </td>
                 <td >8</td>
+                <td>Total de Ambientes inhabilitados</td>
+                <td >0</td>
         </tr>
         <tr>
                 <td >Total de horas a asignar:</td>
