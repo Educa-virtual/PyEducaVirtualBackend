@@ -50,8 +50,8 @@ class CuadernosCampoController extends Controller
 					INNER JOIN acad.semestre_academicos     AS asema    ON asema.iSemAcadId=adocu.iSemAcadId AND asema.iYAcadId=adocu.iYAcadId
 					INNER JOIN acad.year_academicos         AS ayeac    ON ayeac.iYAcadId=asema.iYAcadId
 					LEFT JOIN acad.silabos					AS asil     ON asil.idDocCursoId=adocu.idDocCursoId AND asil.iSemAcadId=asema.iSemAcadId AND asil.iYAcadId=asema.iYAcadId
-					LEFT JOIN doc.cuadernos_campo AS cc ON cc.iSilaboId = asil.iSilaboId 
-					WHERE adoc.iPersId = '".$request->iPersId."' AND ayeac.iYearId='".$request->iYearId."' AND asil.iSilaboId is not null
+					LEFT JOIN doc.cuadernos_campo AS cc ON cc.iSilaboId = asil.iSilaboId AND asil.iSilaboId is not null
+					WHERE adoc.iPersId = '".$request->iPersId."' AND ayeac.iYearId='".$request->iYearId."' 
 					
             ");
 
