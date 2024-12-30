@@ -10,6 +10,13 @@ class DeleteOperation extends AbstractDatabaseOperation
     {
         return 'grl.SP_DEL_RegistroConTransaccion';
     }
+
+    protected function getParams(): array
+    {
+         // Lista de propiedades requeridas
+         return ['esquema', 'tabla', 'campoId', 'valorId', 'tablaHija'];
+
+    }
 }
 
 ?>

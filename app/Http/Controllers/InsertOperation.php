@@ -10,6 +10,13 @@ class InsertOperation extends AbstractDatabaseOperation
     {
         return 'grl.SP_INS_EnTablaDesdeJSON';
     }
+
+    protected function getParams(): array
+    {
+         // Lista de propiedades requeridas
+         return ['esquema', 'tabla', 'campos'];
+
+    }
 }
 
 ?>

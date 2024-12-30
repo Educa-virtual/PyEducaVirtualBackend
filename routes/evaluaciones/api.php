@@ -96,25 +96,4 @@ Route::group(['prefix' => 'virtual'], function () {
     Route::post('insertData', [ApiController::class, 'insertData']);
     Route::post('updateData', [ApiController::class, 'updateData']);
     Route::post('deleteData', [ApiController::class, 'deleteData']);
-
-    // Route::post('getData', function (Request $request) {
-    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
-    //     return (new ApiController)->selDesdeTablaOVista($request, $strategy);
-    // });
-
-    // Route::post('insertData', function (Request $request) {
-    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
-    //     return (new ApiController)->insEnTablaDesdeJSON($request, $strategy);
-    // });
-
-    // Route::post('updateData', function (Request $request) {
-    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
-    //     return (new ApiController)->updEnTablaConJSON($request, $strategy);
-    // });
-    
-    // Route::post('deleteData', function (Request $request) {
-    //     $strategy = new JsonResponseStrategy(); // Puedes decidir la estrategia aquí
-    //     return (new ApiController)->delRegistroConTransaccion($request, $strategy);
-    // });
-
 });

@@ -7,6 +7,7 @@ use App\Helpers\ResponseHandler;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -18,9 +19,9 @@ abstract class AbstractDatabaseOperation
     /**
      * Valida que los datos tengan esquema y tabla.
      */
-    protected function hasValidSchemaAndTable(array|Request $data): bool
+    protected function hasValidSchemaAndTable(Request|array $request): bool
     {
-        return isset($data['esquema']) && isset($data['tabla']);
+        return isset($request['esquema']) && isset($request['tabla']); 
     }
 
     /**
@@ -37,23 +38,20 @@ abstract class AbstractDatabaseOperation
     /**
      * Método para procesar múltiples esquemas/tablas.
      */
-    protected function processMultipleRequests(array $queries, string $procedure): Collection
+    protected function processMultipleRequests(Request $request, array $queries, string $procedure): Collection
     {
         $results = collect();
+
+        $params = $this->getParams();
 
         foreach ($queries as $query) {
             if (!$this->hasValidSchemaAndTable($query)) {
                 throw new Exception('Error en la solicitud de los datos.');
             }
 
-            $result = $this->executeQuery([
-                $query['esquema'],
-                $query['tabla'],
-                $query['campos'] ?? null,
-                $query['where'] ?? null,
-                $query['campoId'] ?? null,
-                $query['valorId'] ?? null,
-            ], $procedure);
+            $queryParams = array_values(Arr::only($query, $params));
+
+            $result = $this->executeQuery($queryParams, $procedure);
 
             $results->push($result->first());
         }
@@ -69,21 +67,19 @@ abstract class AbstractDatabaseOperation
         try {
             $procedure = $this->getProcedureName();
 
+            $params = $this->getParams();
+            
+            $queryParams = array_values($request->only($params));
+
             if ($this->hasValidSchemaAndTable($request)) {
-                $query = $this->executeQuery([
-                    $request->esquema,
-                    $request->tabla,
-                    $request->campos ?? null,
-                    $request->where ?? null,
-                    $request->campoId ?? null,
-                    $request->valorId ?? null,
-                ], $procedure);
+
+                $query = $this->executeQuery($queryParams, $procedure);
 
                 return $strategy->handle($query);
             }
 
             $queries = $request->all();
-            $results = $this->processMultipleRequests($queries, $procedure);
+            $results = $this->processMultipleRequests($request, $queries, $procedure);
 
             return $strategy->handle($results);
         } catch (Exception $e) {
@@ -95,4 +91,6 @@ abstract class AbstractDatabaseOperation
      * Devuelve el nombre del procedimiento almacenado.
      */
     abstract protected function getProcedureName(): string;
+
+    abstract protected function getParams(): array;
 }

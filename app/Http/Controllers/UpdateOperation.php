@@ -10,6 +10,13 @@ class UpdateOperation extends AbstractDatabaseOperation
     {
         return 'grl.SP_UPD_EnTablaConJSON';
     }
+
+    protected function getParams(): array
+    {
+         // Lista de propiedades requeridas
+         return ['esquema', 'tabla', 'campos', 'where'];
+
+    }
 }
 
 ?>
