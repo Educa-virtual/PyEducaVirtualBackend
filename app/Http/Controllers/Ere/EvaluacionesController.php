@@ -25,7 +25,7 @@ class EvaluacionesController extends ApiController
     public function obtenerEvaluaciones()
     {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iSesionId';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId';
         $where = '';
         $params = [
             'ere',
@@ -64,6 +64,7 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionLiberarMatriz,
             $request->dtEvaluacionLiberarCuadernillo,
             $request->dtEvaluacionLiberarResultados,
+            $request->iEstado,
             $iSesionId
         ];
         try {
@@ -150,6 +151,7 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionLiberarMatriz' => 'nullable|string',
             'dtEvaluacionLiberarCuadernillo' => 'nullable|string',
             'dtEvaluacionLiberarResultados' => 'nullable|string',
+            'iEstado' => 'nullable|integer',
             'iSesionId' => 'nullable|string',
         ]);
         // Preparar los valores para la llamada al procedimiento
@@ -168,8 +170,10 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionLiberarMatriz' => $request->input('dtEvaluacionLiberarMatriz', null),
             'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
             'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
+            'iEstado' => $request->input('iEstado', null),
             'iSesionId' => $iSesionId,
         ];
+
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
         DB::statement('EXEC ere.SP_UPD_evaluaciones
@@ -187,6 +191,7 @@ class EvaluacionesController extends ApiController
             @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
             @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
             @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
+            @iEstado = :iEstado,
             @iSesionId = :iSesionId', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
