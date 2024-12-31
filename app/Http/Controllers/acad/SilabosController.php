@@ -112,13 +112,18 @@ class SilabosController extends Controller
     {
         $request['opcion'] = 'CONSULTAR_SILABO';
         $parametros = $this->validateRequest($request);
+        
         $query = DB::select(
             "EXECUTE acad.Sp_SEL_silabos ?,?,?,?,?,?,?,?,?,?",
             $parametros
         );
         
-        $pdf = Pdf::loadView('silabus_reporte', $query)
-            ->setPaper('a4', 'landscape')
+        $formato = $query[0];
+        
+        $respuesta = [
+            "query" => $formato,
+        ];
+        $pdf = Pdf::loadView('silabus_reporte', $respuesta)
             ->stream('silabus.pdf');
         return $pdf;
     }
