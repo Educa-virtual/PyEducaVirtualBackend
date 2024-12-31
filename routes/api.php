@@ -9,6 +9,7 @@ use App\Http\Controllers\api\acad\ActividadesAprendizajeController;
 use App\Http\Controllers\api\acad\BibliografiaController;
 use App\http\Controllers\api\acad\CalendarioAcademicosController;
 use App\http\Controllers\api\acad\GestionInstitucionalController;
+use App\http\Controllers\api\acad\HorarioController;
 use App\http\Controllers\api\acad\PeriodoAcademicosController;
 use App\Http\Controllers\CredencialController;
 
@@ -156,6 +157,12 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']); 
         Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']); 
 
+    });
+
+    Route::group(['prefix' => 'horario'], function () {
+        Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
+        //procendimiento generales
+       
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
