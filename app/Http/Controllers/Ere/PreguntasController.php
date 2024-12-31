@@ -343,68 +343,6 @@ class PreguntasController extends ApiController
         }
     }
 
-
-    // public function generarWordBancoPreguntasByIds(Request $request)
-    // {
-
-    //     $params = [
-    //         'iEvaluacionId' => $request->iEvaluacionId,
-    //         'iCursosNivelGradId' => $request->areaId,
-    //         'busqueda' => '',
-    //         'iTipoPregId' => 0,
-    //         'bPreguntaEstado' => -1,
-    //         'ids' => $request->ids
-    //     ];
-    //     return $params;
-    //     $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-
-    //     $phpTemplateWord = new TemplateProcessor(storage_path() . DIRECTORY_SEPARATOR .  'template-ere.docx');
-
-    //     $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-
-    //     $phpTemplateWord->cloneBlock('block_preguntas', count($preguntasDB), true, true);
-
-    //     $phpTemplateWord->setValue('cantidadPreguntas', (count($preguntasDB)));
-
-    //     foreach ($preguntasDB as $indexPregunta => $pregunta) {
-    //         $phpTemplateWord->setValue('index#' . ($indexPregunta + 1), $indexPregunta + 1);
-
-    //         if (strpos($pregunta->cPregunta, ';base64,')) {
-    //             preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cPregunta, $matches);
-
-    //             $imagen = isset($matches[1]) ? $matches[1] : null;
-
-    //             $phpTemplateWord->setImageValue('cPregunta#' . ($indexPregunta + 1), array('path' => $imagen, 'width' => 200, 'height' => 200, 'ratio' => false));
-    //         } else {
-    //             $phpTemplateWord->setValue('cPregunta#' . ($indexPregunta + 1), strip_tags($pregunta->cPregunta));
-    //         }
-
-    //         if (isset($pregunta->alternativas)) {
-    //             $phpTemplateWord->cloneBlock('block_alternativas#' . ($indexPregunta + 1), count($pregunta->alternativas), true, true);
-
-    //             foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
-    //                 // Reemplazar valores de las alternativas dinámicamente
-    //                 $phpTemplateWord->setValue('cAlternativaLetra#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), $alternativa->cAlternativaLetra);
-    //                 $phpTemplateWord->setValue('cAlternativaDescripcion#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), strip_tags($alternativa->cAlternativaDescripcion));
-    //             }
-    //         }
-    //     }
-
-    //     $response = new Response();
-    //     $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    //     $response->headers->set('Content-Disposition', 'attachment;filename="preguntas_generated.docx"');
-    //     $response->headers->set('Cache-Control', 'max-age=0');
-
-    //     ob_start();
-    //     $phpTemplateWord->saveAs('php://output');
-    //     $content = ob_get_contents();
-    //     ob_end_clean();
-
-    //     $response->setContent($content);
-
-    //     return $response;
-    // }
-
     public function generarWordBancoPreguntasByIds(Request $request)
     {
         // Recibe los parámetros desde el frontend
