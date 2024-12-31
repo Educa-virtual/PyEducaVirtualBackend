@@ -263,8 +263,6 @@ class PreguntasController extends ApiController
             'bPreguntaEstado' => $request->bPreguntaEstado ?? -1,
             'iEncabPregId' => $request->iEncabPregId  ?? 0
         ];
-
-        //return $params;
         try {
             $preguntas = PreguntasRepository::obtenerBancoPreguntasByParams($params);
 
