@@ -76,22 +76,23 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
         Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
         Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
-        //!Agregando participacion y eliminando participacion, IE
+        //Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
         Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
         //Agregando participacion nuevo
         Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
-        //! Ruta para actualizar la evaluación
+        // Ruta para actualizar la evaluación
         Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
-        //! Ruta para obtener las participaciones
-        Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        // Ruta para obtener las participaciones
+        //Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        Route::get('obtenerParticipaciones/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerParticipaciones']);
         //Nuevo Ver con Datos completos
         Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
         //Obtener Cursos
         Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
         //Insertar Cursos
         Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
-        //!Eliminar Cursos
+        //Eliminar Cursos
         Route::delete('eliminarCursos', [EvaluacionesController::class, 'eliminarCursos']);
         //Ver Cursos
         Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
@@ -111,8 +112,22 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
         //InsertarMatrizDesempeno
         Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
+        //ObtenerEspecialistas
+        Route::get('obtenerEspDrem', [EvaluacionesController::class, 'obtenerEspDrem']);
+        //Obtener por el iGradoId los Cursos del Especialista
+        Route::get('obtenerEspDremCurso', [EvaluacionesController::class, 'obtenerEspDremCurso']);
         //Matriz Descargar
         Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
+        //Insertar pregunta seleccionada
+        Route::post('insertarPreguntaSeleccionada', [EvaluacionesController::class, 'insertarPreguntaSeleccionada']);
+        //Obtener pregunta seleccionada
+        Route::get('obtenerPreguntaSeleccionada', [EvaluacionesController::class, 'obtenerPreguntaSeleccionada']);
+        //Obtener preguntas por EvaluacionId y preguntaId
+        Route::get('obtenerPreguntaInformacion', [EvaluacionesController::class, 'obtenerPreguntaInformacion']);
+        //Obtener conteo por curso
+        Route::post('obtenerConteoPorCurso', [EvaluacionesController::class, 'obtenerConteoPorCurso']);
+        //Guardar fecha inicio fin de cursos
+        Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -121,7 +136,7 @@ Route::group(['prefix' => 'ere'], function () {
 Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'AutenticarU'], function () {
-    Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
+        Route::get('obtenerAutenticacion', [AutenticarUsurioController::class, 'obtenerAutenticacion']);
     });
 
     Route::group(['prefix' => 'Perfiles'], function () {
@@ -132,7 +147,6 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('selReglamentoInterno', [AcadInstitucionesEducativasController::class, 'selReglamentoInterno']);
         Route::put('updReglamentoInterno', [AcadInstitucionesEducativasController::class, 'updReglamentoInterno']);
     });
-
     Route::group(['prefix' => 'gestionInstitucional'], function () {
         Route::post('listarPersonalIes', [GestionInstitucionalController::class, 'listarPersonalIes']);
         //procendimiento generales
@@ -140,8 +154,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('insertMaestro', [GestionInstitucionalController::class, 'insertMaestro']);
         Route::post('updateMaestro', [GestionInstitucionalController::class, 'updateMaestro']);
         Route::post('deleteMaestro', [GestionInstitucionalController::class, 'deleteMaestro']);
-        Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']); 
-        Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']); 
+        Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']);
+        Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']);
+        Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']);
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
@@ -151,7 +166,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); //procedimiento especifico EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']); // procedimiento especifico EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('searchAcademico', [CalendarioAcademicosController::class, 'searchAcademico']); // procedimiento especifico EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
-        
+
         Route::post('searchCalAcademico', [CalendarioAcademicosController::class, 'searchCalAcademico']); // procedimiento general
         Route::post('updateCalendario', [CalendarioAcademicosController::class, 'updateCalendario']); // procedimiento general
         Route::post('deleteCalendario', [CalendarioAcademicosController::class, 'deleteCalendario']); // procediiento general
@@ -161,9 +176,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('deleteYear', [CalendarioAcademicosController::class, 'deleteYear']); // procedimiento especifico SP_DEL_TablaYearXopcion
 
         Route::post('addAmbiente', [CalendarioAcademicosController::class, 'addAmbienteAcademico']); // procedimiento especifico  acad.SP_INS_stepAmbienteAcademicoDesdeJsonOpcion
-        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']);// procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
-        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']);// procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
-        
+        Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); // procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
+        Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']); // procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
+
 
         /*
          * * Peticiones de información de varios calendarios

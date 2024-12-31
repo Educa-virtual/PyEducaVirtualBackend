@@ -153,11 +153,11 @@ class AulaVirtualController extends ApiController
         $iSilaboId = $this->hashids->decode($iSilaboId);
         $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
 
-        $params = [$iSilaboId];
+        $params = [$iSilaboId, $request->perfil];
 
         $contenidos = [];
         try {
-            $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?', $params);
+            $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?, @_perfil = ?', $params);
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
@@ -298,7 +298,7 @@ class AulaVirtualController extends ApiController
     }
 
     public function obtenerCategorias()
-    {        
+    {
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
@@ -314,7 +314,7 @@ class AulaVirtualController extends ApiController
         $iCursoId = '1';
         $iSemAcadId = '1';
         $iYAcadId = '1';
-        
+
         // $params =[
         //     $iCursoId,
         //     $iSemAcadId,
@@ -410,12 +410,12 @@ class AulaVirtualController extends ApiController
 
         // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
-    public function eliminarRptEstudiante (Request $request)
+    public function eliminarRptEstudiante(Request $request)
     {
         $validated = $request->validate([
             'iForoRptaId' => 'required|string',
         ]);
-        $params = [$request ['iForoRptaId']];
+        $params = [$request['iForoRptaId']];
         //return $params;
         try {
             // Llamar al procedimiento almacenado
@@ -433,14 +433,13 @@ class AulaVirtualController extends ApiController
                 'message' => $message,
             ], 500);
         }
-        
     }
     // Guardar respuesta de Foro
     public function guardarRespuesta(Request $request)
     {
         //return $request -> all();
         $request->validate([
-            //'iEstudianteId' => 'required|integer',
+            'iEstudianteId' => 'required|integer',
             'cForoRptaRespuesta' => 'required|string',
             'iForoId' => 'required|string'
         ]);
@@ -451,52 +450,31 @@ class AulaVirtualController extends ApiController
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
         }
 
-        $iDocenteId = $request->iDocenteId;
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
+        // $iDocenteId = $request->iDocenteId;
+        // if ($request->iDocenteId) {
+        //     $iDocenteId = $this->hashids->decode($iDocenteId);
+        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        // }
 
         $data = [
-            $request->iEstudianteId ?? null,
+            $request->iEstudianteId,
             $iForoId,
-            null,
-            // $iForoRptaPadre ?? null,
-            $iDocenteId ?? null,
-            $request->cForoRptaRespuesta,
-            $request->nForoRptaNota ?? null,
-            $request->dtForoRptaPublicacion ?? null,
-            $request->cForoRptaDocente ?? null,
-            $request->iEstado ?? null,
-            $request->iSesionId ?? null,
-            $request->dtCreado ?? null,
-            $request->dtActualizado ?? null,
-            $request->iEscalaCalifId ?? null
+            $request->cForoRptaRespuesta
+
         ];
         //return $data;
         try {
-            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaForo]
+
+            $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
                 @iEstudianteId = ?,
                 @iForoId = ?,
-                @iForoRptaPadre = ?,
-                @iDocenteId = ?,
-                @cForoRptaRespuesta = ?,
-                @nForoRptaNota = ?,
-                @dtForoRptaPublicacion = ?,
-                @cForoRptaDocente = ?,
-                @iEstado = ?,
-                @iSesionId = ?,
-                @dtCreado = ?,
-                @dtActualizado = ?,
-                @iEscalaCalifId = ?', $data);
-            DB::commit();
-            if ($resp[0]->id > 0) {
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+                @cForoRptaRespuesta = ?', $data);
+
+            //return $resp;
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $resp];
+            $estado = 200;
+
+            return $response;
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
@@ -606,32 +584,51 @@ class AulaVirtualController extends ApiController
     {
         // Prepara los parámetros para la consulta. Se obtienen del objeto $request, el cual contiene los datos de la solicitud HTTP.
         // Si los valores no existen, se asigna NULL en su lugar.
-        $iDocenteId = $request->iDocenteId;
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
-        $parametros = [
-            $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
-            $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
-            $request->iEscalaCalifId ?? NULL    // ID de la escala de calificación (si existe)
+        // $request ->validate([
+        //     'iEstudianteId' =>'required|integer',
+        // ]);
+        $iEstudianteId = $request->iEstudianteId;
+        $iForoId = $request ->iForoId;
+        $cForoRptDocente = $request ->cForoRptDocente;
+
+        $params = [
+            $iEstudianteId,
+            $iForoId,
+            $cForoRptDocente,
         ];
+        
+        //return $params;
+        // $iDocenteId = $request->iDocenteId;
+        // if ($request->iDocenteId) {
+        //     $iDocenteId = $this->hashids->decode($iDocenteId);
+        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        // }
+        
+        // $parametros = [
+        //     $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
+        //     $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
+        //     $request->iEscalaCalifId ?? NULL    // ID de la escala de calificación (si existe)
+        // ];
 
         try {
             // Llama al procedimiento almacenado 'Sp_UPD_calificarDocenteForoRespuestas' en la base de datos,
             // pasándole los parámetros preparados. Este procedimiento se encarga de actualizar la calificación.
-            $data = DB::select('exec aula.Sp_UPD_calificarDocenteForoRespuestas ?,?,?', $parametros);
+            $data = DB::select('exec aula.Sp_UPD_calificarDocenteForoRespuestasEstudiante ?,?,?', $params);
 
-            // Si la respuesta de la base de datos tiene un ID válido de respuesta de foro, significa que la operación fue exitosa.
-            if ($data[0]->iForoRptaId > 0) {
-                // Crea un mensaje de éxito y asigna un código de respuesta HTTP 200 (OK).
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                // Si el ID no es válido, significa que no se pudo guardar la información, y se asigna un código de error 500.
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+
+            return $response;
+            // // Si la respuesta de la base de datos tiene un ID válido de respuesta de foro, significa que la operación fue exitosa.
+            // if ($data[0]->iForoRptaId > 0) {
+            //     // Crea un mensaje de éxito y asigna un código de respuesta HTTP 200 (OK).
+            //     $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+            //     $codeResponse = 200;
+            // } else {
+            //     // Si el ID no es válido, significa que no se pudo guardar la información, y se asigna un código de error 500.
+            //     $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+            //     $codeResponse = 500;
+            // }
         } catch (\Exception $e) {
             // Si ocurre una excepción, se captura y se envía un mensaje de error con los detalles del mismo.
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
@@ -703,27 +700,29 @@ class AulaVirtualController extends ApiController
             $request->TablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
             $request->DatosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
             $request->campoFK // NVARCHAR(128)
-    
+
         ];
 
-        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
-        $solicitud);
+        $query = DB::select(
+            "EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
+            $solicitud
+        );
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);

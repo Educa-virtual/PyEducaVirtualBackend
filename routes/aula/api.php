@@ -3,6 +3,7 @@
 use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
+use App\Http\Controllers\aula\AnuncioController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
 use App\Http\Controllers\aula\NotificacionEstudianteController;
@@ -78,12 +79,21 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('guardarCalfcEstudiante', [ResultadoController::class, 'guardarCalfcEstudiante']);
         Route::post('obtenerCalificacionesFinalesReporte', [ResultadoController::class, 'obtenerCalificacionesFinalesReporte']);
         Route::post('habilitarCalificacion', [ResultadoController::class, 'habilitarCalificacion']);
+        Route::get('obtenerReporteFinalNotas', [ResultadoController::class, 'obtenerReporteFinalNotas']);
+        Route::get('reporteDeLogros', [ResultadoController::class, 'reporteDeLogros']);
+        Route::get('reporteDeLogroFinalXYear', [ResultadoController::class, 'reporteDeLogroFinalXYear']); 
+        Route::get('generarReporteDeLogrosAlcanzadosXYear', [ResultadoController::class, 'generarReporteDeLogrosAlcanzadosXYear']);
         
+    });
+    Route::group(['prefix' => 'Anuncio'], function (){
+        Route::post('guardarAnuncio', [AnuncioController::class, 'guardarAnuncio']);
+        Route::get('obtenerAnunciosXDocente', [AnuncioController::class, 'obtenerAnunciosXDocente']);
     });
 
     Route::group(['prefix' => 'foros'], function () {
         Route::post('obtenerForoxiForoId', [ForosController::class, 'obtenerForoxiForoId']);
         Route::post('actualizarForo', [ForosController::class, 'actualizarForo']);
+        Route::post('eliminarxiForoId', [ForosController::class, 'eliminarxiForoId']);
     });
 
     Route::group(['prefix' => 'notificacion_docente'], function () {

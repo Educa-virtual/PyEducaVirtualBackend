@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\seg;
 
+use App\Helpers\CollectionStrategy;
 use Exception;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHandler;
@@ -24,12 +25,15 @@ class AuditoriaAccesosController extends Controller
       $where = 'CAST(dtFecha as DATE) >= CAST(' . "'" . $validated['filtroFechaInicio'] . "'" . ' as DATE) AND CAST(dtFecha as DATE) <= CAST(' . "'" . $validated['filtroFechaFin'] . "'" . ' as DATE)';
 
       // Usar `selDesdeTablaOVista` para realizar la consulta
-      $query = $this->selDesdeTablaOVista(
-        self::schema,
-        'V_auditoria_accesos',
-        '*',
-        $where,
-      );
+      $request->merge([
+        'esquema' => self::schema,
+        'tabla' => 'V_auditoria_accesos',
+        'campos' => '*',
+        'where' => $where,
+      ]);
+
+
+      $query = $this->selDesdeTablaOVista($request, new CollectionStrategy());
 
       if ($query instanceof Collection) {
         $query = $query->sortByDesc('dtFecha')->values();

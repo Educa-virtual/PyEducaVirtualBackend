@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\eval\EvaluacionesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -23,6 +24,14 @@ class ProgramacionActividadesController extends Controller
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
+
+    private function decodeValue($value)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
     public function list(Request $request)
@@ -128,29 +137,20 @@ class ProgramacionActividadesController extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iProgActId) {
-            $iProgActId = $this->hashids->decode($request->iProgActId);
-            $iProgActId = count($iProgActId) > 0 ? $iProgActId[0] : $iProgActId;
-        }
-        if ($request->iSilaboActAprendId) {
-            $iSilaboActAprendId = $this->hashids->decode($request->iSilaboActAprendId);
-            $iSilaboActAprendId = count($iSilaboActAprendId) > 0 ? $iSilaboActAprendId[0] : $iSilaboActAprendId;
-        }
-        if ($request->iContenidoSemId) {
-            $iContenidoSemId = $this->hashids->decode($request->iContenidoSemId);
-            $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
-        }
-        if ($request->iInstrumentoId) {
-            $iInstrumentoId = $this->hashids->decode($request->iInstrumentoId);
-            $iInstrumentoId = count($iInstrumentoId) > 0 ? $iInstrumentoId[0] : $iInstrumentoId;
-        }
-        if ($request->iActTipoId) {
-            $iActTipoId = $this->hashids->decode($request->iActTipoId);
-            $iActTipoId = count($iActTipoId) > 0 ? $iActTipoId[0] : $iActTipoId;
-        }
-        if ($request->iHorarioId) {
-            $iHorarioId = $this->hashids->decode($request->iHorarioId);
-            $iHorarioId = count($iHorarioId) > 0 ? $iHorarioId[0] : $iHorarioId;
+        $fieldsToDecode = [
+            'valorBusqueda',
+
+            'iProgActId',
+            'iSilaboActAprendId',
+            'iContenidoSemId',
+            'iInstrumentoId',
+            'iActTipoId',
+            'iHorarioId'
+
+        ];
+
+        foreach ($fieldsToDecode as $field) {
+            $request[$field] = $this->decodeValue($request->$field);
         }
 
 
@@ -158,10 +158,10 @@ class ProgramacionActividadesController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iProgActId                     ?? NULL,
-            $iSilaboActAprendId             ?? NULL,
-            $iContenidoSemId                ?? NULL,
-            $iInstrumentoId                 ?? NULL,
+            $request->iProgActId                     ?? NULL,
+            $request->iSilaboActAprendId             ?? NULL,
+            $request->iContenidoSemId                ?? NULL,
+            $request->iInstrumentoId                 ?? NULL,
             $request->iActTipoId                     ?? NULL,
             $request->dtProgActPublicacion  ?? NULL,
             $request->nProgActConceptual    ?? NULL,
@@ -180,27 +180,45 @@ class ProgramacionActividadesController extends Controller
             $request->iSesionId                 ?? NULL,
             $request->dtCreado                  ?? NULL,
             $request->dtActualizado             ?? NULL,
-            $iHorarioId                         ?? NULL,
+            $request->iHorarioId                         ?? NULL,
 
             //$request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
             switch ($request->opcion) {
                 case 'GUARDARxProgActxiTarea':
+                    $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
                         $resp = new TareasController();
                     }
                     return $resp->store($request);
                     break;
-                default:
+                case 'GUARDARxProgActxiEvaluacionId':
+                    $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
-
+                        $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
+                        $resp = new EvaluacionesController();
+                    }
+                    return $resp->handleCrudOperation($request);
+                    break;
+                case 'ACTUALIZARxProgActxiEvaluacionId':
+                    $data = DB::select('exec aula.SP_UPD_programacionActividades
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iProgActId > 0) {
+                        $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
+                        $resp = new EvaluacionesController();
+                    }
+                    return $resp->handleCrudOperation($request);
+                    break;
+                default:
+                    $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iProgActId > 0) {
                         $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
                         $codeResponse = 200;
                     } else {

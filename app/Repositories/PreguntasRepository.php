@@ -18,17 +18,18 @@ class PreguntasRepository
     {
 
         $params = [
-            $params['iCursoId'] ?? 0,
+            $params['iCursosNivelGradId'] ?? 0,
             $params['busqueda'] ?? '',
             $params['iTipoPregId'] ?? 0,
             $params['bPreguntaEstado'] ?? -1,
             $params['ids'] ?? '',
-            $params['iEncabPregId'] ?? 0
+            $params['iEncabPregId'] ?? 0,
+            $params['iEvaluacionId'] ?? 0
         ];
-        dd($params);
-        $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursoId = ?,
+        //dd($params);
+        $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursosNivelGradId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
-             @_iEncabPregId = ? 
+             @_iEncabPregId = ?, @_iEvaluacionId = ?
             ', $params);
         $preguntas = [];
         foreach ($preguntasDB as $item) {
@@ -55,7 +56,7 @@ class PreguntasRepository
             $params['iDocenteId'] ?? '',
             $params['iCursoId'] ?? '',
         ];
- 
+
         $preguntasDB = DB::select('exec eval.SP_SEL_preguntasEvaluacionx @BancoId = ?,
              @iDocenteId = ?, @iCursoId = ? 
             ', $params);
@@ -64,7 +65,7 @@ class PreguntasRepository
             $item->alternativas = json_decode($item->alternativas);
             array_push($preguntas, $item);
         }
-        
+
         return $preguntas;
     }
 
@@ -102,7 +103,7 @@ class PreguntasRepository
 
         $campos = 'cEncabPregTitulo, cEncabPregContenido';
         $where = '1=1 ';
-        $where .= " AND iCursoId = {$params['iCursoId']}";
+        //$where .= " AND iCursoId = {$params['iCursoId']}";//Aqui se paso en Eval
         $schema =  $params['schema'] ?? 'ere';
         if ($schema === 'ere') {
             $campos .= ' ,iEncabPregId';
@@ -114,6 +115,7 @@ class PreguntasRepository
             $campos .= ' ,idEncabPregId';
             $where .= " AND iNivelCicloId = {$params['iNivelCicloId']}";
             $where .= " AND iDocenteId = {$params['iDocenteId']}";
+            $where .= " AND iCursoId = {$params['iCursoId']}";
         }
 
         $params = [

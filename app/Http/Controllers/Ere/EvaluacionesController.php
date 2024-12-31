@@ -10,14 +10,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 //use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\Ere\EreEvaluacion;
-//use Carbon\Carbon;
+use Hashids\Hashids;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+
+use function Laravel\Prompts\select;
 
 class EvaluacionesController extends ApiController
 {
+    public function __construct()
+    {
+        $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
     public function obtenerEvaluaciones()
     {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId';
         $where = '';
         $params = [
             'ere',
@@ -38,6 +46,10 @@ class EvaluacionesController extends ApiController
 
     public function guardarEvaluacion(Request $request)
     {
+        $iSesionId = $this->hashids->decode($request->iSesionId);
+        if (!empty($iSesionId) && is_array($iSesionId)) {
+            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        }
         $params = [
             $request->idTipoEvalId,
             $request->iNivelEvalId,
@@ -51,7 +63,9 @@ class EvaluacionesController extends ApiController
             $request->cEvaluacionObs,
             $request->dtEvaluacionLiberarMatriz,
             $request->dtEvaluacionLiberarCuadernillo,
-            $request->dtEvaluacionLiberarResultados
+            $request->dtEvaluacionLiberarResultados,
+            $request->iEstado,
+            $iSesionId
         ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
@@ -118,6 +132,10 @@ class EvaluacionesController extends ApiController
     }
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
+        $iSesionId = $this->hashids->decode($request->iSesionId);
+        if (!empty($iSesionId) && is_array($iSesionId)) {
+            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        }
         // Validar solo los campos opcionales
         $request->validate([
             'idTipoEvalId' => 'nullable|integer',
@@ -132,7 +150,9 @@ class EvaluacionesController extends ApiController
             'cEvaluacionObs' => 'nullable|string|max:255',
             'dtEvaluacionLiberarMatriz' => 'nullable|string',
             'dtEvaluacionLiberarCuadernillo' => 'nullable|string',
-            'dtEvaluacionLiberarResultados' => 'nullable|string'
+            'dtEvaluacionLiberarResultados' => 'nullable|string',
+            'iEstado' => 'nullable|integer',
+            'iSesionId' => 'nullable|string',
         ]);
         // Preparar los valores para la llamada al procedimiento
         $params = [
@@ -149,64 +169,46 @@ class EvaluacionesController extends ApiController
             'cEvaluacionObs' => $request->input('cEvaluacionObs', null),
             'dtEvaluacionLiberarMatriz' => $request->input('dtEvaluacionLiberarMatriz', null),
             'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
-            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null)
+            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
+            'iEstado' => $request->input('iEstado', null),
+            'iSesionId' => $iSesionId,
         ];
 
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
         DB::statement('EXEC ere.SP_UPD_evaluaciones
-        @iEvaluacionId = :iEvaluacionId, 
-        @idTipoEvalId = :idTipoEvalId, 
-        @iNivelEvalId = :iNivelEvalId, 
-        @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
-        @cEvaluacionNombre = :cEvaluacionNombre, 
-        @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
-        @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
-        @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
-        @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
-        @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
-        @cEvaluacionObs = :cEvaluacionObs, 
-        @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
-        @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
-        @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados', $params);
-
+            @iEvaluacionId = :iEvaluacionId, 
+            @idTipoEvalId = :idTipoEvalId, 
+            @iNivelEvalId = :iNivelEvalId, 
+            @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
+            @cEvaluacionNombre = :cEvaluacionNombre, 
+            @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
+            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
+            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
+            @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
+            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
+            @cEvaluacionObs = :cEvaluacionObs, 
+            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
+            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
+            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
+            @iEstado = :iEstado,
+            @iSesionId = :iSesionId', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
-    public function obtenerParticipaciones(Request $request)
+    public function obtenerParticipaciones($iEvaluacionId)
     {
-        // Obtener el ID de evaluación del parámetro de consulta
-        $iEvaluacionId = $request->query('iEvaluacionId');
+        // Llamar al procedimiento almacenado
+        $participaciones = DB::select('EXEC ere.SP_SEL_ObtenerParticipaciones ?', [$iEvaluacionId]);
 
-        // Verificar si el ID no es nulo antes de hacer la consulta
-        if ($iEvaluacionId === null) {
-            return response()->json(['error' => 'ID de evaluación no proporcionado'], 400);
-        }
-
-        try {
-            // Filtrar las participaciones por el ID de evaluación y obtener la información adicional de las instituciones
-            $participaciones = DB::table('acad.institucion_educativas')
-                ->join('acad.nivel_tipos', 'acad.institucion_educativas.iNivelTipoId', '=', 'acad.nivel_tipos.iNivelTipoId')
-                ->join('grl.distritos', 'acad.institucion_educativas.iDsttId', '=', 'grl.distritos.iDsttId')
-                ->join('grl.provincias', 'grl.distritos.iPrvnId', '=', 'grl.provincias.iPrvnId')
-                ->leftJoin('ere.iiee_participa_evaluaciones', 'acad.institucion_educativas.iIieeId', '=', 'ere.iiee_participa_evaluaciones.iIieeId')
-                ->select(
-                    'acad.institucion_educativas.iIieeId',
-                    'acad.institucion_educativas.cIieeCodigoModular',
-                    'acad.institucion_educativas.cIieeNombre',
-                    'acad.nivel_tipos.cNivelTipoNombre',
-                    'grl.distritos.cDsttNombre',
-                    'grl.provincias.cPrvnNombre',
-                    'ere.iiee_participa_evaluaciones.iEvaluacionId'
-                )
-                ->where('ere.iiee_participa_evaluaciones.iEvaluacionId', $iEvaluacionId) // Filtrar por ID de evaluación
-                ->get();
-
-            return response()->json(['data' => $participaciones]);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Error al obtener las participaciones', 'message' => $e->getMessage()], 500);
-        }
+        // Devolver la respuesta en formato JSON
+        return response()->json([
+            'data' => $participaciones,
+            'message' => 'Participaciones obtenidas correctamente.',
+            'status' => true
+        ]);
     }
+    //!
     public function obtenerCursos()
     {
         $campos = 'iCursoId,cCursoNombre';
@@ -286,7 +288,7 @@ class EvaluacionesController extends ApiController
     {
         // Llamar al procedimiento almacenado
         //Se cambio el nombre SP_SEL_CursosEvaluacion
-        $cursos = DB::select('EXEC ere.SP_SEL_CursosEvaluacion ?', [$iEvaluacionId]);
+        $cursos = DB::select('EXEC ere.SP_SEL_cursosEvaluacion ?', [$iEvaluacionId]);
 
         // Devolver la respuesta en formato JSON
         return response()->json([
@@ -505,8 +507,9 @@ class EvaluacionesController extends ApiController
             'iSesionId' => 'nullable|integer',
         ]);
 
-        // Llamar al procedimiento almacenado
-        DB::statement('EXEC [ere].[SP_INS_desempenoEvaluacion] ?, ?, ?, ?, ?, ?, ?', [
+
+        // Llamar al procedimiento almacenado y capturar el ID retornado
+        $result = DB::select('EXEC [ere].[SP_INS_desempenoEvaluacion] ?, ?, ?, ?, ?, ?, ?', [
             $validated['iEvaluacionId'],
             $validated['iCompCursoId'],
             $validated['iCapacidadId'],
@@ -515,85 +518,347 @@ class EvaluacionesController extends ApiController
             $validated['iEstado'] ?? null,
             $validated['iSesionId'] ?? null,
         ]);
+        // Capturar el ID retornado
+        $iDesempenoId = $result[0]->iDesempenoId;
 
         // Responder con éxito
-        return response()->json(['message' => 'Datos insertados correctamente'], 201);
+        return response()->json([
+            'message' =>
+            'Datos insertados correctamente',
+            'iDesempenoId' => $iDesempenoId,
+        ], 201);
     }
+    //!Obtener Especialista y Grado cursos
+    public function obtenerEspDrem(Request $request)
+    {
+        $campos = 'iEspecialistaId,dtEspecialistaInicio,dtEspecialistaRslDesignacion,iDocenteId,iCursosNivelGradId'; // Campos específicos que necesitas
+        $where = '1=1'; // Condición siempre verdadera para no filtrar los datos
 
+        $params = [
+            'acad',
+            'especialistas_DRE',
+            $campos,
+            $where
+        ];
+
+        try {
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            @nombreEsquema = ?,
+            @nombreTabla = ?,    
+            @campos = ?,        
+            @condicionWhere = ?
+        ', $params);
+
+            return $this->successResponse(
+                $preguntas,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
+    public function obtenerEspDremCurso(Request $request)
+    {
+        // Validar los parámetros de entrada
+        $iPersId = $request->input('iPersId');
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        //$iPersId = 1;
+        //$iEvaluacionId = 679; //724 no tiene esos dos cursos  - 679 Si tiene esos dos cursos
+        if (!$iPersId) {
+            return $this->errorResponse(null, 'El parámetro iPersId es obligatorio.');
+        }
+
+        if (!$iEvaluacionId) {
+            return $this->errorResponse(null, 'El parámetro iEvaluacionId es obligatorio.');
+        }
+
+        try {
+            // Obtener el iDocenteId relacionado con el iPersId
+            $iDocenteId = DB::table('acad.docentes')
+                ->where('iPersId', $iPersId)
+                ->value('iDocenteId');
+
+            if (!$iDocenteId) {
+                return $this->errorResponse(null, 'No se encontró un docente relacionado con el iPersId proporcionado.');
+            }
+
+            // Realizar la consulta con filtros y uniones
+            $resultados = DB::table('acad.especialistas_DRE as ed')
+                ->join('ere.examen_cursos as ec', 'ed.iCursosNivelGradId', '=', 'ec.iCursoNivelGradId')
+                ->join('acad.cursos_niveles_grados as cng', 'ed.iCursosNivelGradId', '=', 'cng.iCursosNivelGradId')
+                ->join('acad.cursos as c', 'cng.iCursoId', '=', 'c.iCursoId')
+                ->join('acad.grados as g', 'cng.iNivelGradoId', '=', 'g.iGradoId')
+                ->select(
+                    'ed.iEspecialistaId',
+                    'ed.dtEspecialistaInicio',
+                    'ed.dtEspecialistaRslDesignacion',
+                    'ed.iDocenteId',
+                    'ed.iCursosNivelGradId',
+                    'c.cCursoNombre',
+                    'c.cCursoDescripcion',
+                    'g.cGradoNombre',
+                    'g.cGradoAbreviacion',
+                    'g.cGradoRomanos'
+                )
+                ->where('ec.iEvaluacionId', $iEvaluacionId) // Filtrar por la evaluación seleccionada
+                ->where('ed.iDocenteId', $iDocenteId)       // Filtrar por el docente relacionado
+                ->get();
+
+            if ($resultados->isEmpty()) {
+                return $this->errorResponse(null, 'No se encontraron datos para los cursos asociados.');
+            }
+
+            // Retornar los resultados exitosamente
+            return $this->successResponse(
+                $resultados,
+                'Datos obtenidos correctamente.'
+            );
+        } catch (Exception $e) {
+            // Manejo de errores
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
+        }
+    }
     public function generarPdfMatrizbyEvaluacionId(Request $request)
     {
-        // Obtener el parámetro iEvaluacionId de la solicitud
-        $iEvaluacionId = $request->query('iEvaluacionId');
 
-        // Validar si se recibió el parámetro
-        if (!$iEvaluacionId) {
-            return response()->json([
-                'message' => 'El parámetro iEvaluacionId no fue recibido.',
-                'status' => 'error'
-            ], 400); // Código HTTP 400: Bad Request
+        // Acceder a los datos enviados desde Angular
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $nombreEvaluacion = $request->input('nombreEvaluacion');
+        $areaId = $request->input('areaId'); // Esto se comparará con 'iCursosNivelGradId'
+        $ids = $request->input('ids');  // Esto se comparará con 'iPreguntaId'
+        $seccion = $request->input('seccion');
+        $grado = $request->input('grado');
+        $nivel = $request->input('nivel');
+        $nombreCurso = $request->input('nombreCurso');
+        $especialista = $request->input('especialista');
+
+
+        // Aquí tomaremos los datos de la tabla "ere.preguntas"
+        //        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
+        $preguntas = DB::select("EXEC ere.SP_SEl_evaluacionPreguntas ?", [$iEvaluacionId]);
+
+        // Verificar si se obtuvieron resultados
+        if (empty($preguntas)) {
+            return response()->json(['error' => 'No se encontraron preguntas para la evaluación especificada'], 404);
         }
 
-        // Aquí puedes realizar una consulta para verificar si existe el ID en la base de datos
-        // $evaluacion = Evaluacion::find($iEvaluacionId);
+        // Filtrar las preguntas según los parámetros recibidos
+        $datos = [];
+        $dtCreado = null; // Variable para almacenar el dtCreado
 
-        if (!$iEvaluacionId) {
-            return response()->json([
-                'message' => 'La evaluación no existe con el ID proporcionado.',
-                'status' => 'error'
-            ], 404); // Código HTTP 404: Not Found
+        foreach ($preguntas as $key => $pregunta) {
+            // Filtrar por areaId (compara con iCursosNivelGradId)
+            if ($areaId && $pregunta->iCursosNivelGradId != $areaId) {
+
+                continue; // Si no coincide, omitir esta pregunta
+            }
+
+            // Filtrar por ids (compara con iPreguntaId)
+            if ($ids && !in_array($pregunta->iPreguntaId, explode(',', $ids))) {
+
+                continue; // Si no coincide, omitir esta pregunta
+            }
+
+            // Si pasa los filtros, agregar la pregunta a los datos
+            $datos['preguntas'][$key] = [
+                'evaluacion_nombre' => $pregunta->cEvaluacionNombre,
+                'evaluacion_descripcion' => $pregunta->cEvaluacionDescripcion,
+                'competencia_nombre' => $pregunta->cCompetenciaNombre,
+                'competencia_descripcion' => $pregunta->cCompetenciaDescripcion,
+                'capacidad_nombre' => $pregunta->cCapacidadNombre,
+                'capacidad_descripcion' => $pregunta->cCapacidadDescripcion,
+                'desempeno_descripcion' => $pregunta->cDesempenoDescripcion,
+                //'curso_nombre' => $pregunta->cCursoNombre,
+                //'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
+                //'nivel_nombre' => $pregunta->cNivelNombre,
+                'pregunta' => $pregunta->cPregunta,
+                'pregunta_clave' => $pregunta->cPreguntaClave,
+                'pregunta_texto_ayuda' => $pregunta->cPreguntaTextoAyuda,
+                'pregunta_nivel' => $pregunta->iPreguntaNivel,
+                'iPreguntaId' => $pregunta->iPreguntaId,
+                'iCursosNivelGradId' => $pregunta->iCursosNivelGradId,
+                'iEvaluacionId' => $pregunta->iEvaluacionId,
+                'dtCreado' => $dtCreado, // Fecha de creación como dato independiente
+            ];
+
+            // Capturar el valor de dtCreado de la primera pregunta
+            if ($dtCreado === null) {
+                $dtCreado = $pregunta->dtCreado;
+            }
         }
 
-        // Si todo está correcto, devolver un mensaje de éxito
-        return response()->json([
-            'message' => "El ID $iEvaluacionId se recibió correctamente.",
-            'status' => 'success'
+        // Formatear dtCreado para que solo muestre la fecha (sin la hora)
+        if ($dtCreado !== null) {
+            $dtCreado = \Carbon\Carbon::parse($dtCreado)->format('Y-m-d'); // Formato "Año-Mes-Día"
+        }
+        // Verificar si se encontraron preguntas después del filtro
+        if (empty($datos['preguntas'])) {
+            return response()->json(['error' => 'No se encontraron preguntas que coincidan con los filtros especificados'], 404);
+        }
+        //CARGAR LOGOS
+        $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $virtual = 'data:image/jpeg;base64,' . $imageData;
+
+        $imagePath = public_path('images\logo_IE\dremo.jpg');
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $region = 'data:image/jpeg;base64,' . $imageData;
+
+
+        // Preparar los datos para el PDF o la respuesta
+        $respuesta = [
+            'iEvaluacionId' => $iEvaluacionId,
+            'nombreEvaluacion' => $nombreEvaluacion,
+            'areaId' => $areaId,
+            'ids' => $ids,
+            'seccion' => $seccion,
+            'grado' => $grado,
+            'nivel' => $nivel,
+            'nombreCurso' => $nombreCurso,
+            'preguntas' => $datos['preguntas'],
+            "logoVirtual" => $virtual, // Ruta absoluta
+            "imageLogo" => $region, // Ruta absoluta
+            'dtCreado' => $dtCreado,
+            'especialista' => $especialista
+        ];
+        // Generar el PDF con los datos recibidos
+        $pdf = PDF::loadView('pdfEre.matrizReporte', $respuesta)
+            ->setPaper('a4', 'landscape')  // Asegúrate de tener el tamaño de papel correcto
+            ->stream('matriz_evaluacion.pdf');  // Puedes cambiar 'stream' por 'download' si quieres forzar la descarga
+
+        // Retornar el PDF como respuesta
+        return $pdf;
+    }
+    public function insertarPreguntaSeleccionada(Request $request)
+    {
+        // Validar el payload recibido
+        $validated = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+            'preguntas' => 'required|array',
+            'preguntas.*.iPreguntaId' => 'required|integer',
         ]);
-        // $iEvaluacionId = $request->input('iEvaluacionId'); // Obtener el ID de la evaluación
 
-        // // Supongamos que generas el reporte con esos datos, por ejemplo:
-        // $asistencias = $this->obtenerAsistenciasPorEvaluacionId($iEvaluacionId); // Método para obtener las asistencias
+        // Recorrer las preguntas seleccionadas y formatear los datos para la inserción
+        $dataToInsert = array_map(function ($pregunta) use ($validated) {
+            return [
+                'iPreguntaId' => $pregunta['iPreguntaId'],
+                'iEvaluacionId' => $validated['iEvaluacionId'],
+            ];
+        }, $validated['preguntas']);
 
-        // // Ahora generamos el PDF
-        // $pdf = Pdf::loadView('pdfEre.matrizReporte', compact('asistencias', 'evaluacion'))
-        //     ->orientation('landscape')
-        //     ->name('reporte_matriz.pdf');
+        // Insertar los datos en la tabla
+        DB::table('ere.evaluacion_preguntas')->insert($dataToInsert);
 
-        // // Retornamos el PDF para descarga
-        // return $pdf->download('reporte_matriz.pdf');
+        // Retornar una respuesta de éxito
+        return response()->json([
+            'message' => 'Preguntas seleccionadas guardadas exitosamente.',
+        ]);
+    }
+    public function obtenerPreguntaSeleccionada(Request $request)
+    {
+        $validatedData = $request->validate([
+            'iEvaluacionId' => 'required|integer',
+        ]);
+
+        $preguntas = DB::table('ere.evaluacion_preguntas')
+            ->join('ere.preguntas', 'ere.evaluacion_preguntas.iPreguntaId', '=', 'ere.preguntas.iPreguntaId')
+            ->where('ere.evaluacion_preguntas.iEvaluacionId', $validatedData['iEvaluacionId'])
+            ->select('ere.preguntas.*', 'ere.evaluacion_preguntas.iEvalPregId')
+            ->get();
+
+        return response()->json($preguntas, 200);
+    }
+    public function obtenerConteoPorCurso(Request $request)
+    {
+        // Validar los datos de entrada
+        $validatedData = $request->validate([
+            'iEvaluacionId' => 'required',
+            'iCursosNivelGradId' => 'required', // Asegurarse de que ambos parámetros estén presentes
+        ]);
+
+        try {
+            // Consulta para obtener las preguntas seleccionadas por iEvaluacionId e iCursosNivelGradId
+            $resultado = DB::table('ere.evaluacion_preguntas')
+                ->join('ere.preguntas', 'ere.evaluacion_preguntas.iPreguntaId', '=', 'ere.preguntas.iPreguntaId')
+                ->where('ere.evaluacion_preguntas.iEvaluacionId', $validatedData['iEvaluacionId'])
+                ->whereIn('ere.preguntas.iCursosNivelGradId', $validatedData['iCursosNivelGradId'])
+                ->select(
+                    'ere.preguntas.iPreguntaId', // Otras columnas que necesites
+                    'ere.preguntas.cPregunta',  // Por ejemplo, el texto de la pregunta
+                    'ere.preguntas.iCursosNivelGradId', // Para asegurarse de que la comparación sea válida
+                )
+                ->get();
+
+            // Verificar si se encontraron resultados
+            if ($resultado->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron preguntas para la evaluación y nivel de curso especificados.'], 404);
+            }
+
+            // Si hay resultados, devolver los datos
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return response()->json(['error' => 'Hubo un problema al obtener las preguntas: ' . $e->getMessage()], 500);
+        }
+    }
+    /**
+     * Obtener preguntas por EvaluacionId y iPreguntaId
+     * 
+     * @param  Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function obtenerPreguntaInformacion(Request $request)
+    {
+        // Obtener los parámetros del request
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $iPreguntaIds = $request->input('iPreguntaIds'); // Recibe la cadena de IDs separados por comas
+
+        // Llamar al procedimiento almacenado con los parámetros
+        $result = DB::select('EXEC ere.SP_SEL_preguntasXiEvaluacionId ?, ?', [$iEvaluacionId, $iPreguntaIds]);
+
+        // Retornar el resultado como JSON
+        return response()->json($result);
     }
 
+    //guardar fecha inicio fin de cursos
+    public function guardarInicioFinalExmAreas(Request $request)
+    {
+        // Validar los datos enviados desde el frontend
+        $request->validate([
+            'iEvaluacionId' => 'required|integer', // ID de evaluación obligatorio
+            'fechaIniFin' => 'required|array', // Debe ser un array
+            'fechaIniFin.*.iCursoNivelGradId' => 'required|integer', // Cada objeto debe tener iCursoNivelGradId
+            'fechaIniFin.*.fechaInicio' => 'required|date', // Validar que sea una fecha válida
+            'fechaIniFin.*.fechaFin' => 'required|date', // Validar que sea una fecha válida
+        ]);
 
+        // Obtener los datos validados
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $cursos = $request->input('fechaIniFin'); // Array de objetos con fechas y cursos
 
+        try {
+            // Iterar sobre cada curso y ejecutar el procedimiento almacenado
+            foreach ($cursos as $curso) {
+                DB::statement('EXEC ere.SP_UPD_actualizarFechasExamenCursos ?, ?, ?, ?', [
+                    $iEvaluacionId,
+                    $curso['iCursoNivelGradId'],
+                    $curso['fechaInicio'],
+                    $curso['fechaFin'],
+                ]);
+            }
 
-    // public function generarPdfMatriz(Request $request)
-    // {
-    //     // Obtener el parámetro iEvaluacionId
-    //     $iEvaluacionId = $request->query('iEvaluacionId');
-
-    //     // Validar si se recibió el parámetro
-    //     if (!$iEvaluacionId) {
-    //         return response()->json([
-    //             'message' => 'El parámetro iEvaluacionId no fue recibido.',
-    //             'status' => 'error'
-    //         ], 400);
-    //     }
-
-    //     // Buscar la evaluación en la base de datos
-    //     //$evaluacion = Evaluacion::find($iEvaluacionId);
-
-    //     if (!$iEvaluacionId) {
-    //         return response()->json([
-    //             'message' => 'La evaluación no existe con el ID proporcionado.',
-    //             'status' => 'error'
-    //         ], 404);
-    //     }
-
-    //     // Generar el PDF utilizando Spatie Laravel PDF
-    //     $pdf = Pdf::loadView('pdf.matriz', ['evaluacion' => $iEvaluacionId])
-    //         ->format(Format::A4)
-    //         ->orientation(Orientation::Portrait);
-
-    //     // Descargar el PDF como respuesta
-    //     return $pdf->download('matriz-evaluacion-' . $iEvaluacionId . '.pdf');
-    // }
+            // Devolver una respuesta de éxito
+            return response()->json([
+                'success' => true,
+                'message' => 'Fechas de examen actualizadas correctamente.',
+            ], 200);
+        } catch (\Exception $e) {
+            // Manejo de errores en caso de que falle el procedimiento almacenado
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar las fechas de examen.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
