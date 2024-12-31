@@ -6,6 +6,7 @@ use App\Helpers\CollectionStrategy;
 use Exception;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHandler;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
 
@@ -32,9 +33,9 @@ class AuditoriaController extends Controller
         'campos' => '*',
         'condicionWhere' => $where,
       ]);
+      
+      $query = (new ApiController(new CollectionStrategy()))->getData($request);
 
-
-      $query = $this->selDesdeTablaOVista($request, new CollectionStrategy());
 
       if ($query instanceof Collection) {
         $query = $query->sortByDesc('dtFecha')->values();

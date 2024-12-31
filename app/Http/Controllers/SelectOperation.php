@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\AbstractDatabaseOperation;
-use Illuminate\Http\Request;
 
 class SelectOperation extends AbstractDatabaseOperation
 {

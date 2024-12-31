@@ -21,36 +21,31 @@ class ApiController extends Controller
     use HelperTrait;
     use HashidsTrait;
 
-    public function __construct()
+    private $strategy;
+
+    public function __construct(DataReturnStrategy $strategy = new JsonResponseStrategy())
     {
         $this->initializeHashids();
+        $this->strategy = $strategy;
     }
 
     public function getData(Request $request)
     {
-        $strategy = new JsonResponseStrategy();
-
-        return (new SelectOperation())->handleRequest($request, $strategy);
+        return (new SelectOperation())->handleRequest($request, $this->strategy);
     }
 
     public function insertData(Request $request)
     {
-        $strategy = new JsonResponseStrategy();
-
-        return (new InsertOperation())->handleRequest($request, $strategy);
+        return (new InsertOperation())->handleRequest($request, $this->strategy);
     }
 
     public function updateData(Request $request)
     {
-        $strategy = new JsonResponseStrategy();
-
-        return (new UpdateOperation())->handleRequest($request, $strategy);
+        return (new UpdateOperation())->handleRequest($request, $this->strategy);
     }
 
     public function deleteData(Request $request)
     {
-        $strategy = new JsonResponseStrategy();
-
-        return (new DeleteOperation())->handleRequest($request, $strategy);
+        return (new DeleteOperation())->handleRequest($request, $this->strategy);
     }
 }
