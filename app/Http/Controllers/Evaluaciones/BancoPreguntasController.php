@@ -34,7 +34,8 @@ class BancoPreguntasController extends ApiController
             'iNivelCicloId' => $request->iNivelCicloId,
             'busqueda' => $request->busqueda ?? '',
             'iTipoPregId' => $request->iTipoPregId ?? 0,
-            'idEncabPregId' => $request->iEncabPregId ?? 0
+            'idEncabPregId' => $request->iEncabPregId ?? 0,
+            'iGradoId' => $this->decodeId($request->iGradoId ?? 0),
         ];
 
         try {

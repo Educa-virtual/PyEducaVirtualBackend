@@ -12,14 +12,20 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Ere\EreEvaluacion;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
-//use Carbon\Carbon;
+use Carbon\Carbon;
+
+use function Laravel\Prompts\select;
 
 class EvaluacionesController extends ApiController
 {
+    public function __construct()
+    {
+        $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
     public function obtenerEvaluaciones()
     {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId';
         $where = '';
         $params = [
             'ere',
@@ -40,6 +46,10 @@ class EvaluacionesController extends ApiController
 
     public function guardarEvaluacion(Request $request)
     {
+        $iSesionId = $this->hashids->decode($request->iSesionId);
+        if (!empty($iSesionId) && is_array($iSesionId)) {
+            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        }
         $params = [
             $request->idTipoEvalId,
             $request->iNivelEvalId,
@@ -53,7 +63,9 @@ class EvaluacionesController extends ApiController
             $request->cEvaluacionObs,
             $request->dtEvaluacionLiberarMatriz,
             $request->dtEvaluacionLiberarCuadernillo,
-            $request->dtEvaluacionLiberarResultados
+            $request->dtEvaluacionLiberarResultados,
+            $request->iEstado,
+            $iSesionId
         ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
@@ -120,6 +132,10 @@ class EvaluacionesController extends ApiController
     }
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
+        $iSesionId = $this->hashids->decode($request->iSesionId);
+        if (!empty($iSesionId) && is_array($iSesionId)) {
+            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        }
         // Validar solo los campos opcionales
         $request->validate([
             'idTipoEvalId' => 'nullable|integer',
@@ -134,7 +150,9 @@ class EvaluacionesController extends ApiController
             'cEvaluacionObs' => 'nullable|string|max:255',
             'dtEvaluacionLiberarMatriz' => 'nullable|string',
             'dtEvaluacionLiberarCuadernillo' => 'nullable|string',
-            'dtEvaluacionLiberarResultados' => 'nullable|string'
+            'dtEvaluacionLiberarResultados' => 'nullable|string',
+            'iEstado' => 'nullable|integer',
+            'iSesionId' => 'nullable|string',
         ]);
         // Preparar los valores para la llamada al procedimiento
         $params = [
@@ -151,27 +169,30 @@ class EvaluacionesController extends ApiController
             'cEvaluacionObs' => $request->input('cEvaluacionObs', null),
             'dtEvaluacionLiberarMatriz' => $request->input('dtEvaluacionLiberarMatriz', null),
             'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
-            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null)
+            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
+            'iEstado' => $request->input('iEstado', null),
+            'iSesionId' => $iSesionId,
         ];
 
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
         DB::statement('EXEC ere.SP_UPD_evaluaciones
-        @iEvaluacionId = :iEvaluacionId, 
-        @idTipoEvalId = :idTipoEvalId, 
-        @iNivelEvalId = :iNivelEvalId, 
-        @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
-        @cEvaluacionNombre = :cEvaluacionNombre, 
-        @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
-        @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
-        @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
-        @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
-        @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
-        @cEvaluacionObs = :cEvaluacionObs, 
-        @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
-        @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
-        @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados', $params);
-
+            @iEvaluacionId = :iEvaluacionId, 
+            @idTipoEvalId = :idTipoEvalId, 
+            @iNivelEvalId = :iNivelEvalId, 
+            @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
+            @cEvaluacionNombre = :cEvaluacionNombre, 
+            @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
+            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
+            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
+            @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
+            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
+            @cEvaluacionObs = :cEvaluacionObs, 
+            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
+            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
+            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
+            @iEstado = :iEstado,
+            @iSesionId = :iSesionId', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
@@ -187,7 +208,6 @@ class EvaluacionesController extends ApiController
             'status' => true
         ]);
     }
-    //!
     public function obtenerCursos()
     {
         $campos = 'iCursoId,cCursoNombre';
@@ -238,7 +258,7 @@ class EvaluacionesController extends ApiController
             return response()->json(['message' => 'Error al insertar cursos', 'error' => $e->getMessage()], 500);
         }
     }
-    //!ELIMINAR CURSO
+    //ELIMINAR CURSO
     public function eliminarCursos(Request $request)
     {
         try {
@@ -365,7 +385,7 @@ class EvaluacionesController extends ApiController
 
         return response()->json(['message' => 'Cursos actualizados correctamente para la evaluación ' . $iEvaluacionId]);
     }
-    //!Agregando CopiarEvaluacion
+    //Agregando CopiarEvaluacion
     public function copiarEvaluacion(Request $request)
     {
         // Validar que el parámetro iEvaluacionIdOriginal esté presente
@@ -392,7 +412,7 @@ class EvaluacionesController extends ApiController
             ], 500);
         }
     }
-    //!AgregarMatrizCompetencia
+    //AgregarMatrizCompetencia
     public function obtenerMatrizCompetencias(Request $request)
     {
         $campos = 'iCompetenciaId,cCompetenciaNro,cCompetenciaNombre,cCompetenciaDescripcion,iCurrId'; // Campos específicos que necesitas
@@ -432,7 +452,7 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    //!AgregarMatrizCapacidad
+    //AgregarMatrizCapacidad
     public function obtenerMatrizCapacidades(Request $request)
     {
         $campos = 'iCapacidadId,iCompetenciaId,cCapacidadNombre,cCapacidadDescripcion'; // Campos específicos que necesitas
@@ -472,7 +492,7 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    //!AgregarMatrizDesempeno
+    //AgregarMatrizDesempeno
     public function insertarMatrizDesempeno(Request $request)
     {
         // Validar los datos recibidos en la solicitud
@@ -507,9 +527,7 @@ class EvaluacionesController extends ApiController
             'iDesempenoId' => $iDesempenoId,
         ], 201);
     }
-
-    //!Obtener Especialista y Grado cursos
-
+    //Obtener Especialista y Grado cursos
     public function obtenerEspDrem(Request $request)
     {
         $campos = 'iEspecialistaId,dtEspecialistaInicio,dtEspecialistaRslDesignacion,iDocenteId,iCursosNivelGradId'; // Campos específicos que necesitas
@@ -538,7 +556,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-
     public function obtenerEspDremCurso(Request $request)
     {
         // Validar los parámetros de entrada
@@ -600,7 +617,6 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
         }
     }
-
     public function generarPdfMatrizbyEvaluacionId(Request $request)
     {
 
@@ -617,7 +633,8 @@ class EvaluacionesController extends ApiController
 
 
         // Aquí tomaremos los datos de la tabla "ere.preguntas"
-        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
+        //        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
+        $preguntas = DB::select("EXEC ere.SP_SEl_evaluacionPreguntas ?", [$iEvaluacionId]);
 
         // Verificar si se obtuvieron resultados
         if (empty($preguntas)) {
@@ -650,9 +667,9 @@ class EvaluacionesController extends ApiController
                 'capacidad_nombre' => $pregunta->cCapacidadNombre,
                 'capacidad_descripcion' => $pregunta->cCapacidadDescripcion,
                 'desempeno_descripcion' => $pregunta->cDesempenoDescripcion,
-                'curso_nombre' => $pregunta->cCursoNombre,
-                'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
-                'nivel_nombre' => $pregunta->cNivelNombre,
+                //'curso_nombre' => $pregunta->cCursoNombre,
+                //'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
+                //'nivel_nombre' => $pregunta->cNivelNombre,
                 'pregunta' => $pregunta->cPregunta,
                 'pregunta_clave' => $pregunta->cPreguntaClave,
                 'pregunta_texto_ayuda' => $pregunta->cPreguntaTextoAyuda,
@@ -668,6 +685,7 @@ class EvaluacionesController extends ApiController
                 $dtCreado = $pregunta->dtCreado;
             }
         }
+
         // Formatear dtCreado para que solo muestre la fecha (sin la hora)
         if ($dtCreado !== null) {
             $dtCreado = \Carbon\Carbon::parse($dtCreado)->format('Y-m-d'); // Formato "Año-Mes-Día"
@@ -799,5 +817,47 @@ class EvaluacionesController extends ApiController
 
         // Retornar el resultado como JSON
         return response()->json($result);
+    }
+
+    //guardar fecha inicio fin de cursos
+    public function guardarInicioFinalExmAreas(Request $request)
+    {
+        // Validar los datos enviados desde el frontend
+        $request->validate([
+            'iEvaluacionId' => 'required|integer', // ID de evaluación obligatorio
+            'fechaIniFin' => 'required|array', // Debe ser un array
+            'fechaIniFin.*.iCursoNivelGradId' => 'required|integer', // Cada objeto debe tener iCursoNivelGradId
+            'fechaIniFin.*.fechaInicio' => 'required|date', // Validar que sea una fecha válida
+            'fechaIniFin.*.fechaFin' => 'required|date', // Validar que sea una fecha válida
+        ]);
+
+        // Obtener los datos validados
+        $iEvaluacionId = $request->input('iEvaluacionId');
+        $cursos = $request->input('fechaIniFin'); // Array de objetos con fechas y cursos
+
+        try {
+            // Iterar sobre cada curso y ejecutar el procedimiento almacenado
+            foreach ($cursos as $curso) {
+                DB::statement('EXEC ere.SP_UPD_actualizarFechasExamenCursos ?, ?, ?, ?', [
+                    $iEvaluacionId,
+                    $curso['iCursoNivelGradId'],
+                    $curso['fechaInicio'],
+                    $curso['fechaFin'],
+                ]);
+            }
+
+            // Devolver una respuesta de éxito
+            return response()->json([
+                'success' => true,
+                'message' => 'Fechas de examen actualizadas correctamente.',
+            ], 200);
+        } catch (\Exception $e) {
+            // Manejo de errores en caso de que falle el procedimiento almacenado
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar las fechas de examen.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

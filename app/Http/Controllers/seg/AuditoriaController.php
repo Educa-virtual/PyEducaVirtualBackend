@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\seg;
 
+use App\Helpers\CollectionStrategy;
 use Exception;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHandler;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Collection;
 
@@ -24,12 +26,16 @@ class AuditoriaController extends Controller
       $where = 'CAST(dtFecha as DATE) >= CAST(' . "'" . $validated['filtroFechaInicio'] . "'" . ' as DATE) AND CAST(dtFecha as DATE) <= CAST(' . "'" . $validated['filtroFechaFin'] . "'" . ' as DATE)';
 
       // Usar `selDesdeTablaOVista` para realizar la consulta
-      $query = $this->selDesdeTablaOVista(
-        self::schema,
-        'V_auditoria',
-        '*',
-        $where,
-      );
+
+      $request->merge([
+        'esquema' => self::schema,
+        'tabla' => 'V_auditoria',
+        'campos' => '*',
+        'condicionWhere' => $where,
+      ]);
+      
+      $query = (new ApiController(new CollectionStrategy()))->getData($request);
+
 
       if ($query instanceof Collection) {
         $query = $query->sortByDesc('dtFecha')->values();

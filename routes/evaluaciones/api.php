@@ -1,5 +1,7 @@
 <?php
 
+use App\Helpers\JsonResponseStrategy;
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\eval\EvaluacionesController;
 use App\Http\Controllers\eval\BancoAlternativasController;
 use App\Http\Controllers\eval\EncabezadoPreguntasController;
@@ -15,6 +17,7 @@ use App\Http\Controllers\Evaluaciones\TipoEvaluacionController as EvaluacionesTi
 use App\Http\Controllers\Evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController ;
+use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'tipo-preguntas'], function () {
@@ -56,7 +59,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::resource('rubrica', InstrumentosEvaluacionController::class);
         Route::get('obtenerRubricas', [InstrumentosEvaluacionController::class, 'obtenerRubricas']);
         Route::get('obtenerRubrica', [InstrumentosEvaluacionController::class, 'obtenerRubrica']);
-        Route::get('obtenerRubricaEvaluacion', [InstrumentosEvaluacionController::class, 'obtenerRubricaEvaluacion']);
+        Route::post('obtenerRubricaEvaluacion', [InstrumentosEvaluacionController::class, 'obtenerRubricaEvaluacion']);
     });
 
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
@@ -86,4 +89,11 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::group(['prefix' => 'evaluacion-promedios'], function () {
         Route::post('guardarConclusionxiEvalPromId', [EvaluacionesController::class, 'guardarConclusionxiEvalPromId']);
     });
+});
+
+Route::group(['prefix' => 'virtual'], function () {
+    Route::post('getData', [ApiController::class, 'getData']);
+    Route::post('insertData', [ApiController::class, 'insertData']);
+    Route::post('updateData', [ApiController::class, 'updateData']);
+    Route::post('deleteData', [ApiController::class, 'deleteData']);
 });

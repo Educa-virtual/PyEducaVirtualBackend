@@ -23,12 +23,13 @@ class PreguntasRepository
             $params['iTipoPregId'] ?? 0,
             $params['bPreguntaEstado'] ?? -1,
             $params['ids'] ?? '',
-            $params['iEncabPregId'] ?? 0
+            $params['iEncabPregId'] ?? 0,
+            $params['iEvaluacionId'] ?? 0
         ];
         //dd($params);
         $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursosNivelGradId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
-             @_iEncabPregId = ? 
+             @_iEncabPregId = ?, @_iEvaluacionId = ?
             ', $params);
         $preguntas = [];
         foreach ($preguntasDB as $item) {
