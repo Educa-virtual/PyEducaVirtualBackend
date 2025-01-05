@@ -638,6 +638,40 @@ class AulaVirtualController extends ApiController
         // Retorna una respuesta JSON con el mensaje y el código HTTP correspondiente.
         return new JsonResponse($response, $codeResponse);
     }
+    // Obtener retrolimentación del docente del foro
+    public function obtenerReptdocente(Request $request)
+    {
+        // return $request->all();
+        $request->validate([
+            'iEstudianteId' => 'required|string',
+            'iForoId' => 'required|string'
+        ]);
+        
+        $iEstudianteId = $request->iEstudianteId;
+        $iForoId = $request->iForoId;
+        $params = [
+            $iEstudianteId,
+            $iForoId
+        ];
+
+        // return $params;
+         //return $params;
+         try {
+            $data = DB ::select('EXEC aula.SP_SEL_obtenerForoRespuestasXidEstudiante ?,?', $params);
+
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+
+            return $response;
+        } 
+        catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response,$estado);
+
+    }
     public function guardarComentarioRespuesta(Request $request)
     {
 
