@@ -208,7 +208,6 @@ class EvaluacionesController extends ApiController
             'status' => true
         ]);
     }
-    //!
     public function obtenerCursos()
     {
         $campos = 'iCursoId,cCursoNombre';
@@ -259,7 +258,7 @@ class EvaluacionesController extends ApiController
             return response()->json(['message' => 'Error al insertar cursos', 'error' => $e->getMessage()], 500);
         }
     }
-    //!ELIMINAR CURSO
+    //ELIMINAR CURSO
     public function eliminarCursos(Request $request)
     {
         try {
@@ -386,7 +385,7 @@ class EvaluacionesController extends ApiController
 
         return response()->json(['message' => 'Cursos actualizados correctamente para la evaluación ' . $iEvaluacionId]);
     }
-    //!Agregando CopiarEvaluacion
+    //Agregando CopiarEvaluacion
     public function copiarEvaluacion(Request $request)
     {
         // Validar que el parámetro iEvaluacionIdOriginal esté presente
@@ -413,7 +412,7 @@ class EvaluacionesController extends ApiController
             ], 500);
         }
     }
-    //!AgregarMatrizCompetencia
+    //AgregarMatrizCompetencia
     public function obtenerMatrizCompetencias(Request $request)
     {
         $campos = 'iCompetenciaId,cCompetenciaNro,cCompetenciaNombre,cCompetenciaDescripcion,iCurrId'; // Campos específicos que necesitas
@@ -453,7 +452,7 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    //!AgregarMatrizCapacidad
+    //AgregarMatrizCapacidad
     public function obtenerMatrizCapacidades(Request $request)
     {
         $campos = 'iCapacidadId,iCompetenciaId,cCapacidadNombre,cCapacidadDescripcion'; // Campos específicos que necesitas
@@ -493,7 +492,7 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    //!AgregarMatrizDesempeno
+    //AgregarMatrizDesempeno
     public function insertarMatrizDesempeno(Request $request)
     {
         // Validar los datos recibidos en la solicitud
@@ -528,7 +527,7 @@ class EvaluacionesController extends ApiController
             'iDesempenoId' => $iDesempenoId,
         ], 201);
     }
-    //!Obtener Especialista y Grado cursos
+    //Obtener Especialista y Grado cursos
     public function obtenerEspDrem(Request $request)
     {
         $campos = 'iEspecialistaId,dtEspecialistaInicio,dtEspecialistaRslDesignacion,iDocenteId,iCursosNivelGradId'; // Campos específicos que necesitas
