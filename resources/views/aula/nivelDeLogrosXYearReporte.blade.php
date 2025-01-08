@@ -208,7 +208,7 @@
         <div class="table-flotante-izquierda">
            
             <aside>
-                <div>Cod-M : {{$headers['cod_Mod']}} / </div>
+                <div>Cod-M : {{$headers['cod_Mod']}} / JUAN XXIII </div>
                 <div>Estudiante : {{$estudiante['Estudiante']}} </div>
                 <div>Tutor :  {{ $headers['docente'] }} </div>                
                 <div>Año : {{ $headers['año'] }} </div>
@@ -217,10 +217,10 @@
         </div>    
         <div class="table-flotante-derecha">
             <aside>
-                <div>Nivel Educativo: </div>
-                <div>Sección - Turno : {{ $headers['Seccion_turno'] }} / </div>
+                <div>Nivel Educativo: PRIMARIA </div>
+                <div>Sección - Turno : {{ $headers['Seccion_turno'] }} - MAÑANA </div>
                 <div>Ciclo - Grado : {{ $headers['ciclo_grado'] }}</div>
-                <div>Fase / Periodo / Nivel Educativo :  {{ $headers['nivel_educativo'] }} /</div>
+                <div>Periodo :  TRIMESTRAL /</div>
             </aside>
         </div>        
     </header>
