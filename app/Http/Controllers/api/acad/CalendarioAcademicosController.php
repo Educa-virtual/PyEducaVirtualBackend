@@ -68,12 +68,12 @@ class CalendarioAcademicosController extends Controller
         );
 
         $yearAcadQuery = DB::select(
-            "EXEC grl.SP_SEL_DesdeTabla_Where ?,?,?,?",
+            "EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?",
             [
                 'acad',
-                'year_academicos',
+                'V_YearAcademico',
                 'iYAcadId, cYAcadNombre, dtYAcadInicio, dYAcadFin',
-                "iEstado=1",
+                "iYearEstado=1",
             ]
         )[0];
 
