@@ -26,7 +26,7 @@ class EvaluacionesController extends ApiController
     public function obtenerEvaluaciones()
     {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId,cEvaluacionIUrlCuadernillo,cEvaluacionUrlHojaRespuestas';
         $where = '';
         $params = [
             'ere',
@@ -66,7 +66,9 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionLiberarCuadernillo,
             $request->dtEvaluacionLiberarResultados,
             $request->iEstado,
-            $iSesionId
+            $iSesionId,
+            $request->cEvaluacionIUrlCuadernillo,
+            $request->cEvaluacionUrlHojaRespuestas,
         ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
@@ -154,6 +156,8 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionLiberarResultados' => 'nullable|string',
             'iEstado' => 'nullable|integer',
             'iSesionId' => 'nullable|string',
+            'cEvaluacionIUrlCuadernillo' => 'nullable|string|max:255',
+            'cEvaluacionUrlHojaRespuestas' => 'nullable|string|max:255',
         ]);
         // Preparar los valores para la llamada al procedimiento
         $params = [
@@ -173,6 +177,8 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
             'iEstado' => $request->input('iEstado', null),
             'iSesionId' => $iSesionId,
+            'cEvaluacionIUrlCuadernillo' => $request->input('cEvaluacionIUrlCuadernillo', null),
+            'cEvaluacionUrlHojaRespuestas' => $request->input('cEvaluacionUrlHojaRespuestas', null),
         ];
 
         // Construir la llamada dinámica al procedimiento
@@ -193,7 +199,9 @@ class EvaluacionesController extends ApiController
             @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
             @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
             @iEstado = :iEstado,
-            @iSesionId = :iSesionId', $params);
+            @iSesionId = :iSesionId,
+            @cEvaluacionIUrlCuadernillo = :cEvaluacionIUrlCuadernillo,
+            @cEvaluacionUrlHojaRespuestas = :cEvaluacionUrlHojaRespuestas', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
@@ -729,31 +737,7 @@ class EvaluacionesController extends ApiController
         // Retornar el PDF como respuesta
         return $pdf;
     }
-    // public function insertarPreguntaSeleccionada(Request $request)
-    // {
-    //     // Validar el payload recibido
-    //     $validated = $request->validate([
-    //         'iEvaluacionId' => 'required|integer',
-    //         'preguntas' => 'required|array',
-    //         'preguntas.*.iPreguntaId' => 'required|integer',
-    //     ]);
 
-    //     // Recorrer las preguntas seleccionadas y formatear los datos para la inserción
-    //     $dataToInsert = array_map(function ($pregunta) use ($validated) {
-    //         return [
-    //             'iPreguntaId' => $pregunta['iPreguntaId'],
-    //             'iEvaluacionId' => $validated['iEvaluacionId'],
-    //         ];
-    //     }, $validated['preguntas']);
-
-    //     // Insertar los datos en la tabla
-    //     DB::table('ere.evaluacion_preguntas')->insert($dataToInsert);
-
-    //     // Retornar una respuesta de éxito
-    //     return response()->json([
-    //         'message' => 'Preguntas seleccionadas guardadas exitosamente.',
-    //     ]);
-    // }
     public function insertarPreguntaSeleccionada(Request $request)
     {
         // Validar el payload recibido
