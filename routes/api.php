@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\Ere\InstitucionesEducativasController;
 use App\Http\Controllers\Ere\CapacidadesController;
 use App\Http\Controllers\Ere\CompetenciasController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\api\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
 use App\Http\Controllers\api\acad\InstitucionesEducativasController as AcadInstitucionesEducativasController;
 use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Controllers\api\grl\TipoIdentificacionController;
 use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\AuthController;
@@ -301,6 +303,15 @@ Route::group(['prefix' => 'acad'], function () {
         //* DELETE: Periodos académicos de un calendario
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
     });
+
+    Route::group(['prefix' => 'matricula'], function () {
+        Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
+        Route::get('list', [MatriculaController::class, 'list']);
+        Route::post('validarEstudiante', [MatriculaController::class, 'validarEstudiante']);
+        Route::post('validarRepresentante', [MatriculaController::class, 'validarRepresentante']);
+        Route::post('guardarMatricula', [MatriculaController::class, 'guardar']);
+        Route::post('searchMatriculas', [MatriculaController::class, 'search']);
+    });
 });
 
 Route::group(['prefix' => 'seg'], function () {
@@ -329,3 +340,7 @@ Route::get('/imprimir', PersonaController::class);
 Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
 Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+
+Route::group(['prefix' => 'grl'], function () {
+    Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
+});
