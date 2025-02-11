@@ -130,6 +130,8 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('obtenerConteoPorCurso', [EvaluacionesController::class, 'obtenerConteoPorCurso']);
         //Guardar fecha inicio fin de cursos
         Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
+        //Eliminar una pregunta de una evaluación.
+        Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

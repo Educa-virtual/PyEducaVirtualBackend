@@ -13,6 +13,7 @@ use App\Models\Ere\EreEvaluacion;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Contracts\Support\ValidatedData;
 
 use function Laravel\Prompts\select;
 
@@ -25,7 +26,7 @@ class EvaluacionesController extends ApiController
     public function obtenerEvaluaciones()
     {
 
-        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId,cEvaluacionIUrlCuadernillo,cEvaluacionUrlHojaRespuestas';
         $where = '';
         $params = [
             'ere',
@@ -65,7 +66,9 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionLiberarCuadernillo,
             $request->dtEvaluacionLiberarResultados,
             $request->iEstado,
-            $iSesionId
+            $iSesionId,
+            $request->cEvaluacionIUrlCuadernillo,
+            $request->cEvaluacionUrlHojaRespuestas,
         ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
@@ -153,6 +156,8 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionLiberarResultados' => 'nullable|string',
             'iEstado' => 'nullable|integer',
             'iSesionId' => 'nullable|string',
+            'cEvaluacionIUrlCuadernillo' => 'nullable|string|max:255',
+            'cEvaluacionUrlHojaRespuestas' => 'nullable|string|max:255',
         ]);
         // Preparar los valores para la llamada al procedimiento
         $params = [
@@ -172,6 +177,8 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
             'iEstado' => $request->input('iEstado', null),
             'iSesionId' => $iSesionId,
+            'cEvaluacionIUrlCuadernillo' => $request->input('cEvaluacionIUrlCuadernillo', null),
+            'cEvaluacionUrlHojaRespuestas' => $request->input('cEvaluacionUrlHojaRespuestas', null),
         ];
 
         // Construir la llamada dinámica al procedimiento
@@ -192,7 +199,9 @@ class EvaluacionesController extends ApiController
             @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
             @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
             @iEstado = :iEstado,
-            @iSesionId = :iSesionId', $params);
+            @iSesionId = :iSesionId,
+            @cEvaluacionIUrlCuadernillo = :cEvaluacionIUrlCuadernillo,
+            @cEvaluacionUrlHojaRespuestas = :cEvaluacionUrlHojaRespuestas', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
@@ -728,6 +737,7 @@ class EvaluacionesController extends ApiController
         // Retornar el PDF como respuesta
         return $pdf;
     }
+
     public function insertarPreguntaSeleccionada(Request $request)
     {
         // Validar el payload recibido
@@ -745,14 +755,31 @@ class EvaluacionesController extends ApiController
             ];
         }, $validated['preguntas']);
 
-        // Insertar los datos en la tabla
-        DB::table('ere.evaluacion_preguntas')->insert($dataToInsert);
+        // Verificar si alguna de las preguntas ya existe en la base de datos
+        $existingQuestions = DB::table('ere.evaluacion_preguntas')
+            ->whereIn('iPreguntaId', array_column($dataToInsert, 'iPreguntaId'))
+            ->where('iEvaluacionId', $validated['iEvaluacionId'])
+            ->pluck('iPreguntaId') // Obtener solo los iPreguntaId de las preguntas existentes
+            ->toArray();
+
+        // Filtrar las preguntas a insertar, excluyendo las que ya existen
+        $dataToInsert = array_filter($dataToInsert, function ($pregunta) use ($existingQuestions) {
+            return !in_array($pregunta['iPreguntaId'], $existingQuestions);
+        });
+
+        // Si hay preguntas para insertar, hacer la inserción
+        if (count($dataToInsert) > 0) {
+            DB::table('ere.evaluacion_preguntas')->insert($dataToInsert);
+        }
 
         // Retornar una respuesta de éxito
         return response()->json([
             'message' => 'Preguntas seleccionadas guardadas exitosamente.',
+            'inserted' => count($dataToInsert),
+            'existing' => count($validated['preguntas']) - count($dataToInsert), // Mostrar cuántas ya existían
         ]);
     }
+
     public function obtenerPreguntaSeleccionada(Request $request)
     {
         $validatedData = $request->validate([
@@ -806,19 +833,32 @@ class EvaluacionesController extends ApiController
      * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
+    // public function obtenerPreguntaInformacion(Request $request)
+    // {
+    //     // Obtener los parámetros del request
+    //     $iEvaluacionId = $request->input('iEvaluacionId');
+    //     //$iPreguntaIds = $request->input('iPreguntaIds'); // Recibe la cadena de IDs separados por comas
+
+    //     // Llamar al procedimiento almacenado con los parámetros
+    //     $result = DB::select('EXEC ere.SP_SEL_preguntasXiEvaluacionId ?', [$iEvaluacionId]);
+
+    //     // Retornar el resultado como JSON
+    //     return response()->json($result);
+    // }
     public function obtenerPreguntaInformacion(Request $request)
     {
         // Obtener los parámetros del request
         $iEvaluacionId = $request->input('iEvaluacionId');
-        $iPreguntaIds = $request->input('iPreguntaIds'); // Recibe la cadena de IDs separados por comas
 
         // Llamar al procedimiento almacenado con los parámetros
-        $result = DB::select('EXEC ere.SP_SEL_preguntasXiEvaluacionId ?, ?', [$iEvaluacionId, $iPreguntaIds]);
+        $result = DB::select(
+            'EXEC ere.SP_SEL_preguntasXiEvaluacionId @iEvaluacionId = ?',
+            [$iEvaluacionId]
+        );
 
         // Retornar el resultado como JSON
         return response()->json($result);
     }
-
     //guardar fecha inicio fin de cursos
     public function guardarInicioFinalExmAreas(Request $request)
     {
@@ -859,5 +899,23 @@ class EvaluacionesController extends ApiController
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Eliminar una pregunta de una evaluación.
+     */
+    public function eliminarPregunta(Request $request)
+    {
+        // Validar los parámetros recibidos
+        $validatedData = $request->validate([
+            'iEvaluacionId' => 'required|string',
+            'iPreguntaId' => 'required|string',
+        ]);
+        // Ejecutar el procedimiento almacenado
+        $result = DB::statement('EXEC [ere].[SP_DEL_PreguntaDeEvaluacion] :iEvaluacionId, :iPreguntaId', [
+            'iEvaluacionId' => $validatedData['iEvaluacionId'],
+            'iPreguntaId' => $validatedData['iPreguntaId'],
+        ]);
+        return response()->json($result);
     }
 }
