@@ -3,6 +3,7 @@
 use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
+use App\Http\Controllers\aula\AcademicoController;
 use App\Http\Controllers\aula\AnuncioController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
@@ -103,5 +104,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     });
     Route::group(['prefix' => 'notificacion_estudiante'], function () {
         Route::post('mostrar_notificacion', [NotificacionEstudianteController::class, 'mostrar_notificacion']);
+    });
+    Route::group(['prefix' => 'academico'], function () {
+        Route::post('reporte_academico', [AcademicoController::class, 'reporte']);
     });
 });
