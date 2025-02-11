@@ -216,9 +216,9 @@
         </div>    
         <div class="table-flotante-derecha">
             <aside>
-                <div>Sección - Turno : {{ $headers['Seccion_turno'] }}</div>
+                <div>Sección - Turno :{{ $headers['Seccion_turno'] }} - MAÑANA</div>
                 <div>Ciclo - Grado : {{ $headers['ciclo_grado'] }}</div>
-                <div>Fase / Periodo / Nivel Educativo : {{ $headers['curso'] }}  {{ $headers['nivel_educativo'] }}</div>
+                <div>Nivel Educativo : PRIMARIA</div>
             </aside>
         </div>        
     </header>
