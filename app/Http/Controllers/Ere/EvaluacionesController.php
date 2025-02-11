@@ -47,29 +47,41 @@ class EvaluacionesController extends ApiController
 
     public function guardarEvaluacion(Request $request)
     {
-        $iSesionId = $this->hashids->decode($request->iSesionId);
-        if (!empty($iSesionId) && is_array($iSesionId)) {
-            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
-        }
+        // return $request->all();
+        // $iSesionId = $this->hashids->decode($request->iSesionId);
+        // if (!empty($iSesionId) && is_array($iSesionId)) {
+        //     $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        // }
         $params = [
             $request->idTipoEvalId,
             $request->iNivelEvalId,
-            $request->dtEvaluacionCreacion,
             $request->cEvaluacionNombre,
             $request->cEvaluacionDescripcion,
             $request->cEvaluacionUrlDrive,
-            $request->cEvaluacionUrlPlantilla,
-            $request->cEvaluacionUrlManual,
-            $request->cEvaluacionUrlMatriz,
-            $request->cEvaluacionObs,
-            $request->dtEvaluacionLiberarMatriz,
-            $request->dtEvaluacionLiberarCuadernillo,
-            $request->dtEvaluacionLiberarResultados,
-            $request->iEstado,
-            $iSesionId,
-            $request->cEvaluacionIUrlCuadernillo,
-            $request->cEvaluacionUrlHojaRespuestas,
+            $request->dtEvaluacionFechaInicio,
+            $request->dtEvaluacionFechaFin,
+            
         ];
+        // return $params;
+        // $params = [
+        //     $request->idTipoEvalId,
+        //     $request->iNivelEvalId,
+        //     $request->dtEvaluacionCreacion,
+        //     $request->cEvaluacionNombre,
+        //     $request->cEvaluacionDescripcion,
+        //     $request->cEvaluacionUrlDrive,
+        //     $request->cEvaluacionUrlPlantilla,
+        //     $request->cEvaluacionUrlManual,
+        //     $request->cEvaluacionUrlMatriz,
+        //     $request->cEvaluacionObs,
+        //     $request->dtEvaluacionLiberarMatriz,
+        //     $request->dtEvaluacionLiberarCuadernillo,
+        //     $request->dtEvaluacionLiberarResultados,
+        //     $request->iEstado,
+        //     $iSesionId,
+        //     $request->cEvaluacionIUrlCuadernillo,
+        //     $request->cEvaluacionUrlHojaRespuestas,
+        // ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
             $evaluaciones = EreEvaluacion::guardarEvaluaciones($params);
@@ -135,10 +147,11 @@ class EvaluacionesController extends ApiController
     }
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
-        $iSesionId = $this->hashids->decode($request->iSesionId);
-        if (!empty($iSesionId) && is_array($iSesionId)) {
-            $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
-        }
+        // $iSesionId = $this->hashids->decode($request->iSesionId);
+        // if (!empty($iSesionId) && is_array($iSesionId)) {
+        //     $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        // }
+        return $request->all();
         // Validar solo los campos opcionales
         $request->validate([
             'idTipoEvalId' => 'nullable|integer',
@@ -176,7 +189,7 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
             'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
             'iEstado' => $request->input('iEstado', null),
-            'iSesionId' => $iSesionId,
+            // 'iSesionId' => $iSesionId,
             'cEvaluacionIUrlCuadernillo' => $request->input('cEvaluacionIUrlCuadernillo', null),
             'cEvaluacionUrlHojaRespuestas' => $request->input('cEvaluacionUrlHojaRespuestas', null),
         ];
