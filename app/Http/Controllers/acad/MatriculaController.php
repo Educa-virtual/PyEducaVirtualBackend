@@ -85,7 +85,7 @@ class MatriculaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function search(Request $request)
+    public function searchGradoSeccion(Request $request)
     {
         $parametros = [
             $request->iSedeId,
@@ -201,6 +201,25 @@ class MatriculaController extends Controller
             $parametros = [ $data[0]->iPersId ];
             $response = ['validated' => false, 'message' => 'Se obtuvo la información', 'data' => [ 'persona' => $data[0]]];
             $codeResponse = 200;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function searchNivelGrado(Request $request)
+    {
+        try {
+            $data = DB::select("SELECT ng.iNivelGradoId, n.cNivelNombre, nt.cNivelTipoNombre, c.cCicloNombre, g.cGradoAbreviacion, g.cGradoNombre
+                FROM acad.nivel_grados ng
+                    JOIN acad.grados g ON ng.iGradoId = g.iGradoId
+                    JOIN acad.nivel_ciclos nc ON nc.iNivelCicloId = ng.iNivelCicloId
+                    JOIN acad.ciclos c ON nc.iCicloId = c.iCicloId
+                    JOIN acad.nivel_tipos nt ON nc.iNivelTipoId = nt.iNivelTipoId
+                    JOIN acad.niveles n ON nt.iNivelId = n.iNivelId");
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
     }
@@ -342,22 +361,39 @@ class MatriculaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function searchNivelGrado(Request $request)
+    public function search(Request $request)
     {
+        $parametros = [
+            $request->iSedeId,
+            $request->iSemAcadId,
+            $request->iYAcadId,
+            $request->iTipoMatrId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iTurnoId,
+        ];
+
         try {
-            $data = DB::select("SELECT ng.iNivelGradoId, n.cNivelNombre, nt.cNivelTipoNombre, c.cCicloNombre, g.cGradoAbreviacion, g.cGradoNombre
-                FROM acad.nivel_grados ng
-                    JOIN acad.grados g ON ng.iGradoId = g.iGradoId
-                    JOIN acad.nivel_ciclos nc ON nc.iNivelCicloId = ng.iNivelCicloId
-                    JOIN acad.ciclos c ON nc.iCicloId = c.iCicloId
-                    JOIN acad.nivel_tipos nt ON nc.iNivelTipoId = nt.iNivelTipoId
-                    JOIN acad.niveles n ON nt.iNivelId = n.iNivelId");
+            $data = DB::select("SELECT amat.*, aest.cEstCodigo, at.cTipoMatrNombre, CONCAT_WS(' ', aest.cEstNombres, aest.cEstPaterno, aest.cEstMaterno) AS nombreCompleto
+				FROM acad.matricula AS amat
+                    INNER JOIN acad.tipo_matriculas AS at ON amat.iTipoMatrId=at.iTipoMatrId
+                    INNER JOIN acad.estudiantes AS aest ON aest.iEstudianteId=amat.iEstudianteId
+                    LEFT JOIN acad.nivel_grados AS anig ON anig.iNivelGradoId = amat.iNivelGradoId
+                    LEFT JOIN acad.nivel_grados AS acunig ON acunig.iNivelGradoId=amat.iNivelGradoId
+                    LEFT JOIN acad.grados AS ag ON ag.iGradoId=acunig.iGradoId
+                    LEFT JOIN acad.secciones AS asec ON asec.iSeccionId=amat.iSeccionId
+                    LEFT JOIN acad.turnos AS aturn ON aturn.iTurnoId=amat.iTurnoId
+				WHERE 
+                    amat.iYAcadId = 3 AND 
+                    amat.iSemAcadId = 3 ", $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
         }
+        
         return new JsonResponse($response, $codeResponse);
     }
 }

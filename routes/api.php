@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\Ere\InstitucionesEducativasController;
 use App\Http\Controllers\Ere\CapacidadesController;
@@ -305,12 +306,17 @@ Route::group(['prefix' => 'acad'], function () {
     });
 
     Route::group(['prefix' => 'matricula'], function () {
+
+        Route::post('guardarEstudiante', [EstudiantesController::class, 'guardarEstudiantePersona']);
+        Route::post('searchGradoSeccion', [MatriculaController::class, 'searchGradoSeccion']);
         Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
         Route::get('list', [MatriculaController::class, 'list']);
+        
         Route::post('validarEstudiante', [MatriculaController::class, 'validarEstudiante']);
         Route::post('validarRepresentante', [MatriculaController::class, 'validarRepresentante']);
-        Route::post('guardarMatricula', [MatriculaController::class, 'guardar']);
+
         Route::post('searchMatriculas', [MatriculaController::class, 'search']);
+        Route::post('guardarMatricula', [MatriculaController::class, 'guardar']);
     });
 });
 
@@ -343,4 +349,5 @@ Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsu
 
 Route::group(['prefix' => 'grl'], function () {
     Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
+    Route::post('guardarPersona', [PersonaController::class, 'guardarPersona']);
 });
