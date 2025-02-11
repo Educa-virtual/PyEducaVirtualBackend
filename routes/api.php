@@ -33,6 +33,7 @@ use App\Http\Controllers\seg\AuditoriaController;
 use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\aula\EstadisticasController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -329,3 +330,5 @@ Route::get('/imprimir', PersonaController::class);
 Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
 Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+
+Route::get('/estadistica/anios-academicos', [EstadisticasController::class, 'obtenerAniosAcademicos']);
