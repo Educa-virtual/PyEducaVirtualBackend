@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Ere\EvaluacionController;
 use App\Http\Controllers\Ere\PreguntasController;
 use App\Http\Controllers\Evaluaciones\AlternativaPreguntaController;
 use Illuminate\Support\Facades\Route;
@@ -22,5 +23,8 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'encabezado-preguntas'], function () {
         Route::post('guardarActualizarEncabezadoPregunta', [PreguntasController::class, 'guardarActualizarEncabezadoPregunta']);
         Route::delete('eliminarEncabezadoPreguntaById/{id}', [PreguntasController::class, 'eliminarEncabezadoPreguntaById']);
+    });
+    Route::group(['prefix' => 'evaluacion'], function () {
+        Route::post('handleCrudOperation', [EvaluacionController::class, 'handleCrudOperation']);
     });
 });
