@@ -308,6 +308,8 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'matricula'], function () {
 
         Route::post('guardarEstudiante', [EstudiantesController::class, 'guardarEstudiantePersona']);
+        Route::post('searchEstudiante', [EstudiantesController::class, 'searchEstudiante']);
+
         Route::post('searchGradoSeccion', [MatriculaController::class, 'searchGradoSeccion']);
         Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
         Route::get('list', [MatriculaController::class, 'list']);

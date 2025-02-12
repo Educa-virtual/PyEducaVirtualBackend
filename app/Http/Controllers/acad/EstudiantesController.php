@@ -107,6 +107,9 @@ class EstudiantesController extends Controller
 
         try {
             $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?', $parametros);
+            
+            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas ?,?', ['simple', $data[0]->iEstudianteId]);
+
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -116,6 +119,33 @@ class EstudiantesController extends Controller
         }
 
         DB::commit();
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function searchEstudiante(Request $request){
+        $parametros = [
+            'SIMPLE',
+            $request->iEstudianteId,
+            $request->iPersId,
+            $request->iCurrId,
+            $request->cEstCodigo,
+            $request->dtEstIngreso,
+            $request->cEstNombres,
+            $request->cEstPaterno,
+            $request->cEstMaterno,
+            $request->dtEstFechaNacimiento,
+        ];
+
+        try {
+            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas ?,?,?,?,?,?,?,?,?,?', $parametros);
+
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
         return new JsonResponse($response, $codeResponse);
     }
 
