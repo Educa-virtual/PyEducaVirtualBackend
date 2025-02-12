@@ -20,8 +20,9 @@ class EvaluacionesController extends ApiController
 {
     public function __construct()
     {
-        $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));//new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
+
     public function obtenerEvaluaciones()
     {
 
@@ -41,6 +42,31 @@ class EvaluacionesController extends ApiController
             );
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
+
+    public function obtenerEvaluacion(Request $request)
+    {
+        //die($this->hashids->encode($request->iEvaluacionId));
+        if (is_numeric($request->iEvaluacionId)) {
+            $iEvaluacionId = $request->iEvaluacionId;
+        } else {
+            $iEvaluacionId = $this->hashids->decode($request->iEvaluacionId)[0];
+        }
+
+        try {
+            $evaluacion = DB::selectOne(
+                'SELECT * FROM ere.evaluacion AS e
+                 INNER JOIN ere.nivel_evaluaciones AS ne ON e.iNivelEvalId=ne.iNivelEvalId
+                 WHERE iEvaluacionId = ?',
+                [$iEvaluacionId]
+            );
+            return $this->successResponse(
+                $evaluacion,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos');
         }
     }
 
@@ -177,20 +203,20 @@ class EvaluacionesController extends ApiController
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
         DB::statement('EXEC ere.SP_UPD_evaluaciones
-            @iEvaluacionId = :iEvaluacionId, 
-            @idTipoEvalId = :idTipoEvalId, 
-            @iNivelEvalId = :iNivelEvalId, 
-            @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
-            @cEvaluacionNombre = :cEvaluacionNombre, 
-            @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
-            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
-            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
-            @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
-            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
-            @cEvaluacionObs = :cEvaluacionObs, 
-            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
-            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
-            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
+            @iEvaluacionId = :iEvaluacionId,
+            @idTipoEvalId = :idTipoEvalId,
+            @iNivelEvalId = :iNivelEvalId,
+            @dtEvaluacionCreacion = :dtEvaluacionCreacion,
+            @cEvaluacionNombre = :cEvaluacionNombre,
+            @cEvaluacionDescripcion = :cEvaluacionDescripcion,
+            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive,
+            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla,
+            @cEvaluacionUrlManual = :cEvaluacionUrlManual,
+            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz,
+            @cEvaluacionObs = :cEvaluacionObs,
+            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz,
+            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo,
+            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados,
             @iEstado = :iEstado,
             @iSesionId = :iSesionId', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
@@ -221,8 +247,8 @@ class EvaluacionesController extends ApiController
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
+                @nombreTabla = ?,
+                @campos = ?,
                 @condicionWhere = ?
             ', $params);
 
@@ -311,8 +337,8 @@ class EvaluacionesController extends ApiController
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
+                @nombreTabla = ?,
+                @campos = ?,
                 @condicionWhere = ?
             ', $params);
 
@@ -426,10 +452,10 @@ class EvaluacionesController extends ApiController
         ];
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
             @nombreEsquema = ?,
-            @nombreTabla = ?,    
-            @campos = ?,        
+            @nombreTabla = ?,
+            @campos = ?,
             @condicionWhere = ?
         ', $params);
 
@@ -466,10 +492,10 @@ class EvaluacionesController extends ApiController
         ];
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
             @nombreEsquema = ?,
-            @nombreTabla = ?,    
-            @campos = ?,        
+            @nombreTabla = ?,
+            @campos = ?,
             @condicionWhere = ?
         ', $params);
 
@@ -541,10 +567,10 @@ class EvaluacionesController extends ApiController
         ];
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
             @nombreEsquema = ?,
-            @nombreTabla = ?,    
-            @campos = ?,        
+            @nombreTabla = ?,
+            @campos = ?,
             @condicionWhere = ?
         ', $params);
 
@@ -556,6 +582,73 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
+
+    public function obtenerAreasPorEvaluacionyEspecialista(Request $request) {
+        $iPersId = $request->input('iPersId');
+        try {
+            $iEvaluacionId = $this->hashids->decode($request->input('iEvaluacionId'))[0];
+        } catch (Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 'Error al decodificar hash iEvaluacionId');
+        }
+
+        if (!$iPersId) {
+            return $this->errorResponse(null, 'El parámetro iPersId es obligatorio.');
+        }
+
+        if (!$iEvaluacionId) {
+            return $this->errorResponse(null, 'El parámetro iEvaluacionId es obligatorio.');
+        }
+
+        try {
+            $iDocenteId = DB::table('acad.docentes')
+                ->where('iPersId', $iPersId)
+                ->value('iDocenteId');
+
+            if (!$iDocenteId) {
+                return $this->errorResponse(null, 'No se encontró un docente relacionado con el iPersId proporcionado.');
+            }
+
+            $resultados = DB::table('acad.especialistas_DRE as ed')
+                ->join('ere.examen_cursos as ec', 'ed.iCursosNivelGradId', '=', 'ec.iCursoNivelGradId')
+                ->join('acad.cursos_niveles_grados as cng', 'ed.iCursosNivelGradId', '=', 'cng.iCursosNivelGradId')
+                ->join('acad.cursos as c', 'cng.iCursoId', '=', 'c.iCursoId')
+                ->join('acad.nivel_grados as angr', 'cng.iNivelGradoId', '=', 'angr.iNivelGradoId')
+                ->join('acad.grados as g', 'angr.iGradoId', '=', 'g.iGradoId')
+                ->join('acad.nivel_ciclos as anici', 'angr.iNivelCicloId', '=', 'anici.iNivelCicloId')
+                ->join('acad.nivel_tipos as aniti', 'anici.iNivelTipoId', '=', 'aniti.iNivelTipoId')
+                ->join('acad.niveles as ani', 'aniti.iNivelId', '=', 'ani.iNivelId')
+                ->select(
+                    'c.iCursoId',
+                    'ed.iEspecialistaId',
+                    'ed.dtEspecialistaInicio',
+                    'ed.dtEspecialistaRslDesignacion',
+                    'ed.iDocenteId',
+                    'ed.iCursosNivelGradId',
+                    'c.cCursoNombre',
+                    'c.cCursoDescripcion',
+                    'c.cCursoImagen',
+                    'g.cGradoNombre',
+                    'g.cGradoAbreviacion',
+                    'g.cGradoRomanos', 'aniti.cNivelTipoNombre'
+                )
+                ->where('ec.iEvaluacionId', $iEvaluacionId) // Filtrar por la evaluación seleccionada
+                ->where('ed.iDocenteId', $iDocenteId)       // Filtrar por el docente relacionado
+                ->get();
+
+            if ($resultados->isEmpty()) {
+                return $this->errorResponse(null, 'No se encontraron datos para los cursos asociados.');
+            }
+
+            // Retornar los resultados exitosamente
+            return $this->successResponse(
+                $resultados,
+                'Datos obtenidos correctamente.'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
+        }
+    }
+
     public function obtenerEspDremCurso(Request $request)
     {
         // Validar los parámetros de entrada
@@ -802,7 +895,7 @@ class EvaluacionesController extends ApiController
     }
     /**
      * Obtener preguntas por EvaluacionId y iPreguntaId
-     * 
+     *
      * @param  Request  $request
      * @return \Illuminate\Http\Response
      */

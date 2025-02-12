@@ -1,10 +1,19 @@
 <?php
 
+use App\Http\Controllers\Ere\EvaluacionesController;
 use App\Http\Controllers\Ere\PreguntasController;
+use App\Http\Controllers\ere\PruebaController;
 use App\Http\Controllers\Evaluaciones\AlternativaPreguntaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'ere'], function () {
+
+
+    Route::group(['prefix' => 'evaluaciones'], function () {
+        Route::get('obtenerAreasPorEvaluacionyEspecialista', [EvaluacionesController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
+        Route::get('obtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluacion']);
+    });
+
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('guardarActualizarAlternativa', [AlternativaPreguntaController::class, 'guardarActualizarAlternativa']);
         Route::get('obtenerAlternativaByPreguntaId/{id}', [AlternativaPreguntaController::class, 'obtenerAlternativaByPreguntaId']);

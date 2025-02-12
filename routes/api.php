@@ -163,7 +163,7 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
-       
+
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
@@ -196,13 +196,13 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
 
         /*
-         * * Peticiones de información para la configuración de un calendario  
+         * * Peticiones de información para la configuración de un calendario
         */
         //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selCalFasesProm', [CalendarioAcademicosController::class, 'selCalFasesProm']);
 
         /*
-         * * Peticiones de información para la configuración de un calendario  
+         * * Peticiones de información para la configuración de un calendario
         */
         //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
@@ -245,7 +245,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         /*
          * * Peticiones con información para guardar información de un
-         * * calendario 
+         * * calendario
          */
         // * POST: Fases promocionales de un calendario académico
         Route::post('insCalFasesProm', [CalendarioAcademicosController::class, 'insCalFasesProm']);
@@ -267,7 +267,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         /*
          * * Peticiones con información para editar información de un
-         * * calendario 
+         * * calendario
         */
         // * PUT: Calendario Académico
         Route::put('updCalAcademico', [CalendarioAcademicosController::class, 'updCalAcademico']);
@@ -284,7 +284,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         /*
          * * Peticiones con información para eliminar información de un
-         * * calendario 
+         * * calendario
         */
         // * DELETE: Calendario Academico por identificador
         Route::delete('deleteCalFasesProm', [CalendarioAcademicosController::class, 'deleteCalFasesProm']);
