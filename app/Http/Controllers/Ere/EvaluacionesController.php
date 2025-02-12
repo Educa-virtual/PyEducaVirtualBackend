@@ -151,7 +151,7 @@ class EvaluacionesController extends ApiController
         // if (!empty($iSesionId) && is_array($iSesionId)) {
         //     $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
         // }
-        return $request->all();
+        // return $request->all();
         // Validar solo los campos opcionales
         $request->validate([
             'idTipoEvalId' => 'nullable|integer',
@@ -160,61 +160,34 @@ class EvaluacionesController extends ApiController
             'cEvaluacionNombre' => 'nullable|string|max:255',
             'cEvaluacionDescripcion' => 'nullable|string|max:255',
             'cEvaluacionUrlDrive' => 'nullable|string|max:255',
-            'cEvaluacionUrlPlantilla' => 'nullable|string|max:255',
-            'cEvaluacionUrlManual' => 'nullable|string|max:255',
-            'cEvaluacionUrlMatriz' => 'nullable|string|max:255',
-            'cEvaluacionObs' => 'nullable|string|max:255',
-            'dtEvaluacionLiberarMatriz' => 'nullable|string',
-            'dtEvaluacionLiberarCuadernillo' => 'nullable|string',
-            'dtEvaluacionLiberarResultados' => 'nullable|string',
-            'iEstado' => 'nullable|integer',
-            'iSesionId' => 'nullable|string',
-            'cEvaluacionIUrlCuadernillo' => 'nullable|string|max:255',
-            'cEvaluacionUrlHojaRespuestas' => 'nullable|string|max:255',
-        ]);
+            'dtEvaluacionFechaInicio' => 'nullable|string',
+            'dtEvaluacionFechaFin' => 'nullable|string',
+            
+        ]);        
+        
         // Preparar los valores para la llamada al procedimiento
         $params = [
             'iEvaluacionId' => $iEvaluacionId,
             'idTipoEvalId' => $request->input('idTipoEvalId', null),
-            'iNivelEvalId' => $request->input('iNivelEvalId', null),
-            'dtEvaluacionCreacion' => $request->input('dtEvaluacionCreacion', null),
+            'iNivelEvalId' => $request->input('iNivelEvalId', null),            
             'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
             'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
             'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
-            'cEvaluacionUrlPlantilla' => $request->input('cEvaluacionUrlPlantilla', null),
-            'cEvaluacionUrlManual' => $request->input('cEvaluacionUrlManual', null),
-            'cEvaluacionUrlMatriz' => $request->input('cEvaluacionUrlMatriz', null),
-            'cEvaluacionObs' => $request->input('cEvaluacionObs', null),
-            'dtEvaluacionLiberarMatriz' => $request->input('dtEvaluacionLiberarMatriz', null),
-            'dtEvaluacionLiberarCuadernillo' => $request->input('dtEvaluacionLiberarCuadernillo', null),
-            'dtEvaluacionLiberarResultados' => $request->input('dtEvaluacionLiberarResultados', null),
-            'iEstado' => $request->input('iEstado', null),
-            // 'iSesionId' => $iSesionId,
-            'cEvaluacionIUrlCuadernillo' => $request->input('cEvaluacionIUrlCuadernillo', null),
-            'cEvaluacionUrlHojaRespuestas' => $request->input('cEvaluacionUrlHojaRespuestas', null),
+            'dtEvaluacionFechaInicio' => $request->input('dtEvaluacionFechaInicio', null),
+            'dtEvaluacionFechaFin' => $request->input('dtEvaluacionFechaFin', null),
         ];
-
+        // return $params;
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
         DB::statement('EXEC ere.SP_UPD_evaluaciones
             @iEvaluacionId = :iEvaluacionId, 
             @idTipoEvalId = :idTipoEvalId, 
             @iNivelEvalId = :iNivelEvalId, 
-            @dtEvaluacionCreacion = :dtEvaluacionCreacion, 
             @cEvaluacionNombre = :cEvaluacionNombre, 
             @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
             @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
-            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla, 
-            @cEvaluacionUrlManual = :cEvaluacionUrlManual, 
-            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz, 
-            @cEvaluacionObs = :cEvaluacionObs, 
-            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz, 
-            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo, 
-            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados, 
-            @iEstado = :iEstado,
-            @iSesionId = :iSesionId,
-            @cEvaluacionIUrlCuadernillo = :cEvaluacionIUrlCuadernillo,
-            @cEvaluacionUrlHojaRespuestas = :cEvaluacionUrlHojaRespuestas', $params);
+            @dtEvaluacionFechaInicio = :dtEvaluacionFechaInicio,
+            @dtEvaluacionFechaFin = :dtEvaluacionFechaFin', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
