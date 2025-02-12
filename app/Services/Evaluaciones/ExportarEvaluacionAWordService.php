@@ -4,6 +4,8 @@ namespace App\Services\Evaluaciones;
 
 use Carbon\Carbon;
 use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Element\RichText;
+use PhpOffice\PhpWord\Shared\Html;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportarEvaluacionAWordService
@@ -27,6 +29,8 @@ class ExportarEvaluacionAWordService
     {
         return $this->evaluacion->dtEvaluacionFechaInicio == null ? '' : (new Carbon($this->evaluacion->dtEvaluacionFechaInicio))->year;
     }
+
+
 
     private function prepararPaginasIniciales()
     {
@@ -65,40 +69,74 @@ class ExportarEvaluacionAWordService
         return getimagesizefromstring($imageData);
     }
 
-    private function insertarImagenEnEnunciado($indice, $texto)
+    private function insertarImagen($ubicacion, $texto)
     {
         $imagen = $this->obtenerImagenDesdeBase64($texto);
         $dimensiones = $this->obtenerDimensionesImagenDesdeBase64($imagen);
-        $this->phpTemplateWord->setImageValue('cPreguntaImagen#' . $indice, array('path' => $imagen, 'width' => $dimensiones[0], 'height' => $dimensiones[1], 'ratio' => true));
+        $this->phpTemplateWord->setImageValue($ubicacion, array('path' => $imagen, 'width' => $dimensiones[0], 'height' => $dimensiones[1], 'ratio' => true));
     }
 
-    private function generarPreguntas()
+    private function insertarPregunta($indexActual, $pregunta)
     {
-        $this->phpTemplateWord->cloneBlock('block_preguntas', count($this->preguntas), true, true);
+        $this->phpTemplateWord->setValue('index#' . ($indexActual + 1), $indexActual + 1);
+        $textoLimpio = $this->limpiarTexto($pregunta->cPregunta);
+        $this->phpTemplateWord->setValue('preguntaTexto#' . ($indexActual + 1), $textoLimpio);
+        if ($this->textoTieneImagen($pregunta->cPregunta)) {
+            $this->insertarImagen('preguntaImagen#' . ($indexActual + 1), $pregunta->cPregunta);
+        } else {
+            $this->phpTemplateWord->setValue('preguntaImagen#' . ($indexActual + 1), '');
+        }
+        $this->insertarAlternativas($indexActual, $pregunta);
+    }
+
+    private function insertarEncabezado($indexActual, $contenido)
+    {
+        $textoLimpio = $this->limpiarTexto($contenido);
+        $this->phpTemplateWord->setValue('encabezadoTexto#' . ($indexActual + 1), $textoLimpio);
+        if ($this->textoTieneImagen($contenido)) {
+            $this->insertarImagen('encabezadoImagen#' . ($indexActual + 1), $contenido);
+        } else {
+            $this->phpTemplateWord->setValue('encabezadoImagen#' . ($indexActual + 1), '');
+        }
+    }
+
+    private function insertarAlternativas($indexActual, $pregunta)
+    {
+        if (isset($pregunta->alternativas)) {
+            $this->phpTemplateWord->cloneBlock('block_alternativas#' . ($indexActual + 1), count($pregunta->alternativas), true, true);
+            usort($pregunta->alternativas, function ($a, $b) {
+                return strcmp($a->cAlternativaLetra, $b->cAlternativaLetra);
+            });
+            foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
+                $this->phpTemplateWord->setValue('alternativaLetra#' . ($indexActual + 1) . '#' . ($indexAlternativa + 1), $alternativa->cAlternativaLetra);
+                $this->phpTemplateWord->setValue('alternativaDescripcion#' . ($indexActual + 1) . '#' . ($indexAlternativa + 1), strip_tags($alternativa->cAlternativaDescripcion));
+            }
+        }
+    }
+
+    private function borrarContenedorEncabezado($indice) {
+        $this->phpTemplateWord->setValue('encabezadoTexto#' . $indice, '');
+        $this->phpTemplateWord->setValue('encabezadoImagen#' .$indice, '');
+    }
+
+    private function generarContenido()
+    {
+        $this->phpTemplateWord->cloneBlock('block_preguntas', 4, true, true); //count($this->preguntas)
 
         foreach ($this->preguntas as $indexPregunta => $pregunta) {
-            $this->phpTemplateWord->setValue('index#' . ($indexPregunta + 1), $indexPregunta + 1);
-            $textoLimpio = $this->limpiarTexto($pregunta->cPregunta);
-            // Si la pregunta tiene una imagen en base64, se inserta como imagen
-            if ($this->textoTieneImagen($pregunta->cPregunta)) {
-
-                $this->phpTemplateWord->setValue('cPreguntaTexto#' . ($indexPregunta + 1), $textoLimpio . "\r\n");
-                $this->insertarImagenEnEnunciado(($indexPregunta + 1), $pregunta->cPregunta);
+            if ($pregunta->iEncabPregId == '-1') {
+                $this->borrarContenedorEncabezado(($indexPregunta + 1));
+                //$this->phpTemplateWord->setValue('encabezadoTexto#' . ($indexPregunta + 1), '');
+                //$this->phpTemplateWord->setValue('encabezadoImagen#' . ($indexPregunta + 1), '');
+                $this->insertarPregunta($indexPregunta, $pregunta);
             } else {
-                $this->phpTemplateWord->setValue('cPreguntaTexto#' . ($indexPregunta + 1), $textoLimpio);
-                $this->phpTemplateWord->setValue('cPreguntaImagen#' . ($indexPregunta + 1), '');
-            }
-
-            // Si la pregunta tiene alternativas, se agregan al documento
-            if (isset($pregunta->alternativas)) {
-                $this->phpTemplateWord->cloneBlock('block_alternativas#' . ($indexPregunta + 1), count($pregunta->alternativas), true, true);
-                usort($pregunta->alternativas, function ($a, $b) {
-                    return strcmp($a->cAlternativaLetra, $b->cAlternativaLetra);
-                });
-                foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
-                    // Reemplazar valores de las alternativas dinámicamente
-                    $this->phpTemplateWord->setValue('cAlternativaLetra#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), $alternativa->cAlternativaLetra);
-                    $this->phpTemplateWord->setValue('cAlternativaDescripcion#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), strip_tags($alternativa->cAlternativaDescripcion));
+                $this->insertarEncabezado($indexPregunta,$pregunta->cEncabPregContenido);
+                //$this->phpTemplateWord->setValue('encabezadoTexto#' . ($indexPregunta + 1), $this->limpiarTexto($pregunta->cEncabPregContenido));
+                $indiceActual=$indexPregunta;
+                foreach ($pregunta->preguntas as $index => $preguntaEncabezado) {
+                    $this->insertarPregunta($indiceActual, $preguntaEncabezado);
+                    $indiceActual++;
+                    $this->borrarContenedorEncabezado(($indiceActual + 1));
                 }
             }
         }
@@ -117,10 +155,11 @@ class ExportarEvaluacionAWordService
         return $response;
     }
 
-    public function generarResultado()
+    public function exportar()
     {
         $this->prepararPaginasIniciales();
-        $this->generarPreguntas();
+        $this->generarContenido();
+        //die("FIN");
         return $this->generarSalida();
     }
 }

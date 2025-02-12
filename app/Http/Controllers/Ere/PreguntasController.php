@@ -364,25 +364,24 @@ class PreguntasController extends ApiController
             'iCursosNivelGradId' => $request->areaId,  // ID del área (curso o nivel de grado)
             'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
             'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
-            'bPreguntaEstado' => -1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
+            'bPreguntaEstado' => 1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
             'ids' => $request->ids  // ID de las preguntas (si lo necesitas)
         ];
 
         $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($iEvaluacionId);
         $area = AreasRepository::obtenerAreaPorId($request->areaId);
         $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+        //dd($preguntasDB);
         if (count($preguntasDB) == 0) {
             return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 400);
         }
         $exportador = new ExportarEvaluacionAWordService($evaluacion, $area, $preguntasDB);
-        return $exportador->generarResultado();
+        return $exportador->exportar();
     }
 
     public function guardarActualizarEncabezadoPregunta(Request $request)
     {
-
         $type = $request->type;
-
         try {
             $paramsEncabezado = [
                 'iEncabPregId' => $request->iEncabPregId,
