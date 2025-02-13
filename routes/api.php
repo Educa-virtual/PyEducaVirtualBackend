@@ -334,3 +334,6 @@ Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuar
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
 
 Route::get('/estadistica/anios-academicos', [EstadisticasController::class, 'obtenerAniosAcademicos']);
+
+Route::get('/estadistica/grados-por-sede/{iSedeId}', [EstadisticasController::class, 'obtenerGradosPorSede']);
+
