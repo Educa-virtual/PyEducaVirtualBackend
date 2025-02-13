@@ -197,10 +197,10 @@
         </div>
         
         <div class="logo-izquierda">
-            <img src="{{$logoInsignia}} " style="height: 60px;">
+            <img src="{{$logoInsignia}}" style="height: 60px;">
         </div>
         <div class="logo-derecha">
-            <img src="{{$logoVirtual}} " style="height: 50px;" >
+            <img src="{{$logoVirtual}}" style="height: 50px;" >
         </div>
         
         <div class="titulo"><u>REPORTE FINAL DE LOGROS DE APRENDIZAJE</u> </div>  
