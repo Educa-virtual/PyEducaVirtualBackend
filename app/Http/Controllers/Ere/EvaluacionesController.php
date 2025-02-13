@@ -60,6 +60,7 @@ class EvaluacionesController extends ApiController
             $request->cEvaluacionUrlDrive,
             $request->dtEvaluacionFechaInicio,
             $request->dtEvaluacionFechaFin,
+            $request->iEstado,
             
         ];
         // return $params;
