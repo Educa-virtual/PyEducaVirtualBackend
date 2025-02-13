@@ -77,6 +77,12 @@ class EvaluacionesController extends ApiController
         ];
         try {
             $evaluaciones = DB::select('EXEC ere.SP_SEL_evaluaciones');
+            foreach ($evaluaciones as $key => $value) {
+                if (isset($value->iEvaluacionId)) {
+                    $value->iEvaluacionIdxHash = $this->hashids->encode($value->iEvaluacionId);
+                }
+               
+            }
             return $this->successResponse(
                 $evaluaciones,
                 'Datos obtenidos correctamente'
