@@ -367,25 +367,19 @@ class MatriculaController extends Controller
             $request->iSedeId,
             $request->iSemAcadId,
             $request->iYAcadId,
-            $request->iTipoMatrId,
             $request->iNivelGradoId,
             $request->iSeccionId,
             $request->iTurnoId,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $request->iCredSesionId,
         ];
 
         try {
-            $data = DB::select("SELECT amat.*, aest.cEstCodigo, at.cTipoMatrNombre, CONCAT_WS(' ', aest.cEstNombres, aest.cEstPaterno, aest.cEstMaterno) AS nombreCompleto
-				FROM acad.matricula AS amat
-                    INNER JOIN acad.tipo_matriculas AS at ON amat.iTipoMatrId=at.iTipoMatrId
-                    INNER JOIN acad.estudiantes AS aest ON aest.iEstudianteId=amat.iEstudianteId
-                    LEFT JOIN acad.nivel_grados AS anig ON anig.iNivelGradoId = amat.iNivelGradoId
-                    LEFT JOIN acad.nivel_grados AS acunig ON acunig.iNivelGradoId=amat.iNivelGradoId
-                    LEFT JOIN acad.grados AS ag ON ag.iGradoId=acunig.iGradoId
-                    LEFT JOIN acad.secciones AS asec ON asec.iSeccionId=amat.iSeccionId
-                    LEFT JOIN acad.turnos AS aturn ON aturn.iTurnoId=amat.iTurnoId
-				WHERE 
-                    amat.iYAcadId = 3 AND 
-                    amat.iSemAcadId = 3 ", $parametros);
+            $data = DB::select("EXEC acad.Sp_SEL_matriculas ?,?,?,?,?,?,?,?,?,?,?,? ", $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }
