@@ -106,6 +106,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('mostrar_notificacion', [NotificacionEstudianteController::class, 'mostrar_notificacion']);
     });
     Route::group(['prefix' => 'academico'], function () {
+        Route::post('obtener_datos', [AcademicoController::class, 'obtenerDatos']);
         Route::post('reporte_academico', [AcademicoController::class, 'reporte']);
     });
+
 });
