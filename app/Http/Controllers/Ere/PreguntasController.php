@@ -16,13 +16,16 @@ use App\Http\Controllers\WordController;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 
 class PreguntasController extends ApiController
 {
     protected  $alternativaPreguntaRespository;
 
-    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository)
+    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository = null)
     {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
     }
 
@@ -528,5 +531,139 @@ class PreguntasController extends ApiController
         $response->setContent($content);
 
         return $response;
+    }
+
+    //Estructura : Jhonny
+    protected $hashids;
+
+    private function decodeValue($value)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
+    }
+
+    public function validateRequest(Request $request)
+    {
+        $request->validate(
+            ['opcion' => 'required'],
+            ['opcion.required' => 'Hubo un problema al obtener la acción']
+        );
+
+        $fieldsToDecode = [
+            'valorBusqueda',
+
+            'iPreguntaId',
+            'iDesempenoId',
+            'iTipoPregId',
+            'iPreguntaNivel',
+            'iPreguntaPeso',
+            'iEspecialistaId',
+            'iNivelGradoId',
+            'iEncabPregId',
+            'iCursosNivelGradId'
+
+        ];
+
+        foreach ($fieldsToDecode as $field) {
+            $request[$field] = $this->decodeValue($request->$field);
+        }
+
+        return [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+
+            $request->iPreguntaId           ??  NULL,
+            $request->iDesempenoId          ??  NULL,
+            $request->iTipoPregId           ??  NULL,
+            $request->cPregunta             ??  NULL,
+            $request->cPreguntaTextoAyuda   ??  NULL,
+            $request->iPreguntaNivel        ??  NULL,
+            $request->iPreguntaPeso         ??  NULL,
+            $request->dtPreguntaTiempo      ??  NULL,
+            $request->bPreguntaEstado       ??  NULL,
+            $request->cPreguntaClave        ??  NULL,
+            $request->iEspecialistaId       ??  NULL,
+            $request->iNivelGradoId         ??  NULL,
+            $request->iEncabPregId          ??  NULL,
+            $request->iCursosNivelGradId    ??  NULL,
+
+            $request->iCredId               ??  NULL
+        ];
+    }
+
+    private function encodeFields($item)
+    {
+        $fieldsToEncode = [
+            'iPreguntaId',
+            'iDesempenoId',
+            'iTipoPregId',
+            'iPreguntaNivel',
+            'iPreguntaPeso',
+            'iEspecialistaId',
+            'iNivelGradoId',
+            'iEncabPregId',
+            'iCursosNivelGradId'
+        ];
+
+        foreach ($fieldsToEncode as $field) {
+            if (isset($item->$field)) {
+                $item->$field = $this->hashids->encode($item->$field);
+            }
+        }
+
+        return $item;
+    }
+
+    public function encodeId($data)
+    {
+        return array_map([$this, 'encodeFields'], $data);
+    }
+
+    public function handleCrudOperation(Request $request)
+    {
+        $parametros = $this->validateRequest($request);
+
+        try {
+            switch ($request->opcion) {
+                case 'ACTUALIZARxiPreguntaIdxbPreguntaEstado':
+                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iPreguntaId > 0) {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'Se eliminó la información', 'data' => null],
+                            200
+                        );
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido eliminar la información', 'data' => null],
+                            500
+                        );
+                    }
+                    break;
+                case 'ACTUALIZARxiPreguntaId':
+                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iPreguntaId > 0) {
+                        $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
+                        $resp = new AlternativasController();
+                        return $resp->handleCrudOperation($request);
+                        // return new JsonResponse(
+                        //     ['validated' => true, 'message' => 'Se actualizó la información', 'data' => null],
+                        //     200
+                        // );
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
+                            500
+                        );
+                    }
+                    break;
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                500
+            );
+        }
     }
 }
