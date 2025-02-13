@@ -10,23 +10,64 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 //use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\Ere\EreEvaluacion;
+use App\Repositories\Acad\AreasRepository;
+use App\Repositories\Ere\EvaluacionesRepository;
+use App\Repositories\PreguntasRepository;
+use App\Services\Ere\Preguntas\ExportarPreguntasPorAreaWordService;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\ValidatedData;
 
-use function Laravel\Prompts\select;
-
 class EvaluacionesController extends ApiController
 {
     public function __construct()
     {
-        $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));//new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
+
+    public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
+
+        if (!is_numeric($iEvaluacionId) && !is_numeric($iCursosNivelGradId)) {
+            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
+            $iCursosNivelGradId= $this->hashids->decode($iCursosNivelGradId)[0];
+        } else {
+            return response()->json(['error' => 'Los ID deben estar cifrados'], 400);
+        }
+
+        /*if (!is_numeric($iEvaluacionId)) {
+            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
+        } else {
+            return response()->json(['error' => 'ID de evaluación no está cifrado'], 400);
+        }*/
+
+        $params = [
+            'iEvaluacionId' => $iEvaluacionId,  // ID de la evaluación
+            'iCursosNivelGradId' => $iCursosNivelGradId,  // ID del área (curso o nivel de grado)
+            'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
+            'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
+            'bPreguntaEstado' => 1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
+            'ids' => NULL // ID de las preguntas (si lo necesitas)
+        ];
+
+        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($iEvaluacionId);
+        $area = AreasRepository::obtenerAreaPorId($iCursosNivelGradId);
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+
+        if (count($preguntasDB) == 0) {
+            return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 400);
+        }
+
+        $exportador = new ExportarPreguntasPorAreaWordService($evaluacion, $area, $preguntasDB);
+        return $exportador->exportar();
+
+    }
+
     public function obtenerEvaluaciones()
     {
 
         $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId,cEvaluacionIUrlCuadernillo,cEvaluacionUrlHojaRespuestas';
+        $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId';
         $where = '';
         $params = [
             'ere',
@@ -42,6 +83,31 @@ class EvaluacionesController extends ApiController
             );
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al obtener los datos');
+        }
+    }
+
+    public function obtenerEvaluacion(Request $request)
+    {
+        //die($this->hashids->encode($request->iEvaluacionId));
+        if (is_numeric($request->iEvaluacionId)) {
+            $iEvaluacionId = $request->iEvaluacionId;
+        } else {
+            $iEvaluacionId = $this->hashids->decode($request->iEvaluacionId)[0];
+        }
+
+        try {
+            $evaluacion = DB::selectOne(
+                'SELECT * FROM ere.evaluacion AS e
+                 INNER JOIN ere.nivel_evaluaciones AS ne ON e.iNivelEvalId=ne.iNivelEvalId
+                 WHERE iEvaluacionId = ?',
+                [$iEvaluacionId]
+            );
+            return $this->successResponse(
+                $evaluacion,
+                'Datos obtenidos correctamente'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos');
         }
     }
 
@@ -180,14 +246,22 @@ class EvaluacionesController extends ApiController
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
         DB::statement('EXEC ere.SP_UPD_evaluaciones
-            @iEvaluacionId = :iEvaluacionId, 
-            @idTipoEvalId = :idTipoEvalId, 
-            @iNivelEvalId = :iNivelEvalId, 
-            @cEvaluacionNombre = :cEvaluacionNombre, 
-            @cEvaluacionDescripcion = :cEvaluacionDescripcion, 
-            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive, 
-            @dtEvaluacionFechaInicio = :dtEvaluacionFechaInicio,
-            @dtEvaluacionFechaFin = :dtEvaluacionFechaFin', $params);
+            @iEvaluacionId = :iEvaluacionId,
+            @idTipoEvalId = :idTipoEvalId,
+            @iNivelEvalId = :iNivelEvalId,
+            @dtEvaluacionCreacion = :dtEvaluacionCreacion,
+            @cEvaluacionNombre = :cEvaluacionNombre,
+            @cEvaluacionDescripcion = :cEvaluacionDescripcion,
+            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive,
+            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla,
+            @cEvaluacionUrlManual = :cEvaluacionUrlManual,
+            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz,
+            @cEvaluacionObs = :cEvaluacionObs,
+            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz,
+            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo,
+            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados,
+            @iEstado = :iEstado,
+            @iSesionId = :iSesionId', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
@@ -216,8 +290,8 @@ class EvaluacionesController extends ApiController
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
+                @nombreTabla = ?,
+                @campos = ?,
                 @condicionWhere = ?
             ', $params);
 
@@ -306,8 +380,8 @@ class EvaluacionesController extends ApiController
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
+                @nombreTabla = ?,
+                @campos = ?,
                 @condicionWhere = ?
             ', $params);
 
@@ -421,10 +495,10 @@ class EvaluacionesController extends ApiController
         ];
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
             @nombreEsquema = ?,
-            @nombreTabla = ?,    
-            @campos = ?,        
+            @nombreTabla = ?,
+            @campos = ?,
             @condicionWhere = ?
         ', $params);
 
@@ -461,10 +535,10 @@ class EvaluacionesController extends ApiController
         ];
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
             @nombreEsquema = ?,
-            @nombreTabla = ?,    
-            @campos = ?,        
+            @nombreTabla = ?,
+            @campos = ?,
             @condicionWhere = ?
         ', $params);
 
@@ -536,10 +610,10 @@ class EvaluacionesController extends ApiController
         ];
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
             @nombreEsquema = ?,
-            @nombreTabla = ?,    
-            @campos = ?,        
+            @nombreTabla = ?,
+            @campos = ?,
             @condicionWhere = ?
         ', $params);
 
@@ -551,6 +625,87 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
+
+    public function obtenerAreasPorEvaluacionyEspecialista(Request $request) {
+        $iPersId = $request->input('iPersId');
+        try {
+            $iEvaluacionId = $this->hashids->decode($request->input('iEvaluacionId'))[0];
+        } catch (Exception $ex) {
+            return $this->errorResponse($ex->getMessage(), 'Error al decodificar hash iEvaluacionId');
+        }
+
+        if (!$iPersId) {
+            return $this->errorResponse(null, 'El parámetro iPersId es obligatorio.');
+        }
+
+        if (!$iEvaluacionId) {
+            return $this->errorResponse(null, 'El parámetro iEvaluacionId es obligatorio.');
+        }
+
+        try {
+            $iDocenteId = DB::table('acad.docentes')
+                ->where('iPersId', $iPersId)
+                ->value('iDocenteId');
+
+            if (!$iDocenteId) {
+                return $this->errorResponse(null, 'No se encontró un docente relacionado con el iPersId proporcionado.');
+            }
+
+            $resultados = DB::table('acad.especialistas_DRE as ed')
+                ->join('ere.examen_cursos as ec', 'ed.iCursosNivelGradId', '=', 'ec.iCursoNivelGradId')
+                ->join('acad.cursos_niveles_grados as cng', 'ed.iCursosNivelGradId', '=', 'cng.iCursosNivelGradId')
+                ->join('acad.cursos as c', 'cng.iCursoId', '=', 'c.iCursoId')
+                ->join('acad.nivel_grados as angr', 'cng.iNivelGradoId', '=', 'angr.iNivelGradoId')
+                ->join('acad.grados as g', 'angr.iGradoId', '=', 'g.iGradoId')
+                ->join('acad.nivel_ciclos as anici', 'angr.iNivelCicloId', '=', 'anici.iNivelCicloId')
+                ->join('acad.nivel_tipos as aniti', 'anici.iNivelTipoId', '=', 'aniti.iNivelTipoId')
+                ->join('acad.niveles as ani', 'aniti.iNivelId', '=', 'ani.iNivelId')
+                ->select(
+                    'c.iCursoId',
+                    'ed.iEspecialistaId',
+                    'ed.dtEspecialistaInicio',
+                    'ed.dtEspecialistaRslDesignacion',
+                    'ed.iDocenteId',
+                    'ed.iCursosNivelGradId',
+                    'c.cCursoNombre',
+                    'c.cCursoDescripcion',
+                    'c.cCursoImagen',
+                    'g.cGradoNombre',
+                    'g.cGradoAbreviacion',
+                    'g.cGradoRomanos', 'aniti.cNivelTipoNombre'
+                )
+                ->where('ec.iEvaluacionId', $iEvaluacionId) // Filtrar por la evaluación seleccionada
+                ->where('ed.iDocenteId', $iDocenteId)       // Filtrar por el docente relacionado
+                ->get();
+
+            if ($resultados->isEmpty()) {
+                return $this->errorResponse(null, 'No se encontraron datos para los cursos asociados.');
+            }
+
+            foreach ($resultados as $fila) {
+                $params = [
+                    'iEvaluacionId' => $iEvaluacionId,
+                    'iCursosNivelGradId' => $fila->iCursosNivelGradId,
+                    'busqueda' => '',
+                    'iTipoPregId' => 0,
+                    'bPreguntaEstado' => 1,
+                    'ids' => NULL
+                ];
+                $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+                $fila->iCursoId=$this->hashids->encode($fila->iCursosNivelGradId);
+                $fila->iCantidadPreguntas=PreguntasRepository::contarPreguntasEre($preguntasDB);
+            }
+
+            // Retornar los resultados exitosamente
+            return $this->successResponse(
+                $resultados,
+                'Datos obtenidos correctamente.'
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
+        }
+    }
+
     public function obtenerEspDremCurso(Request $request)
     {
         // Validar los parámetros de entrada
@@ -815,7 +970,7 @@ class EvaluacionesController extends ApiController
     }
     /**
      * Obtener preguntas por EvaluacionId y iPreguntaId
-     * 
+     *
      * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
