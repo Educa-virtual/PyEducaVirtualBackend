@@ -1,45 +1,56 @@
 <?php
 
-namespace App\Services\Evaluaciones;
+namespace App\Services\Ere\Preguntas;
 
+use App\Repositories\Acad\AreasRepository;
+use App\Repositories\PreguntasRepository;
 use Carbon\Carbon;
 use PhpOffice\PhpWord\TemplateProcessor;
-use PhpOffice\PhpWord\Element\RichText;
-use PhpOffice\PhpWord\Shared\Html;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class ExportarEvaluacionAWordService
+class ExportarPreguntasPorAreaWordService
 {
 
     private $evaluacion;
     private $area;
     private $preguntas;
-    private $plantilla = 'template-ere.docx';
+    private $plantilla = 'template-ere-';
     private $phpTemplateWord;
+    private $anioEvaluacion;
 
     public function __construct($evaluacion, $area, $preguntas)
     {
         $this->evaluacion = $evaluacion;
         $this->area = $area;
         $this->preguntas = $preguntas;
-        $this->phpTemplateWord = new TemplateProcessor(storage_path() . DIRECTORY_SEPARATOR . $this->plantilla);
+        $this->anioEvaluacion = $this->obtenerAnioDeEvaluacion();
+        $this->phpTemplateWord = new TemplateProcessor(storage_path() . DIRECTORY_SEPARATOR . $this->plantilla . $this->anioEvaluacion . '.docx');
     }
 
     private function obtenerAnioDeEvaluacion()
     {
-        return $this->evaluacion->dtEvaluacionFechaInicio == null ? '' : (new Carbon($this->evaluacion->dtEvaluacionFechaInicio))->year;
+        return $this->evaluacion->dtEvaluacionFechaInicio == null ? '2025' : (new Carbon($this->evaluacion->dtEvaluacionFechaInicio))->year;
     }
 
-
-
     private function prepararPaginasIniciales()
-    {
-        $anioEvaluacion = $this->obtenerAnioDeEvaluacion();
-        $this->phpTemplateWord->setValue('cantidadPreguntas', count($this->preguntas));
-        $this->phpTemplateWord->setValue('anioEval', $anioEvaluacion);
+    {   //dd($this->evaluacion);
+        $this->phpTemplateWord->setValue('cantidadPreguntas', PreguntasRepository::contarPreguntasEre($this->preguntas));
+        //$this->phpTemplateWord->setValue('anioEval', $anioEvaluacion);
         $this->phpTemplateWord->setValue('nivelEval', strtoupper($this->evaluacion->cNivelEvalNombre));
         $this->phpTemplateWord->setValue('areaNombre', $this->area->cCursoNombre);
-        $this->phpTemplateWord->setValue('grado', substr($this->area->cGradoAbreviacion, 0, 1));
+
+        switch ($this->anioEvaluacion) {
+            case '2024':
+                $grado = substr($this->area->cGradoAbreviacion, 0, 1);
+                break;
+            case '2025':
+                $grado = strtoupper($this->area->cGradoNombre);
+                break;
+            default:
+                $grado = strtoupper($this->area->cGradoNombre);
+                break;
+        }
+        $this->phpTemplateWord->setValue('grado', $grado);
         $this->phpTemplateWord->setValue('nivel', strtoupper(str_replace('Educación ', '', $this->area->cNivelTipoNombre)));
     }
 
@@ -114,25 +125,24 @@ class ExportarEvaluacionAWordService
         }
     }
 
-    private function borrarContenedorEncabezado($indice) {
+    private function borrarContenedorEncabezado($indice)
+    {
         $this->phpTemplateWord->setValue('encabezadoTexto#' . $indice, '');
-        $this->phpTemplateWord->setValue('encabezadoImagen#' .$indice, '');
+        $this->phpTemplateWord->setValue('encabezadoImagen#' . $indice, '');
     }
 
     private function generarContenido()
     {
-        $this->phpTemplateWord->cloneBlock('block_preguntas', 4, true, true); //count($this->preguntas)
+        $cantidadPreguntas = PreguntasRepository::contarPreguntasEre($this->preguntas);
+        $this->phpTemplateWord->cloneBlock('block_preguntas', $cantidadPreguntas, true, true);
 
         foreach ($this->preguntas as $indexPregunta => $pregunta) {
             if ($pregunta->iEncabPregId == '-1') {
                 $this->borrarContenedorEncabezado(($indexPregunta + 1));
-                //$this->phpTemplateWord->setValue('encabezadoTexto#' . ($indexPregunta + 1), '');
-                //$this->phpTemplateWord->setValue('encabezadoImagen#' . ($indexPregunta + 1), '');
                 $this->insertarPregunta($indexPregunta, $pregunta);
             } else {
-                $this->insertarEncabezado($indexPregunta,$pregunta->cEncabPregContenido);
-                //$this->phpTemplateWord->setValue('encabezadoTexto#' . ($indexPregunta + 1), $this->limpiarTexto($pregunta->cEncabPregContenido));
-                $indiceActual=$indexPregunta;
+                $this->insertarEncabezado($indexPregunta, $pregunta->cEncabPregContenido);
+                $indiceActual = $indexPregunta;
                 foreach ($pregunta->preguntas as $index => $preguntaEncabezado) {
                     $this->insertarPregunta($indiceActual, $preguntaEncabezado);
                     $indiceActual++;

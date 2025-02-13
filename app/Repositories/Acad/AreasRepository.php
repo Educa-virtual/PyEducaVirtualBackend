@@ -19,4 +19,5 @@ INNER JOIN acad.niveles					AS ani		ON ani.iNivelId = aniti.iNivelId
 WHERE iCursosNivelGradId=?', [$areaId]);
         return $area;
     }
+
 }

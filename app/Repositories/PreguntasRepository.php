@@ -23,6 +23,22 @@ class PreguntasRepository
         return "'" . addslashes($valor) . "'";
     }
 
+
+    public static function contarPreguntasEre($preguntas)
+    {
+        $cantidad = 0;
+        foreach ($preguntas as $indexPregunta => $pregunta) {
+            if ($pregunta->iEncabPregId=='-1') {
+                $cantidad++;
+            } else {
+                foreach ($pregunta->preguntas as $indexSubPregunta => $subPregunta) {
+                    $cantidad++;
+                }
+            }
+        }
+        return $cantidad;
+    }
+
     public static function obtenerBancoPreguntasByParams($params)
     {
         $params = [

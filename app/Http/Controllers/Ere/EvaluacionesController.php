@@ -10,11 +10,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 //use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\Ere\EreEvaluacion;
+use App\Repositories\Acad\AreasRepository;
+use App\Repositories\Ere\EvaluacionesRepository;
+use App\Repositories\PreguntasRepository;
+use App\Services\Ere\Preguntas\ExportarPreguntasPorAreaWordService;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-
-use function Laravel\Prompts\select;
 
 class EvaluacionesController extends ApiController
 {
@@ -23,9 +25,45 @@ class EvaluacionesController extends ApiController
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));//new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
 
+    public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
+
+        if (!is_numeric($iEvaluacionId) && !is_numeric($iCursosNivelGradId)) {
+            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
+            $iCursosNivelGradId= $this->hashids->decode($iCursosNivelGradId)[0];
+        } else {
+            return response()->json(['error' => 'Los ID deben estar cifrados'], 400);
+        }
+
+        /*if (!is_numeric($iEvaluacionId)) {
+            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
+        } else {
+            return response()->json(['error' => 'ID de evaluación no está cifrado'], 400);
+        }*/
+
+        $params = [
+            'iEvaluacionId' => $iEvaluacionId,  // ID de la evaluación
+            'iCursosNivelGradId' => $iCursosNivelGradId,  // ID del área (curso o nivel de grado)
+            'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
+            'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
+            'bPreguntaEstado' => 1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
+            'ids' => NULL // ID de las preguntas (si lo necesitas)
+        ];
+
+        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($iEvaluacionId);
+        $area = AreasRepository::obtenerAreaPorId($iCursosNivelGradId);
+        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+
+        if (count($preguntasDB) == 0) {
+            return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 400);
+        }
+
+        $exportador = new ExportarPreguntasPorAreaWordService($evaluacion, $area, $preguntasDB);
+        return $exportador->exportar();
+
+    }
+
     public function obtenerEvaluaciones()
     {
-
         $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId';
         $where = '';
         $params = [
@@ -637,6 +675,20 @@ class EvaluacionesController extends ApiController
 
             if ($resultados->isEmpty()) {
                 return $this->errorResponse(null, 'No se encontraron datos para los cursos asociados.');
+            }
+
+            foreach ($resultados as $fila) {
+                $params = [
+                    'iEvaluacionId' => $iEvaluacionId,
+                    'iCursosNivelGradId' => $fila->iCursosNivelGradId,
+                    'busqueda' => '',
+                    'iTipoPregId' => 0,
+                    'bPreguntaEstado' => 1,
+                    'ids' => NULL
+                ];
+                $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+                $fila->iCursoId=$this->hashids->encode($fila->iCursosNivelGradId);
+                $fila->iCantidadPreguntas=PreguntasRepository::contarPreguntasEre($preguntasDB);
             }
 
             // Retornar los resultados exitosamente

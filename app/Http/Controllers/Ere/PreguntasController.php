@@ -6,19 +6,14 @@ use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpWord\Shared\Html;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\WordController;
 use App\Repositories\Acad\AreasRepository;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
 use App\Repositories\Ere\EvaluacionesRepository;
-use App\Services\Evaluaciones\ExportarEvaluacionAWordService;
+use App\Services\Ere\Preguntas\ExportarPreguntasPorAreaWordService;
 use Carbon\Carbon;
 use Hashids\Hashids;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -349,34 +344,6 @@ class PreguntasController extends ApiController
             $message = $this->returnError($e, 'Error al eliminar la pregunta');
             return $this->errorResponse($e, $message);
         }
-    }
-
-    public function generarWordBancoPreguntasByIds(Request $request)
-    {
-        if (is_numeric($request->iEvaluacionId)) {
-            $iEvaluacionId = $request->iEvaluacionId;
-        } else {
-            $iEvaluacionId = $this->hashids->decode($request->iEvaluacionId)[0];
-        }
-
-        $params = [
-            'iEvaluacionId' => $iEvaluacionId,  // ID de la evaluación
-            'iCursosNivelGradId' => $request->areaId,  // ID del área (curso o nivel de grado)
-            'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
-            'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
-            'bPreguntaEstado' => 1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
-            'ids' => $request->ids  // ID de las preguntas (si lo necesitas)
-        ];
-
-        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($iEvaluacionId);
-        $area = AreasRepository::obtenerAreaPorId($request->areaId);
-        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-        //dd($preguntasDB);
-        if (count($preguntasDB) == 0) {
-            return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 400);
-        }
-        $exportador = new ExportarEvaluacionAWordService($evaluacion, $area, $preguntasDB);
-        return $exportador->exportar();
     }
 
     public function guardarActualizarEncabezadoPregunta(Request $request)
