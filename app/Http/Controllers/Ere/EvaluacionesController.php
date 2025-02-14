@@ -320,7 +320,7 @@ class EvaluacionesController extends ApiController
                 DB::table('ere.examen_cursos')->insert([
                     'iEvaluacionId' => $iEvaluacionId,
                     'iCursoNivelGradId' => $curso['iCursoNivelGradId'],
-                    'dtExamenFechaInicio'=>$curso['dtExamenFechaInicio']
+                    //'dtExamenFechaInicio'=>$curso['dtExamenFechaInicio']
                 ]);
             }
 
