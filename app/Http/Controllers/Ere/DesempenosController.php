@@ -127,6 +127,7 @@ class DesempenosController extends ApiController
                     $data = DB::select('exec ere.Sp_UPD_desempenos ?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iDesempenoId > 0) {
                         $request['opcion'] = $request['iPreguntaId'] ? 'ACTUALIZARxiPreguntaId' : 'GUARDAR';
+                        $request['iDesempenoId'] = $data[0]->iDesempenoId;
                         $resp = new PreguntasController();
                         return $resp->handleCrudOperation($request);
                     } else {

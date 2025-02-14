@@ -456,7 +456,7 @@ class PreguntasController extends ApiController
     }
 
     //Estructura : Jhonny
-   
+
     private function decodeValue($value)
     {
         if (is_null($value)) {
@@ -568,10 +568,20 @@ class PreguntasController extends ApiController
                         $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
                         $resp = new AlternativasController();
                         return $resp->handleCrudOperation($request);
-                        // return new JsonResponse(
-                        //     ['validated' => true, 'message' => 'Se actualizó la información', 'data' => null],
-                        //     200
-                        // );
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
+                            500
+                        );
+                    }
+                    break;
+                case 'GUARDAR-PREGUNTAS':
+                    $data = DB::select('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iPreguntaId > 0) {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
+                            200
+                        );
                     } else {
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
