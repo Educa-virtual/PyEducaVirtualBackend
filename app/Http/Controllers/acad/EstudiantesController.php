@@ -64,7 +64,7 @@ class EstudiantesController extends Controller
 
         $this->validateGuardarPersona($request);
         $parametros = [
-            1, // iTipoPersId
+            $request->iTipoPersId,
             $request->iTipoIdentId,
             $request->cPersDocumento,
             $request->cPersPaterno,
@@ -79,12 +79,17 @@ class EstudiantesController extends Controller
             $request->cPersRazonSocialSigla,
             $request->cPersDomicilio,
             $request->iCredId,
+            $request->iNacionId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
         ];
 
         DB::beginTransaction();
 
         try {
-            $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
         } catch (\Exception $e) {
             DB::rollBack();
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
@@ -103,10 +108,15 @@ class EstudiantesController extends Controller
             $request->cPersCertificado,
             $request->cPersDomicilio,
             $request->iCredId,
+            $request->cEstCodigo,
+            $request->cEstUbideo,
+            $request->cEstPartidaNacimiento,
+            $request->cEstTelefono,
+            $request->cEstCorreo,
         ];
 
         try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             
             $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas ?,?', ['simple', $data[0]->iEstudianteId]);
 
@@ -149,6 +159,54 @@ class EstudiantesController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
+    public function searchRepresentante(Request $request){
+        $parametros = [
+            $request->tipoConsulta,
+            $request->iEstudianteId,
+            $request->iPersId,
+            $request->cEstCodigo,
+            $request->cPersNombre,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+        ];
+
+        try {
+            $data = DB::select("execute acad.Sp_SEL_estudiante_representante ?,?,?,?,?,?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+
+    }
+
+    public function searchFamiliares(Request $request){
+        $parametros = [
+            'SIMPLE',
+            $request->iEstudianteId,
+            $request->iTipoFamiliarId,
+            $request->iPersId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+        ];
+
+        try {
+            $data = DB::select("execute acad.Sp_SEL_estudiante_familiares ?,?,?,?,?,?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
     private function validateGuardarPersona(Request $request){
         return $request->validate([
             'iTipoPersId' => 'required|integer',
@@ -166,5 +224,130 @@ class EstudiantesController extends Controller
             'cPersDomicilio' => 'nullable|string',
             'iCredId' => 'nullable|integer',
         ]);
+    }
+
+    public function guardarRepresetantePersona(Request $request)
+    {
+        // primero guardar como persona
+        $request->merge([
+            'iTipoPersId' => 1, // Siempre persona natural
+        ]);
+
+        $this->validateGuardarPersona($request);
+        $parametros = [
+            
+        ];
+
+        DB::beginTransaction();
+
+        try {
+            $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+            return new JsonResponse($response, $codeResponse);
+        }
+
+        // luego registrar como representante o estudiante-persona
+        $parametros = [
+            $request->iPersIdEstudiante,
+            $data[0]->iPersId,
+        ];
+
+        try {
+            $data = DB::select('EXEC acad.Sp_UPDATE_persona @_iPersId = ?, @_iPersRepresentanteId = ?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        DB::commit();
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    
+    public function validarEstudiante(Request $request)
+    {
+        $request->validate([
+            'iTipoIdentId' => 'required',
+            'cPersDocumento' => 'required',
+        ]);
+
+        $parametros = [
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+        ];
+
+        try {
+            $data = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento
+                ?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        if( count($data) == 0){
+            // No registra datos personales y tampoco estudiante
+            // ¿Ejecutar consulta a servicio web RENIEC?
+            // Por mientras proceder con registro manual
+            $response = ['validated' => true, 'message' => 'No está registrado', 'data' => ['persona' => []]];
+            $codeResponse = 200;
+        } elseif( count($data) > 1 ) {
+            // ERROR: mas de un registro con el mismo documento
+            $response = ['validated' => false, 'message' => 'Documento de identidad duplicado', 'data' => ['persona' => $data]];
+            $codeResponse = 500;
+        } else {
+            $parametros = [ $data[0]->iPersId ];
+            $estudiante = DB::select('SELECT * FROM acad.estudiantes WHERE iPersId = ?', $parametros);
+            $response = ['validated' => false, 'message' => 'Se obtuvo la información', 'data' => [ 'persona' => $data[0], 'estudiante' => count($estudiante) == 1 ? $estudiante[0] : []]];
+            $codeResponse = 200;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function validarRepresentante(Request $request)
+    {
+        $request->validate([
+            'iTipoIdentId' => 'required',
+            'cPersDocumento' => 'required',
+        ]);
+
+        $parametros = [
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+        ];
+
+        try {
+            $data = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento
+                ?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        if( count($data) == 0){
+            // No registra datos personales
+            // ¿Ejecutar consulta a servicio web RENIEC?
+            // Por mientras proceder con registro manual
+            $response = ['validated' => true, 'message' => 'No se obtuvo la información', 'data' => ['persona' => []]];
+            $codeResponse = 200;
+        } elseif( count($data) > 1 ) {
+            // ERROR: mas de un registro con el mismo documento
+            $response = ['validated' => false, 'message' => 'Documento de identidad duplicado', 'data' => ['persona' => $data]];
+            $codeResponse = 500;
+        } else {
+            $parametros = [ $data[0]->iPersId ];
+            $response = ['validated' => false, 'message' => 'Se obtuvo la información', 'data' => [ 'persona' => $data[0]]];
+            $codeResponse = 200;
+        }
+        return new JsonResponse($response, $codeResponse);
     }
 }

@@ -305,17 +305,23 @@ Route::group(['prefix' => 'acad'], function () {
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
     });
 
-    Route::group(['prefix' => 'matricula'], function () {
-
+    Route::group(['prefix' => 'estudiante'], function () {
         Route::post('guardarEstudiante', [EstudiantesController::class, 'guardarEstudiantePersona']);
+        Route::post('guardarRepresetante', [EstudiantesController::class, 'guardarRepresetantePersona']);
+
         Route::post('searchEstudiante', [EstudiantesController::class, 'searchEstudiante']);
+        Route::post('searchRepresentante', [EstudiantesController::class, 'searchRepresentante']);
+        Route::post('searchFamiliares', [EstudiantesController::class, 'searchFamiliares']);
+
+        Route::post('validarEstudiante', [EstudiantesController::class, 'validarEstudiante']);
+        Route::post('validarRepresentante', [EstudiantesController::class, 'validarRepresentante']);
+    });
+
+    Route::group(['prefix' => 'matricula'], function () {
 
         Route::post('searchGradoSeccion', [MatriculaController::class, 'searchGradoSeccion']);
         Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
         Route::get('list', [MatriculaController::class, 'list']);
-        
-        Route::post('validarEstudiante', [MatriculaController::class, 'validarEstudiante']);
-        Route::post('validarRepresentante', [MatriculaController::class, 'validarRepresentante']);
 
         Route::post('searchMatriculas', [MatriculaController::class, 'search']);
         Route::post('guardarMatricula', [MatriculaController::class, 'guardar']);
@@ -352,4 +358,6 @@ Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsu
 Route::group(['prefix' => 'grl'], function () {
     Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
     Route::post('guardarPersona', [PersonaController::class, 'guardarPersona']);
+    Route::post('guardarPersonaFamiliar', [PersonaController::class, 'guardarPersonaFamiliar']);
+    Route::post('searchPersona', [PersonaController::class, 'searchPersona']);
 });

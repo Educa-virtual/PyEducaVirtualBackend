@@ -89,6 +89,87 @@ class PersonaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
+    public function guardarPersonaFamiliar(Request $request)
+    {
+        $parametros = [
+            $request->bEsRepresentante,
+            $request->iTipoFamiliarId,
+            $request->iTipoPersId,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->iTipoEstCivId,
+            $request->cPersFotografia,
+            $request->cPersDomicilio,
+            $request->iNacionId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
+            $request->iOcupacionId,
+            $request->bFamiliarVivoConEl,
+            $request->iGradoInstId,
+            $request->iCredId,
+        ];
+
+        try {
+            $data = DB::select('execute grl.Sp_INS_persona_familiar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function searchPersona(Request $request){
+        $parametros = [
+            $request->opcion,
+            $request->iPersId,
+            $request->iTipoPersId,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->iTipoEstCivId,
+            $request->iNacionId,
+            $request->cPersFotografia,
+            $request->cPersRazonSocialNombre,
+            $request->cPersRazonSocialCorto,
+            $request->cPersRazonSocialSigla,
+            $request->iPersRepresentanteLegalId,
+            $request->cPersDomicilio,
+            $request->iTipoSectorId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
+            $request->iPersEstado,
+            $request->cPersCodigoVerificacion,
+            $request->cPersObs,
+        ];
+
+        try {
+            $data = DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?",$parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
     private function validateGuardarPersona(Request $request){
         return $request->validate([
             'iTipoPersId' => 'required|integer',
