@@ -14,6 +14,7 @@ use App\Http\Controllers\aula\TareaCabeceraGruposController;
 use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
+use App\Http\Controllers\aula\EstadisticasController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -108,6 +109,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'academico'], function () {
         Route::post('obtener_datos', [AcademicoController::class, 'obtenerDatos']);
         Route::post('reporte_academico', [AcademicoController::class, 'reporte']);
+        Route::get('/estadistica/anios-academicos', [EstadisticasController::class, 'obtenerAniosAcademicos']);
+
+        Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
+        Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
     });
 
 });

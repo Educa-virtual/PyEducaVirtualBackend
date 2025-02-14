@@ -15,21 +15,39 @@ class EstadisticasController extends Controller
         ->select('iYAcadId', 'iYearId')
         ->get();
 
-        $grados = DB::table('acad.grados')
-            ->select('iGradoId', 'cGradoNombre')
-            ->get();
-
         return response()->json([
             'anios' => $anios,
-            'grados' => $grados
+            
     ]);
     }
-    public function obtenerGradosPorSede($iSedeId)
+    public function obtenerGradosPorSede(Request $request)
     {
-        $grados = DB::select('EXEC sp_ObtenerGradosPorSede ?', [$iSedeId]);
+        $iSedeId=$request->iIieeId;
+        $grados = DB::select('EXEC acad.Sp_SEL_ObtenerGradosPorSede ?', [$iSedeId]);
     
         return response()->json([
             'grados' => $grados
         ]);
     }
+    public function generarReporteNotas(Request $request)
+    {
+        $validatedData = $request->validate([
+            'year' => 'required|integer',
+            'grado' => 'required|integer',
+            'merito' => 'required|integer',
+            'SedeID' => 'required|integer',
+        ]);
+    
+        // Llamamos al procedimiento almacenado
+        $reporte = DB::select('EXEC acad.Sp_SEL_GenerarReporteNotas ?, ?, ?, ?', [
+            $validatedData['year'],
+            $validatedData['grado'],
+            $validatedData['merito'],
+            $validatedData['SedeID']
+        ]);
+    
+        return response()->json([
+            'reporte' => $reporte
+        ]);
+    }    
 }
