@@ -257,19 +257,12 @@ class EvaluacionesController extends ApiController
             @iEvaluacionId = :iEvaluacionId,
             @idTipoEvalId = :idTipoEvalId,
             @iNivelEvalId = :iNivelEvalId,
-            @dtEvaluacionCreacion = :dtEvaluacionCreacion,
+           
             @cEvaluacionNombre = :cEvaluacionNombre,
             @cEvaluacionDescripcion = :cEvaluacionDescripcion,
             @cEvaluacionUrlDrive = :cEvaluacionUrlDrive,
-            @cEvaluacionUrlPlantilla = :cEvaluacionUrlPlantilla,
-            @cEvaluacionUrlManual = :cEvaluacionUrlManual,
-            @cEvaluacionUrlMatriz = :cEvaluacionUrlMatriz,
-            @cEvaluacionObs = :cEvaluacionObs,
-            @dtEvaluacionLiberarMatriz = :dtEvaluacionLiberarMatriz,
-            @dtEvaluacionLiberarCuadernillo = :dtEvaluacionLiberarCuadernillo,
-            @dtEvaluacionLiberarResultados = :dtEvaluacionLiberarResultados,
-            @iEstado = :iEstado,
-            @iSesionId = :iSesionId', $params);
+            @dtEvaluacionFechaInicio = :dtEvaluacionFechaInicio,
+            @dtEvaluacionFechaFin = :dtEvaluacionFechaFin', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
 
@@ -326,7 +319,8 @@ class EvaluacionesController extends ApiController
             foreach ($selectedCursos as $curso) {
                 DB::table('ere.examen_cursos')->insert([
                     'iEvaluacionId' => $iEvaluacionId,
-                    'iCursoNivelGradId' => $curso['iCursoNivelGradId']
+                    'iCursoNivelGradId' => $curso['iCursoNivelGradId'],
+                    'dtExamenFechaInicio'=>$curso['dtExamenFechaInicio']
                 ]);
             }
 
