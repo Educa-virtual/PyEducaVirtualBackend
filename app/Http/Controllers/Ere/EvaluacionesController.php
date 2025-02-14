@@ -81,7 +81,7 @@ class EvaluacionesController extends ApiController
                 if (isset($value->iEvaluacionId)) {
                     $value->iEvaluacionIdxHash = $this->hashids->encode($value->iEvaluacionId);
                 }
-               
+
             }
             return $this->successResponse(
                 $evaluaciones,
@@ -134,6 +134,7 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionFechaFin,
             $request->iEstado,
             
+
         ];
         // return $params;
         // $params = [
@@ -235,14 +236,14 @@ class EvaluacionesController extends ApiController
             'cEvaluacionUrlDrive' => 'nullable|string|max:255',
             'dtEvaluacionFechaInicio' => 'nullable|string',
             'dtEvaluacionFechaFin' => 'nullable|string',
-            
-        ]);        
-        
+
+        ]);
+
         // Preparar los valores para la llamada al procedimiento
         $params = [
             'iEvaluacionId' => $iEvaluacionId,
             'idTipoEvalId' => $request->input('idTipoEvalId', null),
-            'iNivelEvalId' => $request->input('iNivelEvalId', null),            
+            'iNivelEvalId' => $request->input('iNivelEvalId', null),
             'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
             'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
             'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
@@ -699,7 +700,8 @@ class EvaluacionesController extends ApiController
                     'ids' => NULL
                 ];
                 $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-                $fila->iCursoId=$this->hashids->encode($fila->iCursosNivelGradId);
+                $fila->iCursosNivelGradId=$this->hashids->encode($fila->iCursosNivelGradId);
+                //$fila->iCursoId=$this->hashids->encode($fila->iCursosNivelGradId);
                 $fila->iCantidadPreguntas=PreguntasRepository::contarPreguntasEre($preguntasDB);
             }
 
