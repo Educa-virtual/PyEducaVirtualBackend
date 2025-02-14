@@ -54,7 +54,7 @@ class EvaluacionController extends Controller
             $request->iNivelEvalId              ??  NULL,
             $request->dtEvaluacionCreacion      ??  NULL,
             $request->cEvaluacionNombre         ??  NULL,
-            $request->cEvaluacionDescripcion    ??  NULL,                
+            $request->cEvaluacionDescripcion    ??  NULL,
             $request->cEvaluacionUrlDrive       ??  NULL,
             $request->cEvaluacionUrlPlantilla   ??  NULL,
             $request->cEvaluacionUrlManual      ??  NULL,
@@ -111,6 +111,21 @@ class EvaluacionController extends Controller
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200
                     );
+                    break;
+                case 'ELIMINARxiEvaluacionId':
+                    $data = DB::update('exec ere.SP_DEL_evaluacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    //return $data;
+                    if ($data) {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'Se eliminó la información', 'data' => null],
+                            200
+                        );
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido eliminar la información', 'data' => null],
+                            500
+                        );
+                    }
                     break;
             }
         } catch (\Exception $e) {
