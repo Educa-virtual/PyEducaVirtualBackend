@@ -32,6 +32,7 @@ use App\Http\Controllers\seg\AuditoriaAccesosFallidosController;
 use App\Http\Controllers\seg\AuditoriaController;
 use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
+use App\Http\Controllersapi\acad\EstudiantesController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/user', function (Request $request) {
@@ -160,6 +161,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']);
         Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']);
         Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']);
+        Route::post('obtenerInformacionEstudianteDNI', [GestionInstitucionalController::class, 'obtenerInformacionEstudianteDNI']);
     });
 
     Route::group(['prefix' => 'horario'], function () {
