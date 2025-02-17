@@ -7,7 +7,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EstadisticasController extends Controller
 {
@@ -25,8 +25,7 @@ class EstadisticasController extends Controller
     public function obtenerGradosPorSede(Request $request)
     {
         $iSedeId=$request->iIieeId;
-        
-        
+
         try {
             $data = DB::select('EXEC acad.Sp_SEL_ObtenerGradosPorSede ?', [$iSedeId]);
 
@@ -40,23 +39,33 @@ class EstadisticasController extends Controller
     }
     public function generarReporteNotas(Request $request)
     {
-        $validatedData = $request->validate([
-            'year' => 'required|integer',
-            'grado' => 'required|integer',
-            'merito' => 'required|integer',
-            'SedeID' => 'required|integer',
+        $documento_capturado = $request->cIieeNombre;
+        $year_capturado = $request->year;
+        $order_merito_capturado = $request->merito;
+        $grado_capturado = $request->grado;
+        $codigo_modular = $request->codModular;
+        $year_id = $request->yearid;
+        $grado_id = $request->gradoid;
+        $merito_id = $request->meritoid;
+        $sede_id = $request->sede;
+
+        $resultado = DB::select('EXEC acad.Sp_SEL_GenerarReporteNotas ?, ?, ?, ?', [
+            $year_id, $grado_id, $merito_id, $sede_id
         ]);
     
-        // Llamamos al procedimiento almacenado
-        $reporte = DB::select('EXEC acad.Sp_SEL_GenerarReporteNotas ?, ?, ?, ?', [
-            $validatedData['year'],
-            $validatedData['grado'],
-            $validatedData['merito'],
-            $validatedData['SedeID']
-        ]);
-    
-        return response()->json([
-            'reporte' => $reporte
-        ]);
+        $respuesta = [
+            "documento_enviado"=>$documento_capturado,
+            "year_capturado"=>$year_capturado,
+            "order_merito_capturado"=>$order_merito_capturado,
+            "grado_capturado"=>$grado_capturado,
+            "codigo_modular"=>$codigo_modular,
+            "resultado_notas" => $resultado
+        ];
+
+        $pdf = PDF::loadView('administracion.ranking_reporte', $respuesta)
+        ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true])
+        ->setPaper('a4', 'landscape')
+        ->stream('reporte.pdf');
+        return $pdf;
     }    
 }

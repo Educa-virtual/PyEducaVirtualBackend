@@ -109,7 +109,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'academico'], function () {
         Route::post('obtener_datos', [AcademicoController::class, 'obtenerDatos']);
         Route::post('reporte_academico', [AcademicoController::class, 'reporte']);
-        Route::get('/estadistica/anios-academicos', [EstadisticasController::class, 'obtenerAniosAcademicos']);
+        Route::post('/reporte_ranking', [EstadisticasController::class, 'generarReporteNotas']);
 
         Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
         Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
