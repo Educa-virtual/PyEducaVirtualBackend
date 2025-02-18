@@ -80,7 +80,7 @@ class DesempenosController extends ApiController
 
         return [
             $request->opcion,
-            $request->valorBusqueda ?? '-',
+            $request->valorBusqueda ?? NULL,
 
             $request->iDesempenoId              ??  NULL,
             $request->iEvaluacionId             ??  NULL,
