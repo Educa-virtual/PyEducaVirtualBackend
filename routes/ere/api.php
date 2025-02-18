@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Ere\AlternativasController;
 use App\Http\Controllers\Ere\DesempenosController;
+use App\Http\Controllers\Ere\EncabezadoPreguntasController;
 use App\Http\Controllers\Ere\EvaluacionController;
 use App\Http\Controllers\Ere\EvaluacionesController;
 use App\Http\Controllers\Ere\PreguntasController;
@@ -45,5 +46,8 @@ Route::group(['prefix' => 'ere'], function () {
     });
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('handleCrudOperation', [AlternativasController::class, 'handleCrudOperation']);
+    });
+    Route::group(['prefix' => 'encabezado-preguntas'], function () {
+        Route::post('handleCrudOperation', [EncabezadoPreguntasController::class, 'handleCrudOperation']);
     });
 });
