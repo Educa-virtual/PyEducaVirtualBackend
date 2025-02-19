@@ -16,8 +16,8 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'evaluaciones'], function () {
         Route::get('obtenerAreasPorEvaluacionyEspecialista', [EvaluacionesController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
         Route::get('obtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluacion']);
-        Route::post('{evaluacionId}/areas/{areaId}/archivo', [AreasController::class, 'guardarArchivoPdf']);
-        Route::get('{evaluacionId}/areas/{areaId}/archivo', [AreasController::class, 'descargarArchivoPdf']);
+        Route::post('{evaluacionId}/areas/{areaId}/archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
+        Route::get('{evaluacionId}/areas/{areaId}/archivo-preguntas', [AreasController::class, 'descargarArchivoPdf']);
     });
 
     Route::group(['prefix' => 'areas'], function () {
