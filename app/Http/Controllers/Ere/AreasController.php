@@ -9,6 +9,7 @@ use ErrorException;
 use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -26,15 +27,15 @@ class AreasController extends Controller
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
         if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], 400);
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
         $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
         if ($evaluacion == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], 404);
+            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
         $area = AreasRepository::obtenerAreaPorNivelGradId($areaIdDescifrado[0]);
         if ($area == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], 404);
+            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
 
         $validator = Validator::make($request->all(), [
@@ -43,7 +44,7 @@ class AreasController extends Controller
 
         if ($validator->fails()) {
             $error = $validator->errors()->all();
-            return response()->json(['status' => 'Error', 'message' => $error[0]], 422); //422 Unprocessable Content
+            return response()->json(['status' => 'Error', 'message' => $error[0]], Response::HTTP_UNPROCESSABLE_ENTITY);
         } else {
 
             $archivo = $request->file('archivo');
@@ -54,7 +55,7 @@ class AreasController extends Controller
             }
             $archivo->move($rutaDestino, $nombreArchivo);
 
-            return response()->json(['status' => 'Success', 'message' => 'Archivo guardado correctamente.'], 200);
+            return response()->json(['status' => 'Success', 'message' => 'Archivo guardado correctamente.'], Response::HTTP_OK);
         }
     }
 
@@ -63,21 +64,19 @@ class AreasController extends Controller
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
         if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], 400);
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
         $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
         if ($evaluacion == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], 404);
+            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
         $area = AreasRepository::obtenerAreaPorNivelGradId($areaIdDescifrado[0]);
         if ($area == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], 404);
+            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
-
         $rutaArchivo = public_path("ere/evaluaciones/$evaluacionId/areas/$areaId/examen.pdf");
         if (!file_exists($rutaArchivo)) {
-            //return response()->json(['status' => 'Error', 'message' => 'Archivo no encontrado.'], 404);
-            abort(404);
+            abort(Response::HTTP_NOT_FOUND);
         }
         $nombreArchivo = $evaluacion->cEvaluacionNombre . ' - ' . ucwords(strtolower($area->cCursoNombre)) . ' ' . $area->cGradoAbreviacion . ' '
             . str_replace('Educación ', '', $area->cNivelTipoNombre) . '.pdf';
