@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class AreasRepository
 {
-    public static function obtenerAreaPorId($areaId)
+    public static function obtenerAreaPorNivelGradId($iCursosNivelGradId)
     {
         $area = DB::selectOne('SELECT cCursoNombre, cGradoNombre, cGradoAbreviacion, cNivelTipoNombre
 FROM acad.cursos AS acur
@@ -16,7 +16,7 @@ INNER JOIN acad.grados                  AS agr      ON agr.iGradoId=angr.iGradoI
 INNER JOIN acad.nivel_ciclos			AS anici	ON anici.iNivelCicloId=angr.iNivelCicloId
 INNER JOIN acad.nivel_tipos				AS aniti	ON aniti.iNivelTipoId=anici.iNivelTipoId
 INNER JOIN acad.niveles					AS ani		ON ani.iNivelId = aniti.iNivelId
-WHERE iCursosNivelGradId=?', [$areaId]);
+WHERE iCursosNivelGradId=?', [$iCursosNivelGradId]);
         return $area;
     }
 

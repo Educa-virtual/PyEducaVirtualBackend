@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Ere\AlternativasController;
+use App\Http\Controllers\Ere\AreasController;
 use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\Ere\EncabezadoPreguntasController;
 use App\Http\Controllers\Ere\EvaluacionController;
@@ -15,7 +16,12 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'evaluaciones'], function () {
         Route::get('obtenerAreasPorEvaluacionyEspecialista', [EvaluacionesController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
         Route::get('obtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluacion']);
-        Route::get('{iEvaluacionId}/areas/{areaId}/exportar-preguntas', [EvaluacionesController::class, 'exportarPreguntasPorArea']);
+        Route::post('{evaluacionId}/areas/{areaId}/archivo-pdf', [AreasController::class, 'guardarArchivoPdf']);
+        Route::get('{evaluacionId}/areas/{areaId}/archivo-pdf', [AreasController::class, 'descargarArchivoPdf']);
+    });
+
+    Route::group(['prefix' => 'areas'], function () {
+
     });
 
     Route::group(['prefix' => 'alternativas'], function () {

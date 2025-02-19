@@ -26,7 +26,7 @@ class EvaluacionesController extends ApiController
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));//new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
 
-    public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
+    /*public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
 
         if (!is_numeric($iEvaluacionId) && !is_numeric($iCursosNivelGradId)) {
             $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
@@ -34,13 +34,6 @@ class EvaluacionesController extends ApiController
         } else {
             return response()->json(['error' => 'Los ID deben estar cifrados'], 400);
         }
-
-        /*if (!is_numeric($iEvaluacionId)) {
-            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
-        } else {
-            return response()->json(['error' => 'ID de evaluación no está cifrado'], 400);
-        }*/
-
         $params = [
             'iEvaluacionId' => $iEvaluacionId,  // ID de la evaluación
             'iCursosNivelGradId' => $iCursosNivelGradId,  // ID del área (curso o nivel de grado)
@@ -61,7 +54,7 @@ class EvaluacionesController extends ApiController
         $exportador = new ExportarPreguntasPorAreaWordService($evaluacion, $area, $preguntasDB);
         return $exportador->exportar();
 
-    }
+    }*/
 
     public function obtenerEvaluaciones()
     {
@@ -133,7 +126,7 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionFechaInicio,
             $request->dtEvaluacionFechaFin,
             $request->iEstado,
-            
+
 
         ];
         // return $params;
@@ -257,7 +250,7 @@ class EvaluacionesController extends ApiController
             @iEvaluacionId = :iEvaluacionId,
             @idTipoEvalId = :idTipoEvalId,
             @iNivelEvalId = :iNivelEvalId,
-           
+
             @cEvaluacionNombre = :cEvaluacionNombre,
             @cEvaluacionDescripcion = :cEvaluacionDescripcion,
             @cEvaluacionUrlDrive = :cEvaluacionUrlDrive,
