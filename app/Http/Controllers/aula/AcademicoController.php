@@ -32,16 +32,40 @@ class AcademicoController extends Controller
         }
         return new JsonResponse($response, $estado);
     }
+    public function obtenerAcademicoGrado(Request $request){
+        $iiee = $request->iIieeId;
+        $iGrado = $request->iGrado;
+        $iYear = $request->iYear;
+
+        $solicitud = [
+            $iiee,
+            $iGrado,
+            $iYear, 
+        ];        
+        
+        try {
+            $data = DB::select('EXEC aula.SP_SEL_academicoGrado ?,?,?', $solicitud);
+
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+        } catch (Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $estado = 500;
+        }
+        return new JsonResponse($response, $estado);
+        
+    }
     public function reporte(Request $request){
         
         // $documento = '41789603';
         $documento = $request->cPersDocumento;
-        $iiee = $request->iiee || "";
+        $iiee = $request->iIieeId;
         $solicitud = [
-            '41789603',
-            3,
+            $documento,
+            $iiee,
         ];
         $data = DB::select('EXEC aula.SP_SEL_academico ?,?', $solicitud);
+        
         $columna = [];
         $fila = [];
         $historial = $data[0]->historial;
