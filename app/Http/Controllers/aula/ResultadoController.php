@@ -262,7 +262,7 @@ class ResultadoController extends Controller
         $iSedeId = $request -> iSedeId;
         $iSeccionId = 2;
         $iYAcadId = 3;
-        $iNivelGradoId = 3;
+        $iNivelGradoId = 9;
         $params = [
             $iSedeId,
             $iSeccionId,
