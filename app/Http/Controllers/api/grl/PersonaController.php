@@ -92,9 +92,9 @@ class PersonaController extends Controller
     public function guardarPersonaFamiliar(Request $request)
     {
         $parametros = [
+            $request->iPersId,
             $request->bEsRepresentante,
             $request->iTipoFamiliarId,
-            $request->iTipoPersId,
             $request->iTipoIdentId,
             $request->cPersDocumento,
             $request->cPersPaterno,
@@ -117,7 +117,7 @@ class PersonaController extends Controller
         ];
 
         try {
-            $data = DB::select('execute grl.Sp_INS_persona_familiar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('execute grl.Sp_INS_personas_familiares ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -188,6 +188,7 @@ class PersonaController extends Controller
             'iDptoId' => 'nullable|integer',
             'iPrvnId' => 'nullable|integer',
             'iDsttId' => 'nullable|integer',
+            'bCrearFicha' => 'nullable|boolean',
         ]);
     }
 }

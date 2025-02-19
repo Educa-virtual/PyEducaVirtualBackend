@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\acad\EstudiantesController;
+use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\Ere\InstitucionesEducativasController;
 use App\Http\Controllers\Ere\CapacidadesController;
@@ -306,6 +307,7 @@ Route::group(['prefix' => 'acad'], function () {
     });
 
     Route::group(['prefix' => 'estudiante'], function () {
+
         Route::post('guardarEstudiante', [EstudiantesController::class, 'guardarEstudiantePersona']);
         Route::post('guardarRepresetante', [EstudiantesController::class, 'guardarRepresetantePersona']);
 
@@ -315,11 +317,18 @@ Route::group(['prefix' => 'acad'], function () {
 
         Route::post('validarEstudiante', [EstudiantesController::class, 'validarEstudiante']);
         Route::post('validarRepresentante', [EstudiantesController::class, 'validarRepresentante']);
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
+
+        Route::post('buscarCodigo', [EstudiantesController::class, 'buscarCodigo']);
     });
 
     Route::group(['prefix' => 'matricula'], function () {
 
-        Route::post('searchGradoSeccion', [MatriculaController::class, 'searchGradoSeccion']);
+        Route::post('searchGrados', [MatriculaController::class, 'searchGrados']);
+        Route::post('searchSecciones', [MatriculaController::class, 'searchSecciones']);
+        Route::post('searchTurnos', [MatriculaController::class, 'searchTurnos']);
+
+        Route::post('searchGradoSeccionTurnoConf', [MatriculaController::class, 'searchGradoSeccionTurnoConf']);
         Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
         Route::get('list', [MatriculaController::class, 'list']);
 

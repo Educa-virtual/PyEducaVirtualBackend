@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\acad;
 
-use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\Controller;
+use App\Services\LeerExcelService;
+use App\Services\FormatearExcelPadresService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
@@ -13,10 +14,14 @@ class EstudiantesController extends Controller
 {
     protected $hashids;
     protected $iEstudianteId;
+    protected $leerExcelService;
+    protected $formatearExcelPadresService;
 
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+        $this->leerExcelService = new LeerExcelService();
+        $this->formatearExcelPadresService = new FormatearExcelPadresService();
     }
 
     public function obtenerCursosXEstudianteAnioSemestre(Request $request)
@@ -161,7 +166,7 @@ class EstudiantesController extends Controller
 
     public function searchRepresentante(Request $request){
         $parametros = [
-            $request->tipoConsulta,
+            'SIMPLE',
             $request->iEstudianteId,
             $request->iPersId,
             $request->cEstCodigo,
@@ -348,6 +353,54 @@ class EstudiantesController extends Controller
             $response = ['validated' => false, 'message' => 'Se obtuvo la información', 'data' => [ 'persona' => $data[0]]];
             $codeResponse = 200;
         }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function buscarCodigo(Request $request)
+    {
+        $parametros = [
+            'SIMPLE',
+            $request->cEstCodigo
+        ];
+        try {
+            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas @_tipoConsulta = ?, @_cEstCodigo = ?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function importarEstudiantesPadresExcel(Request $request)
+    {
+        $datos_hojas = $this->leerExcelService->leer($request);
+        
+        $datos_hoja = $this->formatearExcelPadresService->formatear($datos_hojas);
+
+        $parametros = [
+            $request->iSedeId,
+            $request->iSemAcadId,
+            $request->iYAcadId,
+            $request->iCredId,
+            $datos_hoja['nivel'],
+            $datos_hoja['modalidad'],
+            $datos_hoja['turno'],
+            json_encode($datos_hoja['estudiantes']),
+        ];
+
+        // return $datos_hoja;
+
+        try {
+            $data = DB::select('EXEC acad.Sp_INS_estudiantes_padres_masivo ?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+        
         return new JsonResponse($response, $codeResponse);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -85,6 +86,29 @@ class MatriculaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
+    public function searchGradoSeccionTurnoConf(Request $request)
+    {
+        $parametros = [
+            $request->opcion,
+            $request->iSedeId,
+            $request->iYAcadId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iTurnoId,
+            $request->iCredSesionId,
+        ];
+        try {
+            $data = DB::select("EXEC acad.Sp_SEL_grado_seccion_turno_conf ?,?,?,?,?,?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }        
+        return new JsonResponse($response, $codeResponse);
+    }
+
     public function searchGradoSeccion(Request $request)
     {
         $parametros = [
@@ -145,138 +169,26 @@ class MatriculaController extends Controller
 
     public function guardar(Request $request)
     {
-        
-        // $request contiene datos de matricula
-        $estudiante = $request->estudiante;
-        $representante = $request->representante;
-
-        // 1. Paso: Validar y/o registrar representante legal
-        if( $representante->iPers_id ) {
-            $persona = DB::select('SELECT * FROM grl.persona WHERE iPersId = ?, iTipoIdentId = ?, cPersDocumento = ?');
-            if( count($persona) != 1 ) {
-                $response = ['validated' => false, 'message' => 'Los datos del representante son incorrectos', 'data' => []];
-                $codeResponse = 500;
-                return new JsonResponse($response, $codeResponse);
-            }
-        } else {
-            $parametros = [
-                $representante->iTipoIdentId,
-                $representante->cPersDocumento,
-                $representante->cPersNombre,
-                $representante->cPersPaterno,
-                $representante->cPersMaterno,
-            ];
-            DB::beginTransaction();
-            try {
-                $representante->iPersId = DB::select('INSERT INTO grl.personas(iTipoIdentId, cPersDocumento, cPersNombre, cPersPaterno, cPersMaterno VALUES (?,?,?,?,?) RETURNING iPersId', $parametros);
-                $estudiante->merge(['iPersRepresentanteLegalId' => $representante->iPersId]);
-            } catch (\Exception $e) {
-                DB::rollBack();
-                $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-                $codeResponse = 500;
-                return new JsonResponse($response, $codeResponse);
-            }
-        }
-
-        // 2. Paso: Validar y/o registrar estudiante
-        if( !$estudiante->iPersId ) {
-            // 2.1. Caso: Es nueva persona y nuevo estudiante
-            // 2.1.1. Paso: Registrar como persona
-            $parametros = [
-                $estudiante->iTipoIdentId,
-                $estudiante->cPersDocumento,
-                $estudiante->cPersNombre,
-                $estudiante->cPersPaterno,
-                $estudiante->cPersMaterno,
-                $estudiante->iPersRepresentanteLegalId,
-            ];
-            DB::beginTransaction();
-            try {
-                $estudiante->iPersId = DB::select('INSERT INTO grl.personas(iTipoIdentId, cPersDocumento, cPersNombre, cPersPaterno, cPersMaterno, iPersRepresentanteLegalId VALUES (?,?,?,?,?,?) RETURNING iPersId', $parametros);
-                $estudiante->merge(['iPersId' => $estudiante->iPersId]);
-            } catch (\Exception $e) {
-                DB::rollBack();
-                $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-                $codeResponse = 500;
-                return new JsonResponse($response, $codeResponse);
-            }
-            // 2.1.2. Paso: Registrar como estudiante
-            $parametros = [
-                'iPersId' => $estudiante->iPersId,
-                'dtEstIngreso' => now(),
-                'cEstNombres' => $estudiante->cPersNombre,
-                'cEstPaterno' => $estudiante->cPersPaterno,
-                'cEstMaterno' => $estudiante->cPersMaterno,
-            ];
-            DB::beginTransaction();
-            try {
-                $iEstudianteId = DB::select('INSERT INTO acad.estudiantes(iPersId, dtEstIngreso, cEstNombres, cEstPaterno, cEstMaterno) VALUES (?,?,?,?,?) RETURNING iEstudianteId', $parametros);
-                $request->merge(['iEstudianteId' => $iEstudianteId]);
-            } catch (\Exception $e) {
-                DB::rollBack();
-                $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-                $codeResponse = 500;
-                return new JsonResponse($response, $codeResponse);
-            }
-        } elseif( !$request->iEstudianteId ) {
-            // 2.2. Caso: Existe persona pero nuevo estudiante
-            // 2.2.1. Validar y/o registrar estudiante
-            $parametros = [
-                'iPersId' => $estudiante->iPersId,
-                'dtEstIngreso' => now(),
-                'cEstNombres' => $estudiante->cPersNombre,
-                'cEstPaterno' => $estudiante->cPersPaterno,
-                'cEstMaterno' => $estudiante->cPersMaterno,
-            ];
-            DB::beginTransaction();
-            try {
-                $iEstudianteId = DB::select('INSERT INTO acad.estudiantes(iPersId, dtEstIngreso, cEstNombres, cEstPaterno, cEstMaterno, iPersRepresentanteLegalId) VALUES (?,?,?,?,?,?) RETURNING iEstudianteId', $parametros);
-                $request->merge(['iEstudianteId' => $iEstudianteId]);
-            } catch (\Exception $e) {
-                DB::rollBack();
-                $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-                $codeResponse = 500;
-                return new JsonResponse($response, $codeResponse);
-            }
-        }
-
-        // 3. Paso: Registrar matricula
-
-        // Establecer valores por defecto para proforma/solicitud de matricula
         $parametros = [
-            $estudiante->iEstudianteId,
-            $request->iSemAcadId,
+            $request->iEstudianteId,
             $request->iYAcadId,
             $request->iTipoMatrId,
-            $request->bMatrReservado,
-            $request->dtMatrReservado,
-            $request->cMatrObservaciones,
             $request->iSedeId,
             $request->iNivelGradoId,
-            $request->iSeccionId,
             $request->iTurnoId,
-            $request->bMatrEsProforma ?? 1,
-            $request->bMatrEsProforma ?? 1,
-            $request->bMatrEsRegular ?? 1,
-            $request->dtMatrFechaProforma ?? now(),
-            $request->iEstado ?? 1,
-            $request->iSessionId,
-            $request->dtCreado ?? now(),
-            $request->dtActualizado ?? now(),
+            $request->iSeccionId,
+            $request->dtMatrFecha,
+            $request->cMatrObservacion,
+            $request->iCredSesionId
         ];
-
-        DB::beginTransaction();
-        try {
-            DB::select('INSERT INTO acad.matricula(iEstudianteId, iSemAcadId, iYAcadId, iTipoMatrId, bMatrReservado, dtMatrReservado, cMatrObservaciones, iSedeId, iNivelGradoId, iSeccionId, iTurnoId, bMatrEsProforma, bMatrEsRegular, dtMatrFechaProforma, iEstado, iSesionId, dtCreado, dtActualizado),
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => ''];
+        $data = DB::select('EXEC acad.Sp_INS_matricula ?,?,?,?,?,?,?,?,?,?', $parametros);
+        if( $data[0]->iResult ) {
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => ''];
+        } else {
+            $response = ['validated' => false, 'message' => $data[0]->cMensaje, 'data' => []];
             $codeResponse = 500;
         }
-        DB::commit();
         return new JsonResponse($response, $codeResponse);
     }
 
