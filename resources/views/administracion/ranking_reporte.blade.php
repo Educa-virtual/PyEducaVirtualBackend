@@ -213,7 +213,7 @@
                 <th class="cabecera-table">Apellidos y Nombres</th>
                 <th class="cabecera-table">Promedio</th>
                 <th class="cabecera-table">Puesto</th>
-                <th class="Seccion">Puesto</th>
+                <th class="cabecera-table">Seccion</th>
             </tr>
             @foreach($resultado_notas as $nota)
             <tr>
