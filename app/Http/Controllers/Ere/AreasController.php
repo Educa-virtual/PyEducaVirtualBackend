@@ -38,7 +38,7 @@ class AreasController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'archivo' => 'required|file|mimes:pdf|max:30720', // máximo 30MB
+            'archivo' => 'required|file|mimes:pdf|max:51200', // máximo 50MB
         ]);
 
         if ($validator->fails()) {
@@ -76,7 +76,8 @@ class AreasController extends Controller
 
         $rutaArchivo = public_path("ere/evaluaciones/$evaluacionId/areas/$areaId/examen.pdf");
         if (!file_exists($rutaArchivo)) {
-            return response()->json(['status' => 'Error', 'message' => 'Archivo no encontrado.'], 404);
+            //return response()->json(['status' => 'Error', 'message' => 'Archivo no encontrado.'], 404);
+            abort(404);
         }
         $nombreArchivo = $evaluacion->cEvaluacionNombre . ' - ' . ucwords(strtolower($area->cCursoNombre)) . ' ' . $area->cGradoAbreviacion . ' '
             . str_replace('Educación ', '', $area->cNivelTipoNombre) . '.pdf';
