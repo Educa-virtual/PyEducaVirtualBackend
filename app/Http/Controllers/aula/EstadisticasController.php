@@ -141,17 +141,40 @@ class EstadisticasController extends Controller
     public function obtenerReportes(Request $request)
     {
         try {
-            // Validar que se reciba el parámetro codModular
+            // Obtener los parámetros del request
             $codModular = $request->input('codModular');
+            $year = $request->input('year');
+            $grado = $request->input('grado');
     
             if (!$codModular) {
                 return response()->json(['validated' => false, 'message' => 'El parámetro codModular es requerido.'], 400);
             }
-            // Filtrar por codModular
-            $reportes = DB::table('acad.reportes_record')
-                ->where('cCodigoModular', $codModular)
-                ->orderBy('dtReporteCreacion', 'desc')
-                ->get();
+    
+            // Construir la consulta con los filtros opcionales
+            $query = DB::table('acad.reportes_record')
+            ->select([
+                'cCodigoModular',
+                'iSedeId',
+                'cTipoOrdenMerito',
+                'cGrado',
+                'iNivelGradoId',
+                'cUrlGenerado',
+                'cAnio',
+                'iSemAcadId',
+                'iYAcadId',
+                DB::raw("FORMAT(dtReporteCreacion, 'yyyy-MM-dd HH:mm:ss') as dtReporteCreacion")
+            ])
+            ->where('cCodigoModular', $codModular);
+    
+            if ($year) {
+                $query->where('iYAcadId', $year);
+            }
+    
+            if ($grado) {
+                $query->where('iNivelGradoId', $grado);
+            }
+    
+            $reportes = $query->orderBy('dtReporteCreacion', 'desc')->get();
     
             return response()->json(['validated' => true, 'data' => $reportes], 200);
         } catch (Exception $e) {
