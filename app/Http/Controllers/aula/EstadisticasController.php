@@ -7,8 +7,8 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 class EstadisticasController extends Controller
 {
     public function obtenerAniosAcademicos()
@@ -25,8 +25,7 @@ class EstadisticasController extends Controller
     public function obtenerGradosPorSede(Request $request)
     {
         $iSedeId=$request->iIieeId;
-        
-        
+
         try {
             $data = DB::select('EXEC acad.Sp_SEL_ObtenerGradosPorSede ?', [$iSedeId]);
 
@@ -40,23 +39,124 @@ class EstadisticasController extends Controller
     }
     public function generarReporteNotas(Request $request)
     {
-        $validatedData = $request->validate([
-            'year' => 'required|integer',
-            'grado' => 'required|integer',
-            'merito' => 'required|integer',
-            'SedeID' => 'required|integer',
+        $documento_capturado = $request->cIieeNombre;
+        $year_capturado = $request->year;
+        $order_merito_capturado = $request->merito;
+        $grado_capturado = $request->grado;
+        $codigo_modular = $request->codModular;
+        $year_id = $request->yearid;
+        $grado_id = $request->gradoid;
+        $merito_id = $request->meritoid;
+        $sede_id = $request->sede;
+
+        $resultado = DB::select('EXEC acad.Sp_SEL_GenerarReporteNotas ?, ?, ?, ?', [
+            $year_id, $grado_id, $merito_id, $sede_id
         ]);
     
-        // Llamamos al procedimiento almacenado
-        $reporte = DB::select('EXEC acad.Sp_SEL_GenerarReporteNotas ?, ?, ?, ?', [
-            $validatedData['year'],
-            $validatedData['grado'],
-            $validatedData['merito'],
-            $validatedData['SedeID']
+        $respuesta = [
+            "documento_enviado"=>$documento_capturado,
+            "year_capturado"=>$year_capturado,
+            "order_merito_capturado"=>$order_merito_capturado,
+            "grado_capturado"=>$grado_capturado,
+            "codigo_modular"=>$codigo_modular,
+            "resultado_notas" => $resultado
+        ];
+
+        $pdf = PDF::loadView('administracion.ranking_reporte', $respuesta)
+        ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true])
+        ->setPaper('a4', 'landscape')
+        ->stream('reporte.pdf');
+        return $pdf;
+    } 
+    public function guardarRecord(Request $request){
+        $documento_capturado = $request->cIieeNombre;
+        $codigo_modular = $request->codModular;
+        $sede_id = $request->sede;
+        $reporte_creacion = date('Y-m-d\TH:i:s');
+        $order_merito_capturado = $request->merito;
+        $grado_capturado = $request->grado;
+        $grado_id = $request->gradoid;
+        $url_generado = '';
+        $year_capturado = $request->year;
+        $semestre_acad_id = '';
+        $year_id = $request->yearid;
+        $grado_id = $request->gradoid;
+        $merito_id = $request->meritoid;
+        $sede_id = $request->sede;
+
+        
+        $semestre = DB::select('SELECT iSemAcadId FROM acad.semestre_academicos WHERE iYAcadId = ?', [$year_id]);
+        $semestre_acad_id = $semestre[0]->iSemAcadId ?? null;
+        
+        $resultado = DB::select('EXEC acad.Sp_SEL_GenerarReporteNotas ?, ?, ?, ?', [
+            $year_id, $grado_id, $merito_id, $sede_id
         ]);
+        $respuesta = [
+            "documento_enviado"=>$documento_capturado,
+            "year_capturado"=>$year_capturado,
+            "order_merito_capturado"=>$order_merito_capturado,
+            "grado_capturado"=>$grado_capturado,
+            "codigo_modular"=>$codigo_modular,
+            "resultado_notas" => $resultado
+        ];
+
+        
+        $pdf = PDF::loadView('administracion.ranking_reporte', $respuesta )
+        ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true])
+        ->setPaper('a4', 'landscape');
+           
+        $filename = 'reporte_' . time() . '.pdf'; // Nombre único
+        $filepath = 'reports/' . $filename;
+        // Storage::put($filepath, $pdf->output());
+        Storage::disk('public')->put($filepath, $pdf->output());
+        // Storage::put('public/reports/' . $filename, $pdf->output()); 22
+        // $url_generado = Storage::url('reports/' . $filename);
+        $url_generado = asset('storage/reports/' . $filename);
+        // $url_generado = asset('storage/reports/' . $filename); 22
+
+        $solicitud = [
+            'cCodigoModular' => $codigo_modular,
+            'iSedeId' => $sede_id,
+            'dtReporteCreacion' => $reporte_creacion,
+            'cTipoOrdenMerito' => $order_merito_capturado,
+            'cGrado' => $grado_capturado,
+            'iNivelGradoId' => $grado_id,
+            'cUrlGenerado' => $url_generado,
+            'cAnio' => $year_capturado,
+            'iSemAcadId' => $semestre_acad_id,
+            'iYAcadId' => $year_id
+        ];
+
+        try {
+            $data = DB::table('acad.reportes_record')->insert($solicitud);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = 200;
+        } catch (Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $estado = 500;
+        }
+        return new JsonResponse($response, $estado);
+    }
+
+    public function obtenerReportes(Request $request)
+    {
+        try {
+            // Validar que se reciba el parámetro codModular
+            $codModular = $request->input('codModular');
     
-        return response()->json([
-            'reporte' => $reporte
-        ]);
-    }    
+            if (!$codModular) {
+                return response()->json(['validated' => false, 'message' => 'El parámetro codModular es requerido.'], 400);
+            }
+            // Filtrar por codModular
+            $reportes = DB::table('acad.reportes_record')
+                ->where('cCodigoModular', $codModular)
+                ->orderBy('dtReporteCreacion', 'desc')
+                ->get();
+    
+            return response()->json(['validated' => true, 'data' => $reportes], 200);
+        } catch (Exception $e) {
+            return response()->json(['validated' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    
 }
