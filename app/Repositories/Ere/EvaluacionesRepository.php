@@ -9,9 +9,7 @@ class EvaluacionesRepository
     public static function obtenerEvaluacionPorId($iEvaluacionId)
     {
         $evaluacion = DB::selectOne(
-            'SELECT * FROM ere.evaluacion AS e
-             INNER JOIN ere.nivel_evaluaciones AS ne ON e.iNivelEvalId=ne.iNivelEvalId
-             WHERE iEvaluacionId = ?',
+            'EXEC ere.SP_SEL_EvaluacionNivel @_iEvaluacion = ?',
             [$iEvaluacionId]
         );
         return $evaluacion;

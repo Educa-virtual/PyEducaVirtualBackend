@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'ere'], function () {
 
-
     Route::group(['prefix' => 'evaluaciones'], function () {
         Route::get('obtenerAreasPorEvaluacionyEspecialista', [EvaluacionesController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
         Route::get('obtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluacion']);
         Route::post('{evaluacionId}/areas/{areaId}/archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
         Route::get('{evaluacionId}/areas/{areaId}/archivo-preguntas', [AreasController::class, 'descargarArchivoPdf']);
+        Route::get('{evaluacionId}/areas/{areaId}/matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
     });
 
     Route::group(['prefix' => 'areas'], function () {

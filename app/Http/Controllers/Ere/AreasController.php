@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ere;
 use App\Http\Controllers\Controller;
 use App\Repositories\Acad\AreasRepository;
 use App\Repositories\Ere\EvaluacionesRepository;
+use Barryvdh\DomPDF\Facade\Pdf;
 use ErrorException;
 use Exception;
 use Hashids\Hashids;
@@ -83,5 +84,36 @@ class AreasController extends Controller
         return response()->download($rutaArchivo, $nombreArchivo, [
             'Content-Type' => 'application/pdf'
         ]);
+    }
+
+    public function generarMatrizCompetencias($evaluacionId, $areaId) {
+        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+        $areaIdDescifrado = $this->hashids->decode($areaId);
+        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
+        if ($evaluacion == null) {
+            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
+        }
+        $area = AreasRepository::obtenerAreaPorNivelGradId($areaIdDescifrado[0]);
+        if ($area == null) {
+            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
+        }
+        $dataMatriz = AreasRepository::obtenerMatrizPorEvaluacionArea($evaluacionIdDescifrado[0], $areaIdDescifrado[0]);
+        if (empty($dataMatriz)) {
+            return response()->json(['status' => 'Error', 'message' => 'No hay preguntas para generar la matriz.'], Response::HTTP_NOT_FOUND);
+        }
+        $data=[
+            'dataMatriz'=>$dataMatriz,
+            'evaluacion'=>$evaluacion,
+            'area'=>$area
+        ];
+        $pdf = PDF::loadView('ere.areas.pdf.matriz-competencias', $data)
+            ->setPaper('a4', 'landscape')  // Asegúrate de tener el tamaño de papel correcto
+            ->stream('matriz_evaluacion.pdf');  // Puedes cambiar 'stream' por 'download' si quieres forzar la descarga
+
+        // Retornar el PDF como respuesta
+        return $pdf;
     }
 }

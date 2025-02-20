@@ -776,8 +776,6 @@ class EvaluacionesController extends ApiController
         $nivel = $request->input('nivel');
         $nombreCurso = $request->input('nombreCurso');
         $especialista = $request->input('especialista');
-
-
         // Aquí tomaremos los datos de la tabla "ere.preguntas"
         //        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
         $preguntas = DB::select("EXEC ere.SP_SEl_evaluacionPreguntas ?", [$iEvaluacionId]);
