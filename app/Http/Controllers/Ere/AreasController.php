@@ -81,7 +81,7 @@ class AreasController extends Controller
         }
         $nombreArchivo = $evaluacion->cEvaluacionNombre . ' - ' . ucwords(strtolower($area->cCursoNombre)) . ' ' . $area->cGradoAbreviacion . ' '
             . str_replace('Educación ', '', $area->cNivelTipoNombre) . '.pdf';
-        return response()->download($rutaArchivo, $nombreArchivo, [
+        return response()->stream($rutaArchivo, $nombreArchivo, [
             'Content-Type' => 'application/pdf'
         ]);
     }
@@ -110,10 +110,9 @@ class AreasController extends Controller
             'area'=>$area
         ];
         $pdf = PDF::loadView('ere.areas.pdf.matriz-competencias', $data)
-            ->setPaper('a4', 'landscape')  // Asegúrate de tener el tamaño de papel correcto
-            ->stream('matriz_evaluacion.pdf');  // Puedes cambiar 'stream' por 'download' si quieres forzar la descarga
+            ->setPaper('a4', 'landscape')
+            ->stream('Matriz competencias - '.$evaluacion->cEvaluacionNombre.'.pdf');
 
-        // Retornar el PDF como respuesta
         return $pdf;
     }
 }
