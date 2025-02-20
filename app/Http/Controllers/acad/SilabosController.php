@@ -123,6 +123,7 @@ class SilabosController extends Controller
         $respuesta = [
             "query" => $formato,
         ];
+        
         $pdf = Pdf::loadView('silabus_reporte', $respuesta)
             ->stream('silabus.pdf');
         return $pdf;
