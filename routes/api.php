@@ -29,6 +29,13 @@ use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+//Linea 18 de febrero------------------------------------- 
+//use App\Http\Controllers\VacantesController;
+
+//Route::post('/guardar-vacantes', [VacantesController::class, 'guardarVacantes']);
+//Route::post('store', [VacantesController::class, 'store']);
+
+//-------------------------------------------------------
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
@@ -268,5 +275,6 @@ Route::get('/imprimir', PersonaController::class);
 Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
 Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+
 
 

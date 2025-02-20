@@ -46,7 +46,7 @@ class BibliografiaController extends Controller
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
 
-        $parametros = [
+       /* $parametros = [
             $request->opcion,
             $iBiblioId                      ?? NULL,
             $iTipoBiblioId                  ?? NULL,
@@ -60,20 +60,48 @@ class BibliografiaController extends Controller
 
             $request->iCredId
 
-        ];
+        ];*/
+
+//Linea de código Optimizada-----------------------------
+$parametros = [
+    $validatedData['opcion'],
+    $iBiblioId ?? NULL,
+    $iTipoBiblioId ?? NULL,
+    $iSilaboId ?? NULL,
+    $validatedData['cBiblioAutor'] ?? NULL,
+    $validatedData['cBiblioTitulo'] ?? NULL,
+    $validatedData['cBiblioAnioEdicion'] ?? NULL,
+    $validatedData['cBiblioEditorial'] ?? NULL,
+    $validatedData['cBiblioUrl'] ?? NULL,
+    $validatedData['iEstado'] ?? NULL,
+    $validatedData['iCredId'],
+];
+//----------fin de coigo optimizado------------------------
 
         try {
             $query = DB::select(
+                //Ejecusion del procedimiento almacenado en la BD
                 "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?,?",
                 $parametros
             );
-
+/*/Linea de codigo ORIGINAL---------------------------
             foreach ($query as $key => $value) {
                 $value->iBiblioId = $this->hashids->encode($value->iBiblioId);
                 $value->iTipoBiblioId = $this->hashids->encode($value->iTipoBiblioId);
                 $value->iSilaboId = $this->hashids->encode($value->iSilaboId);
-            }
-
+            }*/
+//----------------------------------------------------
+//Linea de codigo nueva Optimizada
+        foreach ($query as $key => &$value) {
+            $propertiesToEncode = ['iBiblioId', 'iTipoBiblioId', 'iSilaboId'];
+            
+            foreach ($propertiesToEncode as $property) {
+                if (isset($value->$property)) {
+                    $value->$property = $this->hashids->encode($value->$property);
+                }
+    }
+}
+//------------fin de codigo mejorado--------------------------------
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
@@ -116,6 +144,7 @@ class BibliografiaController extends Controller
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
 
+        /*
         $parametros = [
             $request->opcion,
             $iBiblioId                      ?? NULL,
@@ -130,8 +159,24 @@ class BibliografiaController extends Controller
 
             //$request->iCredId
 
+        ];*/
+//Linea de codigo nueva Optimizada--------------
+        $parametros = [
+            $request->opcion,
+            $iBiblioId ?? null,
+            $iTipoBiblioId ?? null,
+            $iSilaboId ?? null,
+            ...array_map(fn($key) => $request->$key ?? null, [
+                'cBiblioAutor',
+                'cBiblioTitulo',
+                'cBiblioAnioEdicion',
+                'cBiblioEditorial',
+                'cBiblioUrl',
+                'iEstado'
+            ])
         ];
 
+//----------------------------------------------
         try {
             $query = DB::select(
                 "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?,?",

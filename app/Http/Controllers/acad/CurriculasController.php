@@ -31,9 +31,7 @@ class CurriculasController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
-            
-            
+                      
             $request->iCredId
 
         ];

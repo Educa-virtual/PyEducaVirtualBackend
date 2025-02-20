@@ -44,7 +44,7 @@ class ContenidoSemanasController extends Controller
                 $request['valorBusqueda'] = count($request->valorBusqueda) > 0 ? $request->valorBusqueda[0] : $request->valorBusqueda;
                 break;
         }
-
+/*
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
@@ -57,8 +57,21 @@ class ContenidoSemanasController extends Controller
 
             $request->iCredId
 
+        ];*/
+//-----Linea de código Optimizada---------------
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+            $iContenidoSemId ?? null,
+            $iIndActId ?? null,
+            ...array_map(fn($key) => $request->$key ?? null, [
+                'cContenidoSemTitulo',
+                'cContenidoSemNumero',
+                'cContenidoSemDescripcion',
+                'iCredId'
+            ])
         ];
-
+//----------------------------------------------
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_CONTENIDO_SEMANAS
                 ?,?,?,?,?,?,?,?', $parametros);
@@ -96,7 +109,6 @@ class ContenidoSemanasController extends Controller
             $iIndActId = count($iIndActId) > 0 ? $iIndActId[0] : $iIndActId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
@@ -116,7 +128,6 @@ class ContenidoSemanasController extends Controller
             ?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iContenidoSemId > 0) {
-
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
                 $codeResponse = 200;
             } else {

@@ -32,7 +32,7 @@ class CursosController extends Controller
             $iCursoId = $this->hashids->decode($request->iCursoId);
             $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
         }
-
+/*Lina de codigo antigua---------------------------------------------------
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
@@ -53,8 +53,29 @@ class CursosController extends Controller
 
             $request->iCredId
 
+        ];*/
+//Linea de codigo Optimizada-----------------------------------
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+            $iCursoId ?? null,
+            ...array_map(fn($key) => $request->$key ?? null, [
+                'iCurrId',
+                'iTipoCursoId',
+                'cCursoNombre',
+                'nCursoCredTeoria',
+                'nCursoCredPractica',
+                'cCursoDescripcion',
+                'nCursoTotalCreditos',
+                'cCursoPerfilDocente',
+                'iCursoTotalHoras',
+                'iCursoEstado',
+                'iEstado',
+                'iSesionId',
+                'iCredId'
+            ])
         ];
-
+//--------------fin de codigo optimizado-------------------------
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_CURSOS
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);

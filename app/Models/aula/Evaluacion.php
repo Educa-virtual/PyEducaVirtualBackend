@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models\aula;
 
 use App\Repositories\GeneralRepository;

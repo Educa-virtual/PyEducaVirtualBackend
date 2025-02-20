@@ -22,6 +22,11 @@ class MatriculaController extends Controller
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        
+    }
+//RUTA PARA COMUNICACION CON EL FRONT END LARAVEL - ANGULAR 14 FEB
+    public function registrar(Request $request){
+        return new JsonResponse("Recibido", 200);
     }
 
     public function list(Request $request)

@@ -70,8 +70,8 @@ class DocenteCursosController extends Controller
             $request->iCredId
 
         ];
-
-        try {
+//Linea de codigo antigua----------------------------------------------------------
+  /*      try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_DOCENTE_CURSOS
                 ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
@@ -103,8 +103,52 @@ class DocenteCursosController extends Controller
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
-        }
+        }*/
+//---------Fin de codigo amtiguo
+//-----Linea de Código nueva----------------------------
+        try {
+            $data = DB::select('exec acad.Sp_ACAD_CRUD_DOCENTE_CURSOS ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
+            $propertiesToEncode = [
+                'idDocCursoId',
+                'iSemAcadId',
+                'iYAcadId',
+                'iIeCursoId',
+                'iSilaboId',
+                'iCursoId',
+                'iNivelGradoId',
+                'iSeccionId',
+            ];
+
+            foreach ($data as $value) {
+                foreach ($propertiesToEncode as $property) {
+                    if (isset($value->$property)) {
+                        $value->$property = $this->hashids->encode($value->$property);
+                    }
+                }
+
+                if (isset($value->iGradoId)) {
+                    $value->iGradoId = $this->hashids->encode($value->iGradoId);
+                }
+                if (isset($value->iDocenteId)) {
+                    $value->iDocenteId = $this->hashids->encode($value->iDocenteId);
+                }
+            }
+
+            $response = [
+                'validated' => true,
+                'message' => 'Se obtuvo la información correctamente',
+                'data' => $data,
+            ];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => 'Error al obtener la información: ' . $e->getMessage(),
+                'data' => [],
+            ];
+            $codeResponse = 500;
+        }
         return new JsonResponse($response, $codeResponse);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
@@ -37,7 +36,7 @@ class DetalleEvaluacionesController extends Controller
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
-
+/*Linea de codigo antigua---------------------------------
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
@@ -47,9 +46,20 @@ class DetalleEvaluacionesController extends Controller
             $request->cDetEvalDetalles              ?? NULL,
 
             $request->iCredId
-
+        ];*/
+// Linea de codigo Optimizada----------------------
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+            $iDetEvaId ?? null,
+            $iSilaboId ?? null,
+            ...array_map(fn($key) => $request->$key ?? null, [
+                'cDetEvalDetalles',
+                'iCredId'
+            ])
         ];
 
+//Fin de linea optimizada--------------------------
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_DETALLE_EVALUACIONES
                 ?,?,?,?,?,?', $parametros);
@@ -87,7 +97,7 @@ class DetalleEvaluacionesController extends Controller
             $iSilaboId = $this->hashids->decode($request->iSilaboId);
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
-
+/*Linea de codigo antigua--------------------------------------
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
@@ -97,9 +107,20 @@ class DetalleEvaluacionesController extends Controller
             $request->cDetEvalDetalles              ?? NULL,
 
             $request->iCredId
-
+        ];*/
+//Linea de Codigo nueva Optimizada------------------------------
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+            $iDetEvaId ?? null,
+            $iSilaboId ?? null,
+            ...array_map(fn($key) => $request->$key ?? null, [
+                'cDetEvalDetalles',
+                'iCredId'
+            ])
         ];
 
+//Fin del codigo optimizado-------------------------------------
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_DETALLE_EVALUACIONES
                 ?,?,?,?,?,?', $parametros);
