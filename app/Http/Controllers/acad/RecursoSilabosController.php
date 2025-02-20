@@ -59,7 +59,7 @@ class RecursoSilabosController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
+            $data = DB::select('exec acad.Sp_SEL_recursoSilabos
                 ?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -116,8 +116,13 @@ class RecursoSilabosController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_RECURSO_SILABOS
-                ?,?,?,?,?,?,?', $parametros);
+
+            switch ($request->opcion) {
+                case 'GUARDARxiEstado':
+                    $data = DB::select('exec acad.Sp_INS_recursoSilabos
+                    ?,?,?,?,?,?,?', $parametros);
+                    break;
+            }
 
             if ($data[0]->iRecSilaboId > 0) {
 

@@ -57,13 +57,13 @@ class ereEvaluacion extends Model
 
     public static function guardarEvaluaciones($params)
     {
-        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
+        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
     }
     public static function actualizarEvaluacion(array $params)
     {
         // Ejecutar el procedimiento almacenado para actualizar la evaluación
         //Se cambio el nombre sp_UPD_Evaluaciones
-        $result = DB::select('EXEC ere.SP_UPD_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
+        $result = DB::select('EXEC ere.SP_UPD_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
         // Si el procedimiento devuelve resultados, asumimos que el primer resultado es la evaluación actualizada
         return !empty($result) ? $result[0] : null;
     }

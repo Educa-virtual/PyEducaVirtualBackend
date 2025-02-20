@@ -15,7 +15,7 @@ class EstudiantesController extends Controller
             $opcion  = $request->opcion,
             $iCurrId = $request->iCurrId ?? NULL
         ];
-        $query=DB::select("execute acad.Sp_crud_estudiante ?,?",$solicitud);
+        $query=DB::select("execute acad.Sp_SEL_estudiante ?,?",$solicitud);
         
         try{
             $response = [

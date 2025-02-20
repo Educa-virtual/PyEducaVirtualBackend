@@ -74,7 +74,7 @@ class MatriculaController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_MATRICULA
+            $data = DB::select('exec acad.Sp_SEL_matricula
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];

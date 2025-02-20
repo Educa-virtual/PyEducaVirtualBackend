@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -47,7 +48,7 @@ class TipoBibliografiasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_TIPO_BIBLIOGRAFIAS
+            $data = DB::select('exec acad.Sp_SEL_tipoBibliografias
                 ?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -56,7 +57,7 @@ class TipoBibliografiasController extends Controller
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
         }

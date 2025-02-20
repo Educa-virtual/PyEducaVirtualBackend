@@ -38,16 +38,14 @@ class TipoMetodologiasController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $iTipoMetId                         ?? NULL,
             $request->cTipoMetNombre            ?? NULL,
-
             $request->iCredId
 
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_TIPO_METODOLOGIAS
+            $data = DB::select('exec acad.Sp_SEL_tipoMetodologias
                 ?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {

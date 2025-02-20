@@ -65,7 +65,7 @@ class SilaboActividadAprendizajesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_ACTIVIDAD_APRENDIZAJES
+            $data = DB::select('exec acad.Sp_SEL_silaboActividadAprendizajes
                 ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -128,8 +128,20 @@ class SilaboActividadAprendizajesController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_ACTIVIDAD_APRENDIZAJES
+            switch ($request->opcion) {
+                case 'GUARDARxiSilaboId':
+                    $data = DB::select('exec acad.Sp_INS_silaboActividadAprendizajes
                 ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ACTUALIZARxiSilaboActAprendId':
+                    $data = DB::select('exec acad.Sp_UPD_silaboActividadAprendizajes
+                ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ELIMINARxiSilaboActAprendId':
+                    $data = DB::select('exec acad.Sp_DEL_silaboActividadAprendizajes
+                ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    break;
+            }
 
             if ($data[0]->iSilaboActAprendId > 0) {
 

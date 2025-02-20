@@ -61,9 +61,9 @@ class DetalleEvaluacionesController extends Controller
 
 //Fin de linea optimizada--------------------------
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_DETALLE_EVALUACIONES
-                ?,?,?,?,?,?', $parametros);
-
+            $data = DB::select('exec acad.Sp_SEL_detalleEvaluaciones
+            ?,?,?,?,?,?', $parametros);
+            
             foreach ($data as $key => $value) {
                 $value->iDetEvaId = $this->hashids->encode($value->iDetEvaId);
                 $value->iSilaboId = $this->hashids->encode($value->iSilaboId);
@@ -122,8 +122,20 @@ class DetalleEvaluacionesController extends Controller
 
 //Fin del codigo optimizado-------------------------------------
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_DETALLE_EVALUACIONES
+            switch ($request->opcion) {
+                case 'GUARDARxiSilaboId':
+                    $data = DB::select('exec acad.Sp_INS_detalleEvaluaciones
                 ?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ACTUALIZARxiDetEvaId':
+                    $data = DB::select('exec acad.Sp_UPD_detalleEvaluaciones
+                    ?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ELIMINARxiDetEvaId':
+                    $data = DB::select('exec acad.Sp_DEL_detalleEvaluaciones
+                    ?,?,?,?,?,?', $parametros);
+                    break;
+            }
 
             if ($data[0]->iDetEvaId > 0) {
 

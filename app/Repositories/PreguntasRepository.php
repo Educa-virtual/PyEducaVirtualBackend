@@ -18,17 +18,18 @@ class PreguntasRepository
     {
 
         $params = [
-            $params['iCursoId'] ?? 0,
+            $params['iCursosNivelGradId'] ?? 0,
             $params['busqueda'] ?? '',
             $params['iTipoPregId'] ?? 0,
             $params['bPreguntaEstado'] ?? -1,
             $params['ids'] ?? '',
-            $params['iEncabPregId'] ?? 0
+            $params['iEncabPregId'] ?? 0,
+            $params['iEvaluacionId'] ?? 0
         ];
-
-        $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursoId = ?,
+        //dd($params);
+        $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursosNivelGradId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
-             @_iEncabPregId = ? 
+             @_iEncabPregId = ?, @_iEvaluacionId = ?
             ', $params);
         $preguntas = [];
         foreach ($preguntasDB as $item) {
@@ -47,6 +48,26 @@ class PreguntasRepository
 
         return $preguntas;
     }
+    public static function obtenerBancoPreguntas($params)
+    {
+
+        $params = [
+            $params['BancoId'] ?? 0,
+            $params['iDocenteId'] ?? '',
+            $params['iCursoId'] ?? '',
+        ];
+
+        $preguntasDB = DB::select('exec eval.SP_SEL_preguntasEvaluacionx @BancoId = ?,
+             @iDocenteId = ?, @iCursoId = ? 
+            ', $params);
+        $preguntas = [];
+        foreach ($preguntasDB as $item) {
+            $item->alternativas = json_decode($item->alternativas);
+            array_push($preguntas, $item);
+        }
+
+        return $preguntas;
+    }
 
     public static function guardarActualizarPreguntaEncabezado($data)
     {
@@ -54,18 +75,19 @@ class PreguntasRepository
             $data['iEncabPregId'],
             $data['cEncabPregTitulo'] ?? '',
             $data['cEncabPregContenido'] ?? '',
-            $data['iCursoId'],
+            //$data['iCursoId'],
+            $data['iCursosNivelGradId'],
             $data['iNivelGradoId'],
             $data['iColumnValue'],
             $data['cColumnName'] ?? 'iEspecialistaId',
             $data['cSchemaName']
         ];
-
+        // , @_iCursoId = ?
         $result = DB::select(
             'exec ere.SP_INS_UPD_encabezadoPregunta @_iEncabPregId  = ?
                 , @_cEncabPregTitulo = ?
                 , @_cEncabPregContenido = ?
-                , @_iCursoId = ?
+                , @_iCursosNivelGradId = ?
                 , @_iNivelGradoId  = ?
                 , @_iColumnValue  = ?
                 , @_cColumnName = ?
@@ -82,7 +104,7 @@ class PreguntasRepository
 
         $campos = 'cEncabPregTitulo, cEncabPregContenido';
         $where = '1=1 ';
-        $where .= " AND iCursoId = {$params['iCursoId']}";
+        //$where .= " AND iCursoId = {$params['iCursoId']}";//Aqui se paso en Eval
         $schema =  $params['schema'] ?? 'ere';
         if ($schema === 'ere') {
             $campos .= ' ,iEncabPregId';
@@ -94,6 +116,7 @@ class PreguntasRepository
             $campos .= ' ,idEncabPregId';
             $where .= " AND iNivelCicloId = {$params['iNivelCicloId']}";
             $where .= " AND iDocenteId = {$params['iDocenteId']}";
+            $where .= " AND iCursoId = {$params['iCursoId']}";
         }
 
         $params = [
