@@ -77,8 +77,7 @@ class CredencialescCredUsuariocClaveController extends Controller
             ");
             if ($vencimiento[0]->iDias <= 60 && $vencimiento[0]->iDias >= 0) {
                 DB::update('update seg.credenciales set iCredIntentos =  0, dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
-            }
-            else{
+            } else {
                 return response()->json(['validated' => false, 'message' => 'Debe de actualizar su contraseña'], 401);
             }
         }
@@ -97,19 +96,19 @@ class CredencialescCredUsuariocClaveController extends Controller
         //Obtener roles 
         $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
         $data[0]->perfiles = $perfiles;
-
-        $conctactar = json_decode($data[0]->contactar, true);
-        $patron = "/^[[:digit:]]+$/";
-        foreach ($conctactar as $key => $correo) {
-            if (!preg_match($patron, $correo["cPersConNombre"])) {
-                $separar = explode("@", $correo["cPersConNombre"]);
-                $conctactar[$key]["iPersConId"] = bcrypt($correo["iPersConId"]);
-                $conctactar[$key]["cPersConNombre"] = $separar[0][0] . $separar[0][1] . "******" . "@" . $separar[1];
+        if ($data[0]->contactar) {
+            $conctactar = json_decode($data[0]->contactar, true);
+            $patron = "/^[[:digit:]]+$/";
+            foreach ($conctactar as $key => $correo) {
+                if (!preg_match($patron, $correo["cPersConNombre"])) {
+                    $separar = explode("@", $correo["cPersConNombre"]);
+                    $conctactar[$key]["iPersConId"] = bcrypt($correo["iPersConId"]);
+                    $conctactar[$key]["cPersConNombre"] = $separar[0][0] . $separar[0][1] . "******" . "@" . $separar[1];
+                }
             }
+
+            $data[0]->contactar = $conctactar;
         }
-
-        $data[0]->contactar = $conctactar;
-
         return $this->createNewToken($token, $data);
     }
 
