@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Ere;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\Acad\AreasRepository;
+use App\Repositories\Acad\DocentesRepository;
 use App\Repositories\Ere\EvaluacionesRepository;
+use App\Repositories\Grl\PersonasRepository;
+use App\Repositories\Grl\YearsRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use ErrorException;
 use Exception;
@@ -81,17 +84,27 @@ class AreasController extends Controller
         }
         $nombreArchivo = $evaluacion->cEvaluacionNombre . ' - ' . ucwords(strtolower($area->cCursoNombre)) . ' ' . $area->cGradoAbreviacion . ' '
             . str_replace('Educación ', '', $area->cNivelTipoNombre) . '.pdf';
-        return response()->stream($rutaArchivo, $nombreArchivo, [
+
+        return response()->download($rutaArchivo, $nombreArchivo, [
             'Content-Type' => 'application/pdf'
         ]);
     }
 
-    public function generarMatrizCompetencias($evaluacionId, $areaId) {
+    public function generarMatrizCompetencias($evaluacionId, $areaId, Request $request)
+    {
+        date_default_timezone_set('America/Lima');
+        $docenteIdDescifrado = $this->hashids->decode($request->input('docente'));
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
-        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
+        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado) || empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
+        $year = YearsRepository::obtenerYearPorId(date('Y'));
+        $docente = DocentesRepository::obtenerDocentePorId($docenteIdDescifrado[0]);
+        if ($docente == null) {
+            return response()->json(['status' => 'Error', 'message' => 'No existe el docente con el ID enviado.'], Response::HTTP_NOT_FOUND);
+        }
+        $persona = PersonasRepository::obtenerPersonaPorId($docente->iPersId);
         $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
         if ($evaluacion == null) {
             return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
@@ -100,19 +113,19 @@ class AreasController extends Controller
         if ($area == null) {
             return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
+
         $dataMatriz = AreasRepository::obtenerMatrizPorEvaluacionArea($evaluacionIdDescifrado[0], $areaIdDescifrado[0]);
         if (empty($dataMatriz)) {
             return response()->json(['status' => 'Error', 'message' => 'No hay preguntas para generar la matriz.'], Response::HTTP_NOT_FOUND);
         }
-        $data=[
-            'dataMatriz'=>$dataMatriz,
-            'evaluacion'=>$evaluacion,
-            'area'=>$area
+        $data = [
+            'year' => $year,
+            'dataMatriz' => $dataMatriz,
+            'evaluacion' => $evaluacion,
+            'area' => $area,
+            'persona' => $persona
         ];
-        $pdf = PDF::loadView('ere.areas.pdf.matriz-competencias', $data)
-            ->setPaper('a4', 'landscape')
-            ->stream('Matriz competencias - '.$evaluacion->cEvaluacionNombre.'.pdf');
-
-        return $pdf;
+        $pdf = PDF::loadView('ere.areas.pdf.matriz-competencias', $data)->setPaper('a4', 'landscape')->set_option("enable_php", true);
+        return $pdf->download('Matriz competencias - ' . $evaluacion->cEvaluacionNombre . '.pdf');
     }
 }
