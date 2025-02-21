@@ -3,6 +3,7 @@
 use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
+use App\Http\Controllers\aula\AcademicoController;
 use App\Http\Controllers\aula\AnuncioController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\aula\TareaCabeceraGruposController;
 use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
+use App\Http\Controllers\aula\EstadisticasController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -104,4 +106,18 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'notificacion_estudiante'], function () {
         Route::post('mostrar_notificacion', [NotificacionEstudianteController::class, 'mostrar_notificacion']);
     });
+    Route::group(['prefix' => 'academico'], function () {
+        Route::post('obtener_datos', [AcademicoController::class, 'obtenerDatos']);
+        Route::post('reporte_academico', [AcademicoController::class, 'reporte']);
+        Route::post('reporte_grado', [AcademicoController::class, 'reporteGrado']);
+        Route::post('obtener_academico_grado', [AcademicoController::class, 'obtenerAcademicoGrado']);
+        Route::post('/reporte_ranking', [EstadisticasController::class, 'generarReporteNotas']);
+        Route::post('/guardar_record', [EstadisticasController::class, 'guardarRecord']);
+        Route::post('/obtener-reportes', [EstadisticasController::class, 'obtenerReportes']);
+        Route::post('/eliminar-record', [EstadisticasController::class, 'eliminarRecord']);
+
+        Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
+        Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
+    });
+
 });

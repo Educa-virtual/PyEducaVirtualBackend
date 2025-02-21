@@ -48,7 +48,7 @@ class PersonaController extends Controller
         ];
 
         $query=DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?",[$solicitud]);
-        
+
         try{
             $response = [
                 'validated' => true, 
@@ -68,5 +68,127 @@ class PersonaController extends Controller
         }
 
         return new JsonResponse($response,$estado);
+    }
+
+    public function guardarPersona(Request $request){
+
+        $request->merge([
+            'iTipoPersId' => 1, // Siempre persona natural
+        ]);
+        $parametros = $this->validateGuardarPersona($request);
+
+        try {
+            $data = DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function guardarPersonaFamiliar(Request $request)
+    {
+        $parametros = [
+            $request->iPersId,
+            $request->bEsRepresentante,
+            $request->iTipoFamiliarId,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->iTipoEstCivId,
+            $request->cPersFotografia,
+            $request->cPersDomicilio,
+            $request->iNacionId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
+            $request->iOcupacionId,
+            $request->bFamiliarVivoConEl,
+            $request->iGradoInstId,
+            $request->iCredId,
+        ];
+
+        try {
+            $data = DB::select('execute grl.Sp_INS_personas_familiares ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function searchPersona(Request $request){
+        $parametros = [
+            $request->opcion,
+            $request->iPersId,
+            $request->iTipoPersId,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->iTipoEstCivId,
+            $request->iNacionId,
+            $request->cPersFotografia,
+            $request->cPersRazonSocialNombre,
+            $request->cPersRazonSocialCorto,
+            $request->cPersRazonSocialSigla,
+            $request->iPersRepresentanteLegalId,
+            $request->cPersDomicilio,
+            $request->iTipoSectorId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
+            $request->iPersEstado,
+            $request->cPersCodigoVerificacion,
+            $request->cPersObs,
+        ];
+
+        try {
+            $data = DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?",$parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    private function validateGuardarPersona(Request $request){
+        return $request->validate([
+            'iTipoPersId' => 'required|integer',
+            'iTipoIdentId' => 'required|integer',
+            'cPersDocumento' => 'required|string|min:8|max:15',
+            'cPersPaterno' => 'nullable|string|max:50',
+            'cPersMaterno' => 'nullable|string|max:50',
+            'cPersNombre' => 'required|string|max:50',
+            'cPersSexo' => 'required|size:1',
+            'dPersNacimiento' => 'nullable|date',
+            'iTipoEstCivId' => 'nullable',
+            'iNacionId' => 'nullable|integer',
+            'iPersRepresentanteLegalId' => 'nullable|integer',
+            'cPersDomicilio' => 'nullable|string',
+            'iPaisId' => 'nullable|integer',
+            'iDptoId' => 'nullable|integer',
+            'iPrvnId' => 'nullable|integer',
+            'iDsttId' => 'nullable|integer',
+            'bCrearFicha' => 'nullable|boolean',
+        ]);
     }
 }
