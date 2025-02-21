@@ -313,12 +313,14 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'estudiante'], function () {
 
         Route::post('guardarEstudiante', [EstudiantesController::class, 'guardarEstudiantePersona']);
+        Route::post('actualizaarEstudiante', [EstudiantesController::class, 'actualizaarEstudiantePersona']);
         Route::post('guardarRepresetante', [EstudiantesController::class, 'guardarRepresetantePersona']);
 
         Route::post('searchEstudiantes', [EstudiantesController::class, 'searchEstudiantes']);
         Route::post('searchEstudiante', [EstudiantesController::class, 'searchEstudiante']);
         Route::post('searchRepresentante', [EstudiantesController::class, 'searchRepresentante']);
         Route::post('searchFamiliares', [EstudiantesController::class, 'searchFamiliares']);
+        Route::post('searchFamiliar', [EstudiantesController::class, 'searchFamiliar']);
 
         Route::post('validarEstudiante', [EstudiantesController::class, 'validarEstudiante']);
         Route::post('validarRepresentante', [EstudiantesController::class, 'validarRepresentante']);
@@ -372,5 +374,7 @@ Route::group(['prefix' => 'grl'], function () {
     Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
     Route::post('guardarPersona', [PersonaController::class, 'guardarPersona']);
     Route::post('guardarPersonaFamiliar', [PersonaController::class, 'guardarPersonaFamiliar']);
+    Route::post('actualizarPersonaFamiliar', [PersonaController::class, 'actualizarPersonaFamiliar']);
+    Route::post('borrarPersonaFamiliar', [PersonaController::class, 'borrarPersonaFamiliar']);
     Route::post('searchPersona', [PersonaController::class, 'searchPersona']);
 });
