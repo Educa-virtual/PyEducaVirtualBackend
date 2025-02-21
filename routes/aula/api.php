@@ -114,6 +114,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('/reporte_ranking', [EstadisticasController::class, 'generarReporteNotas']);
         Route::post('/guardar_record', [EstadisticasController::class, 'guardarRecord']);
         Route::post('/obtener-reportes', [EstadisticasController::class, 'obtenerReportes']);
+        Route::post('/eliminar-record', [EstadisticasController::class, 'eliminarRecord']);
 
         Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
         Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);

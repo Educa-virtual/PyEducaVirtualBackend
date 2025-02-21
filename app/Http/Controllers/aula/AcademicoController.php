@@ -147,7 +147,11 @@ class AcademicoController extends Controller
 
         $solicitud = ['',$iiee,2];
 
-        //$data = DB::select('EXEC aula.SP_SEL_academico ?,?,?', $solicitud);
+        $datos = DB::select('EXEC aula.SP_SEL_academico ?,?,?', $solicitud);
+
+        
+
+        $jsonIiee = json_decode($datos[0]->datosIiee,true);
 
         $alumno = json_decode($request->alumnos,true);
         $curso = json_decode($request->cursos,true);
@@ -172,14 +176,31 @@ class AcademicoController extends Controller
             return $acc;
         });
         
-      
+
+        $logo = $jsonIiee[0]["cIieeLogo"];
+        $verLogo = explode(",",$logo);
+        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if (base64_decode($base64Image, true) === false) {
+            $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+        }
+
+        $niveles = $jsonIiee[0]["ant"][0]["cNivelTipoNombre"];
+        $distrito = $jsonIiee[0]["ant"][0]["gd"][0]["cDsttNombre"];
+        $provincia = $jsonIiee[0]["ant"][0]["gd"][0]["gp"][0]["cPrvnNombre"];
+        $departamento  = $jsonIiee[0]["ant"][0]["gd"][0]["gp"][0]["gde"][0]["cDptoNombre"];
+        
         $respuesta = [
-            "iiee"=>"instituto",
-            "codigo"=>"123123",
+            "iiee"=>$jsonIiee[0]["cIieeNombre"],
+            "codigo"=>$jsonIiee[0]["cIieeCodigoModular"],
+            "logo"=>$logo,
             "seccion"=>$seccion,
             "grado"=>$grado,
             "cursos"=>$curso,
             "alumnos"=>$agrupar,
+            "nivel"=>$niveles,
+            "distrito"=>$distrito,
+            "provincia"=>$provincia,
+            "departamento"=>$departamento,
         ];
 
         $pdf = PDF::loadView('administracion.reporte_academico_grado', $respuesta)

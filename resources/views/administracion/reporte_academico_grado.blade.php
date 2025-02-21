@@ -191,10 +191,10 @@
         </div>
         
         <div class="logo-izquierda">
-            <img src="" style="height: 60px;">
+            <img src="{{$logo}}" style="height: 60px;">
         </div>
         <div class="logo-derecha">
-            <img src="" style="height: 50px;" >
+            <img src="{{$logo}}" style="height: 50px;" >
         </div>
         
         <div class="titulo"><u>REPORTE ACADEMICO</u> </div>  
@@ -202,7 +202,7 @@
         <div class="table-flotante-izquierda">
            
             <aside>
-                <div>Nivel Educativo : </div>
+                <div>Nivel Educativo : {{$nivel}}</div>
                 <div>Año : {{date('Y')}}</div>
                 <div>Grado : {{$grado}}</div>
                 <div>Seccion : {{$seccion}}</div>
@@ -212,9 +212,9 @@
         <div class="table-flotante-derecha">
             <aside>
                 
-                <div>Distrito : </div>
-                <div>Provincia : </div> 
-                <div>Departamento : </div>              
+                <div>Distrito : {{$distrito}}</div>
+                <div>Provincia : {{$provincia}}</div> 
+                <div>Departamento : {{$departamento}}</div>              
             </aside>
         </div>        
     </header>
