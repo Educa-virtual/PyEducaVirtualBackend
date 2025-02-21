@@ -141,7 +141,10 @@ class AcademicoController extends Controller
     }
     public function reporteGrado(Request $request){
         
-        // $documento = '41789603';
+        $iiee = $request->iIieeId;
+        $grado = $request->nombreGrado;
+        $seccion = $request->nombreSeccion;
+
         $alumno = json_decode($request->alumnos,true);
         $curso = json_decode($request->cursos,true);
         $agrupar =  array_reduce($alumno, function($acc, $alumno){
@@ -162,14 +165,15 @@ class AcademicoController extends Controller
         
             // Asignamos el promedio del curso al estudiante correspondiente
             $acc[$iEstudianteId][$cCursoNombre] = $nDetMatrPromedio;
-        
             return $acc;
         });
         
-        return ($agrupar);
+      
         $respuesta = [
             "iiee"=>"instituto",
             "codigo"=>"123123",
+            "seccion"=>$seccion,
+            "grado"=>$grado,
             "cursos"=>$curso,
             "alumnos"=>$agrupar,
         ];

@@ -202,9 +202,10 @@
         <div class="table-flotante-izquierda">
            
             <aside>
-                <div>Estudiante : </div>
                 <div>Nivel Educativo : </div>
                 <div>Año : {{date('Y')}}</div>
+                <div>Grado : {{$grado}}</div>
+                <div>Seccion : {{$seccion}}</div>
             </aside>
             
         </div>    
@@ -221,6 +222,11 @@
         
         <table class="cuerpo">
             <tr>
+                <th class="cabecera-table"></th>
+                <th class="cabecera-table"></th>
+                <th colspan="{{count($cursos)}}" class="cabecera-table">ÁREA CURRICULAR</th>
+            </tr>
+            <tr>
                 <th class="cabecera-table">Nro</th>
                 <th class="cabecera-table">Nombres y Apellidos</th>
                 @foreach ($cursos as $list)
@@ -230,16 +236,53 @@
             
             @foreach($alumnos as $list)
                 <tr>
+                <td>{{$loop->index+1}}</td>
                 <td class="lista-table">{{$list["cEstNombres"]}} {{$list["cEstPaterno"]}} {{$list["cEstMaterno"]}}</td>
-                
+                @foreach ($cursos as $item)
+                    <th class="cabecera-table">{{$list[$item]}}</th>
+                @endforeach        
                 </tr>
             @endforeach
+        </table>
+ 
+    </main>
+    <hr>
+    <main>
+        
+        <table class="cuerpo">
+            <tr>
+                <th class="cabecera-table"></th>
+                <th class="cabecera-table"></th>
+                <th colspan="{{count($cursos)}}" class="cabecera-table">ÁREAS POR ADECUAR (RVM 094-2020-MINEDU)</th>
+                <th class="cabecera-table"></th>
+            </tr>
+            <tr>
+                <th class="cabecera-table">Nro</th>
+                <th class="cabecera-table">Nombres y Apellidos</th>
+                @foreach ($cursos as $list)
+                    <th class="cabecera-table">{{$list}}</th>
+                @endforeach
+                <th class="cabecera-table">Promedio</th>
+            </tr>
             
-            
+            @foreach($alumnos as $list)
+                <tr>
+                <td>{{$loop->index+1}}</td>
+                <td class="lista-table">{{$list["cEstNombres"]}} {{$list["cEstPaterno"]}} {{$list["cEstMaterno"]}}</td>
+                @php
+                $total=0;    
+                @endphp
+                @foreach ($cursos as $item)
+                    
+                    <th class="cabecera-table">{{($total+=(intval($list[$item]) * 3) / 8 + 2.5) ? null : null}} {{((intval($list[$item]) * 3) / 8 + 2.5) ?? '-'}}</th>
+                @endforeach
+                <td>{{$total}}</td>
+                </tr>
+            @endforeach
         </table>
         <p>Reporte de notas del estudainte emitido por la institucion Educativa: {{ $iiee }} Codigo Modular: {{$codigo}}</p>
         <p>Emitido: {{date("d \d\\e m \d\\e\l Y \H\o\\r\a: H:m:s")}}</p>
-    </main>    
+    </main>
     <script type="text/php">
         if ( isset($pdf) ) {
             $pdf->page_script('
