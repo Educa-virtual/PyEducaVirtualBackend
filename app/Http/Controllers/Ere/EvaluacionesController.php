@@ -23,7 +23,7 @@ class EvaluacionesController extends ApiController
 {
     public function __construct()
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));//new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length')); //new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
 
     /*public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
@@ -74,7 +74,6 @@ class EvaluacionesController extends ApiController
                 if (isset($value->iEvaluacionId)) {
                     $value->iEvaluacionIdxHash = $this->hashids->encode($value->iEvaluacionId);
                 }
-
             }
             return $this->successResponse(
                 $evaluaciones,
@@ -313,7 +312,6 @@ class EvaluacionesController extends ApiController
                 DB::table('ere.examen_cursos')->insert([
                     'iEvaluacionId' => $iEvaluacionId,
                     'iCursoNivelGradId' => $curso['iCursoNivelGradId'],
-                    //'dtExamenFechaInicio'=>$curso['dtExamenFechaInicio']
                 ]);
             }
 
@@ -621,7 +619,8 @@ class EvaluacionesController extends ApiController
         }
     }
 
-    public function obtenerAreasPorEvaluacionyEspecialista(Request $request) {
+    public function obtenerAreasPorEvaluacionyEspecialista(Request $request)
+    {
         $iPersId = $request->input('iPersId');
         try {
             $iEvaluacionId = $this->hashids->decode($request->input('iEvaluacionId'))[0];
@@ -667,7 +666,8 @@ class EvaluacionesController extends ApiController
                     'c.cCursoImagen',
                     'g.cGradoNombre',
                     'g.cGradoAbreviacion',
-                    'g.cGradoRomanos', 'aniti.cNivelTipoNombre'
+                    'g.cGradoRomanos',
+                    'aniti.cNivelTipoNombre'
                 )
                 ->where('ec.iEvaluacionId', $iEvaluacionId) // Filtrar por la evaluación seleccionada
                 ->where('ed.iDocenteId', $iDocenteId)       // Filtrar por el docente relacionado
@@ -687,9 +687,9 @@ class EvaluacionesController extends ApiController
                     'ids' => NULL
                 ];
                 $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-                $fila->iCursosNivelGradId=$this->hashids->encode($fila->iCursosNivelGradId);
+                $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
                 //$fila->iCursoId=$this->hashids->encode($fila->iCursosNivelGradId);
-                $fila->iCantidadPreguntas=PreguntasRepository::contarPreguntasEre($preguntasDB);
+                $fila->iCantidadPreguntas = PreguntasRepository::contarPreguntasEre($preguntasDB);
             }
 
             // Retornar los resultados exitosamente
@@ -1052,5 +1052,32 @@ class EvaluacionesController extends ApiController
             'iPreguntaId' => $validatedData['iPreguntaId'],
         ]);
         return response()->json($result);
+    }
+
+    public function guardarFechaCantidadExamenCursos(Request $request)
+    {
+        $parametros = [
+            $request->iEvaluacionId,
+            $request->iCursoNivelGradId,
+            $request->dtExamenFechaInicio          ??  NULL,
+            $request->iExamenCantidadPreguntas     ??  NULL
+        ];
+
+        try {
+            $data = DB::select('exec ere.Sp_UPD_examenCursosxdtExamenFechaInicioxiExamenCantidadPreguntas ?,?,?,?', $parametros);
+            if ($data[0]->iEvaluacionId > 0) {
+
+                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return response()->json($response, $codeResponse);
     }
 }
