@@ -246,7 +246,7 @@
         </table>
  
     </main>
-    <hr>
+    <br>
     <main>
         
         <table class="cuerpo">

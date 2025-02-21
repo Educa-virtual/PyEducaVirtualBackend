@@ -22,7 +22,7 @@ class AcademicoController extends Controller
         ];
     
         try {
-            $data = DB::select('EXEC aula.SP_SEL_academico ?,?', $solicitud);
+            $data = DB::select('EXEC aula.SP_SEL_academico ?,?,1', $solicitud);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;
         } catch (Exception $e) {
@@ -63,7 +63,7 @@ class AcademicoController extends Controller
             $documento,
             $iiee,
         ];
-        $data = DB::select('EXEC aula.SP_SEL_academico ?,?', $solicitud);
+        $data = DB::select('EXEC aula.SP_SEL_academico ?,?,1', $solicitud);
         
         $columna = [];
         $fila = [];
@@ -144,6 +144,10 @@ class AcademicoController extends Controller
         $iiee = $request->iIieeId;
         $grado = $request->nombreGrado;
         $seccion = $request->nombreSeccion;
+
+        $solicitud = ['',$iiee,2];
+
+        //$data = DB::select('EXEC aula.SP_SEL_academico ?,?,?', $solicitud);
 
         $alumno = json_decode($request->alumnos,true);
         $curso = json_decode($request->cursos,true);
