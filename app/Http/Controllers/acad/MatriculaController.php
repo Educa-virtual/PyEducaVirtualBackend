@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use App\Services\ParseSqlErrorService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,17 +13,12 @@ use Hashids\Hashids;
 class MatriculaController extends Controller
 {
     protected $hashids;
-    protected $iMatrId;
-    protected $iEstudianteId;
-    protected $iSemAcadId;
-    protected $iYAcadId;
-    protected $iTipoMatrId;
-    protected $iCurrId;
-
+    protected $parseSqlErrorService;
 
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->parseSqlErrorService = new ParseSqlErrorService;
     }
 
     public function list(Request $request)
@@ -103,7 +99,8 @@ class MatriculaController extends Controller
             $codeResponse = 200;
         }
         catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }        
         return new JsonResponse($response, $codeResponse);
@@ -181,12 +178,14 @@ class MatriculaController extends Controller
             $request->cMatrObservacion,
             $request->iCredSesionId
         ];
-        $data = DB::select('EXEC acad.Sp_INS_matricula ?,?,?,?,?,?,?,?,?,?', $parametros);
-        if( $data[0]->iResult ) {
+
+        try {
+            $data = DB::select('EXEC acad.Sp_INS_matricula ?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } else {
-            $response = ['validated' => false, 'message' => $data[0]->cMensaje, 'data' => []];
+        } catch(\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
@@ -215,7 +214,50 @@ class MatriculaController extends Controller
             $codeResponse = 200;
         }
         catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function searchMatricula(Request $request)
+    {
+        $parametros = [
+            $request->iMatrId,
+            $request->iCredSesionId,
+        ];
+
+        try {
+            $data = DB::select("EXEC acad.Sp_SEL_matriculaPorId ?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function deleteMatricula(Request $request)
+    {
+        $parametros = [
+            $request->iMatrId,
+            $request->iCredSesionId,
+        ];
+
+        try {
+            $data = DB::select("EXEC acad.Sp_DEL_matriculaPorId ?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
         

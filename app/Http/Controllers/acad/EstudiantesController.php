@@ -5,10 +5,12 @@ namespace App\Http\Controllers\acad;
 use App\Http\Controllers\Controller;
 use App\Services\LeerExcelService;
 use App\Services\FormatearExcelPadresService;
+use App\Services\ParseSqlErrorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
+use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
 
 class EstudiantesController extends Controller
 {
@@ -16,12 +18,14 @@ class EstudiantesController extends Controller
     protected $iEstudianteId;
     protected $leerExcelService;
     protected $formatearExcelPadresService;
+    protected $parseSqlErrorService;
 
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
         $this->leerExcelService = new LeerExcelService();
         $this->formatearExcelPadresService = new FormatearExcelPadresService();
+        $this->parseSqlErrorService = new ParseSqlErrorService();
     }
 
     public function obtenerCursosXEstudianteAnioSemestre(Request $request)
@@ -137,9 +141,8 @@ class EstudiantesController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function searchEstudiante(Request $request){
+    public function searchEstudiantes(Request $request){
         $parametros = [
-            'SIMPLE',
             $request->iEstudianteId,
             $request->iPersId,
             $request->iCurrId,
@@ -152,12 +155,31 @@ class EstudiantesController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas ?,?,?,?,?,?,?,?,?', $parametros);
 
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function searchEstudiante(Request $request){
+        $parametros = [
+            $request->iEstudianteId,
+            $request->iPersId,
+            $request->cEstCodigo
+        ];
+        try {
+            $data = DB::select('EXEC acad.Sp_SEL_estudiante_persona ?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
 
@@ -352,23 +374,6 @@ class EstudiantesController extends Controller
             $parametros = [ $data[0]->iPersId ];
             $response = ['validated' => false, 'message' => 'Se obtuvo la información', 'data' => [ 'persona' => $data[0]]];
             $codeResponse = 200;
-        }
-        return new JsonResponse($response, $codeResponse);
-    }
-
-    public function buscarCodigo(Request $request)
-    {
-        $parametros = [
-            'SIMPLE',
-            $request->cEstCodigo
-        ];
-        try {
-            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas @_tipoConsulta = ?, @_cEstCodigo = ?', $parametros);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
     }
