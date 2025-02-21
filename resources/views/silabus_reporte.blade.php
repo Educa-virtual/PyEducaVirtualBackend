@@ -135,14 +135,14 @@
             @if (!empty($query->metodo))
                 @foreach (json_decode($query->metodo) as $tipo)
                 <tr>
-                    <th class="sin_bordes">{{$tipo->cTipoMetNombre}}</th>
+                    <th class="sin_bordes">{{$tipo->cTipoMetNombre ?? '-'}}</th>
                 </tr>
                 @if (!empty($tipo->metodologias))
                     <tr>
                         <td class="sin_bordes">
                             <ul>
                             @foreach ($tipo->metodologias as $met)
-                                <li>{{$met->cSilMetDescripcion}}</li>
+                                <li>{{$met->cSilMetDescripcion ?? '-'}}</li>
                             @endforeach
                             </ul>
                         </td>
@@ -165,8 +165,9 @@
                 <td>
                     <ul>
                     @foreach (json_decode($query->recursos) as $rec)
-                            <li>{{$rec->cRecSilaboDescripcion}}</li>
-                            
+
+                            <li>{{$rec->cRecSilaboDescripcion ?? '-'}}</li>
+                        
                             @if (!empty($rec->recursosdidacticos))
                                 <ul>
                                 @foreach ($rec->recursosdidacticos as $recur)
@@ -237,16 +238,16 @@
                         @if (!empty($list->indicadores))
                             @foreach($list->indicadores AS $indi)
                             <tr>
-                                <td>{{$indi->iIndActSemanaEval}}</td>
-                                <td>{{$indi->cTipoIndLogNombre}}</td>
-                                <td>{{$indi->cIndActNumero}}</td>
+                                <td>{{$indi->iIndActSemanaEval ?? '-'}}</td>
+                                <td>{{$indi->cTipoIndLogNombre ?? '-'}}</td>
+                                <td>{{$indi->cIndActNumero ?? '-'}}</td>
                             </tr>
                             @endforeach
                         @endif
                         <tr>
-                            <td>{{$list->iSilaboActAprendSemanaEval}}</td>
-                            <td>{{$list->cSilaboActIndLogro}}</td>
-                            <td>{{intval($list->cSilaboActAprendNumero)}}</td>
+                            <td>{{$list->iSilaboActAprendSemanaEval ?? '-'}}</td>
+                            <td>{{$list->cSilaboActIndLogro ?? '-'}}</td>
+                            <td>{{intval($list->cSilaboActAprendNumero) ?? '-'}}</td>
                         </tr>
                     @endforeach
                 @else
@@ -268,7 +269,7 @@
                     <td>
                         <ul>
                         @foreach(json_decode($query->detalles) AS $det)
-                            <li>{{$det->cDetEvalDetalles}}</li>
+                            <li>{{$det->cDetEvalDetalles ?? '-'}}</li>
                         @endforeach
                         </ul>
                     </td>

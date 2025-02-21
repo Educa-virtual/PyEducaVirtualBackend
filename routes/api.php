@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\acad\EstudiantesController;
+use App\Http\Controllers\acad\GradosController;
+use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\Ere\InstitucionesEducativasController;
 use App\Http\Controllers\Ere\CapacidadesController;
 use App\Http\Controllers\Ere\CompetenciasController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\api\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
 use App\Http\Controllers\api\acad\InstitucionesEducativasController as AcadInstitucionesEducativasController;
 use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Controllers\api\grl\TipoIdentificacionController;
 use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\AuthController;
@@ -32,7 +36,6 @@ use App\Http\Controllers\seg\AuditoriaAccesosFallidosController;
 use App\Http\Controllers\seg\AuditoriaController;
 use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
-use App\Http\Controllersapi\acad\EstudiantesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
 
@@ -306,6 +309,36 @@ Route::group(['prefix' => 'acad'], function () {
         //* DELETE: Periodos académicos de un calendario
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
     });
+
+    Route::group(['prefix' => 'estudiante'], function () {
+
+        Route::post('guardarEstudiante', [EstudiantesController::class, 'guardarEstudiantePersona']);
+        Route::post('guardarRepresetante', [EstudiantesController::class, 'guardarRepresetantePersona']);
+
+        Route::post('searchEstudiante', [EstudiantesController::class, 'searchEstudiante']);
+        Route::post('searchRepresentante', [EstudiantesController::class, 'searchRepresentante']);
+        Route::post('searchFamiliares', [EstudiantesController::class, 'searchFamiliares']);
+
+        Route::post('validarEstudiante', [EstudiantesController::class, 'validarEstudiante']);
+        Route::post('validarRepresentante', [EstudiantesController::class, 'validarRepresentante']);
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
+
+        Route::post('buscarCodigo', [EstudiantesController::class, 'buscarCodigo']);
+    });
+
+    Route::group(['prefix' => 'matricula'], function () {
+
+        Route::post('searchGrados', [MatriculaController::class, 'searchGrados']);
+        Route::post('searchSecciones', [MatriculaController::class, 'searchSecciones']);
+        Route::post('searchTurnos', [MatriculaController::class, 'searchTurnos']);
+
+        Route::post('searchGradoSeccionTurnoConf', [MatriculaController::class, 'searchGradoSeccionTurnoConf']);
+        Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
+        Route::get('list', [MatriculaController::class, 'list']);
+
+        Route::post('searchMatriculas', [MatriculaController::class, 'search']);
+        Route::post('guardarMatricula', [MatriculaController::class, 'guardar']);
+    });
 });
 
 Route::group(['prefix' => 'seg'], function () {
@@ -335,3 +368,9 @@ Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']
 Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
 
+Route::group(['prefix' => 'grl'], function () {
+    Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
+    Route::post('guardarPersona', [PersonaController::class, 'guardarPersona']);
+    Route::post('guardarPersonaFamiliar', [PersonaController::class, 'guardarPersonaFamiliar']);
+    Route::post('searchPersona', [PersonaController::class, 'searchPersona']);
+});
