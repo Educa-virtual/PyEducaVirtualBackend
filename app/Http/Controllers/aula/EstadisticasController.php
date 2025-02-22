@@ -158,6 +158,7 @@ class EstadisticasController extends Controller
             $year = $request->input('year');
             $grado = $request->input('grado');
             $baseUrl = $request->input('pdfBaseUrl');
+            $merito = $request->input('merito');
     
             if (!$codModular) {
                 return response()->json(['validated' => false, 'message' => 'El parámetro codModular es requerido.'], 400);
@@ -182,6 +183,9 @@ class EstadisticasController extends Controller
             }
             if ($grado) {
                 $query->where('iNivelGradoId', $grado);
+            }
+            if($merito){
+                $query->where('cTipoOrdenMerito',$merito);
             }
             $reportes = $query->orderBy('dtReporteCreacion', 'desc')->get();
             if ($reportes->isEmpty()) {
