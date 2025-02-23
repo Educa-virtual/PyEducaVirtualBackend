@@ -91,6 +91,16 @@ class EstadisticasController extends Controller
         $resultado = DB::select('EXEC acad.Sp_SEL_GenerarReporteNotas ?, ?, ?, ?', [
             $year_id, $grado_id, $merito_id, $sede_id
         ]);
+
+        // Verifica si no se obtuvo ningún registro
+        if(empty($resultado)) {
+            return new JsonResponse([
+                'validated' => false,
+                'message' => 'No existen datos para el año y grado seleccionados',
+                'data' => []
+            ], 400);
+        }
+
         $respuesta = [
             "documento_enviado"=>$documento_capturado,
             "year_capturado"=>$year_capturado,
@@ -105,14 +115,15 @@ class EstadisticasController extends Controller
         ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true])
         ->setPaper('a4', 'landscape');
            
-        $filename = 'reporte_' . time() . '.pdf'; // Nombre único
+        $filename = 'reporte_' . time() . '.pdf'; 
         $filepath = 'reports/' . $filename;
-        // Storage::put($filepath, $pdf->output());
         Storage::disk('public')->put($filepath, $pdf->output());
-        // Storage::put('public/reports/' . $filename, $pdf->output()); 22
-        // $url_generado = Storage::url('reports/' . $filename);
-        $url_generado = asset('storage/reports/' . $filename);
-        // $url_generado = asset('storage/reports/' . $filename); 22
+
+        $baseUrl = $request->input('pdfBaseUrl', config('app.url'));
+        
+        // $url_generado = asset('storage/reports/' . $filename);
+        // $url_generado = rtrim($baseUrl, '/') . '/storage/reports/' . $filename;
+        $url_generado = $filepath; 
 
         $solicitud = [
             'cCodigoModular' => $codigo_modular,
@@ -124,7 +135,8 @@ class EstadisticasController extends Controller
             'cUrlGenerado' => $url_generado,
             'cAnio' => $year_capturado,
             'iSemAcadId' => $semestre_acad_id,
-            'iYAcadId' => $year_id
+            'iYAcadId' => $year_id,
+            'dtReporteCreacion'   => DB::raw('GETDATE()') 
         ];
 
         try {
@@ -145,14 +157,15 @@ class EstadisticasController extends Controller
             $codModular = $request->input('codModular');
             $year = $request->input('year');
             $grado = $request->input('grado');
+            $baseUrl = $request->input('pdfBaseUrl');
+            $merito = $request->input('merito');
     
             if (!$codModular) {
                 return response()->json(['validated' => false, 'message' => 'El parámetro codModular es requerido.'], 400);
             }
-    
-            // Construir la consulta con los filtros opcionales
             $query = DB::table('acad.reportes_record')
             ->select([
+                'iReporteId',
                 'cCodigoModular',
                 'iSedeId',
                 'cTipoOrdenMerito',
@@ -165,20 +178,69 @@ class EstadisticasController extends Controller
                 DB::raw("FORMAT(dtReporteCreacion, 'yyyy-MM-dd HH:mm:ss') as dtReporteCreacion")
             ])
             ->where('cCodigoModular', $codModular);
-    
             if ($year) {
                 $query->where('iYAcadId', $year);
             }
-    
             if ($grado) {
                 $query->where('iNivelGradoId', $grado);
             }
-    
+            if($merito){
+                $query->where('cTipoOrdenMerito',$merito);
+            }
             $reportes = $query->orderBy('dtReporteCreacion', 'desc')->get();
+            if ($reportes->isEmpty()) {
+                return new JsonResponse([
+                    'validated' => false,
+                    'message' => 'No existen Registros para el año y grado seleccionados',
+                    'data' => []
+                ], 400);
+            }
+
+            foreach ($reportes as $reporte) 
+            {
+                $reporte->cUrlGenerado = rtrim($baseUrl, '/') . '/storage/' . $reporte->cUrlGenerado;
+            }
     
             return response()->json(['validated' => true, 'data' => $reportes], 200);
-        } catch (Exception $e) {
+        } 
+        catch (Exception $e) 
+        {
             return response()->json(['validated' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function eliminarRecord(Request $request)
+    {
+        try {
+            $id = $request->input('id');
+            if (!$id) {
+                return response()->json([
+                    'validated' => false, 
+                    'message' => 'El parámetro id es requerido.'
+                ], 400);
+            }
+            
+            // Se utiliza 'iReporteId' para eliminar
+            $deleted = DB::table('acad.reportes_record')
+                        ->where('iReporteId', $id)
+                        ->delete();
+    
+            if ($deleted) {
+                return response()->json([
+                    'validated' => true, 
+                    'message' => 'Registro eliminado correctamente.'
+                ], 200);
+            } else {
+                return response()->json([
+                    'validated' => false, 
+                    'message' => 'Registro no encontrado.'
+                ], 404);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'validated' => false, 
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
     

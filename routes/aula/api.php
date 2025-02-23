@@ -109,11 +109,12 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::group(['prefix' => 'academico'], function () {
         Route::post('obtener_datos', [AcademicoController::class, 'obtenerDatos']);
         Route::post('reporte_academico', [AcademicoController::class, 'reporte']);
-        Route::post('reporte_grado', [AcademicoController::class, 'reportGrado']);
+        Route::post('reporte_grado', [AcademicoController::class, 'reporteGrado']);
         Route::post('obtener_academico_grado', [AcademicoController::class, 'obtenerAcademicoGrado']);
         Route::post('/reporte_ranking', [EstadisticasController::class, 'generarReporteNotas']);
         Route::post('/guardar_record', [EstadisticasController::class, 'guardarRecord']);
         Route::post('/obtener-reportes', [EstadisticasController::class, 'obtenerReportes']);
+        Route::post('/eliminar-record', [EstadisticasController::class, 'eliminarRecord']);
 
         Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
         Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
