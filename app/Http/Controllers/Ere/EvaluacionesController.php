@@ -13,6 +13,7 @@ use App\Models\Ere\EreEvaluacion;
 use App\Repositories\Acad\AreasRepository;
 use App\Repositories\Ere\EvaluacionesRepository;
 use App\Repositories\PreguntasRepository;
+use App\Services\Ere\AreasService;
 use App\Services\Ere\Preguntas\ExportarPreguntasPorAreaWordService;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -687,7 +688,9 @@ class EvaluacionesController extends ApiController
                     'ids' => NULL
                 ];
                 $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+                $fila->iEvaluacionid = $request->input('iEvaluacionId');
                 $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
+                $fila->bTieneArchivo = AreasService::tieneArchivoPdfSubido($fila->iEvaluacionid, $fila->iCursosNivelGradId);
                 //$fila->iCursoId=$this->hashids->encode($fila->iCursosNivelGradId);
                 $fila->iCantidadPreguntas = PreguntasRepository::contarPreguntasEre($preguntasDB);
             }
