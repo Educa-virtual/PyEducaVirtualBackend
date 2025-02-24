@@ -19,6 +19,7 @@ use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\ValidatedData;
+use Illuminate\Http\Response;
 
 class EvaluacionesController extends ApiController
 {
@@ -85,13 +86,11 @@ class EvaluacionesController extends ApiController
         }
     }
 
-    public function obtenerEvaluacion(Request $request)
+    public function obtenerEvaluacion($evaluacionId)
     {
-        //die($this->hashids->encode($request->iEvaluacionId));
-        if (is_numeric($request->iEvaluacionId)) {
-            $iEvaluacionId = $request->iEvaluacionId;
-        } else {
-            $iEvaluacionId = $this->hashids->decode($request->iEvaluacionId)[0];
+        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -99,7 +98,7 @@ class EvaluacionesController extends ApiController
                 'SELECT * FROM ere.evaluacion AS e
                  INNER JOIN ere.nivel_evaluaciones AS ne ON e.iNivelEvalId=ne.iNivelEvalId
                  WHERE iEvaluacionId = ?',
-                [$iEvaluacionId]
+                [$evaluacionIdDescifrado[0]]
             );
             return $this->successResponse(
                 $evaluacion,
@@ -620,90 +619,7 @@ class EvaluacionesController extends ApiController
         }
     }
 
-    public function obtenerAreasPorEvaluacionyEspecialista(Request $request)
-    {
-        $iPersId = $request->input('iPersId');
-        try {
-            $iEvaluacionId = $this->hashids->decode($request->input('iEvaluacionId'))[0];
-        } catch (Exception $ex) {
-            return $this->errorResponse($ex->getMessage(), 'Error al decodificar hash iEvaluacionId');
-        }
 
-        if (!$iPersId) {
-            return $this->errorResponse(null, 'El parámetro iPersId es obligatorio.');
-        }
-
-        if (!$iEvaluacionId) {
-            return $this->errorResponse(null, 'El parámetro iEvaluacionId es obligatorio.');
-        }
-
-        try {
-            $iDocenteId = DB::table('acad.docentes')
-                ->where('iPersId', $iPersId)
-                ->value('iDocenteId');
-
-            if (!$iDocenteId) {
-                return $this->errorResponse(null, 'No se encontró un docente relacionado con el iPersId proporcionado.');
-            }
-
-            $resultados = DB::table('acad.especialistas_DRE as ed')
-                ->join('ere.examen_cursos as ec', 'ed.iCursosNivelGradId', '=', 'ec.iCursoNivelGradId')
-                ->join('acad.cursos_niveles_grados as cng', 'ed.iCursosNivelGradId', '=', 'cng.iCursosNivelGradId')
-                ->join('acad.cursos as c', 'cng.iCursoId', '=', 'c.iCursoId')
-                ->join('acad.nivel_grados as angr', 'cng.iNivelGradoId', '=', 'angr.iNivelGradoId')
-                ->join('acad.grados as g', 'angr.iGradoId', '=', 'g.iGradoId')
-                ->join('acad.nivel_ciclos as anici', 'angr.iNivelCicloId', '=', 'anici.iNivelCicloId')
-                ->join('acad.nivel_tipos as aniti', 'anici.iNivelTipoId', '=', 'aniti.iNivelTipoId')
-                ->join('acad.niveles as ani', 'aniti.iNivelId', '=', 'ani.iNivelId')
-                ->select(
-                    'c.iCursoId',
-                    'ed.iEspecialistaId',
-                    'ed.dtEspecialistaInicio',
-                    'ed.dtEspecialistaRslDesignacion',
-                    'ed.iDocenteId',
-                    'ed.iCursosNivelGradId',
-                    'c.cCursoNombre',
-                    'c.cCursoDescripcion',
-                    'c.cCursoImagen',
-                    'g.cGradoNombre',
-                    'g.cGradoAbreviacion',
-                    'g.cGradoRomanos',
-                    'aniti.cNivelTipoNombre'
-                )
-                ->where('ec.iEvaluacionId', $iEvaluacionId) // Filtrar por la evaluación seleccionada
-                ->where('ed.iDocenteId', $iDocenteId)       // Filtrar por el docente relacionado
-                ->get();
-
-            if ($resultados->isEmpty()) {
-                return $this->errorResponse(null, 'No se encontraron datos para los cursos asociados.');
-            }
-
-            foreach ($resultados as $fila) {
-                $params = [
-                    'iEvaluacionId' => $iEvaluacionId,
-                    'iCursosNivelGradId' => $fila->iCursosNivelGradId,
-                    'busqueda' => '',
-                    'iTipoPregId' => 0,
-                    'bPreguntaEstado' => 1,
-                    'ids' => NULL
-                ];
-                $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-                $fila->iEvaluacionid = $request->input('iEvaluacionId');
-                $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
-                $fila->bTieneArchivo = AreasService::tieneArchivoPdfSubido($fila->iEvaluacionid, $fila->iCursosNivelGradId);
-                //$fila->iCursoId=$this->hashids->encode($fila->iCursosNivelGradId);
-                $fila->iCantidadPreguntas = PreguntasRepository::contarPreguntasEre($preguntasDB);
-            }
-
-            // Retornar los resultados exitosamente
-            return $this->successResponse(
-                $resultados,
-                'Datos obtenidos correctamente.'
-            );
-        } catch (Exception $e) {
-            return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
-        }
-    }
 
     public function obtenerEspDremCurso(Request $request)
     {

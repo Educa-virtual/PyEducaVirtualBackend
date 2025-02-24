@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Http\Response;
 
 class CursosController extends Controller
 {
@@ -58,7 +59,7 @@ class CursosController extends Controller
         try {
             $data = DB::select('exec acad.Sp_SEL_cursos
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            
+
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -67,5 +68,10 @@ class CursosController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
+    }
+
+    public function listarCursosPorNivel(Request $request) {
+        $data = DB::select('[acad].SP_SEL_CursosXiNivelTipoId @iNivelTipoId=?', [$request->query('nivel')]);
+        return response()->json(['status' => 'Success', 'message' => $data], Response::HTTP_OK);
     }
 }

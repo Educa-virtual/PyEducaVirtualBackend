@@ -4,6 +4,7 @@ use App\Http\Controllers\Ere\AlternativasController;
 use App\Http\Controllers\Ere\AreasController;
 use App\Http\Controllers\Ere\DesempenosController;
 use App\Http\Controllers\Ere\EncabezadoPreguntasController;
+use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\Ere\EvaluacionController;
 use App\Http\Controllers\Ere\EvaluacionesController;
 use App\Http\Controllers\Ere\PreguntasController;
@@ -12,16 +13,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'ere'], function () {
 
-    Route::group(['prefix' => 'evaluaciones'], function () {
-        Route::get('obtenerAreasPorEvaluacionyEspecialista', [EvaluacionesController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
-        Route::get('obtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluacion']);
-        Route::post('{evaluacionId}/areas/{areaId}/archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
-        Route::get('{evaluacionId}/areas/{areaId}/archivo-preguntas', [AreasController::class, 'descargarArchivoPdf']);
-        Route::get('{evaluacionId}/areas/{areaId}/matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
-    });
-
-    Route::group(['prefix' => 'areas'], function () {
-
+    Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
+        Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
+        Route::get('especialistas/{especialistaId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
+        Route::post('areas/{areaId}/archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
+        Route::get('areas/{areaId}/archivo-preguntas', [AreasController::class, 'descargarArchivoPdf']);
+        Route::get('areas/{areaId}/matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
     });
 
     Route::group(['prefix' => 'alternativas'], function () {
