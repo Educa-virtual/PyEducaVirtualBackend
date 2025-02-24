@@ -419,9 +419,8 @@ class EstudiantesController extends Controller
     public function importarEstudiantesMatriculasExcel(Request $request)
     {
         $datos_hojas = $this->leerExcelService->leer($request);
-        
-        $datos_hoja = $this->formatearExcelMatriculasService->formatear($datos_hojas);
 
+        $datos_hoja = $this->formatearExcelMatriculasService->formatear($datos_hojas);
         $parametros = [
             $request->iSedeId,
             $request->iSemAcadId,
@@ -433,8 +432,12 @@ class EstudiantesController extends Controller
             json_encode($datos_hoja['estudiantes']),
         ];
 
+        if( count($datos_hoja['estudiantes']) === 0 ) {
+            return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
+        }
+
         try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantes_padres_masivo ?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC acad.Sp_INS_estudiantesMatriculasMasivo ?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -442,7 +445,7 @@ class EstudiantesController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-        
+
         return new JsonResponse($response, $codeResponse);
     }
 }

@@ -30,7 +30,7 @@ class FormatearExcelMatriculasService
 
         // Reemplazar texto a códigos identificadores
         $sexos = ['Hombre' => 'M', 'Mujer' => 'F'];
-        $tipos_docs = ['DNI' => '01', 'CE' => '04', 'RUC' => '06', 'PAS' => '07', 'OT' => '00'];
+        $tipos_docs = ['01' => 'DNI', '04' => 'CE', '06' => 'RUC', '07' => 'PAS', '00' => 'OT'];
 
         foreach($filas as $index_fila => $fila)
         {
@@ -38,7 +38,7 @@ class FormatearExcelMatriculasService
             if($index_fila >= 13)
             {
                 // Ignorar filas sin codigo de estudiante
-                if ( trim($fila['H']) == '') {
+                if ( trim($fila['L']) == '') {
                     continue;
                 }
                 // Limpiar datos de la fila
@@ -48,7 +48,7 @@ class FormatearExcelMatriculasService
                 $estudiantes[] = array(
                     'grado' => $fila['C'],
                     'seccion' => $fila['D'],
-                    'cod_tipo_documento' => $tipos_docs[$fila['E']],
+                    'cod_tipo_documento' => array_search(strtoupper($fila['E']), $tipos_docs) ?: '00',
                     'documento' => $fila['I'],
                     'validado_reniec' => $fila['J'],
                     'codigo_estudiante' => $fila['L'],
