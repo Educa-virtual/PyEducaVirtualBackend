@@ -993,7 +993,7 @@ class EvaluacionesController extends ApiController
                 $codeResponse = 500;
             }
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
 
