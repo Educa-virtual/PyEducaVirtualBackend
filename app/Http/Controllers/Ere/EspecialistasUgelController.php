@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Illuminate\Http\Response;
 
-class EspecialistasDremoController extends Controller
+class EspecialistasUgelController extends Controller
 {
     private $hashids;
 
@@ -22,44 +22,60 @@ class EspecialistasDremoController extends Controller
 
     public function obtenerEspecialistas()
     {
-        $data = DB::select('EXEC [acad].SP_SEL_DocentesXiPerfilId ?', [2]);
+        $data = DB::select('EXEC [acad].SP_SEL_DocentesXiPerfilId ?', [3]);
         foreach ($data as $fila) {
             $fila->iDocenteId = $this->hashids->encode($fila->iDocenteId);
         }
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $data], Response::HTTP_OK);
     }
 
-    public function obtenerAreasPorEspecialista($docenteId)
+    public function obtenerAreasPorEspecialista($ugelId, $docenteId)
     {
+        $ugelIdDescifrado = $this->hashids->decode($ugelId);
         $docenteIdDescifrado = $this->hashids->decode($docenteId);
-        if (empty($docenteIdDescifrado)) {
+        if (empty($ugelIdDescifrado) || empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        $data = DB::select('EXEC acad.SP_SEL_cursoEspecialistaDremoXDocenteId @iDocenteId=?', [$docenteIdDescifrado[0]]);
-        return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $data], Response::HTTP_OK);
+        $data = DB::select(
+            'EXEC [acad].SP_SEL_cursoEspecialistaUgelXDocenteIdXiUgelId @iDocenteId=?, @iUgelId=?',
+            [$docenteIdDescifrado[0], $ugelIdDescifrado[0]]
+        );
+        if (empty($data)) {
+            return response()->json(['status' => 'Success', 'message' => 'No hay datos para los parámetros enviados.'], Response::HTTP_NOT_FOUND);
+        } else {
+            return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $data], Response::HTTP_OK);
+        }
     }
 
-    public function asignarAreaEspecialista($docenteId, Request $request)
+    public function asignarAreaEspecialista($ugelId, $docenteId, Request $request)
     {
+        $ugelIdDescifrado = $this->hashids->decode($ugelId);
         $docenteIdDescifrado = $this->hashids->decode($docenteId);
-        if (empty($docenteIdDescifrado)) {
+        if (empty($ugelIdDescifrado) || empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        DB::statement("EXEC acad.SP_INS_cursoEspecialistaDremo ?,?", [$docenteIdDescifrado[0], $request->iCursosNivelGradId]);
+        DB::statement(
+            "EXEC acad.SP_INS_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?",
+            [$docenteIdDescifrado[0], $ugelIdDescifrado[0], $request->iCursosNivelGradId]
+        );
         return response()->json(['status' => 'Success', 'message' => 'Área asignada correctamente'], Response::HTTP_CREATED);
     }
 
-    public function eliminarAreaEspecialista($docenteId, Request $request)
+    public function eliminarAreaEspecialista($ugelId, $docenteId, Request $request)
     {
+        $ugelIdDescifrado = $this->hashids->decode($ugelId);
         $docenteIdDescifrado = $this->hashids->decode($docenteId);
-        if (empty($docenteIdDescifrado)) {
+        if (empty($ugelIdDescifrado) || empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        DB::statement("EXEC acad.SP_DEL_cursoEspecialistaDremo ?,?", [$docenteIdDescifrado[0], $request->iCursosNivelGradId]);
+        DB::statement(
+            "EXEC acad.SP_DEL_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?",
+            [$docenteIdDescifrado[0], $ugelIdDescifrado[0], $request->iCursosNivelGradId]
+        );
         return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_NO_CONTENT);
     }
 
-    public function obtenerAreasPorEvaluacionyEspecialista($evaluacionId, $docenteId)
+    /*public function obtenerAreasPorEvaluacionyEspecialista($evaluacionId, $docenteId)
     {
         $evaluacionIdDescifrado =  $this->hashids->decode($evaluacionId);
         $docenteIdDescifrado =  $this->hashids->decode($docenteId);
@@ -88,5 +104,5 @@ class EspecialistasDremoController extends Controller
             $fila->iCantidadPreguntas = PreguntasRepository::contarPreguntasEre($preguntasDB);
         }
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);
-    }
+    }*/
 }

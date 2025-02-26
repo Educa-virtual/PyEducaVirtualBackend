@@ -70,8 +70,9 @@ class CursosController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function listarCursosPorNivel(Request $request) {
+    public function listarCursosPorNivel(Request $request)
+    {
         $data = DB::select('[acad].SP_SEL_CursosXiNivelTipoId @iNivelTipoId=?', [$request->query('nivel')]);
-        return response()->json(['status' => 'Success', 'message' => $data], Response::HTTP_OK);
+        return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos', 'data' => $data], Response::HTTP_OK);
     }
 }
