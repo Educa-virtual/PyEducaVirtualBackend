@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\grl;
 
 use App\Http\Controllers\Controller;
+use App\Services\ParseSqlErrorService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,12 +12,20 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PersonaController extends Controller
 {
+    private $parseSqlErrorService;
+
+    public function __construct()
+    {
+        $this->parseSqlErrorService = new ParseSqlErrorService;
+    }
+
     public function __invoke(Request $request)
     {
         return Pdf::loadView('imprimir', ['invoice' => 12312])
             ->setPaper('a4', 'landscape')
             ->name('your-invoice.pdf');
     }
+
     public function list(Request $request){
         $solicitud = [
             $request->opcion,
@@ -59,9 +68,10 @@ class PersonaController extends Controller
             $estado = 200;
 
         } catch(Exception $e){
+            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
             $response = [
                 'validated' => true, 
-                'message' => $e->getMessage(),
+                'message' => $error_message,
                 'data' => [],
             ];
             $estado = 500;
@@ -70,8 +80,8 @@ class PersonaController extends Controller
         return new JsonResponse($response,$estado);
     }
 
-    public function guardarPersona(Request $request){
-
+    public function guardarPersona(Request $request)
+    {
         $request->merge([
             'iTipoPersId' => 1, // Siempre persona natural
         ]);
@@ -82,7 +92,8 @@ class PersonaController extends Controller
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
 
@@ -117,11 +128,74 @@ class PersonaController extends Controller
         ];
 
         try {
-            $data = DB::select('execute grl.Sp_INS_personas_familiares ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('execute grl.Sp_INS_personaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function actualizarPersonaFamiliar(Request $request)
+    {
+        $parametros = [
+            $request->iPersId,
+            $request->iFamiliarId,
+            $request->bEsRepresentante,
+            $request->iTipoFamiliarId,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->iTipoEstCivId,
+            $request->cPersFotografia,
+            $request->cPersDomicilio,
+            $request->iNacionId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
+            $request->iOcupacionId,
+            $request->bFamiliarVivoConEl,
+            $request->iGradoInstId,
+            $request->iCredId,
+        ];
+
+        try {
+            $data = DB::select('execute grl.Sp_UPD_personaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function borrarPersonaFamiliar(Request $request)
+    {
+        $parametros = [
+            $request->iPersId,
+            $request->iFamiliarId,
+            $request->iCredId,
+        ];
+
+        try {
+            $data = DB::select('EXEC grl.Sp_DEL_personaFamiliarPorId ?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
 
@@ -163,7 +237,8 @@ class PersonaController extends Controller
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
 
