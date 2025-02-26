@@ -72,6 +72,6 @@ class EspecialistasUgelController extends Controller
             "EXEC acad.SP_DEL_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?",
             [$docenteIdDescifrado[0], $ugelIdDescifrado[0], $request->iCursosNivelGradId]
         );
-        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_NO_CONTENT);
+        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_OK);
     }
 }
