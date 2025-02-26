@@ -3,12 +3,18 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Services\DividirApellidoNombresService;
 
 class FormatearExcelPadresService
 {
+
+    private $dividirApellidoNombresService;
+
+    public function __construct()
+    {
+        $this->dividirApellidoNombresService = new DividirApellidoNombresService();
+    }
+
     public function __invoke($hojas)
     {
         return $this->formatear($hojas);
@@ -60,9 +66,9 @@ class FormatearExcelPadresService
                     'estado_matricula' => $fila['R'],
                     'padre' => array(
                         'apenom' => $fila['T'],
-                        'paterno' => $this->split_apenom($fila['T'])['paterno'],
-                        'materno' => $this->split_apenom($fila['T'])['materno'],
-                        'nombres' => $this->split_apenom($fila['T'])['nombres'],
+                        'paterno' => $this->dividirApellidoNombresService->dividir($fila['T'])['paterno'],
+                        'materno' => $this->dividirApellidoNombresService->dividir($fila['T'])['materno'],
+                        'nombres' => $this->dividirApellidoNombresService->dividir($fila['T'])['nombres'],
                         'sexo' => $sexos[$fila['Y']],
                         'parentesco' => $fila['AB'],
                         'cod_tipo_documento' => $tipos_docs[$fila['AF']],
@@ -73,9 +79,9 @@ class FormatearExcelPadresService
                     ),
                     'madre' => array(
                         'apenom' => $fila['AK'],
-                        'paterno' => $this->split_apenom($fila['AK'])['paterno'],
-                        'materno' => $this->split_apenom($fila['AK'])['materno'],
-                        'nombres' => $this->split_apenom($fila['AK'])['nombres'],
+                        'paterno' => $this->dividirApellidoNombresService->dividir($fila['AK'])['paterno'],
+                        'materno' => $this->dividirApellidoNombresService->dividir($fila['AK'])['materno'],
+                        'nombres' => $this->dividirApellidoNombresService->dividir($fila['AK'])['nombres'],
                         'sexo' => $sexos[$fila['AL']],
                         'parentesco' => $fila['AM'],
                         'cod_tipo_documento' => $tipos_docs[$fila['AN']],
@@ -86,9 +92,9 @@ class FormatearExcelPadresService
                     ),
                     'apoderado' => array(
                         'apenom' => $fila['AS'],
-                        'paterno' => $this->split_apenom($fila['AS'])['paterno'],
-                        'materno' => $this->split_apenom($fila['AS'])['materno'],
-                        'nombres' => $this->split_apenom($fila['AS'])['nombres'],
+                        'paterno' => $this->dividirApellidoNombresService->dividir($fila['AS'])['paterno'],
+                        'materno' => $this->dividirApellidoNombresService->dividir($fila['AS'])['materno'],
+                        'nombres' => $this->dividirApellidoNombresService->dividir($fila['AS'])['nombres'],
                         'sexo' => $sexos[$fila['AT']],
                         'parentesco' => $fila['AU'],
                         'cod_tipo_documento' => $tipos_docs[$fila['AV']],
@@ -104,62 +110,5 @@ class FormatearExcelPadresService
         $data['estudiantes'] = $estudiantes;
         
         return $data;
-    }
-
-    public function split_apenom($apenom)
-    {
-        // Poner todo en mayúsculas
-        $apenom = strtoupper($apenom);
-
-        // Reemplazar apellido en blanco con asterisco
-        $apenom = str_replace("  ", " * ", $apenom);
-        $apenom = str_replace(" - ", " * ", $apenom);
-
-        $partes = explode(" ", $apenom);
-
-        $parte_usable = [];
-        foreach ( $partes as $index => $parte ) {
-            if (!in_array($parte, ['DE', 'LA', 'DEL', 'LAS', 'LOS', 'DI', 'MC'])) {
-                $parte_usable[] = $index;
-            }
-        }
-
-        $partes_usables = count($parte_usable);
-
-        switch( $partes_usables ) {
-            case 1:
-                // Asumir solo 1 nombre
-                $datos = [
-                    'paterno' => null,
-                    'materno' => null,
-                    'nombres' => implode(" ", $partes),
-                    ];
-                break;
-            case 2:
-                // Asumir 1 apellido y 1 nombre
-                $datos = [
-                    'paterno' => implode(" ", array_slice($partes, 0, $parte_usable[0] + 1)),
-                    'materno' => null,
-                    'nombres' => implode(" ", array_slice($partes, $parte_usable[0] + 1)),
-                ];
-                break;
-            default:
-                if( in_array('*', $partes) ) {
-                    // Asumir segundo apellido en blanco
-                    $datos = [
-                        'paterno' => implode(" ", array_slice($partes, 0, $parte_usable[0] + 1)),
-                        'materno' => null,
-                        'nombres' => implode(" ", array_slice($partes, $parte_usable[1] + 1)),
-                    ];
-                } else {
-                    // Asumir 2 apellidos y 1 ó mas nombres
-                    $datos = [
-                        'paterno' => implode(" ", array_slice($partes, 0, $parte_usable[0] + 1)),
-                        'materno' => implode(" ", array_slice($partes, $parte_usable[0] + 1, $parte_usable[1] - $parte_usable[0])),
-                        'nombres' => implode(" ", array_slice($partes, $parte_usable[1] + 1)),
-                    ];
-                }
-        }
-        return $datos;
     }
 }
