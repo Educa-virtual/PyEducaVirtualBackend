@@ -70,9 +70,9 @@ class CredencialescCredUsuariocClaveController extends Controller
             return response()->json(['validated' => false, 'message' => 'Verifica tu usuario y contraseña'], 401);
         } else {
             $vencimiento = DB::select("
-                SELECT 
+                SELECT
                     DATEDIFF(DAY, c.dtCredRegistro,GETDATE() ) AS iDias
-                FROM seg.credenciales AS c 
+                FROM seg.credenciales AS c
                 WHERE c.cCredUsuario = '" . $credentials['cCredUsuario'] . "'
             ");
             if ($vencimiento[0]->iDias <= 60 && $vencimiento[0]->iDias >= 0) {
@@ -93,7 +93,7 @@ class CredencialescCredUsuariocClaveController extends Controller
             return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
         }
 
-        //Obtener roles 
+        //Obtener roles
         $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
         $data[0]->perfiles = $perfiles;
         if ($data[0]->contactar) {
@@ -116,13 +116,13 @@ class CredencialescCredUsuariocClaveController extends Controller
     {
         $user = count($data) > 0 ? $data[0] : [];
         $modulos = DB::select("
-                            SELECT 
+                            SELECT
                                iModuloId
 							  ,cModuloNombre
-															
+
 							FROM seg.modulos
 							WHERE iModuloEstado = 1
-														
+
 							ORDER BY iModuloOrden ASC
                             ");
         $years = DB::select("
@@ -134,7 +134,7 @@ class CredencialescCredUsuariocClaveController extends Controller
         $user->modulos = $modulos;
         $user->years = $years;
         $user->iDocenteId = $this->hashids->encode($user->iDocenteId);
-
+        $user->iPersId = $this->hashids->encode($user->iPersId);
         return response()->json([
             'accessToken' => $token,
             'token_type' => 'bearer',
