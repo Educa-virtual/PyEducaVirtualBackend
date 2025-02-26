@@ -56,7 +56,7 @@ class EspecialistasDremoController extends Controller
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
         DB::statement("EXEC acad.SP_DEL_cursoEspecialistaDremo ?,?", [$docenteIdDescifrado[0], $request->iCursosNivelGradId]);
-        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_NO_CONTENT);
+        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_OK);
     }
 
     public function obtenerAreasPorEvaluacionyEspecialista($evaluacionId, $personaId)
@@ -66,7 +66,7 @@ class EspecialistasDremoController extends Controller
         if (empty($evaluacionIdDescifrado) || empty($personaIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        $resultados = DB::select('EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @evaluacionId=?, @personaId=?', [$evaluacionIdDescifrado[0], $personaIdDescifrado[0]]);
+        $resultados = DB::select('EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista ?, ?', [$evaluacionIdDescifrado[0], $personaIdDescifrado[0]]);
 
         if (empty($resultados)) {
             return response()->json(['status' => 'Error', 'message' => 'No se encontraron datos para los cursos asociados.'], Response::HTTP_NOT_FOUND);
