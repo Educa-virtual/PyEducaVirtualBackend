@@ -128,4 +128,13 @@ class AreasController extends Controller
         $pdf = PDF::loadView('ere.areas.pdf.matriz-competencias', $data)->setPaper('a4', 'landscape')->set_option("enable_php", true);
         return $pdf->download('Matriz competencias - ' . $evaluacion->cEvaluacionNombre . '.pdf');
     }
+
+    public function actualizarLiberacionAreasPorEvaluacion($evaluacionId) {
+        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        AreasRepository::liberarAreasPorEvaluacion($evaluacionIdDescifrado[0]);
+        return response()->json(['status' => 'Success', 'message' => 'Se han liberado las áreas de la evaluación especificada.'], Response::HTTP_OK);
+    }
 }

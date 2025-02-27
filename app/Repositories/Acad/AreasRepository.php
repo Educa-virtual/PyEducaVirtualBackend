@@ -16,4 +16,9 @@ class AreasRepository
     {
         return DB::select('EXEC ere.Sp_SEL_MatrizEvaluacion @_iEvaluacionId=?, @_iCursosNivelGradId=?', [$iEvaluacionId, $iCursosNivelGradId]);
     }
+
+    public static function liberarAreasPorEvaluacion($iEvaluacionId)
+    {
+        return DB::statement('EXEC [ere].[SP_UPD_CursosEvaluacionLiberacion] @iEvaluacionId=?', [$iEvaluacionId]);
+    }
 }
