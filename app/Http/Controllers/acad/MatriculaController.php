@@ -22,6 +22,35 @@ class MatriculaController extends Controller
     }
 
     /**
+     * Busca grados, secciones y turnos configurados en el año para el colegio
+     * @param Request $request con los parametros
+     * @return JsonResponse { {is_validated, status_message, data}, status_code } 
+     */
+    public function searchGradoSeccionTurnoConf(Request $request)
+    {
+        $parametros = [
+            $request->opcion,
+            $request->iSedeId,
+            $request->iYAcadId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iTurnoId,
+            $request->iCredSesionId,
+        ];
+        try {
+            $data = DB::select("EXEC acad.Sp_SEL_gradoSeccionTurnoConf ?,?,?,?,?,?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }        
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    /**
      * Lista todos los grados
      * @param Request $request
      * @return JsonResponse
@@ -40,6 +69,32 @@ class MatriculaController extends Controller
             $codeResponse = 200;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    /**
+     * Determina el grado de un estudiante segun matriculas pasadas
+     * @param Request $request con los parametros
+     * @return JsonResponse { {is_validated, status_message, data}, status_code }
+     */
+    public function determinarGradoEstudiante(Request $request)
+    {
+        $parametros = [
+            $request->iCredSesionId,
+            $request->iEstudianteId,
+            $request->iYAcadId,
+            $request->iSedeId,
+        ];
+
+        try {
+            $data = DB::select("EXEC acad.Sp_SEL_determinarGradoEstudiante ?,?,?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
