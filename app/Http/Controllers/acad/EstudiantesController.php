@@ -123,15 +123,14 @@ class EstudiantesController extends Controller
             $request->cPersDomicilio,
             $request->iCredId,
             $request->cEstCodigo,
-            $request->cEstUbideo,
-            $request->cEstPartidaNacimiento,
+            $request->cEstUbigeo,
             $request->cEstTelefono,
             $request->cEstCorreo,
             $request->iPersApoderadoId,
         ];
 
         try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             
             $data = DB::select('EXEC acad.Sp_SEL_estudiante_persona ?', [$data[0]->iEstudianteId]);
 
@@ -167,9 +166,9 @@ class EstudiantesController extends Controller
             $request->cPersRazonSocialNombre,
             $request->cPersRazonSocialCorto,
             $request->cPersRazonSocialSigla,
-            $request->iPersRepresentanteLegalId,
             $request->cPersDomicilio,
             $request->iCredId,
+            $request->iPersRepresentanteLegalId,
             $request->iNacionId,
             $request->iPaisId,
             $request->iDptoId,
