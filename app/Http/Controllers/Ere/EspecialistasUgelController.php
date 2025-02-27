@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Ere;
+namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\PreguntasRepository;
-use App\Services\Ere\AreasService;
+use App\Services\ere\AreasService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;

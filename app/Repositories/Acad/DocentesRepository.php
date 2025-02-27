@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Acad;
+namespace App\Repositories\acad;
 
 use Illuminate\Support\Facades\DB;
 
