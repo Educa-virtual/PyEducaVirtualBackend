@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\acad\ApoderadoController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\MatriculaController;
@@ -314,18 +315,22 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'estudiante'], function () {
 
-        Route::post('guardarEstudiante', [EstudiantesController::class, 'guardarEstudiantePersona']);
-        Route::post('guardarRepresetante', [EstudiantesController::class, 'guardarRepresetantePersona']);
-
-        Route::post('searchEstudiante', [EstudiantesController::class, 'searchEstudiante']);
-        Route::post('searchRepresentante', [EstudiantesController::class, 'searchRepresentante']);
+        Route::post('guardarEstudiante', [EstudiantesController::class, 'save']);
+        Route::post('actualizarEstudiante', [EstudiantesController::class, 'update']);
+        Route::post('searchEstudiantes', [EstudiantesController::class, 'index']);
+        Route::post('searchEstudiante', [EstudiantesController::class, 'show']);
+        
         Route::post('searchFamiliares', [EstudiantesController::class, 'searchFamiliares']);
+        Route::post('searchFamiliar', [EstudiantesController::class, 'searchFamiliar']);
 
         Route::post('validarEstudiante', [EstudiantesController::class, 'validarEstudiante']);
-        Route::post('validarRepresentante', [EstudiantesController::class, 'validarRepresentante']);
-        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
 
-        Route::post('buscarCodigo', [EstudiantesController::class, 'buscarCodigo']);
+        Route::post('guardarApoderado', [ApoderadoController::class, 'save']);
+        Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
+        Route::post('searchApoderado', [ApoderadoController::class, 'show']);
+
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
+        Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
     });
 
     Route::group(['prefix' => 'matricula'], function () {
@@ -339,6 +344,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('list', [MatriculaController::class, 'list']);
 
         Route::post('searchMatriculas', [MatriculaController::class, 'search']);
+        Route::post('searchMatricula', [MatriculaController::class, 'searchMatricula']);
         Route::post('guardarMatricula', [MatriculaController::class, 'guardar']);
     });
 });
@@ -374,5 +380,7 @@ Route::group(['prefix' => 'grl'], function () {
     Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
     Route::post('guardarPersona', [PersonaController::class, 'guardarPersona']);
     Route::post('guardarPersonaFamiliar', [PersonaController::class, 'guardarPersonaFamiliar']);
+    Route::post('actualizarPersonaFamiliar', [PersonaController::class, 'actualizarPersonaFamiliar']);
+    Route::post('borrarPersonaFamiliar', [PersonaController::class, 'borrarPersonaFamiliar']);
     Route::post('searchPersona', [PersonaController::class, 'searchPersona']);
 });

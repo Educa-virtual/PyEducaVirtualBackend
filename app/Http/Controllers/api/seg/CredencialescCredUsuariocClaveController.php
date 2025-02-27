@@ -93,8 +93,8 @@ class CredencialescCredUsuariocClaveController extends Controller
             return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
         }
 
-        //Obtener roles
-        $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
+        //Obtener roles 
+        $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredId ?', [$data[0]->iCredId]);
         $data[0]->perfiles = $perfiles;
         if ($data[0]->contactar) {
             $conctactar = json_decode($data[0]->contactar, true);
