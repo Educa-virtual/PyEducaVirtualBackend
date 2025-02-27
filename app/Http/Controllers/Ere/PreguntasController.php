@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Ere;
+namespace App\Http\Controllers\ere;
 
 use DateTime;
 use Exception;

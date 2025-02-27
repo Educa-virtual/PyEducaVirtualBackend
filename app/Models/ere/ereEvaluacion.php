@@ -1,7 +1,7 @@
 <?php
 
 // namespace App\Models\ere;
-namespace App\Models\Ere;
+namespace App\Models\ere;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

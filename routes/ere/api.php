@@ -1,14 +1,14 @@
 <?php
 
-use App\Http\Controllers\Ere\AlternativasController;
-use App\Http\Controllers\Ere\AreasController;
-use App\Http\Controllers\Ere\DesempenosController;
-use App\Http\Controllers\Ere\EncabezadoPreguntasController;
+use App\Http\Controllers\ere\AlternativasController;
+use App\Http\Controllers\ere\AreasController;
+use App\Http\Controllers\ere\DesempenosController;
+use App\Http\Controllers\ere\EncabezadoPreguntasController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
-use App\Http\Controllers\Ere\EvaluacionController;
-use App\Http\Controllers\Ere\EvaluacionesController;
-use App\Http\Controllers\Ere\PreguntasController;
-use App\Http\Controllers\Evaluaciones\AlternativaPreguntaController;
+use App\Http\Controllers\ere\EvaluacionController;
+use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\ere\PreguntasController;
+use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'ere'], function () {

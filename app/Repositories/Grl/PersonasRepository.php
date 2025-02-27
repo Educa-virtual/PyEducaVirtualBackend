@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Grl;
+namespace App\Repositories\grl;
 
 use Illuminate\Support\Facades\DB;
 

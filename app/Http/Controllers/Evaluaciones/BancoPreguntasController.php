@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Evaluaciones;
+namespace App\Http\Controllers\evaluaciones;
 
 use App\Http\Controllers\ApiController;
 use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
-use App\Repositories\Evaluaciones\BancoRepository;
-use App\Repositories\Evaluaciones\PreguntasEvaluacionRepository;
+use App\Repositories\evaluaciones\BancoRepository;
+use App\Repositories\evaluaciones\PreguntasEvaluacionRepository;
 use App\Repositories\PreguntasRepository;
 use DateTime;
 use Exception;

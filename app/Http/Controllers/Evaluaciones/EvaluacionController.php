@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Evaluaciones;
+namespace App\Http\Controllers\evaluaciones;
 
 use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;

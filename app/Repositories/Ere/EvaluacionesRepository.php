@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Ere;
+namespace App\Repositories\ere;
 
 use Illuminate\Support\Facades\DB;
 
