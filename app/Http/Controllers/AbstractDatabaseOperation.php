@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Clase abstracta para centralizar operaciones con base de datos.
@@ -19,9 +20,9 @@ abstract class AbstractDatabaseOperation
     /**
      * Valida que los datos tengan esquema y tabla.
      */
-    protected function hasValidSchemaAndTable(Request|array $request): bool
+    protected function hasValidStructureParams(Request|array $request): bool
     {
-        return isset($request['esquema']) && isset($request['tabla']); 
+        return $this->getParams() === $request->keys(); 
     }
 
     /**
@@ -29,10 +30,18 @@ abstract class AbstractDatabaseOperation
      */
     protected function executeQuery(array $params, string $procedure): Collection
     {
+
+
+
         $params = array_filter($params); // Filtrar valores nulos
         $placeholders = implode(',', array_fill(0, count($params), '?'));
 
+        $output = new ConsoleOutput();
+        $output->writeln("<info>Procesando solicitud...</info>");
+
+        
         return collect(DB::select("EXEC $procedure $placeholders", $params));
+
     }
 
     /**
@@ -45,7 +54,7 @@ abstract class AbstractDatabaseOperation
         $params = $this->getParams();
 
         foreach ($queries as $query) {
-            if (!$this->hasValidSchemaAndTable($query)) {
+            if (!$this->hasValidStructureParams($query)) {
                 throw new Exception('Error en la solicitud de los datos.');
             }
 
@@ -62,30 +71,33 @@ abstract class AbstractDatabaseOperation
     /**
      * Método principal para manejar la solicitud.
      */
-    public function handleRequest(Request $request, DataReturnStrategy $strategy): Collection|JsonResponse
-    {
-        try {
-            $procedure = $this->getProcedureName();
-
-            $params = $this->getParams();
+        public function handleRequest(Request $request, DataReturnStrategy $strategy): Collection|JsonResponse
+        {
             
-            $queryParams = array_values($request->only($params));
+            try {
+                
+                $procedure = $this->getProcedureName();
+                
+                $params = $this->getParams();
+                
+                $queryParams = array_values($request->only($params));
+                
 
-            if ($this->hasValidSchemaAndTable($request)) {
+                if ($this->hasValidStructureParams($request)) {
 
-                $query = $this->executeQuery($queryParams, $procedure);
+                    $query = $this->executeQuery($queryParams, $procedure);
 
-                return $strategy->handle($query);
+                    return $strategy->handle($query);
+                }
+
+                $queries = $request->all();
+                $results = $this->processMultipleRequests($request, $queries, $procedure);
+
+                return $strategy->handle($results);
+            } catch (Exception $e) {
+                return ResponseHandler::error('Error durante la operación.', 500, $e->getMessage());
             }
-
-            $queries = $request->all();
-            $results = $this->processMultipleRequests($request, $queries, $procedure);
-
-            return $strategy->handle($results);
-        } catch (Exception $e) {
-            return ResponseHandler::error('Error durante la operación.', 500, $e->getMessage());
         }
-    }
 
     /**
      * Devuelve el nombre del procedimiento almacenado.
