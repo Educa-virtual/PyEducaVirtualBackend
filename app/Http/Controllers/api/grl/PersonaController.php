@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\grl;
 
 use App\Http\Controllers\Controller;
+use App\Services\ConsultarDocumentoIdentidadService;
 use App\Services\ParseSqlErrorService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -13,9 +14,11 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class PersonaController extends Controller
 {
     private $parseSqlErrorService;
+    private $consultarDocumentoIdentidadService;
 
     public function __construct()
     {
+        $this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
         $this->parseSqlErrorService = new ParseSqlErrorService;
     }
 
@@ -26,61 +29,12 @@ class PersonaController extends Controller
             ->name('your-invoice.pdf');
     }
 
-    public function list(Request $request){
-        $solicitud = [
-            $request->opcion,
-            $request->iPersId ?? NULL,
-            $request->iTipoPersId ?? NULL,
-            $request->iTipoIdentId ?? NULL,
-            $request->cPersDocumento ?? NULL,
-            $request->cPersPaterno ?? NULL,
-            $request->cPersMaterno ?? NULL,
-            $request->cPersNombre ?? NULL,
-            $request->cPersSexo ?? NULL,
-            $request->dPersNacimiento ?? NULL,
-            $request->iTipoEstCivId ?? NULL,
-            $request->iNacionId ?? NULL,
-            $request->cPersFotografia ?? NULL,
-            $request->cPersRazonSocialNombre ?? NULL,
-            $request->cPersRazonSocialCorto ?? NULL,
-            $request->cPersRazonSocialSigla ?? NULL,
-            $request->iPersRepresentanteLegalId ?? NULL,
-            $request->cPersDomicilio ?? NULL,
-            $request->iTipoSectorId ?? NULL,
-            $request->iPaisId ?? NULL,
-            $request->iDptoId ?? NULL,
-            $request->iPrvnId ?? NULL,
-            $request->iDsttId ?? NULL,
-            $request->iPersEstado ?? NULL,
-            $request->cPersCodigoVerificacion ?? NULL,
-            $request->cPersObs ?? NULL
-        ];
-
-        $query=DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?",[$solicitud]);
-
-        try{
-            $response = [
-                'validated' => true, 
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
-
-            $estado = 200;
-
-        } catch(Exception $e){
-            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
-            $response = [
-                'validated' => true, 
-                'message' => $error_message,
-                'data' => [],
-            ];
-            $estado = 500;
-        }
-
-        return new JsonResponse($response,$estado);
-    }
-
-    public function guardarPersona(Request $request)
+    /**
+     * Guarda una persona
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function save(Request $request)
     {
         $request->merge([
             'iTipoPersId' => 1, // Siempre persona natural
@@ -100,109 +54,12 @@ class PersonaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function guardarPersonaFamiliar(Request $request)
-    {
-        $parametros = [
-            $request->iPersId,
-            $request->bEsRepresentante,
-            $request->iTipoFamiliarId,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersDomicilio,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-            $request->iOcupacionId,
-            $request->bFamiliarVivoConEl,
-            $request->iGradoInstId,
-            $request->iCredId,
-        ];
-
-        try {
-            $data = DB::select('execute grl.Sp_INS_personaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-
-        return new JsonResponse($response, $codeResponse);
-    }
-
-    public function actualizarPersonaFamiliar(Request $request)
-    {
-        $parametros = [
-            $request->iPersId,
-            $request->iFamiliarId,
-            $request->bEsRepresentante,
-            $request->iTipoFamiliarId,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersDomicilio,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-            $request->iOcupacionId,
-            $request->bFamiliarVivoConEl,
-            $request->iGradoInstId,
-            $request->iCredId,
-        ];
-
-        try {
-            $data = DB::select('execute grl.Sp_UPD_personaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-
-        return new JsonResponse($response, $codeResponse);
-    }
-
-    public function borrarPersonaFamiliar(Request $request)
-    {
-        $parametros = [
-            $request->iPersId,
-            $request->iFamiliarId,
-            $request->iCredId,
-        ];
-
-        try {
-            $data = DB::select('EXEC grl.Sp_DEL_personaFamiliarPorId ?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-
-        return new JsonResponse($response, $codeResponse);
-    }
-
-    public function searchPersona(Request $request){
+    /**
+     * Busca una persona segun parametros
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function show(Request $request){
         $parametros = [
             $request->opcion,
             $request->iPersId,
@@ -245,6 +102,49 @@ class PersonaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
+    /**
+     * Validar tipo de identificacion y documento en servicio web
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function validate(Request $request)
+    {
+        $parametros = [
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+        ];
+
+        try {
+            $data = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento
+                ?,?', $parametros);
+        } catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+            return new JsonResponse($response, $codeResponse);
+        }
+
+        if( count($data) == 0){
+            // No está pre-registrado, consultar en servicio web
+            $servicio = $this->consultarDocumentoIdentidadService->buscar($request->iTipoIdentId, $request->cPersDocumento);
+            $response = ['validated' => true, 'message' => $servicio['message'], 'data' => $servicio['data']];
+            $codeResponse = $servicio['status'];
+        } elseif( count($data) > 1 ) {
+            // ERROR: mas de un registro con el mismo documento
+            $response = ['validated' => false, 'message' => 'Documento de identidad duplicado', 'data' => []];
+            $codeResponse = 500;
+        } else {
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data[0]];
+            $codeResponse = 200;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    /**
+     * Valida los parametros de guardar persona
+     * @param Request $request
+     * @return array
+     */
     private function validateGuardarPersona(Request $request){
         return $request->validate([
             'iTipoPersId' => 'required|integer',
