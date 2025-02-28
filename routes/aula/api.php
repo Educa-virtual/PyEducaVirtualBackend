@@ -40,6 +40,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
 
     Route::group(['prefix' => 'matricula'], function () {
         Route::post('list', [MatriculaController::class, 'list']);
+        Route::post('registrar', [MatriculaController::class, 'registrar']);
     });
     Route::group(['prefix' => 'programacion-actividades'], function () {
         Route::post('list', [ProgramacionActividadesController::class, 'list']);
