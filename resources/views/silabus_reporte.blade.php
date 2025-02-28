@@ -14,22 +14,20 @@
             text-align: center;
             
         }
-        h5{
+        h4{
             text-align: center;
             font-family: Arial, Helvetica, sans-serif;
         }
-        caption{
+        h5{
             font-family: Arial, Helvetica, sans-serif;
+            margin: 0px;
+        }
+        caption{
+            font-family: Helvetica,Arial, sans-serif;
             text-align: left;
             font-weight: 600;
             font-size: 14px;
             padding: 7px;
-        }
-        table{
-            margin-left: 50px;
-            margin-right: 50px;
-            margin-top: 10px;
-            margin-bottom: 10px;
         }
         th{
             font-family: Arial, Helvetica, sans-serif;
@@ -53,16 +51,19 @@
         .bordes{
             border: 1px solid black;
         }
+        .page-break {
+	    page-break-after: always;
+	    }
     </style>
 </head>
 <body>
 
     <div class="hojas">
         <div class="titulo">
-            <h5>SILABO DE UNIDAD DIDÁCTICA</h5>
+            <h4>SILABO DE UNIDAD DIDÁCTICA</h4>
         </div>
+        <h5>I. INFORMACIÓN GENERAL</h5>
         <table>
-            <caption>I. INFORMACIÓN GENERAL</caption>
             <tr>
                 <th>PROGRAMA DE ESTUDIOS</th>
                 <th>{{$query->cProgNombre ?? '-'}}</th>
@@ -127,10 +128,10 @@
             </tr>
         </table>
     </div>
-    @pageBreak
+    <div class="page-break"></div>
     <div class="hojas">
+        <h5>V. METODOLOGÍA</h5>
         <table class="bordes">
-            <caption>V. METODOLOGÍA</caption>
             @if (!empty($query->metodo))
                 @foreach (json_decode($query->metodo) as $tipo)
                 <tr>
@@ -139,9 +140,11 @@
                 @if (!empty($tipo->metodologias))
                     <tr>
                         <td class="sin_bordes">
+                            <ul>
                             @foreach ($tipo->metodologias as $met)
                                 <li>{{$met->cSilMetDescripcion}}</li>
                             @endforeach
+                            </ul>
                         </td>
                     </tr>
                 @endif
@@ -155,20 +158,26 @@
             @endif
             
         </table>
+        <h5>VI. RECURSOS DIDACTICOS</h5>
         <table>
-            <caption>VI. RECURSOS DIDACTICOS</caption>
             @if (!empty($query->recursos))
             <tr>
                 <td>
+                    <ul>
                     @foreach (json_decode($query->recursos) as $rec)
                             <li>{{$rec->cRecSilaboDescripcion}}</li>
+                            
                             @if (!empty($rec->recursosdidacticos))
+                                <ul>
                                 @foreach ($rec->recursosdidacticos as $recur)
-                                <ul>{{$recur->cRecDidacticoNombre}}:{{$recur->cRecDidacticoDescripcion}}</ul>
-                                @endforeach                            
+                                <li>{{$recur->cRecDidacticoNombre}}:{{$recur->cRecDidacticoDescripcion}}</li>
+                                @endforeach
+                                </ul>
                             @endif
                             
+                            
                     @endforeach
+                    </ul>
                 </td>
             </tr>
             @else
@@ -180,10 +189,10 @@
             @endif
         </table>
     </div>
-    @pageBreak
+    <div class="page-break"></div>
     <div class="hojas">
+        <h5>VII. CRONOGRAMA - DESARROLLO DE APRENDIZAJE</h5>
         <table>
-            <caption>VII. CRONOGRAMA - DESARROLLO DE APRENDIZAJE</caption>
             <tr>
                 <th>NRO ACTIVIDAD</th>
                 <th>SEM.</th>
@@ -197,10 +206,10 @@
                             @if (!empty($indi->contenidos))
                                 @foreach($indi->contenidos AS $con)
                                 <tr>
-                                    <td>{{$list->cSilaboActAprendNumero}}</td>
-                                    <td>{{$indi->cIndActNumero}}</td>
-                                    <td>{{$con->cContenidoSemNumero}}</td>
-                                    <td>{{$con->cContenidoSemTitulo}}</td>
+                                    <td>{{$list->cSilaboActAprendNumero ?? '-'}}</td>
+                                    <td>{{$indi->cIndActNumero ?? '-'}}</td>
+                                    <td>{{$con->cContenidoSemNumero ?? '-'}}</td>
+                                    <td>{{$con->cContenidoSemTitulo ?? '-'}}</td>
                                 </tr>
                                 @endforeach
                             @endif
@@ -216,8 +225,8 @@
             @endif
             
         </table>
+        <h5>VIII. ACTIVIDADES DE EVALUACIÓN Y RECUPERACIÓN</h5>
         <table>
-            <caption>VIII. ACTIVIDADES DE EVALUACIÓN Y RECUPERACIÓN</caption>
                 <tr>
                     <th>SEMANA</th>
                     <th>INDICADOR DE LOGRO</th>
@@ -250,16 +259,18 @@
                 
         </table>
     </div>
-    @pageBreak
+    <div class="page-break"></div>
     <div class="hojas">
+        <h5>IX. EVALUACIÓN</h5>
         <table>
-            <caption>IX. EVALUACIÓN</caption>
             @if (!empty($query->detalles))
                 <tr>
                     <td>
+                        <ul>
                         @foreach(json_decode($query->detalles) AS $det)
                             <li>{{$det->cDetEvalDetalles}}</li>
                         @endforeach
+                        </ul>
                     </td>
                 </tr>
             @else
@@ -270,8 +281,8 @@
                 </tr>
             @endif
         </table>
+        <h5>X. BIBLIOGRAFÍA</h5>
         <table>
-            <caption>X. BIBLIOGRAFÍA</caption>
             <tr>
                 <th>NRO</th>
                 <th>AUTOR</th>
@@ -283,10 +294,10 @@
                 @foreach(json_decode($query->bibliografias) AS $bib)
                 <tr>
                     <td>{{($loop->index) + 1}}</td>
-                    <td>{{$bib->cBiblioAutor}}</td>
-                    <td>{{$bib->cBiblioAnioEdicion}}</td>
-                    <td>{{$bib->cBiblioTitulo}}</td>
-                    <td>{{$bib->cBiblioEditorial}}</td>
+                    <td>{{$bib->cBiblioAutor ?? '-'}}</td>
+                    <td>{{$bib->cBiblioAnioEdicion ?? '-'}}</td>
+                    <td>{{$bib->cBiblioTitulo ?? '-'}}</td>
+                    <td>{{$bib->cBiblioEditorial ?? '-'}}</td>
                 </tr>
                 @endforeach
             @else
@@ -298,5 +309,15 @@
             @endif
         </table>
     </div>
+
+    {{-- ver el numero de pagina en pie de pagina --}}
+    <script type="text/php">
+        if ( isset($pdf) ) {
+            $pdf->page_script('
+                $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif", "normal");
+                $pdf->text(270, 820, "Página $PAGE_NUM de $PAGE_COUNT", $font, 10);
+            ');
+        }
+    </script>
 </body>
 </html>

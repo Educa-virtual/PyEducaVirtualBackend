@@ -11,100 +11,91 @@ use Hashids\Hashids;
 class DocenteCursosController extends Controller
 {
     protected $hashids;
-    protected $idDocCursoId;
-    protected $iSemAcadId;
-    protected $iYAcadId;
-    protected $iDocenteId;
-    protected $iIeCursoId;
 
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
 
-    public function list(Request $request)
+    private function decodeValue($value)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
+    }
+
+    public function validateRequest(Request $request)
     {
         $request->validate(
-            [
-                'opcion' => 'required',
-            ],
-            [
-                'opcion.required' => 'Hubo un problema al obtener la acción',
-            ]
+            ['opcion' => 'required'],
+            ['opcion.required' => 'Hubo un problema al obtener la acción']
         );
-        if ($request->idDocCursoId) {
-            $idDocCursoId = $this->hashids->decode($request->idDocCursoId);
-            $idDocCursoId = count($idDocCursoId) > 0 ? $idDocCursoId[0] : $idDocCursoId;
-        }
-        if ($request->iSemAcadId) {
-            $iSemAcadId = $this->hashids->decode($request->iSemAcadId);
-            $iSemAcadId = count($iSemAcadId) > 0 ? $iSemAcadId[0] : $iSemAcadId;
-        }
-        if ($request->iYAcadId) {
-            $iYAcadId = $this->hashids->decode($request->iYAcadId);
-            $iYAcadId = count($iYAcadId) > 0 ? $iYAcadId[0] : $iYAcadId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
-        if ($request->iIeCursoId) {
-            $iIeCursoId = $this->hashids->decode($request->iIeCursoId);
-            $iIeCursoId = count($iIeCursoId) > 0 ? $iIeCursoId[0] : $iIeCursoId;
-        }
 
-        $parametros = [
-            $request->opcion,
-            $request->valorBusqueda ?? '-',
-
-            $idDocCursoId                       ?? NULL,
-            $iSemAcadId                         ?? NULL,
-            $iYAcadId                           ?? NULL,
-            $iDocenteId                         ?? NULL,
-            $iIeCursoId                         ?? NULL,
-            $request->cDocCursoObservaciones    ?? NULL,
-            $request->iDocCursoHorasLectivas    ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-
-            $request->iCredId
-
+        $fieldsToDecode = [
+            'valorBusqueda', 'idDocCursoId', 'iSemAcadId',
+            'iYAcadId', 'iDocenteId', 'iIeCursoId'
         ];
 
-        try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_DOCENTE_CURSOS
-                ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
-
-            foreach ($data as $key => $value) {
-                $value->idDocCursoId = $this->hashids->encode($value->idDocCursoId);
-                $value->iSemAcadId = $this->hashids->encode($value->iSemAcadId);
-                $value->iYAcadId = $this->hashids->encode($value->iYAcadId);
-                $value->iIeCursoId = $this->hashids->encode($value->iIeCursoId);
-                $value->iSilaboId = $this->hashids->encode(($value->iSilaboId));
-                $value->iCursoId = $this->hashids->encode(($value->iCursoId));
-                $value->iNivelGradoId = $this->hashids->encode(($value->iNivelGradoId));
-                $value->iSeccionId = $this->hashids->encode(($value->iSeccionId));
-                //$value->iGradoId = $this->hashids->encode(($value->iGradoId));
-                //$value->iDocenteId = $this->hashids->encode(($value->iDocenteId));
-                if(isset($value->iGradoId)){
-                    $this->hashids->encode(($value->iGradoId));
-                }
-                if(isset($value->iDocenteId)){
-                    $this->hashids->encode(($value->iDocenteId));
-                }
-                
-
-            }
-
-
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            $codeResponse = 500;
+        foreach ($fieldsToDecode as $field) {
+            $request[$field] = $this->decodeValue($request->$field);
         }
 
-        return new JsonResponse($response, $codeResponse);
+        return [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+            $request->idDocCursoId ?? null,
+            $request->iSemAcadId ?? null,
+            $request->iYAcadId ?? null,
+            $request->iDocenteId ?? null,
+            $request->iIeCursoId ?? null,
+            $request->cDocCursoObservaciones ?? null,
+            $request->iDocCursoHorasLectivas ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->iCredId
+        ];
+    }
+
+    private function encodeFields($item)
+    {
+        $fieldsToEncode = [
+            'idDocCursoId', 'iSemAcadId', 'iYAcadId', 'iIeCursoId',
+            'iSilaboId', 'iCursoId', 'iNivelGradoId', 'iSeccionId',
+            'iGradoId', 'iDocenteId'
+        ];
+
+        foreach ($fieldsToEncode as $field) {
+            if (isset($item->$field)) {
+                $item->$field = $this->hashids->encode($item->$field);
+            }
+        }
+
+        return $item;
+    }
+
+    public function encodeId($data)
+    {
+        return array_map([$this, 'encodeFields'], $data);
+    }
+
+    public function list(Request $request)
+    {
+        $parametros = $this->validateRequest($request);
+
+        try {
+            $data = DB::select('exec acad.Sp_SEL_docenteCursos ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = $this->encodeId($data);
+            
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
+                200
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                500
+            );
+        }
     }
 }

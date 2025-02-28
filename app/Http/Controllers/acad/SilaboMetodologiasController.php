@@ -59,7 +59,7 @@ class SilaboMetodologiasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_METODOLOGIAS
+            $data = DB::select('exec acad.Sp_SEL_silaboMetodologias
                 ?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -115,9 +115,21 @@ class SilaboMetodologiasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_SILABO_METODOLOGIAS
+            switch ($request->opcion) {
+                case 'GUARDARxiSilaboId':
+                    $data = DB::select('exec acad.Sp_INS_silaboMetodologias
                 ?,?,?,?,?,?,?', $parametros);
-
+                    break;
+                case 'ACTUALIZARxidSilMetId':
+                    $data = DB::select('exec acad.Sp_UPD_silaboMetodologias
+                ?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ELIMINARxidSilMetId':
+                    $data = DB::select('exec acad.Sp_DEL_silaboMetodologias
+                ?,?,?,?,?,?,?', $parametros);
+                    break;
+            }
+           
             if ($data[0]->idSilMetId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];

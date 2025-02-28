@@ -7,14 +7,14 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Spatie\LaravelPdf\Facades\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PersonaController extends Controller
 {
     public function __invoke(Request $request)
     {
-        return Pdf::view('imprimir', ['invoice' => 12312])
-            ->format('a4')
+        return Pdf::loadView('imprimir', ['invoice' => 12312])
+            ->setPaper('a4', 'landscape')
             ->name('your-invoice.pdf');
     }
     public function list(Request $request){
@@ -47,7 +47,7 @@ class PersonaController extends Controller
             $request->cPersObs ?? NULL
         ];
 
-        $query=DB::select("execute grl.Sp_CRUD_persona ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?",[$solicitud]);
+        $query=DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?",[$solicitud]);
         
         try{
             $response = [

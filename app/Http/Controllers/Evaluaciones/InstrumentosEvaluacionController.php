@@ -40,6 +40,106 @@ class InstrumentosEvaluacionController extends ApiController
         }
     }
 
+    public function obtenerRubrica(Request $request){
+        try {
+
+            $params = ['eval','V_Instrumentos','*'];
+
+            if (!is_null($request->iInstrumentoId)) {
+                $params[] = 'iInstrumentoId=' . $request->iInstrumentoId;
+            }
+
+            // Construir los placeholders dinámicos
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+            $data = DB::select("exec grl.SP_SEL_DesdeTablaOVista $placeholders", $params);
+
+            foreach ($data as $key => $item) {
+                $criterios = $item->criterios ?? '[]';
+                $data[$key]->criterios  = json_decode($criterios, true);
+            }
+
+            return $this->successResponse($data, 'Datos obtenidos correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            return $this->errorResponse(null, $message);
+        }
+    }
+
+    public function obtenerRubricaEvaluacion(Request $request){
+        try {
+
+            $params = ['eval','V_InstrumentosEvaluacion','*'];
+
+            $where = '';
+
+            if (!is_null($request->iEvaluacionId)) {
+                $where .= 'iEvaluacionId=' . $request->iEvaluacionId . ' AND iInstrumentoId IS NOT NULL';
+                
+            }
+
+            if(isset($request->iEstudianteId) AND !is_null($request->iEstudianteId) AND is_numeric($request->iEstudianteId)){
+                $where .= ' AND iEstudianteId=' . $request->iEstudianteId;
+                $params[1] = 'V_InstrumentoEvaluacionCalificada';
+            }
+            
+            $params[] = $where;
+            // Construir los placeholders dinámicos
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+            $data = DB::select("exec grl.SP_SEL_DesdeTablaOVista $placeholders", $params);
+
+            foreach ($data as $key => $item) {
+                $criterios = $item->criterios ?? '[]';
+                $data[$key]->criterios  = json_decode($criterios, true);
+            }
+
+            return $this->successResponse($data, 'Datos obtenidos correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            return $this->errorResponse(null, $message);
+        }
+    }
+
+    public function obtenerRubricas(Request $request)
+    {
+        $iDocenteId = $this->decodeId($request->iDocenteId ?? 0);
+        $idDocCursoId = $this->decodeId($request->idDocCursoId ?? 0);
+        $iCursoId = $this->decodeId($request->iCursoId ?? 0);
+
+        $params = [
+            'iInstrumentoId' => $request->iInstrumentoId ?? 0,
+            'iDocenteId' => $iDocenteId,
+            'idDocCursoId' => $idDocCursoId,
+            'iCursoId' => $iCursoId,
+        ];
+
+
+        try {
+
+            $params = ['eval','V_Instrumentos','*'];
+
+            if (!is_null($request->filtroYear)) {
+                $params[] = 'YEAR(dtInstrumentoCreacion)=' . $request->filtroYear;
+            }
+
+            // Construir los placeholders dinámicos
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+            $data = DB::select("exec grl.SP_SEL_DesdeTablaOVista $placeholders", $params);
+
+            foreach ($data as $key => $item) {
+                $criterios = $item->criterios ?? '[]';
+                $data[$key]->criterios  = json_decode($criterios, true);
+            }
+
+            return $this->successResponse($data, 'Datos obtenidos correctamente');
+        } catch (Exception $e) {
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            return $this->errorResponse(null, $message);
+        }
+    }
+
     public function store(Request $request)
     {
         $iInstrumentoId = (int) $request->iInstrumentoId;
@@ -183,7 +283,9 @@ class InstrumentosEvaluacionController extends ApiController
 
         DB::commit();
 
-        return $this->successResponse(null, 'Cambios realizados correctamente');
+        return $this->successResponse([
+            'iInstrumentoId' => $iInstrumentoId,
+        ], 'Cambios realizados correctamente');
     }
 
     final public function destroy(Request $request, $id)

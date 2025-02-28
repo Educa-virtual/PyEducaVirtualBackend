@@ -48,7 +48,7 @@ class TipoIndicadorLogrosController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_TIPO_INDICADOR_LOGROS
+            $data = DB::select('exec acad.Sp_SEL_tipoIndicadorLogros
                 ?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {

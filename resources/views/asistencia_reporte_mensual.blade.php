@@ -7,11 +7,13 @@
     <title>Reporte Mensual de Asitencia</title>
 </head>
 <style>
+    @page {
+            font-size: 1em;
+    }
     body{
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
-        margin: 0;
+        margin-top: 1cm;
     }
     main{
         flex: 1;
@@ -19,6 +21,13 @@
     }
     div{
         font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+    .table-header{
+        width: 100%;
+    }
+    .table-header tr td{
+        text-align:center;
+        font-size:12px;
     }
     table {
         width: 100%;
@@ -45,34 +54,70 @@
         width: 45%;
         font-size: 10px;
     }
+    .titulo{
+        text-align:center;
+        font-size:12px;
+        font-weight:900;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+    header{
+        position: fixed;
+        height: 2cm;
+        top: 0;
+        left: 0cm;
+        right: 0cm;
+        text-align: center;
+        line-height: 30px;
+    }
     footer{
-        font-size: 12px;
-        margin-bottom: 10px;
-        margin-left: 10px;
+        position: fixed;
+        height: 2cm;
+        bottom: 0;
+        left: 0cm;
+        right: 0cm;
+        text-align: center;
+        line-height: 30px;
     }
 </style>
 <body>
-    <div style="text-align:center;font-size:12px;font-weight:900;">REPORTE DE ASISTENCIA MENSUAL</div>
+
+    <header class="table-header">
+        <table>
+            <tr>
+                <td></td>
+                <td>
+                    "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
+                    Junín y Ayacucho"
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </header>
     <main>
-    <div class=container>
-        <aside>
-            <div>Docente : {{$docente}}</div>
-            <div>Cod. Modular/I.E. : {{$modular}}</div>
-            <div>DRE/UGEL : {{$dre}}</div>
-            <div>AÑO : {{$year}}</div>
-            <div>MES : {{$mes}}</div>
-            <div>FECHA DE REPORTE : {{$fecha_reporte}}</div>
-            <div>FECHA DE CIERRE : {{$fecha_cierre}}</div>
-        </aside>
-        <aside>
-            <div>Gestion :</div>
-            <div>Nivel : {{$nivel}}</div>
-            <div>Fase / Periodo:</div>
-            <div>Ciclo - Grado : {{$grado}}</div>
-            <div>Seccion - Turno : {{$seccion}} - {{$turno}}</div>
-            <div>Cerrado por :</div>
-        </aside>
-    </div>
+    <div class="titulo">REPORTE DE ASISTENCIA MENSUAL</div>
+    <table>
+        <tr>
+            <td>Docente : {{$docente}}</td><td>Gestion :</td>
+        </tr>
+        <tr>
+            <td>Cod. Modular/I.E. : {{$modular}}</td><td>Nivel : {{$nivel}}</td>
+        </tr>
+        <tr>
+            <td>DRE/UGEL : {{$dre}}</td><td>Fase / Periodo:</td>
+        </tr>
+        <tr>
+            <td>AÑO : {{$year}}</td><td>Ciclo - Grado : {{$ciclo}} - {{$grado}}</td>
+        </tr>
+        <tr>
+            <td>MES : {{$mes}}</td><td>Seccion - Turno : {{$seccion}} - {{$turno}}</td>
+        </tr>
+        <tr>
+            <td>FECHA DE REPORTE : {{$fecha_reporte}}</td><td>Cerrado por :</td>
+        </tr>
+        <tr>
+            <td>FECHA DE CIERRE : {{$fecha_cierre}}</td>
+        </tr>
+    </table>
     <table>
         <tr>
             <th style="border:1px solid black;margin:0;padding:7px;"></th>
@@ -116,6 +161,12 @@
             </tr>
         @endforeach
     </table>
+    <p>
+        Nota de Confidencialidad:
+        Este reporte de asistencia es estrictamente confidencial y está destinado exclusivamente para el uso del docente y el personal autorizado. Conforme a
+        la Ley N° 29733, Ley de Protección de Datos Personales, queda prohibida su reproducción, distribución o utilización con fines distintos a los educativos
+        establecidos, protegiendo así la privacidad de alumnos y docentes.
+    </p>
     <table>
         <tr>
             <td>Legenda:</td>
@@ -128,8 +179,16 @@
         </tr>
     </table>
     </main>
-    <footer>
-        --
-    </footer>
+    
+    <script type="text/php">
+        if ( isset($pdf) ) {
+            $pdf->page_script('
+                $font = $fontMetrics->get_font("Verdana, Geneva, Tahoma, sans-serif", "normal");
+                $pdf->text(70, 570, "Página $PAGE_NUM de $PAGE_COUNT", $font, 10);
+                $pdf->text(370, 570, "Autor:--", $font, 10);
+                $pdf->text(670, 570, date("Y-m-d H:m:s"), $font, 10);
+            ');
+        }
+    </script>
 </body>
 </html>

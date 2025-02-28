@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\grl;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\AuditoriaConsultas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
@@ -16,6 +17,7 @@ class PersonasController extends Controller
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+
     }
 
     public function list(Request $request)
@@ -63,7 +65,7 @@ class PersonasController extends Controller
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_CRUD_persona ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", [$parametros]);
+            $data = DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", [$parametros]);
 
             foreach ($data as $key => $value) {
                 $value->iPersId = $this->hashids->encode($value->iPersId);

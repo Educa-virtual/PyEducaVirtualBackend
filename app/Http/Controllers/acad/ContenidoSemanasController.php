@@ -60,7 +60,7 @@ class ContenidoSemanasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_CONTENIDO_SEMANAS
+            $data = DB::select('exec acad.Sp_SEL_contenidoSemanas
                 ?,?,?,?,?,?,?,?', $parametros);
 
             foreach ($data as $key => $value) {
@@ -112,9 +112,20 @@ class ContenidoSemanasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_CONTENIDO_SEMANAS
-            ?,?,?,?,?,?,?,?', $parametros);
-
+            switch ($request->opcion) {
+                case 'GUARDARxiIndActId':
+                    $data = DB::select('exec acad.Sp_INS_contenidoSemanas
+                    ?,?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ACTUALIZARxiContenidoSemId':
+                    $data = DB::select('exec acad.Sp_UPD_contenidoSemanas
+                    ?,?,?,?,?,?,?,?', $parametros);
+                    break;
+                case 'ELIMINARxiContenidoSemId':
+                    $data = DB::select('exec acad.Sp_DEL_contenidoSemanas
+                    ?,?,?,?,?,?,?,?', $parametros);
+                    break;
+            }
             if ($data[0]->iContenidoSemId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];

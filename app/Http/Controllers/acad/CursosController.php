@@ -56,7 +56,7 @@ class CursosController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_ACAD_CRUD_CURSOS
+            $data = DB::select('exec acad.Sp_SEL_cursos
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
