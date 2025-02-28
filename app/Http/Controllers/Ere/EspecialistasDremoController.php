@@ -84,7 +84,7 @@ class EspecialistasDremoController extends Controller
             $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
             $fila->iEvaluacionid = $evaluacionIdDescifrado[0];
             $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
-            $fila->bTieneArchivo = AreasService::tieneArchivoPdfSubido($fila->iEvaluacionid, $fila->iCursosNivelGradId);
+            $fila->bTieneArchivo = AreasService::tieneArchivoPdfSubido($evaluacionId, $fila->iCursosNivelGradId);
             $fila->iCantidadPreguntas = PreguntasRepository::contarPreguntasEre($preguntasDB);
         }
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);

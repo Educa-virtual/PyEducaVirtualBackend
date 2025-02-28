@@ -58,7 +58,6 @@ class AreasController extends Controller
                 mkdir($rutaDestino, 0755, true);
             }
             $archivo->move($rutaDestino, $nombreArchivo);
-
             return response()->json(['status' => 'Success', 'message' => 'Archivo guardado correctamente.'], Response::HTTP_OK);
         }
     }
