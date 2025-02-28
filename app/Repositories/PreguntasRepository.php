@@ -14,9 +14,33 @@ class PreguntasRepository
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
 
+    public static function formatearValor($valor)
+    {
+        if (is_numeric($valor)) {
+            return $valor;
+        }
+        // Se pueden usar addslashes o mysqli_real_escape_string según el caso
+        return "'" . addslashes($valor) . "'";
+    }
+
+
+    public static function contarPreguntasEre($preguntas)
+    {
+        $cantidad = 0;
+        foreach ($preguntas as $indexPregunta => $pregunta) {
+            if ($pregunta->iEncabPregId=='-1') {
+                $cantidad++;
+            } else {
+                foreach ($pregunta->preguntas as $indexSubPregunta => $subPregunta) {
+                    $cantidad++;
+                }
+            }
+        }
+        return $cantidad;
+    }
+
     public static function obtenerBancoPreguntasByParams($params)
     {
-
         $params = [
             $params['iCursosNivelGradId'] ?? 0,
             $params['busqueda'] ?? '',
@@ -26,11 +50,12 @@ class PreguntasRepository
             $params['iEncabPregId'] ?? 0,
             $params['iEvaluacionId'] ?? 0
         ];
-        //dd($params);
+
         $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursosNivelGradId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
              @_iEncabPregId = ?, @_iEvaluacionId = ?
             ', $params);
+
         $preguntas = [];
         foreach ($preguntasDB as $item) {
             $item->preguntas = json_decode($item->preguntas);
@@ -58,7 +83,7 @@ class PreguntasRepository
         ];
 
         $preguntasDB = DB::select('exec eval.SP_SEL_preguntasEvaluacionx @BancoId = ?,
-             @iDocenteId = ?, @iCursoId = ? 
+             @iDocenteId = ?, @iCursoId = ?
             ', $params);
         $preguntas = [];
         foreach ($preguntasDB as $item) {
@@ -91,7 +116,7 @@ class PreguntasRepository
                 , @_iNivelGradoId  = ?
                 , @_iColumnValue  = ?
                 , @_cColumnName = ?
-                , @_cSchemaName = ? 
+                , @_cSchemaName = ?
                 ',
             $params
         );
@@ -127,10 +152,10 @@ class PreguntasRepository
         ];
 
 
-        return DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+        return DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
+                @nombreTabla = ?,
+                @campos = ?,
                 @condicionWhere = ?
             ', $params);
     }

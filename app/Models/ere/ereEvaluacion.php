@@ -1,7 +1,7 @@
 <?php
 
 // namespace App\Models\ere;
-namespace App\Models\Ere;
+namespace App\Models\ere;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -57,7 +57,7 @@ class ereEvaluacion extends Model
 
     public static function guardarEvaluaciones($params)
     {
-        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
+        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?', $params);
     }
     public static function actualizarEvaluacion(array $params)
     {
