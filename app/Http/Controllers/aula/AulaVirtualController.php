@@ -4,7 +4,7 @@ namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\ApiController;
 use App\Repositories\aula\ProgramacionActividadesRepository;
-use App\Repositories\Evaluaciones\BancoRepository;
+use App\Repositories\evaluaciones\BancoRepository;
 use DateTime;
 use DateTimeZone;
 use Exception;

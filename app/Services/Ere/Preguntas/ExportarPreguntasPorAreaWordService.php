@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Ere\Preguntas;
+namespace App\Services\ere\preguntas;
 
-use App\Repositories\Acad\AreasRepository;
+use App\Repositories\acad\AreasRepository;
 use App\Repositories\PreguntasRepository;
 use Carbon\Carbon;
 use PhpOffice\PhpWord\TemplateProcessor;

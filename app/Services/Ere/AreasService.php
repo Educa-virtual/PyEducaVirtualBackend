@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Ere;
+namespace App\Services\ere;
 
 class AreasService
 {

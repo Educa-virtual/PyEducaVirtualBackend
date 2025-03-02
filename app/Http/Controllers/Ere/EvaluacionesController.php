@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Ere;
+namespace App\Http\Controllers\ere;
 
 use Illuminate\Support\Facades\Log;
 
@@ -8,13 +8,13 @@ use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-//use App\Models\Ere\ereEvaluacion; // Importa tu modelo aquí
-use App\Models\Ere\EreEvaluacion;
-use App\Repositories\Acad\AreasRepository;
-use App\Repositories\Ere\EvaluacionesRepository;
+//use App\Models\ere\ereEvaluacion; // Importa tu modelo aquí
+use App\Models\ere\EreEvaluacion;
+use App\Repositories\acad\AreasRepository;
+use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\PreguntasRepository;
-use App\Services\Ere\AreasService;
-use App\Services\Ere\Preguntas\ExportarPreguntasPorAreaWordService;
+use App\Services\ere\AreasService;
+use App\Services\ere\preguntas\ExportarPreguntasPorAreaWordService;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;

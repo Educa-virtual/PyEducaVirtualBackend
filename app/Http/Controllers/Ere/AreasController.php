@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Ere;
+namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Acad\AreasRepository;
-use App\Repositories\Acad\DocentesRepository;
-use App\Repositories\Ere\EvaluacionesRepository;
-use App\Repositories\Grl\PersonasRepository;
-use App\Repositories\Grl\YearsRepository;
+use App\Repositories\acad\AreasRepository;
+use App\Repositories\acad\DocentesRepository;
+use App\Repositories\ere\EvaluacionesRepository;
+use App\Repositories\grl\PersonasRepository;
+use App\Repositories\grl\YearsRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use ErrorException;
 use Exception;

@@ -3,9 +3,9 @@
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
-use App\Http\Controllers\Ere\EspecialistasDremoController;
-use App\Http\Controllers\Ere\EspecialistasUgelController;
-use App\Http\Controllers\Ere\UgelesController;
+use App\Http\Controllers\ere\EspecialistasDremoController;
+use App\Http\Controllers\ere\EspecialistasUgelController;
+use App\Http\Controllers\ere\UgelesController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad'], function () {
