@@ -38,11 +38,9 @@ class RecursoDidacticosController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $iRecDidacticoId                         ?? NULL,
             $request->cRecDidacticoNombre            ?? NULL,
-            $request->cRecDidacticoDescripcion       ?? NULL,   
-
+            $request->cRecDidacticoDescripcion       ?? NULL,
             $request->iCredId
 
         ];

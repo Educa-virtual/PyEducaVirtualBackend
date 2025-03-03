@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 
 class SilabosController extends Controller
 {
@@ -89,7 +90,7 @@ class SilabosController extends Controller
     public function list(Request $request)
     {
         $parametros = $this->validateRequest($request);
-
+      
         try {
             $data = DB::select('exec acad.Sp_SEL_silabos
                 ?,?,?,?,?,?,?,?,?,?', $parametros);
@@ -100,7 +101,7 @@ class SilabosController extends Controller
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
                 500
