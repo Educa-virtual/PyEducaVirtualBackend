@@ -27,11 +27,11 @@ class AuditoriaMiddlewareController extends Controller
 
       // Usar `selDesdeTablaOVista` para realizar la consulta
 
-      $request->merge([
+      $request->replace([
         'esquema' => self::schema,
         'tabla' => 'V_auditoria_middleware',
         'campos' => '*',
-        'condicionWhere' => $where,
+        'where' => $where,
       ]);
 
       $query = (new ApiController(new CollectionStrategy()))->getData($request);
