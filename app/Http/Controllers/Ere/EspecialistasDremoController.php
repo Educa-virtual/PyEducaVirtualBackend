@@ -86,6 +86,7 @@ class EspecialistasDremoController extends Controller
             $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
             $fila->bTieneArchivo = AreasService::tieneArchivoPdfSubido($evaluacionId, $fila->iCursosNivelGradId);
             $fila->iCantidadPreguntas = PreguntasRepository::contarPreguntasEre($preguntasDB);
+            $fila->iEvaluacionIdHashed= $evaluacionId;
         }
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);
     }
