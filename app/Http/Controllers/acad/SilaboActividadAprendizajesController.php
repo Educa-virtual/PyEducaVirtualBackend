@@ -111,7 +111,6 @@ class SilaboActividadAprendizajesController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $iSilaboActAprendId            ?? NULL,
             $iSilaboId                     ?? NULL,
             $iIndLogorCapId                ?? NULL,
@@ -122,9 +121,7 @@ class SilaboActividadAprendizajesController extends Controller
             $request->cSilaboActIndLogro            ?? NULL,
             $request->iSilaboActAprendSemanaEval    ?? NULL,
             $request->iSilaboActHoras               ?? NULL,
-
             $request->iCredId
-
         ];
 
         try {
@@ -138,8 +135,12 @@ class SilaboActividadAprendizajesController extends Controller
                 ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     break;
                 case 'ELIMINARxiSilaboActAprendId':
-                    $data = DB::select('exec acad.Sp_DEL_silaboActividadAprendizajes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    $parametros = [
+                        $request->opcion,        
+                        $iSilaboActAprendId            ?? NULL,
+                        $request->iCredId
+                    ];
+                    $data = DB::select('exec acad.Sp_DEL_silaboActividadAprendizajes ?,?,?', $parametros);
                     break;
             }
 
