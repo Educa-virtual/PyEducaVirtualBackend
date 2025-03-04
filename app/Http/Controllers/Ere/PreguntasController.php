@@ -1,28 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Ere;
+namespace App\Http\Controllers\ere;
 
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpWord\Shared\Html;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\WordController;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 
 class PreguntasController extends ApiController
 {
     protected  $alternativaPreguntaRespository;
+    protected $hashids;
 
-    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository)
+    public function __construct($alternativaPreguntaRespository = null)
     {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
     }
 
@@ -47,7 +46,8 @@ class PreguntasController extends ApiController
                 'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
-                'iCursoId' => $request->iCursoId,
+                //'iCursoId' => $request->iCursoId,
+                'iCursosNivelGradId' => $request->iCursosNivelGradId,
                 'iNivelGradoId' => $request->iNivelGradoId,
                 'iColumnValue' => $request->iEspecialistaId,
                 'cColumnName' => 'iEspecialistaId',
@@ -105,7 +105,7 @@ class PreguntasController extends ApiController
             try {
                 $respPregunta = DB::select('exec ere.SP_INS_UPD_pregunta
                 @_iPreguntaId = ?
-                , @_iCursosNivelGradId = ? 
+                , @_iCursosNivelGradId = ?
                 , @_iDesempenoId = ?
                 , @_iNivelGradoId = ?
                 , @_iEspecialistaId = ?
@@ -252,6 +252,24 @@ class PreguntasController extends ApiController
         }
     }
 
+    public function obtenerPreguntasReutilizables(Request $request) {
+        $params=[
+            $request->query('tipo_pregunta'),
+            $request->query('curso'),
+            $request->query('grado'),
+            $request->query('nivel_academico'),
+            $request->query('nivel_evaluacion'),
+            $request->query('capacidad'),
+            $request->query('competencia'),
+            $request->query('anio_evaluacion')
+        ];
+        $preguntas = PreguntasRepository::obtenerBancoPreguntasEreParaReutilizar($params);
+        return $this->successResponse(
+            $preguntas,
+            'Datos obtenidos correctamente'
+        );
+    }
+
     public function obtenerBancoPreguntas(Request $request)
     {
 
@@ -343,83 +361,9 @@ class PreguntasController extends ApiController
         }
     }
 
-    public function generarWordBancoPreguntasByIds(Request $request)
-    {
-        // Recibe los parámetros desde el frontend
-        $params = [
-            'iEvaluacionId' => $request->iEvaluacionId,  // ID de la evaluación
-            'iCursosNivelGradId' => $request->areaId,  // ID del área (curso o nivel de grado)
-            'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
-            'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
-            'bPreguntaEstado' => -1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
-            'ids' => $request->ids  // ID de las preguntas (si lo necesitas)
-        ];
-
-        // Llama al repositorio para obtener las preguntas filtradas según los parámetros
-        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-
-        // Se carga la plantilla de Word
-        $phpTemplateWord = new TemplateProcessor(storage_path() . DIRECTORY_SEPARATOR . 'template-ere.docx');
-
-        // Si no se encuentran preguntas, puedes manejarlo de forma adecuada
-        if (count($preguntasDB) == 0) {
-            return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 404);
-        }
-
-        // Clona el bloque de preguntas en el template de acuerdo a la cantidad de preguntas
-        $phpTemplateWord->cloneBlock('block_preguntas', count($preguntasDB), true, true);
-
-        // Establece el número de preguntas encontradas
-        $phpTemplateWord->setValue('cantidadPreguntas', count($preguntasDB));
-
-        // Itera sobre las preguntas y las inserta en el template
-        foreach ($preguntasDB as $indexPregunta => $pregunta) {
-            // Reemplaza los valores de las preguntas
-            $phpTemplateWord->setValue('index#' . ($indexPregunta + 1), $indexPregunta + 1);
-
-            // Si la pregunta tiene una imagen en base64, se inserta como imagen
-            if (strpos($pregunta->cPregunta, ';base64,')) {
-                preg_match('/<img src="(data:image\/[a-zA-Z0-9]+;base64,[^"]+)"/', $pregunta->cPregunta, $matches);
-                $imagen = isset($matches[1]) ? $matches[1] : null;
-                $phpTemplateWord->setImageValue('cPregunta#' . ($indexPregunta + 1), array('path' => $imagen, 'width' => 200, 'height' => 200, 'ratio' => false));
-            } else {
-                // Si no tiene imagen, solo se coloca el texto
-                $phpTemplateWord->setValue('cPregunta#' . ($indexPregunta + 1), strip_tags($pregunta->cPregunta));
-            }
-
-            // Si la pregunta tiene alternativas, se agregan al documento
-            if (isset($pregunta->alternativas)) {
-                $phpTemplateWord->cloneBlock('block_alternativas#' . ($indexPregunta + 1), count($pregunta->alternativas), true, true);
-
-                foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
-                    // Reemplazar valores de las alternativas dinámicamente
-                    $phpTemplateWord->setValue('cAlternativaLetra#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), $alternativa->cAlternativaLetra);
-                    $phpTemplateWord->setValue('cAlternativaDescripcion#' . ($indexPregunta + 1) . '#' . ($indexAlternativa + 1), strip_tags($alternativa->cAlternativaDescripcion));
-                }
-            }
-        }
-
-        // Preparar la respuesta para generar el archivo Word
-        $response = new Response();
-        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        $response->headers->set('Content-Disposition', 'attachment;filename="preguntas_generated.docx"');
-        $response->headers->set('Cache-Control', 'max-age=0');
-
-        ob_start();
-        $phpTemplateWord->saveAs('php://output');
-        $content = ob_get_contents();
-        ob_end_clean();
-
-        $response->setContent($content);
-
-        return $response;
-    }
-
     public function guardarActualizarEncabezadoPregunta(Request $request)
     {
-
         $type = $request->type;
-
         try {
             $paramsEncabezado = [
                 'iEncabPregId' => $request->iEncabPregId,
@@ -527,5 +471,148 @@ class PreguntasController extends ApiController
         $response->setContent($content);
 
         return $response;
+    }
+
+    //Estructura : Jhonny
+
+    private function decodeValue($value)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
+    }
+
+    public function validateRequest(Request $request)
+    {
+        $request->validate(
+            ['opcion' => 'required'],
+            ['opcion.required' => 'Hubo un problema al obtener la acción']
+        );
+
+        $fieldsToDecode = [
+            'valorBusqueda',
+
+            'iPreguntaId',
+            'iDesempenoId',
+            'iTipoPregId',
+            'iPreguntaNivel',
+            'iPreguntaPeso',
+            'iEspecialistaId',
+            'iNivelGradoId',
+            'iEncabPregId',
+            'iCursosNivelGradId'
+
+        ];
+
+        foreach ($fieldsToDecode as $field) {
+            $request[$field] = $this->decodeValue($request->$field);
+        }
+
+        return [
+            $request->opcion,
+            $request->valorBusqueda ?? '-',
+
+            $request->iPreguntaId           ??  NULL,
+            $request->iDesempenoId          ??  NULL,
+            $request->iTipoPregId           ??  NULL,
+            $request->cPregunta             ??  NULL,
+            $request->cPreguntaTextoAyuda   ??  NULL,
+            $request->iPreguntaNivel        ??  NULL,
+            $request->iPreguntaPeso         ??  NULL,
+            $request->dtPreguntaTiempo      ??  NULL,
+            $request->bPreguntaEstado       ??  NULL,
+            $request->cPreguntaClave        ??  NULL,
+            $request->iEspecialistaId       ??  NULL,
+            $request->iNivelGradoId         ??  NULL,
+            $request->iEncabPregId          ??  NULL,
+            $request->iCursosNivelGradId    ??  NULL,
+
+            $request->iCredId               ??  NULL
+        ];
+    }
+
+    private function encodeFields($item)
+    {
+        $fieldsToEncode = [
+            'iPreguntaId',
+            'iDesempenoId',
+            'iTipoPregId',
+            'iPreguntaNivel',
+            'iPreguntaPeso',
+            'iEspecialistaId',
+            'iNivelGradoId',
+            'iEncabPregId',
+            'iCursosNivelGradId'
+        ];
+
+        foreach ($fieldsToEncode as $field) {
+            if (isset($item->$field)) {
+                $item->$field = $this->hashids->encode($item->$field);
+            }
+        }
+
+        return $item;
+    }
+
+    public function encodeId($data)
+    {
+        return array_map([$this, 'encodeFields'], $data);
+    }
+
+    public function handleCrudOperation(Request $request)
+    {
+        $parametros = $this->validateRequest($request);
+
+        try {
+            switch ($request->opcion) {
+                case 'ACTUALIZARxiPreguntaIdxbPreguntaEstado':
+                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iPreguntaId > 0) {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'Se eliminó la información', 'data' => null],
+                            200
+                        );
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido eliminar la información', 'data' => null],
+                            500
+                        );
+                    }
+                    break;
+                case 'ACTUALIZARxiPreguntaId':
+                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iPreguntaId > 0) {
+                        $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
+                        $resp = new AlternativasController();
+                        return $resp->handleCrudOperation($request);
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
+                            500
+                        );
+                    }
+                    break;
+                case 'GUARDAR-PREGUNTAS':
+                    $data = DB::select('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iPreguntaId > 0) {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
+                            200
+                        );
+                    } else {
+                        return new JsonResponse(
+                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
+                            500
+                        );
+                    }
+                    break;
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                500
+            );
+        }
     }
 }

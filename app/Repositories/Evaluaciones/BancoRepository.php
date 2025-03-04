@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Evaluaciones;
+namespace App\Repositories\evaluaciones;
 
 use App\Models\eval\BancoPreguntas;
 use Exception;

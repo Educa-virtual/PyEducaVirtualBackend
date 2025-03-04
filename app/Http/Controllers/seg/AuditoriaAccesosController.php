@@ -26,7 +26,7 @@ class AuditoriaAccesosController extends Controller
       $where = 'CAST(dtFecha as DATE) >= CAST(' . "'" . $validated['filtroFechaInicio'] . "'" . ' as DATE) AND CAST(dtFecha as DATE) <= CAST(' . "'" . $validated['filtroFechaFin'] . "'" . ' as DATE)';
 
       // Usar `selDesdeTablaOVista` para realizar la consulta
-      $request->merge([
+      $request->replace([
         'esquema' => self::schema,
         'tabla' => 'V_auditoria_accesos',
         'campos' => '*',

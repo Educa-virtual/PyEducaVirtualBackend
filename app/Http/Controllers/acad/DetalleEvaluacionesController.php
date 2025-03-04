@@ -111,8 +111,11 @@ class DetalleEvaluacionesController extends Controller
                     ?,?,?,?,?,?', $parametros);
                     break;
                 case 'ELIMINARxiDetEvaId':
-                    $data = DB::select('exec acad.Sp_DEL_detalleEvaluaciones
-                    ?,?,?,?,?,?', $parametros);
+                    $parametros = [         
+                        $iDetEvaId                              ?? NULL,
+                        $request->iCredId
+                    ];
+                    $data = DB::select('exec acad.Sp_DEL_detalleEvaluaciones ?,?', $parametros);
                     break;
             }
 

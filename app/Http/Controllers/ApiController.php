@@ -13,6 +13,7 @@ use App\Http\Controllers\DeleteOperation;
 use App\Http\Controllers\InsertOperation;
 use App\Http\Controllers\SelectOperation;
 use App\Http\Controllers\UpdateOperation;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class ApiController extends Controller
 {
@@ -31,6 +32,7 @@ class ApiController extends Controller
 
     public function getData(Request $request)
     {
+
         return (new SelectOperation())->handleRequest($request, $this->strategy);
     }
 
@@ -47,5 +49,8 @@ class ApiController extends Controller
     public function deleteData(Request $request)
     {
         return (new DeleteOperation())->handleRequest($request, $this->strategy);
+    }
+    public function execProcedure(Request $request, $procedure, $params){
+        return (new ExecProcedure($procedure, $params))->handleRequest($request, $this->strategy);
     }
 }

@@ -70,15 +70,14 @@ class CredencialescCredUsuariocClaveController extends Controller
             return response()->json(['validated' => false, 'message' => 'Verifica tu usuario y contraseña'], 401);
         } else {
             $vencimiento = DB::select("
-                SELECT 
+                SELECT
                     DATEDIFF(DAY, c.dtCredRegistro,GETDATE() ) AS iDias
-                FROM seg.credenciales AS c 
+                FROM seg.credenciales AS c
                 WHERE c.cCredUsuario = '" . $credentials['cCredUsuario'] . "'
             ");
             if ($vencimiento[0]->iDias <= 60 && $vencimiento[0]->iDias >= 0) {
                 DB::update('update seg.credenciales set iCredIntentos =  0, dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
-            }
-            else{
+            } else {
                 return response()->json(['validated' => false, 'message' => 'Debe de actualizar su contraseña'], 401);
             }
         }
@@ -98,19 +97,19 @@ class CredencialescCredUsuariocClaveController extends Controller
         //$perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
         $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredId ?', [$data[0]->iCredId]);
         $data[0]->perfiles = $perfiles;
-
-        $conctactar = json_decode($data[0]->contactar, true);
-        $patron = "/^[[:digit:]]+$/";
-        foreach ($conctactar as $key => $correo) {
-            if (!preg_match($patron, $correo["cPersConNombre"])) {
-                $separar = explode("@", $correo["cPersConNombre"]);
-                $conctactar[$key]["iPersConId"] = bcrypt($correo["iPersConId"]);
-                $conctactar[$key]["cPersConNombre"] = $separar[0][0] . $separar[0][1] . "******" . "@" . $separar[1];
+        if ($data[0]->contactar) {
+            $conctactar = json_decode($data[0]->contactar, true);
+            $patron = "/^[[:digit:]]+$/";
+            foreach ($conctactar as $key => $correo) {
+                if (!preg_match($patron, $correo["cPersConNombre"])) {
+                    $separar = explode("@", $correo["cPersConNombre"]);
+                    $conctactar[$key]["iPersConId"] = bcrypt($correo["iPersConId"]);
+                    $conctactar[$key]["cPersConNombre"] = $separar[0][0] . $separar[0][1] . "******" . "@" . $separar[1];
+                }
             }
+
+            $data[0]->contactar = $conctactar;
         }
-
-        $data[0]->contactar = $conctactar;
-
         return $this->createNewToken($token, $data);
     }
 
@@ -118,13 +117,13 @@ class CredencialescCredUsuariocClaveController extends Controller
     {
         $user = count($data) > 0 ? $data[0] : [];
         $modulos = DB::select("
-                            SELECT 
+                            SELECT
                                iModuloId
 							  ,cModuloNombre
-															
+
 							FROM seg.modulos
 							WHERE iModuloEstado = 1
-														
+
 							ORDER BY iModuloOrden ASC
                             ");
         $years = DB::select("
@@ -136,7 +135,7 @@ class CredencialescCredUsuariocClaveController extends Controller
         $user->modulos = $modulos;
         $user->years = $years;
         $user->iDocenteId = $this->hashids->encode($user->iDocenteId);
-
+        $user->iPersId = $this->hashids->encode($user->iPersId);
         return response()->json([
             'accessToken' => $token,
             'token_type' => 'bearer',

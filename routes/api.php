@@ -1,9 +1,13 @@
 <?php
 
-use App\Http\Controllers\Ere\InstitucionesEducativasController;
-use App\Http\Controllers\Ere\CapacidadesController;
-use App\Http\Controllers\Ere\CompetenciasController;
-use App\Http\Controllers\Ere\DesempenosController;
+use App\Http\Controllers\acad\ApoderadoController;
+use App\Http\Controllers\acad\EstudiantesController;
+use App\Http\Controllers\acad\GradosController;
+use App\Http\Controllers\acad\MatriculaController;
+use App\Http\Controllers\ere\InstitucionesEducativasController;
+use App\Http\Controllers\ere\CapacidadesController;
+use App\Http\Controllers\ere\CompetenciasController;
+use App\Http\Controllers\ere\DesempenosController;
 
 use App\Http\Controllers\api\acad\ActividadesAprendizajeController;
 use App\Http\Controllers\api\acad\BibliografiaController;
@@ -17,22 +21,24 @@ use App\Http\Controllers\api\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
 use App\Http\Controllers\api\acad\InstitucionesEducativasController as AcadInstitucionesEducativasController;
 use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Controllers\api\grl\TipoIdentificacionController;
 use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
-use App\Http\Controllers\Ere\cursoController;
-use App\Http\Controllers\Ere\EvaluacionesController;
-use App\Http\Controllers\Ere\NivelEvaluacionController;
-use App\Http\Controllers\Ere\NivelTipoController;
-use App\Http\Controllers\Ere\TipoEvaluacionController;
-use App\Http\Controllers\Ere\UgelesController;
+use App\Http\Controllers\ere\cursoController;
+use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\ere\NivelEvaluacionController;
+use App\Http\Controllers\ere\NivelTipoController;
+use App\Http\Controllers\ere\TipoEvaluacionController;
+use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\seg\AuditoriaAccesosController;
 use App\Http\Controllers\seg\AuditoriaAccesosFallidosController;
 use App\Http\Controllers\seg\AuditoriaController;
 use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\aula\EstadisticasController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -129,6 +135,10 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('obtenerConteoPorCurso', [EvaluacionesController::class, 'obtenerConteoPorCurso']);
         //Guardar fecha inicio fin de cursos
         Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
+        //Eliminar una pregunta de una evaluación.
+        Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
+         //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -158,12 +168,15 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']);
         Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']);
         Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']);
+        Route::post('obtenerInformacionEstudianteDNI', [GestionInstitucionalController::class, 'obtenerInformacionEstudianteDNI']);
+        Route::post('obtenerCredencialesSede', [GestionInstitucionalController::class, 'obtenerCredencialesSede']);
+       
     });
 
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
-       
+
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
@@ -196,13 +209,13 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
 
         /*
-         * * Peticiones de información para la configuración de un calendario  
+         * * Peticiones de información para la configuración de un calendario
         */
         //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selCalFasesProm', [CalendarioAcademicosController::class, 'selCalFasesProm']);
 
         /*
-         * * Peticiones de información para la configuración de un calendario  
+         * * Peticiones de información para la configuración de un calendario
         */
         //* GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
@@ -245,7 +258,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         /*
          * * Peticiones con información para guardar información de un
-         * * calendario 
+         * * calendario
          */
         // * POST: Fases promocionales de un calendario académico
         Route::post('insCalFasesProm', [CalendarioAcademicosController::class, 'insCalFasesProm']);
@@ -267,7 +280,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         /*
          * * Peticiones con información para editar información de un
-         * * calendario 
+         * * calendario
         */
         // * PUT: Calendario Académico
         Route::put('updCalAcademico', [CalendarioAcademicosController::class, 'updCalAcademico']);
@@ -284,7 +297,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         /*
          * * Peticiones con información para eliminar información de un
-         * * calendario 
+         * * calendario
         */
         // * DELETE: Calendario Academico por identificador
         Route::delete('deleteCalFasesProm', [CalendarioAcademicosController::class, 'deleteCalFasesProm']);
@@ -300,6 +313,36 @@ Route::group(['prefix' => 'acad'], function () {
 
         //* DELETE: Periodos académicos de un calendario
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
+    });
+
+    Route::group(['prefix' => 'estudiante'], function () {
+
+        Route::post('guardarEstudiante', [EstudiantesController::class, 'save']);
+        Route::post('actualizarEstudiante', [EstudiantesController::class, 'update']);
+        Route::post('searchEstudiantes', [EstudiantesController::class, 'index']);
+        Route::post('searchEstudiante', [EstudiantesController::class, 'show']);
+
+        Route::post('guardarApoderado', [ApoderadoController::class, 'save']);
+        Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
+        Route::post('searchApoderado', [ApoderadoController::class, 'show']);
+
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
+        Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
+    });
+
+    Route::group(['prefix' => 'matricula'], function () {
+
+        Route::post('searchGrados', [MatriculaController::class, 'searchGrados']);
+        Route::post('searchSecciones', [MatriculaController::class, 'searchSecciones']);
+        Route::post('searchTurnos', [MatriculaController::class, 'searchTurnos']);
+
+        Route::post('searchGradoSeccionTurnoConf', [MatriculaController::class, 'searchGradoSeccionTurnoConf']);
+        Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
+
+        Route::post('searchMatriculas', [MatriculaController::class, 'index']);
+        Route::post('searchMatricula', [MatriculaController::class, 'show']);
+        Route::post('guardarMatricula', [MatriculaController::class, 'save']);
+        Route::post('borrarMatricula', [MatriculaController::class, 'delete']);
     });
 });
 
@@ -329,3 +372,10 @@ Route::get('/imprimir', PersonaController::class);
 Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
 Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+
+Route::group(['prefix' => 'grl'], function () {
+    Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
+    Route::post('guardarPersona', [PersonaController::class, 'save']);
+    Route::post('searchPersona', [PersonaController::class, 'show']);
+    Route::post('validarPersona', [PersonaController::class, 'validate']);
+});

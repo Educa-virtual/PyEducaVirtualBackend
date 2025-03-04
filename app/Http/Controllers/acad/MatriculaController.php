@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use App\Services\ParseSqlErrorService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -11,74 +13,210 @@ use Hashids\Hashids;
 class MatriculaController extends Controller
 {
     protected $hashids;
-    protected $iMatrId;
-    protected $iEstudianteId;
-    protected $iSemAcadId;
-    protected $iYAcadId;
-    protected $iTipoMatrId;
-    protected $iCurrId;
-
+    protected $parseSqlErrorService;
 
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->parseSqlErrorService = new ParseSqlErrorService;
     }
 
-    public function list(Request $request)
+    /**
+     * Busca grados, secciones y turnos configurados en el año para el colegio
+     * @param Request $request con los parametros
+     * @return JsonResponse { {is_validated, status_message, data}, status_code } 
+     */
+    public function searchGradoSeccionTurnoConf(Request $request)
     {
-        $request->validate(
-            [
-                'opcion' => 'required',
-            ],
-            [
-                'opcion.required' => 'Hubo un problema al obtener la acción',
-            ]
-        );
         $parametros = [
             $request->opcion,
-            $request->valorBusqueda ?? '-',
-
-            $iMatrId           ?? NULL,
-            $iEstudianteId ?? NULL,
-            $iSemAcadId    ?? NULL,
-            $iYAcadId  ?? NULL,
-            $iTipoMatrId   ?? NULL,
-            $iCurrId   ?? NULL,
-            $request->dtMatrMigracion   ?? NULL,
-            $request->dtMatrFecha   ?? NULL,
-            $request->cMatrNumero   ?? NULL,
-            $request->bMatrEsProforma   ?? NULL,
-            $request->bMatrEsRegular    ?? NULL,
-            $request->dtMatrFechaProforma   ?? NULL,
-            $request->bMatrReservado    ?? NULL,
-            $request->dtMatrReservado   ?? NULL,
-            $request->bMatrReanudado    ?? NULL,
-            $request->dtMatrReanudado   ?? NULL,
-            $request->nMatrCosto    ?? NULL,
-            $request->cMatrNroRecibo    ?? NULL,
-            $request->bMatrPagado   ?? NULL,
-            $request->nMatrTotalCreditos    ?? NULL,
-            $request->cMatrObservaciones    ?? NULL,
-            $request->iMatrEstado   ?? NULL,
-            $request->iEstado   ?? NULL,
-            $request->iSesionId ?? NULL,
-            $request->dtCreado  ?? NULL,
-            $request->dtActualizado ?? NULL,
-            $request->iSedeId   ?? NULL,
-
+            $request->iSedeId,
+            $request->iYAcadId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iTurnoId,
+            $request->iCredSesionId,
         ];
-
         try {
-            $data = DB::select('exec acad.Sp_SEL_matricula
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select("EXEC acad.Sp_SEL_gradoSeccionTurnoConf ?,?,?,?,?,?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }        
+        return new JsonResponse($response, $codeResponse);
+    }
 
+    /**
+     * Lista todos los grados
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function searchNivelGrado(Request $request)
+    {
+        try {
+            $data = DB::select("SELECT ng.iNivelGradoId, n.cNivelNombre, nt.cNivelTipoNombre, c.cCicloNombre, g.cGradoAbreviacion, g.cGradoNombre
+                FROM acad.nivel_grados ng
+                    JOIN acad.grados g ON ng.iGradoId = g.iGradoId
+                    JOIN acad.nivel_ciclos nc ON nc.iNivelCicloId = ng.iNivelCicloId
+                    JOIN acad.ciclos c ON nc.iCicloId = c.iCicloId
+                    JOIN acad.nivel_tipos nt ON nc.iNivelTipoId = nt.iNivelTipoId
+                    JOIN acad.niveles n ON nt.iNivelId = n.iNivelId");
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
         }
+        return new JsonResponse($response, $codeResponse);
+    }
 
+    /**
+     * Determina el grado de un estudiante segun matriculas pasadas
+     * @param Request $request con los parametros
+     * @return JsonResponse { {is_validated, status_message, data}, status_code }
+     */
+    public function determinarGradoEstudiante(Request $request)
+    {
+        $parametros = [
+            $request->iCredSesionId,
+            $request->iEstudianteId,
+            $request->iYAcadId,
+            $request->iSedeId,
+        ];
+
+        try {
+            $data = DB::select("EXEC acad.Sp_SEL_determinarGradoEstudiante ?,?,?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    /**
+     * Guarda una matricula
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function save(Request $request)
+    {
+        $parametros = [
+            $request->iEstudianteId,
+            $request->iYAcadId,
+            $request->iTipoMatrId,
+            $request->iSedeId,
+            $request->iNivelGradoId,
+            $request->iTurnoId,
+            $request->iSeccionId,
+            $request->dtMatrFecha,
+            $request->cMatrObservacion,
+            $request->iCredSesionId
+        ];
+
+        try {
+            $data = DB::select('EXEC acad.Sp_INS_matricula ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch(\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    /**
+     * Busca matriculas segun parametros
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function index(Request $request)
+    {
+        $parametros = [
+            $request->iSedeId,
+            $request->iSemAcadId,
+            $request->iYAcadId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iTurnoId,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $request->iCredSesionId,
+        ];
+
+        try {
+            $data = DB::select("EXEC acad.Sp_SEL_matriculas ?,?,?,?,?,?,?,?,?,?,?,? ", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    /**
+     * Busca una matricula segun parametros
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function show(Request $request)
+    {
+        $parametros = [
+            $request->iMatrId,
+            $request->iCredSesionId,
+        ];
+
+        try {
+            $data = DB::select("EXEC acad.Sp_SEL_matriculaPorId ?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    /**
+     * Elimina una matricula
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function delete(Request $request)
+    {
+        $parametros = [
+            $request->iMatrId,
+            $request->iCredSesionId,
+        ];
+
+        try {
+            $data = DB::select("EXEC acad.Sp_DEL_matriculaPorId ?,?", $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        
         return new JsonResponse($response, $codeResponse);
     }
 }

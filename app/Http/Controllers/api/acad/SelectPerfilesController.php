@@ -20,7 +20,7 @@ class SelectPerfilesController extends ApiController
         ];*/
 
         try { 
-            $preguntas = DB ::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$where]);
+            $preguntas = DB ::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredId ?', [$where]);
            
             return $this->successResponse(
                 $preguntas,
