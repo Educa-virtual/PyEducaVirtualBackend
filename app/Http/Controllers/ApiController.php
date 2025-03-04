@@ -50,4 +50,7 @@ class ApiController extends Controller
     {
         return (new DeleteOperation())->handleRequest($request, $this->strategy);
     }
+    public function execProcedure(Request $request, $procedure, $params){
+        return (new ExecProcedure($procedure, $params))->handleRequest($request, $this->strategy);
+    }
 }
