@@ -24,6 +24,47 @@ class ComunicadosController extends Controller
             ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
         }
     }
+
+    public function obtenerDatos(Request $request){
+        // Obtiene los tipos de comunicado
+        $tipo_comunicado = DB::table('com.tipos_comunicados')
+            ->select('iTipoComId', 'cTipoComNombre')
+            ->get();
+    
+        // Obtiene los tipos de prioridad
+        $tipo_prioridad = DB::table('com.prioridades')
+            ->select('iPrioridadId', 'cPrioridadNombre')
+            ->get();
+
+        $iPersId = $request->input('iPersId'); 
+        $grupos = DB::table('com.grupos')
+            ->select('iPersId', 'cGrupoNombre')
+            ->where('iPersId', $iPersId)
+            ->get();
+        
+        // Obtiene el año académico desde el request
+        $year_id = $request->input('year');
+    
+        // Obtiene el semestre académico basado en el año recibido
+        $semestre_acad_id = null;
+        $semestre = DB::select('SELECT iSemAcadId FROM acad.semestre_academicos WHERE iYAcadId = ?', [$year_id]);
+    
+        if (!empty($semestre)) {
+            $semestre_acad_id = $semestre[0]->iSemAcadId;
+        }
+    
+        // Retorna la respuesta dentro de 'data'
+        return response()->json([
+            'data' => [
+                'tipo_comunicado' => $tipo_comunicado,
+                'tipo_prioridad' => $tipo_prioridad,
+                'semestre_acad_id' => $semestre_acad_id,
+                'grupos' => $grupos,
+            ]
+        ]);
+    }
+    
+
     public function registrar(Request $request){
         
         $solicitud = [
