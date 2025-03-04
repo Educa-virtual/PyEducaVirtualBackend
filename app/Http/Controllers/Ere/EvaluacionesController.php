@@ -28,6 +28,18 @@ class EvaluacionesController extends ApiController
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length')); //new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
 
+    public function obtenerAniosEvaluaciones()
+    {
+        $anios = DB::select('SELECT DISTINCT(YEAR(dtEvaluacionFechaInicio)) AS anio
+FROM ere.evaluacion
+WHERE dtEvaluacionFechaInicio IS NOT NULL
+ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
+        return response()->json([
+            'status' => 'Error',
+            'message' => 'Datos obtenidos',
+            'data' => $anios
+        ]);
+    }
     /*public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
 
         if (!is_numeric($iEvaluacionId) && !is_numeric($iCursosNivelGradId)) {

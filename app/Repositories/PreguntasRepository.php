@@ -28,7 +28,7 @@ class PreguntasRepository
     {
         $cantidad = 0;
         foreach ($preguntas as $indexPregunta => $pregunta) {
-            if ($pregunta->iEncabPregId=='-1') {
+            if ($pregunta->iEncabPregId == '-1') {
                 $cantidad++;
             } else {
                 foreach ($pregunta->preguntas as $indexSubPregunta => $subPregunta) {
@@ -37,6 +37,23 @@ class PreguntasRepository
             }
         }
         return $cantidad;
+    }
+
+    public static function obtenerBancoPreguntasEreParaReutilizar($params)
+    {
+        $preguntasDB = DB::select('ere.SP_SEL_BancoPreguntasEreParaReutilizar
+            @iTipoPregId=?,
+            @iCursoId=?,
+            @iGradoId=?,
+            @iNivelTipoId=?,
+            @iNivelEvalId=?,
+            @iCapacidadId=?,
+            @iCompetenciaId=?,
+            @iEvaluacionAnio=?', $params);
+        foreach ($preguntasDB as $pregunta) {
+            $pregunta->cPregunta = str_replace(['<','>'],'',html_entity_decode(strip_tags($pregunta->cPregunta)));
+        }
+        return $preguntasDB;
     }
 
     public static function obtenerBancoPreguntasByParams($params)

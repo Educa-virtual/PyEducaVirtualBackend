@@ -19,7 +19,7 @@ class PreguntasController extends ApiController
     protected  $alternativaPreguntaRespository;
     protected $hashids;
 
-    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository = null)
+    public function __construct($alternativaPreguntaRespository = null)
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
@@ -250,6 +250,24 @@ class PreguntasController extends ApiController
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al actualizar los datos');
         }
+    }
+
+    public function obtenerPreguntasReutilizables(Request $request) {
+        $params=[
+            $request->query('tipo_pregunta'),
+            $request->query('curso'),
+            $request->query('grado'),
+            $request->query('nivel_academico'),
+            $request->query('nivel_evaluacion'),
+            $request->query('capacidad'),
+            $request->query('competencia'),
+            $request->query('anio_evaluacion')
+        ];
+        $preguntas = PreguntasRepository::obtenerBancoPreguntasEreParaReutilizar($params);
+        return $this->successResponse(
+            $preguntas,
+            'Datos obtenidos correctamente'
+        );
     }
 
     public function obtenerBancoPreguntas(Request $request)
