@@ -95,7 +95,8 @@ class CredencialescCredUsuariocClaveController extends Controller
         }
 
         //Obtener roles 
-        $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
+        //$perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredEntId ?', [$data[0]->iCredId]);
+        $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredId ?', [$data[0]->iCredId]);
         $data[0]->perfiles = $perfiles;
 
         $conctactar = json_decode($data[0]->contactar, true);
