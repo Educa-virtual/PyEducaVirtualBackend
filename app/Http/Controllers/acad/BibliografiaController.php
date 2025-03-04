@@ -55,15 +55,11 @@ class BibliografiaController extends Controller
             $request->cBiblioAnioEdicion    ?? NULL,
             $request->cBiblioEditorial      ?? NULL,
             $request->cBiblioUrl            ?? NULL,
-            $request->iEstado               ?? NULL,
-
-            $request->iCredId
-
         ];
 
         try {
             $query = DB::select(
-                "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?,?",
+                "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?",
                 $parametros
             );
 
@@ -125,15 +121,11 @@ class BibliografiaController extends Controller
             $request->cBiblioAnioEdicion    ?? NULL,
             $request->cBiblioEditorial      ?? NULL,
             $request->cBiblioUrl            ?? NULL,
-            $request->iEstado               ?? NULL
-
-            //$request->iCredId
-
         ];
 
         try {
             $query = DB::select(
-                "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?,?",
+                "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?",
                 $parametros
             );
            

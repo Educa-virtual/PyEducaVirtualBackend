@@ -100,33 +100,35 @@ class SilaboMetodologiasController extends Controller
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
 
-
-        $parametros = [
-            $request->opcion,
-            $request->valorBusqueda ?? '-',
-
-            $idSilMetId                     ?? NULL,
-            $iTipoMetId                     ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cSilMetDescripcion    ?? NULL,
-
-            $request->iCredId
-
-        ];
-
         try {
             switch ($request->opcion) {
                 case 'GUARDARxiSilaboId':
+                    $parametros = [
+                        $iTipoMetId                     ?? NULL,
+                        $iSilaboId                      ?? NULL,
+                        $request->cSilMetDescripcion    ?? NULL,      
+                        $request->iCredId
+                    ];
                     $data = DB::select('exec acad.Sp_INS_silaboMetodologias
-                ?,?,?,?,?,?,?', $parametros);
+                ?,?,?,?', $parametros);
                     break;
                 case 'ACTUALIZARxidSilMetId':
+                    $parametros = [
+                        $idSilMetId                     ?? NULL,
+                        $iTipoMetId                     ?? NULL,
+                        $request->cSilMetDescripcion    ?? NULL,
+                        $request->iCredId
+                    ];
                     $data = DB::select('exec acad.Sp_UPD_silaboMetodologias
-                ?,?,?,?,?,?,?', $parametros);
+                ?,?,?,?', $parametros);
                     break;
                 case 'ELIMINARxidSilMetId':
+                    $parametros = [
+                        $idSilMetId                     ?? NULL,
+                        $request->iCredId,
+                    ];
                     $data = DB::select('exec acad.Sp_DEL_silaboMetodologias
-                ?,?,?,?,?,?,?', $parametros);
+                ?,?', $parametros);
                     break;
             }
            

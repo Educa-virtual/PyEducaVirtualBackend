@@ -389,6 +389,35 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }
 
+     // consulta para traslados
+     public function obtenerCredencialesSede(Request $request)
+     {                
+         $solicitud = [
+             $request->iSedeId]; //INT,
+            
+         //41789603
+         $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?", $solicitud);
+ 
+         try {
+             $response = [
+                 'validated' => true,
+                 'message' => 'se obtuvo la información',
+                 'data' => $query,
+             ];
+ 
+             $estado = 201;
+         } catch (Exception $e) {
+             $response = [
+                 'validated' => false,
+                 'message' => $e->getMessage(),
+                 'data' => [],
+             ];
+             $estado = 500;
+         }
+ 
+         return new JsonResponse($response, $estado);
+     }
+
 }
 
 
