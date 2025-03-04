@@ -7,17 +7,8 @@ use App\Helpers\ResponseHandler;
 use Exception;
 use Illuminate\Http\Request;
 
-class FileController extends AbstractDatabaseOperation
+class FileController extends Controller
 {
-  protected function getProcedureName(): string
-  {
-    return 'acad.SP_SEL_ObtenerDocenteSedeMasivo';
-  }
-
-  protected function getParams(): array
-  {
-    return ['iYAcadId', 'json', 'iSedeId'];
-  }
 
   public function uploadFile(Request $request)
   {
@@ -40,7 +31,11 @@ class FileController extends AbstractDatabaseOperation
   public function validatedFile(Request $request)
   {
     try {
-      $query = self::handleRequest($request, new CollectionStrategy());
+      $query = (new ApiController(new CollectionStrategy()))->execProcedure($request, 'acad.SP_SEL_ObtenerDocenteSedeMasivo', [
+        'iYAcadId',
+        'json',
+        'iSedeId',
+      ]);
 
       return ResponseHandler::success($query, 'Archivo validado correctamente.');
     } catch (Exception $e) {
