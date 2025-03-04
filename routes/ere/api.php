@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'ere'], function () {
 
+    Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
         Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
@@ -29,6 +30,7 @@ Route::group(['prefix' => 'ere'], function () {
     });
 
     Route::group(['prefix' => 'preguntas'], function () {
+        Route::get('reutilizables', [PreguntasController::class, 'obtenerPreguntasReutilizables']);
         Route::post('guardarActualizarPreguntaConAlternativas', [PreguntasController::class, 'guardarActualizarPreguntaConAlternativas']);
         Route::delete('eliminarBancoPreguntasById/{id}', [PreguntasController::class, 'eliminarBancoPreguntasById']);
         Route::get('obtenerBancoPreguntas', [PreguntasController::class, 'obtenerBancoPreguntas']);
