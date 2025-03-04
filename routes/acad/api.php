@@ -3,6 +3,7 @@
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
+use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
@@ -34,6 +35,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::delete('{ugelId}/especialistas/{docenteId}/areas', [EspecialistasUgelController::class, 'eliminarAreaEspecialista']);
     });
 
+    Route::group(['prefix' => 'silabos'], function () {
+        Route::post('actualizar', [SilabosController::class, 'actualizar']);
+    });
 
 
     Route::group(['prefix' => 'docentes'], function () {});

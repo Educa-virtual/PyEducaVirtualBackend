@@ -3,7 +3,7 @@ namespace App\Helpers;
 
 use Hashids\Hashids;
 
-class DecodeHash
+class VerifyHash
 {
     protected static $hashids;
 
