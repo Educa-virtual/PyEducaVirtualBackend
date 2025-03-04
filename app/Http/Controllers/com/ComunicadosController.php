@@ -7,9 +7,24 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ResponseHandler;
+use Hashids\Hashids;
 
 class ComunicadosController extends Controller
 {
+    private $hashids;
+    public function __construct()
+    {
+        $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
+
+    private function decodeValue($value)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
+    }
+
     public function mostrar(Request $request){
         $opcion = $request->opcion;
         
@@ -36,7 +51,7 @@ class ComunicadosController extends Controller
             ->select('iPrioridadId', 'cPrioridadNombre')
             ->get();
 
-        $iPersId = $request->input('iPersId'); 
+        $iPersId = $this->decodeValue($request->input('iPersId')); 
         $grupos = DB::table('com.grupos')
             ->select('iPersId', 'cGrupoNombre')
             ->where('iPersId', $iPersId)
