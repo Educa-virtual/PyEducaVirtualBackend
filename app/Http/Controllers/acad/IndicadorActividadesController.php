@@ -122,8 +122,7 @@ class IndicadorActividadesController extends Controller
 
         $parametros = [
             $request->opcion,
-            $request->valorBusqueda ?? '-',
-
+            $request->valorBusqueda           ?? '-',
             $iIndActId                        ?? NULL,
             $request->cIndActNumero           ?? NULL,
             $request->iIndActSemanaEval       ?? NULL,
@@ -134,11 +133,9 @@ class IndicadorActividadesController extends Controller
             $request->cIndActActitudes        ?? NULL,
             $request->cIndActConceptual       ?? NULL,
             $request->IndActHoras             ?? NULL,
-            $iTipoIndLogId           ?? NULL,
+            $iTipoIndLogId                    ?? NULL,
             $request->cIndActNombre           ?? NULL,
-
             $request->iCredId
-
         ];
 
         try {
@@ -152,8 +149,11 @@ class IndicadorActividadesController extends Controller
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     break;
                 case 'ELIMINARxiIndActId':
-                    $data = DB::select('exec acad.Sp_DEL_indicadorActividades
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    $parametros = [
+                        $iIndActId                        ?? NULL,
+                        $request->iCredId
+                    ];
+                    $data = DB::select('exec acad.Sp_DEL_indicadorActividades ?,?', $parametros);
                     break;
             }
 
