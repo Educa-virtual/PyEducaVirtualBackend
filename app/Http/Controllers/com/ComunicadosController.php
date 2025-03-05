@@ -53,7 +53,7 @@ class ComunicadosController extends Controller
 
         $iPersId = $this->decodeValue($request->input('iPersId')); 
         $grupos = DB::table('com.grupos')
-            ->select('iPersId', 'cGrupoNombre')
+            ->select('iGrupoId', 'cGrupoNombre')
             ->where('iPersId', $iPersId)
             ->get();
         
@@ -81,41 +81,61 @@ class ComunicadosController extends Controller
     
 
     public function registrar(Request $request){
-        
+
+        $iPersId = $this->decodeValue($request->input('iPersId'));
+        $listaGrupos = $request->input('listaGrupos'); 
+
         $solicitud = [
-            1,                    //iPersId,
-            1,                    //iTipoComId,
-            1,                    //iPrioridadId,
-            'titulo 1',                    //cComunicadoTitulo,
-            'descricion 1',                    //cComunicadoDescripcion,
-            null,                    //dtComunicadoEmision,
-            null,                    //dtComunicadoHasta,
-            null,                    //cComunicadoUrl,
-            null,                    //bComunicadoArchivado,
-            null,                    //bComunicadoUgeles,
-            null,                    //bComunicadoIes,
-            null,                    //bComunicadoPerfil,
-            null,                    //iActTipoId,
-            null,                    //iUgelId,
-            null,                    //iGradoId,
-            null,                    //iSemAcadId,
-            1,                    //iYAcadId,
-            null,                    //iSeccionId,
-            null,                    //iCursoId,
-            null,                    //iSedeId,
-            null,                    //iDocenteId,
-            null,                    //iEstudianteId,
-            null,                    //iEspecialistaId
+            $iPersId,                // ID de la persona
+            $request->input('iTipoComId'),             // Tipo de comunicado
+            $request->input('iPrioridadId'),           // Prioridad
+            $request->input('cComunicadoTitulo'),      // Título
+            $request->input('cComunicadoDescripcion'), // Descripción
+            $request->input('dtComunicadoEmision'),    // Fecha de emisión
+            $request->input('dtComunicadoHasta'),      // Fecha de caducidad
+            null,                                      // URL (pendiente)
+            $request->input('iEstado'),                // Estado (bComunicadoArchivado)
+            null,                                      // bComunicadoUgeles (pendiente)
+            null,                                      // bComunicadoIes (pendiente)
+            null,                                      // bComunicadoPerfil (pendiente)
+            null,                                      // iActTipoId (pendiente)
+            null,                                      // iUgelId (pendiente)
+            null,                                      // iGradoId (pendiente)
+            null,                                      // iSemAcadId (pendiente)
+            $request->input('iYAcadId'),               // Año académico
+            null,                                      // iSeccionId (pendiente)
+            null,                                      // iCursoId (pendiente)
+            null,                                      // iSedeId (pendiente)
+            null,                                      // iDocenteId (pendiente)
+            null,                                      // iEstudianteId (pendiente)
+            null                                       // iEspecialistaId (pendiente)
         ];
 
         $query = 'EXEC com.Sp_INS_comunicados '.str_repeat('?,',count($solicitud)-1).'?';
-        $data = DB::select($query, $solicitud);
 
         try {
             $data = DB::select($query, $solicitud);
-            return ResponseHandler::success($data);
+
+            $iComunicadoId = $data[0]->resultado ?? null;
+            
+            if (!$iComunicadoId) {
+                return ResponseHandler::error("No se pudo obtener el ID del comunicado", 500);
+            }
+
+            //  Insertar los grupos en com.destinos_grupos
+            if (!empty($listaGrupos)) {
+                foreach ($listaGrupos as $iGrupoId) {
+                    DB::table('com.destinos_grupos')->insert([
+                        'iGrupoId' => $iGrupoId,
+                        'iComunicadoId' => $iComunicadoId
+                    ]);
+                }
+            }
+
+            return ResponseHandler::success(['iComunicadoId' => $iComunicadoId]);
+
         } catch (Exception $e) {
-            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+            return ResponseHandler::error("Error al registrar comunicado ",500,$e->getMessage());
         }
 
     }
