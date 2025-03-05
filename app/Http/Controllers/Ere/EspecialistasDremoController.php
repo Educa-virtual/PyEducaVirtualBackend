@@ -79,6 +79,7 @@ class EspecialistasDremoController extends Controller
                 'busqueda' => '',
                 'iTipoPregId' => 0,
                 'bPreguntaEstado' => 1,
+                'iPreguntaId' => NULL,
                 'ids' => NULL
             ];
             $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
