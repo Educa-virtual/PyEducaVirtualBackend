@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Services\StringService;
 use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
 
@@ -41,20 +42,32 @@ class PreguntasRepository
 
     public static function obtenerBancoPreguntasEreParaReutilizar($params)
     {
+        /*
+        $request->query('tipo_pregunta'),
+            $request->query('curso_nive_grado'),
+            $request->query('nivel_evaluacion'),
+            $request->query('capacidad'),
+            $request->query('competencia'),
+            $request->query('anio_evaluacion'),
+            $request->query('evaluacion'),
+        */
         $preguntasDB = DB::select('ere.SP_SEL_BancoPreguntasEreParaReutilizar
             @iTipoPregId=?,
-            @iCursoId=?,
-            @iGradoId=?,
-            @iNivelTipoId=?,
+            @iCursosNivelGradId=?,
             @iNivelEvalId=?,
             @iCapacidadId=?,
             @iCompetenciaId=?,
-            @iEvaluacionAnio=?', $params);
+            @iEvaluacionAnio=?,
+            @iEvaluacionid=?',
+
+            $params);
         foreach ($preguntasDB as $pregunta) {
-            $pregunta->cPregunta = str_replace(['<','>'],'',html_entity_decode(strip_tags($pregunta->cPregunta)));
+            $pregunta->cPregunta = StringService::recortarTexto(str_replace(['<','>'],'',html_entity_decode(strip_tags($pregunta->cPregunta))));
         }
         return $preguntasDB;
     }
+
+
 
     public static function obtenerBancoPreguntasByParams($params)
     {

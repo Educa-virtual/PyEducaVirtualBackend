@@ -12,17 +12,19 @@ use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'ere'], function () {
-
-    Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
         Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
-        Route::post('areas/{areaId}/archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
-        Route::get('areas/{areaId}/archivo-preguntas', [AreasController::class, 'descargarArchivoPdf']);
-        Route::get('areas/{areaId}/matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
+        Route::group(['prefix' => 'areas/{areaId}'], function () {
+            Route::get('preguntas-reutilizables', [PreguntasController::class, 'obtenerPreguntasReutilizables']);
+            Route::post('preguntas-reutilizables', [PreguntasController::class, 'asignarPreguntaAEvaluacion']);
+            Route::post('archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
+            Route::get('archivo-preguntas', [AreasController::class, 'descargarArchivoPdf']);
+            Route::get('matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
+        });
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
     });
-
+    Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('guardarActualizarAlternativa', [AlternativaPreguntaController::class, 'guardarActualizarAlternativa']);
         Route::get('obtenerAlternativaByPreguntaId/{id}', [AlternativaPreguntaController::class, 'obtenerAlternativaByPreguntaId']);
@@ -30,7 +32,6 @@ Route::group(['prefix' => 'ere'], function () {
     });
 
     Route::group(['prefix' => 'preguntas'], function () {
-        Route::get('reutilizables', [PreguntasController::class, 'obtenerPreguntasReutilizables']);
         Route::post('guardarActualizarPreguntaConAlternativas', [PreguntasController::class, 'guardarActualizarPreguntaConAlternativas']);
         Route::delete('eliminarBancoPreguntasById/{id}', [PreguntasController::class, 'eliminarBancoPreguntasById']);
         Route::get('obtenerBancoPreguntas', [PreguntasController::class, 'obtenerBancoPreguntas']);
