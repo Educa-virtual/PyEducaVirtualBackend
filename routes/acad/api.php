@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\acad\CursosController;
+use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\SilabosController;
@@ -14,7 +15,7 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'estudiantes'], function () {
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
         Route::post('obtener_estudiantes',[EstudiantesController::class,'obtenerEstudianteGrupo']);
-        Route::post('obtener_docentes',[EstudiantesController::class,'obtenerEstudianteGrupo']);
+        Route::post('obtener_docentes',[DocenteCursosController::class,'obtenerDocenteGrupo']);
     });
     Route::group(['prefix' => 'grados'], function () {
         Route::post('handleCrudOperation', [GradosController::class, 'handleCrudOperation']);
