@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -96,6 +98,28 @@ class DocenteCursosController extends Controller
                 ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
                 500
             );
+        }
+    }
+    public function obtenerDocenteGrupo(Request $request){
+        // mostrar datos de estudiantes para miembros de grupo
+        $iIieeId = $request->iIieeId;
+        $iYAcadId = $request->iYAcadId;
+        $iSedeId = $request->iSedeId;
+        
+        //  la opcion 1 muestra los estudiantes de la institucion
+        $solicitud = [
+            2,
+            $iIieeId,
+            $iYAcadId,
+            $iSedeId,
+        ];
+        $query = 'EXEC acad.Sp_SEL_estudianteXdocenteXespecialista '.str_repeat('?,',count($solicitud)-1).'?';
+        $data = DB::select($query, $solicitud);
+        try {
+            $data = DB::select($query, $solicitud);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
         }
     }
 }
