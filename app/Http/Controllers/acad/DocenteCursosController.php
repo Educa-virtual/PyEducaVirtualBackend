@@ -102,15 +102,15 @@ class DocenteCursosController extends Controller
     }
     public function obtenerDocenteGrupo(Request $request){
         // mostrar datos de estudiantes para miembros de grupo
-        $iIieeId = $request->iIieeId;
-        $iYAcadId = $request->iYAcadId;
+        // $iIieeId = $request->iIieeId;
+        // $iYAcadId = $request->iYAcadId;
         $iSedeId = $request->iSedeId;
         
         //  la opcion 1 muestra los estudiantes de la institucion
         $solicitud = [
             2,
-            $iIieeId,
-            $iYAcadId,
+            NULL,
+            NULL,
             $iSedeId,
         ];
         $query = 'EXEC acad.Sp_SEL_estudianteXdocenteXespecialista '.str_repeat('?,',count($solicitud)-1).'?';

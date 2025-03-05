@@ -12,7 +12,6 @@ use App\Http\Controllers\acad\TipoBibliografiasController;
 use App\Http\Controllers\acad\TipoMetodologiasController;
 use App\Http\Controllers\acad\BibliografiaController;
 use App\Http\Controllers\acad\BuscarCurriculaController;
-use App\Http\Controllers\api\acad\EstudiantesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\FechasImportantesController;
 use App\Http\Controllers\acad\IndicadorActividadesController;
@@ -95,9 +94,9 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('obtenerEstudiante', [AsistenciaController::class, 'obtenerEstudiante']);
     Route::post('obtenerFestividad', [AsistenciaController::class, 'obtenerFestividad']);
   });
-  Route::group(['prefix' => 'estudiante'], function () {
-    Route::post('list', [EstudiantesController::class, 'list']);
-  });
+  // Route::group(['prefix' => 'estudiante'], function () {
+  //   Route::post('list', [EstudiantesController::class, 'list']);
+  // });
   Route::group(['prefix' => 'silabus_reporte'], function () {
     Route::post('report', [SilabosController::class, 'report']);
   });
