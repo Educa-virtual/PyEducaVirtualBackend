@@ -100,15 +100,12 @@ class ContenidoSemanasController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $iContenidoSemId                    ?? NULL,
             $iIndActId                          ?? NULL,
             $request->cContenidoSemTitulo       ?? NULL,
             $request->cContenidoSemNumero       ?? NULL,
             $request->cContenidoSemDescripcion  ?? NULL,
-
             $request->iCredId
-
         ];
 
         try {
@@ -122,8 +119,11 @@ class ContenidoSemanasController extends Controller
                     ?,?,?,?,?,?,?,?', $parametros);
                     break;
                 case 'ELIMINARxiContenidoSemId':
-                    $data = DB::select('exec acad.Sp_DEL_contenidoSemanas
-                    ?,?,?,?,?,?,?,?', $parametros);
+                    $parametros = [
+                        $iContenidoSemId    ?? NULL,
+                        $request->iCredId
+                    ];
+                    $data = DB::select('exec acad.Sp_DEL_contenidoSemanas ?,?', $parametros);
                     break;
             }
             if ($data[0]->iContenidoSemId > 0) {

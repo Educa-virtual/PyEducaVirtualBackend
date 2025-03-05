@@ -10,4 +10,5 @@ Route::group(['prefix' => 'general'], function () {
 
 Route::group(['prefix' => 'file'], function () {
     Route::get('import', [FileController::class, 'downloadFile']);
+    Route::post('validate', [FileController::class, 'validatedFile']);
 });
