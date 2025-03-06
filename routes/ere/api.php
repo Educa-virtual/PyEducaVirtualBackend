@@ -12,6 +12,7 @@ use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'ere'], function () {
+    Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
         Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
@@ -24,7 +25,7 @@ Route::group(['prefix' => 'ere'], function () {
         });
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
     });
-    Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
+    
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('guardarActualizarAlternativa', [AlternativaPreguntaController::class, 'guardarActualizarAlternativa']);
         Route::get('obtenerAlternativaByPreguntaId/{id}', [AlternativaPreguntaController::class, 'obtenerAlternativaByPreguntaId']);
