@@ -133,7 +133,7 @@ class SilabosController extends Controller
     }
     public function report(Request $request)
     {
-        $request['opcion'] = 'CONSULTAR_SILABO';
+        $request['opcion'] = 2;
         $parametros = $this->validateRequest($request);
         
         $query = DB::select(
@@ -143,6 +143,8 @@ class SilabosController extends Controller
         
         $formato = $query[0];
         
+        
+
         $respuesta = [
             "query" => $formato,
         ];

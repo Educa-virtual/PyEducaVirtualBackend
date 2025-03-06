@@ -91,7 +91,7 @@ class ComunicadosController extends Controller
             $opcion,
             $iIieeId,
             $iYAcadId,
-            $iSedeId,
+            $iSedeId
         ];
         $query = 'EXEC acad.Sp_SEL_estudianteXdocenteXespecialista '.str_repeat('?,',count($solicitud)-1).'?';
         $data = DB::select($query, $solicitud);
