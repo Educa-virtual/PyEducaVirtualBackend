@@ -105,6 +105,9 @@ class EvaluacionController extends Controller
         try {
             switch ($request->opcion) {
                 case 'CONSULTARxiEvaluacionIdxiCursoNivelGradId':
+                case 'CONSULTARxiEvaluacionId':
+                case 'CONSULTAR-ESTADOxiEvaluacionId':
+                case 'CONSULTAR-PREGUNTAS-ESTUDIANTExiEvaluacionIdxiCursoNivelGradId':
                     $data = DB::select('exec ere.Sp_SEL_evaluacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
                     return new JsonResponse(
@@ -130,7 +133,7 @@ class EvaluacionController extends Controller
             }
         } catch (\Exception $e) {
             return new JsonResponse(
-                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 500
             );
         }

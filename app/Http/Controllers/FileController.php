@@ -28,10 +28,24 @@ class FileController extends Controller
     ]);
   }
 
-  public function validatedFile(Request $request)
+  public function validatedDocentes(Request $request)
   {
     try {
       $query = (new ApiController(new CollectionStrategy()))->execProcedure($request, 'acad.SP_SEL_ObtenerDocenteSedeMasivo', [
+        'iYAcadId',
+        'json',
+        'iSedeId',
+      ]);
+
+      return ResponseHandler::success($query, 'Archivo validado correctamente.');
+    } catch (Exception $e) {
+      return ResponseHandler::error('Error al validar el archivo.', 500, $e->getMessage());
+    }
+  }
+  public function validatedEstudiantes(Request $request)
+  {
+    try {
+      $query = (new ApiController(new CollectionStrategy()))->execProcedure($request, 'acad.SP_SEL_ObtenerEstudianteSedeMasivo', [
         'iYAcadId',
         'json',
         'iSedeId',
