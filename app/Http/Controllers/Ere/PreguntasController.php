@@ -11,7 +11,9 @@ use App\Http\Controllers\ApiController;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
+use App\Services\ParseSqlErrorService;
 use Hashids\Hashids;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 
 class PreguntasController extends ApiController
@@ -19,11 +21,12 @@ class PreguntasController extends ApiController
     protected  $alternativaPreguntaRespository;
     protected $hashids;
 
-    public function __construct(AlternativaPreguntaRespository $alternativaPreguntaRespository = null)
+    public function __construct($alternativaPreguntaRespository = null)
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
     }
+
 
     public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
@@ -252,6 +255,29 @@ class PreguntasController extends ApiController
         }
     }
 
+    public function obtenerPreguntasReutilizables($evaluacionId, $areaId, Request $request)
+    {
+        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+        $areaIdDescifrado = $this->hashids->decode($areaId);
+        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        $params = [
+            $request->query('tipo_pregunta'),
+            $areaIdDescifrado[0],
+            $request->query('nivel_evaluacion'),
+            $request->query('capacidad'),
+            $request->query('competencia'),
+            $request->query('anio_evaluacion'),
+            $evaluacionIdDescifrado[0],
+        ];
+        $preguntas = PreguntasRepository::obtenerBancoPreguntasEreParaReutilizar($params);
+        return $this->successResponse(
+            $preguntas,
+            'Datos obtenidos correctamente'
+        );
+    }
+
     public function obtenerBancoPreguntas(Request $request)
     {
 
@@ -261,7 +287,8 @@ class PreguntasController extends ApiController
             'busqueda' => $request->busqueda ?? '',
             'iTipoPregId' => $request->iTipoPregId ?? 0,
             'bPreguntaEstado' => $request->bPreguntaEstado ?? -1,
-            'iEncabPregId' => $request->iEncabPregId  ?? 0
+            'iEncabPregId' => $request->iEncabPregId  ?? 0,
+            'iPreguntaId' => $request->iPreguntaId
         ];
         try {
             $preguntas = PreguntasRepository::obtenerBancoPreguntasByParams($params);
@@ -540,6 +567,40 @@ class PreguntasController extends ApiController
     public function encodeId($data)
     {
         return array_map([$this, 'encodeFields'], $data);
+    }
+
+
+    public function asignarPreguntaAEvaluacion($evaluacionId, Request $request)
+    {
+        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        $request->validate([
+            'iTipoPregId' => 'required|integer',
+            'iPreguntaId' => 'required|integer',
+        ]);
+        try {
+            if ($request->iTipoPregId == 1) {
+                DB::statement('exec ere.SP_INS_preguntaEnEvaluacion @iPreguntaId=?, @iEvaluacionId=?', [$request->iPreguntaId, $evaluacionIdDescifrado[0]]);
+                return response()->json(['status' => 'Success', 'message' => 'Se ha agregado la pregunta a la evaluación.'], Response::HTTP_OK);
+            } else {
+                $preguntas = DB::select('SELECT iPreguntaId FROM ere.preguntas WHERE iEncabPregId=?', [$request->iPreguntaId]);
+                if (empty($preguntas)) {
+                    return response()->json(['status' => 'Error', 'message' => 'No se encontraron preguntas para el encabezado enviado.'], Response::HTTP_BAD_REQUEST);
+                }
+                foreach ($preguntas as $pregunta) {
+                    DB::statement('exec ere.SP_INS_preguntaEnEvaluacion @iPreguntaId=?, @iEvaluacionId=?', [$pregunta->iPreguntaId, $evaluacionIdDescifrado[0]]);
+                }
+                return response()->json(['status' => 'Success', 'message' => 'Se han agregado las preguntas a la evaluación.'], Response::HTTP_OK);
+            }
+        } catch (Exception $exception) {
+            $parse = new ParseSqlErrorService();
+            return response()->json(
+                ['status' => 'Error', 'message' => $parse->parse($exception->getMessage())],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
     }
 
     public function handleCrudOperation(Request $request)

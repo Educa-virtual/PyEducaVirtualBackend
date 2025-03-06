@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Services\StringService;
 use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
 
@@ -24,11 +25,11 @@ class PreguntasRepository
     }
 
 
-    public static function contarPreguntasEre($preguntas)
+    /*public static function contarPreguntasEre($preguntas)
     {
         $cantidad = 0;
         foreach ($preguntas as $indexPregunta => $pregunta) {
-            if ($pregunta->iEncabPregId=='-1') {
+            if ($pregunta->iEncabPregId == '-1') {
                 $cantidad++;
             } else {
                 foreach ($pregunta->preguntas as $indexSubPregunta => $subPregunta) {
@@ -37,7 +38,48 @@ class PreguntasRepository
             }
         }
         return $cantidad;
+    }*/
+
+    public static function obtenerCantidadPreguntasPorEvaluacion($iEvaluacionid, $iCursosNivelGradId) {
+        $params = [
+            $iEvaluacionid,
+            $iCursosNivelGradId
+        ];
+        $result = DB::selectOne('SELECT COUNT(*) AS cantidad FROM ere.evaluacion_preguntas AS ep
+INNER JOIN ere.preguntas AS p ON ep.iPreguntaId=p.iPreguntaId
+WHERE ep.iEvaluacionId=? AND p.bPreguntaEstado=1
+AND p.iCursosNivelGradId=?', $params);
+        return $result->cantidad;
     }
+
+    public static function obtenerBancoPreguntasEreParaReutilizar($params)
+    {
+        /*
+        $request->query('tipo_pregunta'),
+            $request->query('curso_nive_grado'),
+            $request->query('nivel_evaluacion'),
+            $request->query('capacidad'),
+            $request->query('competencia'),
+            $request->query('anio_evaluacion'),
+            $request->query('evaluacion'),
+        */
+        $preguntasDB = DB::select('ere.SP_SEL_BancoPreguntasEreParaReutilizar
+            @iTipoPregId=?,
+            @iCursosNivelGradId=?,
+            @iNivelEvalId=?,
+            @iCapacidadId=?,
+            @iCompetenciaId=?,
+            @iEvaluacionAnio=?,
+            @iEvaluacionid=?',
+
+            $params);
+        foreach ($preguntasDB as $pregunta) {
+            $pregunta->cPregunta = StringService::recortarTexto(str_replace(['<','>'],'',html_entity_decode(strip_tags($pregunta->cPregunta))));
+        }
+        return $preguntasDB;
+    }
+
+
 
     public static function obtenerBancoPreguntasByParams($params)
     {
@@ -48,12 +90,13 @@ class PreguntasRepository
             $params['bPreguntaEstado'] ?? -1,
             $params['ids'] ?? '',
             $params['iEncabPregId'] ?? 0,
-            $params['iEvaluacionId'] ?? 0
+            $params['iEvaluacionId'] ?? 0,
+            $params['iPreguntaId']
         ];
 
         $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursosNivelGradId = ?,
              @_busqueda = ?, @_iTipoPregId = ?, @_bPreguntaEstado = ?, @_iPreguntasIds = ?,
-             @_iEncabPregId = ?, @_iEvaluacionId = ?
+             @_iEncabPregId = ?, @_iEvaluacionId = ?, @_iPreguntaId = ?
             ', $params);
 
         $preguntas = [];
