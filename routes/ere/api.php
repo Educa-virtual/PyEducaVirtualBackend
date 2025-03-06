@@ -25,11 +25,6 @@ Route::group(['prefix' => 'ere'], function () {
         });
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
     });
-<<<<<<< HEAD
-    
-=======
-
->>>>>>> 54ce067bf3526bd5fa470cfd18b04f0cfd621e64
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('guardarActualizarAlternativa', [AlternativaPreguntaController::class, 'guardarActualizarAlternativa']);
         Route::get('obtenerAlternativaByPreguntaId/{id}', [AlternativaPreguntaController::class, 'obtenerAlternativaByPreguntaId']);
