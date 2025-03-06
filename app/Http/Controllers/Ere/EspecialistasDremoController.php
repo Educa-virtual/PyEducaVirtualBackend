@@ -82,11 +82,10 @@ class EspecialistasDremoController extends Controller
                 'iPreguntaId' => NULL,
                 'ids' => NULL
             ];
-            $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
+            $fila->iCantidadPreguntas = PreguntasRepository::obtenerCantidadPreguntasPorEvaluacion($evaluacionIdDescifrado[0], $fila->iCursosNivelGradId);
             $fila->iEvaluacionid = $evaluacionIdDescifrado[0];
             $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
             $fila->bTieneArchivo = AreasService::tieneArchivoPdfSubido($evaluacionId, $fila->iCursosNivelGradId);
-            $fila->iCantidadPreguntas = PreguntasRepository::contarPreguntasEre($preguntasDB);
             $fila->iEvaluacionIdHashed= $evaluacionId;
         }
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);
