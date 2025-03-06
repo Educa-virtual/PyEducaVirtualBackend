@@ -25,7 +25,7 @@ class PreguntasRepository
     }
 
 
-    public static function contarPreguntasEre($preguntas)
+    /*public static function contarPreguntasEre($preguntas)
     {
         $cantidad = 0;
         foreach ($preguntas as $indexPregunta => $pregunta) {
@@ -38,6 +38,18 @@ class PreguntasRepository
             }
         }
         return $cantidad;
+    }*/
+
+    public static function obtenerCantidadPreguntasPorEvaluacion($iEvaluacionid, $iCursosNivelGradId) {
+        $params = [
+            $iEvaluacionid,
+            $iCursosNivelGradId
+        ];
+        $result = DB::selectOne('SELECT COUNT(*) AS cantidad FROM ere.evaluacion_preguntas AS ep
+INNER JOIN ere.preguntas AS p ON ep.iPreguntaId=p.iPreguntaId
+WHERE ep.iEvaluacionId=? AND p.bPreguntaEstado=1
+AND p.iCursosNivelGradId=?', $params);
+        return $result->cantidad;
     }
 
     public static function obtenerBancoPreguntasEreParaReutilizar($params)
