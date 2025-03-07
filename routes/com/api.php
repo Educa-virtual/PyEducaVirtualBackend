@@ -7,6 +7,8 @@ Route::group(['prefix' => 'com'], function () {
         Route::post('registrar_comunicado', [ComunicadosController::class, 'registrar']);
         Route::post('obtener_comunicado', [ComunicadosController::class, 'obtener']);
         Route::post('obtener_datos', [ComunicadosController::class, 'obtenerDatos']);
-        
+        Route::post('obtener_comunicados_persona', [ComunicadosController::class, 'obtenerComunicadosPersona']);
+        Route::post('eliminar', [ComunicadosController::class, 'eliminar']);
+        Route::post('actualizar_comunicado', [ComunicadosController::class, 'actualizar']);
     });
 });

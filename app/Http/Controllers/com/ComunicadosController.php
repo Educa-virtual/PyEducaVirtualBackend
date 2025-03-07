@@ -139,4 +139,78 @@ class ComunicadosController extends Controller
         }
 
     }
+    
+    public function obtenerComunicadosPersona(Request $request)
+    {
+        $iPersId = $this->decodeValue($request->input('iPersId'));
+        try {
+            // Llamada al SP con el iPersId
+            $data = DB::select('EXEC dbo.sp_ObtenerComunicadosPorPersona ?', [$iPersId]);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error al obtener comunicados", 500, $e->getMessage());
+        }
+    }
+
+    public function eliminar(Request $request) {
+        $iComunicadoId = $request->input('iComunicadoId');
+        try {
+            // Actualizar el comunicado: marcar como inactivo (archivado)
+            DB::table('com.comunicados')
+                ->where('iComunicadoId', $iComunicadoId)
+                ->update(['bComunicadoArchivado' => 0]);
+            
+            // Eliminar los registros de la relación en destinos_grupos
+            DB::table('com.destinos_grupos')
+                ->where('iComunicadoId', $iComunicadoId)
+                ->delete();
+            
+            return ResponseHandler::success(['mensaje' => 'Comunicado eliminado (archivado) correctamente']);
+        } catch(Exception $e) {
+            return ResponseHandler::error("Error al eliminar comunicado", 500, $e->getMessage());
+        }
+    }
+    public function actualizar(Request $request) {
+        $iComunicadoId = $request->input('iComunicadoId');
+    
+        // Datos para actualizar
+        $updateData = [
+            'iTipoComId' => $request->input('iTipoComId'),
+            'iPrioridadId' => $request->input('iPrioridadId'),
+            'cComunicadoTitulo' => $request->input('cComunicadoTitulo'),
+            'cComunicadoDescripcion' => $request->input('cComunicadoDescripcion'),
+            'dtComunicadoEmision' => $request->input('dtComunicadoEmision'),
+            'dtComunicadoHasta' => $request->input('dtComunicadoHasta'),
+            'bComunicadoArchivado' => $request->input('iEstado'),
+            'iYAcadId' => $request->input('iYAcadId'),
+            
+        ];
+    
+        try {
+            // Actualizar el comunicado en la tabla principal
+            DB::table('com.comunicados')
+                ->where('iComunicadoId', $iComunicadoId)
+                ->update($updateData);
+    
+            // Actualizar los grupos: primero eliminar los existentes y luego reinsertar
+            DB::table('com.destinos_grupos')
+                ->where('iComunicadoId', $iComunicadoId)
+                ->delete();
+    
+            $listaGrupos = $request->input('listaGrupos');
+            if (!empty($listaGrupos)) {
+                foreach ($listaGrupos as $iGrupoId) {
+                    DB::table('com.destinos_grupos')->insert([
+                        'iGrupoId' => $iGrupoId,
+                        'iComunicadoId' => $iComunicadoId
+                    ]);
+                }
+            }
+    
+            return ResponseHandler::success(['mensaje' => 'Comunicado actualizado']);
+        } catch(Exception $e) {
+            return ResponseHandler::error("Error al actualizar comunicado", 500, $e->getMessage());
+        }
+    }
+    
 }
