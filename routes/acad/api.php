@@ -1,15 +1,20 @@
+
 <?php
 
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
+use App\Http\Controllers\VacantesController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad'], function () {
-
+    Route::group(['prefix' => 'vacantes'], function () {
+        Route::post('guardar', [VacantesController::class, 'guardarVacantes']);
+        //vacantes convenciones de nombre para APIs
+    });
     Route::group(['prefix' => 'estudiantes'], function () {
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
     });
