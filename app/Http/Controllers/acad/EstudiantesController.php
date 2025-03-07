@@ -338,26 +338,4 @@ class EstudiantesController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
-    public function obtenerEstudianteGrupo(Request $request){
-        // mostrar datos de estudiantes para miembros de grupo
-        $iIieeId = $request->iIieeId;
-        $iYAcadId = $request->iYAcadId;
-        $iSedeId = $request->iSedeId;
-        
-        //  la opcion 1 muestra los estudiantes de la institucion
-        $solicitud = [
-            1,
-            $iIieeId,
-            $iYAcadId,
-            $iSedeId,
-        ];
-        $query = 'EXEC acad.Sp_SEL_estudianteXdocenteXespecialista '.str_repeat('?,',count($solicitud)-1).'?';
-        $data = DB::select($query, $solicitud);
-        try {
-            $data = DB::select($query, $solicitud);
-            return ResponseHandler::success($data);
-        } catch (Exception $e) {
-            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
-        }
-    }
 }

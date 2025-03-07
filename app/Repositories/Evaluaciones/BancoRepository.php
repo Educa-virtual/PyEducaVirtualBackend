@@ -24,7 +24,7 @@ class BancoRepository
             $params['iGradoId'] ?? 0
         ];
 
-        $preguntasDB = DB::select('exec eval.SP_SEL_bancoPreguntas 
+        $preguntasDB = DB::select('exec eval.SP_SEL_bancoPreguntas
             @_iCursoId   = ?
             , @_busqueda = ?
             , @_iCurrContId = ?
@@ -35,6 +35,7 @@ class BancoRepository
             , @_iEvaluacionId = ?
             , @_idEncabPregId = ?
             , @_iGradoId = ?
+            , @_iPreguntaId = ?
         ', $params);
 
         $preguntas = (new BancoPreguntas())->procesarPreguntas($preguntasDB);
@@ -63,7 +64,7 @@ class BancoRepository
             , @_iDocenteId  = ?
             , @_iTipoPregId  = ?
             , @_iCurrContId  = ?
-            
+
             , @_cBancoPregunta  = ?
             , @_dtBancoTiempo  = ?
             , @_cBancoTextoAyuda = ?
@@ -89,10 +90,10 @@ class BancoRepository
         $result = DB::select('exec eval.SP_INS_UPD_alternativaPregunta
             @_iBancoAltId = ?
 	        , @_iBancoId = ?
-	        , @_cBancoAltLetra = ? 
+	        , @_cBancoAltLetra = ?
 	        , @_cBancoAltDescripcion = ?
 	        , @_bBancoAltRptaCorrecta = ?
-	        , @_cBancoAltExplicacionRpta = ?  
+	        , @_cBancoAltExplicacionRpta = ?
         ', $params);
         return $result;
     }

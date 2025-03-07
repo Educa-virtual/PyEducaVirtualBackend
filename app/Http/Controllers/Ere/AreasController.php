@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Http;
 
 class AreasController extends Controller
 {
@@ -62,7 +63,42 @@ class AreasController extends Controller
         }
     }
 
-    public function descargarArchivoPdf($evaluacionId, $areaId)
+    private function descargarArchivoPreguntasPdf($evaluacion, $area)
+    {
+        $rutaArchivo = public_path("ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/examen.pdf");
+        if (!file_exists($rutaArchivo)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+        $nombreArchivo = $evaluacion->cEvaluacionNombre . ' - ' . ucwords(strtolower($area->cCursoNombre)) . ' ' . $area->cGradoAbreviacion . ' '
+            . str_replace('Educación ', '', $area->cNivelTipoNombre) . '.pdf';
+
+        return response()->download($rutaArchivo, $nombreArchivo, [
+            'Content-Type' => 'application/pdf'
+        ]);
+    }
+
+    private function descargarArchivoPreguntasWord($evaluacion, $area)
+    {
+        $url = "http://localhost:7500/api/ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/archivo-preguntas";
+        $response = Http::withOptions(['stream' => true])->get($url);
+        if ($response->failed()) {
+            abort(404, 'Archivo no encontrado.');
+        }
+        $contenido = $response->body();
+        $nombreArchivo = 'archivo.docx';
+        $contentDisposition = $response->header('Content-Disposition');
+        // Si el header existe, intentamos extraer el nombre del archivo
+        if ($contentDisposition && preg_match('/filename\*?=(?:UTF-8\'\')?["\']?([^"\';]+)/i', $contentDisposition, $matches)) {
+            $nombreArchivo = $matches[1];
+        }
+        $headers = [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => "attachment; filename=\"$nombreArchivo\"",
+        ];
+        return response($contenido, 200, $headers);
+    }
+
+    public function descargarArchivoPreguntas($evaluacionId, $areaId, Request $request)
     {
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
@@ -77,16 +113,16 @@ class AreasController extends Controller
         if ($area == null) {
             return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
-        $rutaArchivo = public_path("ere/evaluaciones/$evaluacionId/areas/$areaId/examen.pdf");
-        if (!file_exists($rutaArchivo)) {
-            abort(Response::HTTP_NOT_FOUND);
+        $evaluacion->evaluacionidCifrado = $evaluacionId;
+        $area->areaIdCifrado = $areaId;
+        switch ($request->query('tipo')) {
+            case 'pdf':
+                return $this->descargarArchivoPreguntasPdf($evaluacion, $area);
+            case 'word':
+                return $this->descargarArchivoPreguntasWord($evaluacion, $area);
+            default:
+                return response()->json(['status' => 'Error', 'message' => 'Tipo de archivo no soportado.'], Response::HTTP_BAD_REQUEST);
         }
-        $nombreArchivo = $evaluacion->cEvaluacionNombre . ' - ' . ucwords(strtolower($area->cCursoNombre)) . ' ' . $area->cGradoAbreviacion . ' '
-            . str_replace('Educación ', '', $area->cNivelTipoNombre) . '.pdf';
-
-        return response()->download($rutaArchivo, $nombreArchivo, [
-            'Content-Type' => 'application/pdf'
-        ]);
     }
 
     public function generarMatrizCompetencias($evaluacionId, $areaId, Request $request)
@@ -128,7 +164,8 @@ class AreasController extends Controller
         return $pdf->download('Matriz competencias - ' . $evaluacion->cEvaluacionNombre . '.pdf');
     }
 
-    public function actualizarLiberacionAreasPorEvaluacion($evaluacionId) {
+    public function actualizarLiberacionAreasPorEvaluacion($evaluacionId)
+    {
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         if (empty($evaluacionIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);

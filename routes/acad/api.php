@@ -14,7 +14,6 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'estudiantes'], function () {
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
-        Route::post('obtener_estudiantes',[EstudiantesController::class,'obtenerEstudianteGrupo']);
     });
     Route::group(['prefix' => 'grados'], function () {
         Route::post('handleCrudOperation', [GradosController::class, 'handleCrudOperation']);
@@ -39,11 +38,6 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'silabos'], function () {
         Route::post('actualizar', [SilabosController::class, 'actualizar']);
-    });
-
-
-    Route::group(['prefix' => 'docentes'], function () {
-        Route::post('obtener_docentes',[DocenteCursosController::class,'obtenerDocenteGrupo']);
     });
 
     Route::group(['prefix' => 'cursos'], function () {

@@ -79,6 +79,29 @@ class ComunicadosController extends Controller
         ]);
     }
     
+    public function obtenerDatosMiembros(Request $request){
+        // mostrar datos de estudiantes para miembros de grupo
+        $opcion = $request->opcion;
+        $iIieeId = $request->iIieeId ?? NULL;
+        $iYAcadId = $request->iYAcadId ?? NULL;
+        $iSedeId = $request->iSedeId ?? NULL;
+        
+        //  la opcion 1 muestra los estudiantes de la institucion
+        $solicitud = [
+            $opcion,
+            $iIieeId,
+            $iYAcadId,
+            $iSedeId
+        ];
+        $query = 'EXEC acad.Sp_SEL_estudianteXdocenteXespecialista '.str_repeat('?,',count($solicitud)-1).'?';
+        $data = DB::select($query, $solicitud);
+        try {
+            $data = DB::select($query, $solicitud);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
+    }
 
     public function registrar(Request $request){
 
