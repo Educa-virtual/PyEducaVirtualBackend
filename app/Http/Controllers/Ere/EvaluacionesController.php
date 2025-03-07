@@ -1011,4 +1011,28 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
 
         return response()->json($response, $codeResponse);
     }
+
+    public function obtenerInformeResumen(Request $request)
+    {
+        $parametros = [
+            $request->iYAcadId,
+            $request->iEvaluacionId,
+            $request->iCursoId,
+            $request->iNivelId,
+            $request->iNivelGradoId,
+            $request->iSeccionId
+        ];
+
+        try {
+            $data = DB::select('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?', $parametros);
+
+            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+            $codeResponse = 500;
+        }
+
+        return response()->json($response, $codeResponse);
+    }
 }
