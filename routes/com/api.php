@@ -13,6 +13,7 @@ Route::group(['prefix' => 'com'], function () {
         Route::post('actualizar_comunicado', [ComunicadosController::class, 'actualizar']);
     });
     Route::group(['prefix' => 'miembros'], function () {
+        Route::post('obtener_grupos', [GruposController::class, 'obtenerGrupo']);
         Route::post('obtener_miembros', [GruposController::class, 'obtenerDatosMiembros']);
         Route::post('guardar_miembros', [GruposController::class, 'guardarMiembros']);
     });
