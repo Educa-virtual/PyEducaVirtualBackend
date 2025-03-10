@@ -11,6 +11,8 @@ Route::group(['prefix' => 'com'], function () {
         Route::post('obtener_comunicados_persona', [ComunicadosController::class, 'obtenerComunicadosPersona']);
         Route::post('eliminar', [ComunicadosController::class, 'eliminar']);
         Route::post('actualizar_comunicado', [ComunicadosController::class, 'actualizar']);
+        Route::post('obtener_comunicados_destino', [ComunicadosController::class, 'obtenerComunicadosDestino']);
+
     });
     Route::group(['prefix' => 'miembros'], function () {
         Route::post('obtener_grupos', [GruposController::class, 'obtenerGrupo']);
