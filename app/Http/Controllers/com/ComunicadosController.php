@@ -235,5 +235,18 @@ class ComunicadosController extends Controller
             return ResponseHandler::error("Error al actualizar comunicado", 500, $e->getMessage());
         }
     }
+
+    public function obtenerComunicadosDestino(Request $request)
+    {
+        $iPersId = $this->decodeValue($request->input('iPersId'));
+        try {
+             // Llamada al SP que obtiene los comunicados destino
+             $data = DB::select('EXEC dbo.sp_ObtenerComunicadosDestinoPorPersona ?', [$iPersId]);
+             return ResponseHandler::success($data);
+        } catch (Exception $e) {
+             return ResponseHandler::error("Error al obtener comunicados destino", 500, $e->getMessage());
+        }
+    }
+    
     
 }
