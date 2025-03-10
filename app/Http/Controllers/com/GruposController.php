@@ -60,13 +60,14 @@ class GruposController extends Controller
         $iIieeId = $request->iIieeId ?? NULL;
         $iYAcadId = $request->iYAcadId ?? NULL;
         $iSedeId = $request->iSedeId ?? NULL;
-        
+        $iPersId =  $this->decodeValue($request->input('iPersId'));
         //  la opcion 1 muestra los estudiantes de la institucion
         $solicitud = [
             $opcion,
             $iIieeId,
             $iYAcadId,
-            $iSedeId
+            $iSedeId,
+            $iPersId,
         ];
         $query = 'EXEC acad.Sp_SEL_estudianteXdocenteXespecialista '.str_repeat('?,',count($solicitud)-1).'?';
         $data = DB::select($query, $solicitud);
