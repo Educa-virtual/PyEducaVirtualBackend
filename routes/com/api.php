@@ -16,5 +16,6 @@ Route::group(['prefix' => 'com'], function () {
         Route::post('obtener_grupos', [GruposController::class, 'obtenerGrupo']);
         Route::post('obtener_miembros', [GruposController::class, 'obtenerDatosMiembros']);
         Route::post('guardar_miembros', [GruposController::class, 'guardarMiembros']);
+        Route::post('actualizar_grupo', [GruposController::class, 'actualizarGrupo']);
     });
 });

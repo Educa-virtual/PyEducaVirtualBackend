@@ -95,4 +95,30 @@ class GruposController extends Controller
             return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
         }
     }
+    public function actualizarGrupo(Request $request){
+        // mostrar datos del grupo con sus miembros
+        
+        $iPersId = $this->decodeValue($request->iPersId);
+        $iGrupoId=$request->iGrupoId;
+        $cGrupoNombre= $request->cGrupoNombre;
+        $cGrupoDescripcion= $request->cGrupoDescripcion;
+        $miembros= $request->miembros;
+    
+        $solicitud = [
+            $iPersId,
+            $iGrupoId,
+            $cGrupoNombre,
+            $cGrupoDescripcion,
+            $miembros,
+        ];
+
+        $query = 'EXEC com.Sp_UPD_grupo '.str_repeat('?,',count($solicitud)-1).'?';
+        $data = DB::select($query, $solicitud);
+        try {
+            $data = DB::select($query, $solicitud);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
+    }
 }
