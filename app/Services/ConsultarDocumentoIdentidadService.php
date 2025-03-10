@@ -77,6 +77,13 @@ class ConsultarDocumentoIdentidadService
             ];
         } else {
             $respuesta = json_decode($response);
+            if( $respuesta->data === null ) {
+                return [
+                    'message' => 'No se obtuvo datos: ' . $respuesta->message,
+                    'data' => [],
+                    'status' => 404,
+                ];
+            }
             return [
                 'message' => 'Se obtuvo la información',
                 'data' => $this->formatearRespuestaDni($respuesta->data),
@@ -120,6 +127,13 @@ class ConsultarDocumentoIdentidadService
             ];
         } else {
             $respuesta = json_decode($response);
+            if( $respuesta->data === null ) {
+                return [
+                    'message' => 'No se obtuvo datos: ' . $respuesta->message,
+                    'data' => [],
+                    'status' => 404,
+                ];
+            }
             return [
                 'message' => 'Se obtuvo la información',
                 'data' => $this->formatearRespuestaCarnet($respuesta->data),
@@ -164,6 +178,13 @@ class ConsultarDocumentoIdentidadService
             ];
         } else {
             $respuesta = json_decode($response);
+            if( $respuesta->data === null ) {
+                return [
+                    'message' => 'No se obtuvo datos: ' . $respuesta->message,
+                    'data' => [],
+                    'status' => 404,
+                ];
+            }
             return [
                 'message' => 'Se obtuvo la información',
                 'data' => $this->formatearRespuestaRuc($respuesta->data),
