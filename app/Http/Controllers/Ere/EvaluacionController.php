@@ -178,15 +178,19 @@ class EvaluacionController extends Controller
             $fieldsToDecode = [
                 'iEvaluacionId',
                 'iCursoNivelGradId',
-                'iEstudianteId'
+                'iEstudianteId',
+                'iIieeId',
+                'iYAcadId'
             ];
             $parametro = $this->validateRequest($request, $fieldsToDecode, false);
             $parametros = [
                 $parametro->iEvaluacionId              ??  NULL,
                 $parametro->iCursoNivelGradId          ??  NULL,
-                $parametro->iEstudianteId              ??  NULL
+                $parametro->iEstudianteId              ??  NULL,
+                $parametro->iIieeId                    ??  NULL,
+                $parametro->iYAcadId                   ??  NULL
             ];
-            $data = DB::select('exec ere.SP_SEL_iEstudianteIdxiEvaluacionIdxiCursoNivelGradId ?,?,?', $parametros);
+            $data = DB::select('exec ere.SP_SEL_iEstudianteIdxiEvaluacionIdxiCursoNivelGradId ?,?,?,?,?', $parametros);
             //$data = $this->encodeId($data);
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],

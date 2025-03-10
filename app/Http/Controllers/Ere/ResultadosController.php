@@ -67,9 +67,7 @@ class ResultadosController extends Controller
 
     private function encodeFields($item)
     {
-        $fieldsToEncode = [
-           
-        ];
+        $fieldsToEncode = [];
 
         foreach ($fieldsToEncode as $field) {
             if (isset($item->$field)) {
@@ -102,15 +100,15 @@ class ResultadosController extends Controller
 
             $request = $this->validateRequest($request, $fieldsToDecode, false);
             $parametros = [
-                 $request->iResultadoId               ??  NULL
-                ,$request->iEstudianteId              ??  NULL    
-                ,$request->iResultadoRptaEstudiante   ??  NULL
-                ,$request->iIieeId                    ??  NULL
-                ,$request->iEvaluacionId              ??  NULL
-                ,$request->iYAcadId                   ??  NULL
-                ,$request->iPreguntaId                ??  NULL
-                ,$request->iCursoNivelGradId          ??  NULL    
-                ,$request->iMarcado                   ??  NULL    
+                $request->iResultadoId               ??  NULL,
+                $request->iEstudianteId              ??  NULL,
+                $request->iResultadoRptaEstudiante   ??  NULL,
+                $request->iIieeId                    ??  NULL,
+                $request->iEvaluacionId              ??  NULL,
+                $request->iYAcadId                   ??  NULL,
+                $request->iPreguntaId                ??  NULL,
+                $request->iCursoNivelGradId          ??  NULL,
+                $request->iMarcado                   ??  NULL
             ];
             $data = DB::select('exec ere.SP_INS_UPD_GuardaRptasEvaluacion ?,?,?,?,?,?,?,?,?', $parametros);
             if ($data[0]->iResultadoId > 0) {
@@ -124,6 +122,38 @@ class ResultadosController extends Controller
                     500
                 );
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                500
+            );
+        }
+    }
+
+    public function terminarExamenxiEstudianteId(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iEstudianteId',
+                'iIieeId',
+                'iEvaluacionId',
+                'iYAcadId',
+                'iCursoNivelGradId',
+            ];
+
+            $request = $this->validateRequest($request, $fieldsToDecode, false);
+            $parametros = [
+                $request->iEstudianteId              ??  NULL,
+                $request->iIieeId                    ??  NULL,
+                $request->iEvaluacionId              ??  NULL,
+                $request->iYAcadId                   ??  NULL,
+                $request->iCursoNivelGradId          ??  NULL
+            ];
+            $data = DB::select('exec ere.SP_UPD_terminarExamenxiEstudianteId ?,?,?,?,?', $parametros);
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se guardó exitosamente', 'data' => $data],
+                200
+            );
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
