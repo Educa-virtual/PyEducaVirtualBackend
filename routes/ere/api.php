@@ -8,6 +8,7 @@ use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
 use App\Http\Controllers\ere\PreguntasController;
+use App\Http\Controllers\ere\ResultadosController;
 use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,11 +51,17 @@ Route::group(['prefix' => 'ere'], function () {
     });
     Route::group(['prefix' => 'evaluacion'], function () {
         Route::post('handleCrudOperation', [EvaluacionController::class, 'handleCrudOperation']);
+        Route::post('obtenerEstudianteAreasEvaluacion', [EvaluacionController::class, 'obtenerEstudianteAreasEvaluacion']);
+        Route::post('ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId', [EvaluacionController::class, 'ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId']);
     });
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('handleCrudOperation', [AlternativasController::class, 'handleCrudOperation']);
     });
     Route::group(['prefix' => 'encabezado-preguntas'], function () {
         Route::post('handleCrudOperation', [EncabezadoPreguntasController::class, 'handleCrudOperation']);
+    });
+    Route::group(['prefix' => 'resultados'], function () {
+        Route::post('guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante', [ResultadosController::class, 'guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante']);
+        Route::post('terminarExamenxiEstudianteId', [ResultadosController::class, 'terminarExamenxiEstudianteId']);
     });
 });
