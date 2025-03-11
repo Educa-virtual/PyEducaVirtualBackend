@@ -43,9 +43,8 @@ class CredencialescCredUsuariocClaveController extends Controller
             'user' => 'required',
             'pass' => 'required|string|min:6',
         ]);
-
         if ($validator->fails()) {
-            return new JsonResponse(['validated' => false, 'message' => $validator->errors(), 'data' => []], 422);
+            return new JsonResponse(['validated' => false, 'message' => $validator->errors(), 'data' => []]);
         }
 
         $credentials = ['cCredUsuario' => $request->user, 'password' => $request->pass];
@@ -53,19 +52,29 @@ class CredencialescCredUsuariocClaveController extends Controller
         $intentos = DB::select('select iCredIntentos from seg.credenciales where cCredUsuario = ?', [$credentials['cCredUsuario']]);
         $duracion =  DB::select('select DATEDIFF(minute, dtCredRegistro, GETDATE()) as duracion from seg.credenciales where cCredUsuario = ?', [$credentials['cCredUsuario']]);
 
-        if (!$user = $this->customAttempt($credentials)) {
-            if ((int)$intentos[0]->iCredIntentos === 3 && (int)$duracion[0]->duracion < 5) {
-                return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, vuelva a intentar en 5 minutos.'], 401);
-            } else {
-                if ((int)$duracion[0]->duracion >= 5 || (int)$intentos[0]->iCredIntentos >= 5) {
-                    return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
+         if (count($intentos)>0 && count($duracion) > 0) {
+            if (!$user = $this->customAttempt($credentials)) {
+                if ((int)$intentos[0]->iCredIntentos === 3 && (int)$duracion[0]->duracion < 5) {
+                    return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, vuelva a intentar en 5 minutos.'], 401);
+                } else {
+                    if ((int)$duracion[0]->duracion >= 5 || (int)$intentos[0]->iCredIntentos >= 5) {
+                        return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
+                    }
+                    DB::update('update seg.credenciales set iCredIntentos =  (iCredIntentos + 1), dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
                 }
-                DB::update('update seg.credenciales set iCredIntentos =  (iCredIntentos + 1), dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
             }
         }
         if ($user = $this->customAttempt($credentials) && (int)$duracion[0]->duracion >= 5 && (int)$intentos[0]->iCredIntentos >= 5) {
             return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
         }
+        $user = $request->user;
+        $pass = $request->pass;
+        $data = DB::select('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?', [$user, $pass]);
+
+        if (count($data) == 0) {
+            return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
+        }
+
         if (!$user = $this->customAttempt($credentials)) {
             return response()->json(['validated' => false, 'message' => 'Verifica tu usuario y contraseña'], 401);
         } else {
@@ -83,16 +92,6 @@ class CredencialescCredUsuariocClaveController extends Controller
         }
 
         $token = JWTAuth::fromUser($user);
-
-
-        $user = $request->user;
-        $pass = $request->pass;
-        $data = DB::select('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?', [$user, $pass]);
-
-        if (count($data) == 0) {
-            return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
-        }
-
         //Obtener roles 
         $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredId ?', [$data[0]->iCredId]);
         $data[0]->perfiles = $perfiles;
