@@ -41,6 +41,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
 use App\Http\Controllers\FichaBienestarController;
 
+//Linea 18 de febrero------------------------------------- 
+//use App\Http\Controllers\VacantesController;
+
+//Route::post('/guardar-vacantes', [VacantesController::class, 'guardarVacantes']);
+//Route::post('store', [VacantesController::class, 'store']);
+
+//-------------------------------------------------------
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
