@@ -139,6 +139,8 @@ Route::group(['prefix' => 'ere'], function () {
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
          //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
          Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        // Obtener evaluaciones, cursos, ies, grados, secciones según año académico
+        Route::post('obtenerEvaluacionesCursosIes', [EvaluacionesController::class, 'obtenerEvaluacionesCursosIes']);
         // Obtener resumen de resultados de evaluacion
         Route::post('obtenerInformeResumen', [EvaluacionesController::class, 'obtenerInformeResumen']);
     });

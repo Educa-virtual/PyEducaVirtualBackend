@@ -1012,24 +1012,50 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         return response()->json($response, $codeResponse);
     }
 
+    public function obtenerEvaluacionesCursosIes(Request $request)
+    {
+        $parametros = [
+            $request->iSesionId,
+            $request->iYAcadId,
+            $request->iEvaluacionId,
+            $request->iCursoNivelGradoId,
+            $request->iIieeId,
+            $request->iDsttId,
+            $request->iUgelId,
+            $request->iNivelTipoId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+        ];
+
+        try {
+            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesCursosIeGradosSecciones ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
+            $codeResponse = 500;
+        }
+
+        return response()->json($response, $codeResponse);
+    }
+
     public function obtenerInformeResumen(Request $request)
     {
         $parametros = [
             $request->iYAcadId,
             $request->iEvaluacionId,
             $request->iCursoId,
-            $request->iNivelId,
+            $request->iNivelTipoId,
             $request->iNivelGradoId,
             $request->iSeccionId
         ];
 
         try {
             $data = DB::select('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?', $parametros);
-
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
             $codeResponse = 500;
         }
 
