@@ -11,7 +11,6 @@ class TipoPreguntaController extends ApiController
 {
     public function obtenerTipoPreguntas(Request $request)
     {
-
         $bancoTipo = $request->bancoTipo ?? 'ere';
 
         $where = '1=1 ';
@@ -30,10 +29,10 @@ class TipoPreguntaController extends ApiController
 
 
         try {
-            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where 
+            $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,
-                @nombreTabla = ?,    
-                @campos = ?,        
+                @nombreTabla = ?,
+                @campos = ?,
                 @condicionWhere = ?
             ', $params);
 

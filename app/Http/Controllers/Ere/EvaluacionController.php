@@ -159,7 +159,7 @@ class EvaluacionController extends Controller
                 $parametro->iYAcadId      ??  NULL
             ];
             $data = DB::select('exec ere.SP_SEL_EstudianteEvaluacion ?,?,?', $parametros);
-            //$data = $this->encodeId($data);
+            $data = $this->encodeId($data);
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
