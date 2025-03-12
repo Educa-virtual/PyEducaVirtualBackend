@@ -39,7 +39,6 @@ use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
-use App\Http\Controllers\FichaBienestarController;
 
 //Linea 18 de febrero------------------------------------- 
 //use App\Http\Controllers\VacantesController;
@@ -386,8 +385,4 @@ Route::group(['prefix' => 'grl'], function () {
     Route::post('guardarPersona', [PersonaController::class, 'save']);
     Route::post('searchPersona', [PersonaController::class, 'show']);
     Route::post('validarPersona', [PersonaController::class, 'validate']);
-});
-
-Route::group(['prefix' => 'obe'], function () {
-    Route::post('searchFichaFamiliares', [FichaBienestarController::class, 'index']);
 });

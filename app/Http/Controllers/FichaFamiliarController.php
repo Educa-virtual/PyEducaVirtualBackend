@@ -3,38 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Services\ParseSqlErrorService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class FichaBienestarController extends Controller
+class FichaFamiliarController extends Controller
 {
-    public function saveGeneral(Request $request)
+    public function index(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
+            $request->iFichaFamiliarId,
             $request->iPersId,
-            $request->iTipoViaId,
-            $request->cFichaDGDireccionNombreVia,
-            $request->cFichaDGDireccionNroPuerta,
-            $request->cFichaDGDireccionBlock,
-            $request->cFichaDGDirecionInterior,
-            $request->cFichaDGDirecionPiso,
-            $request->cFichaDGDireccionManzana,
-            $request->cFichaDGDireccionLote,
-            $request->cFichaDGDireccionKm,
-            $request->cFichaDGDireccionReferencia,
-            $request->iReligionId,
-            $request->bFamiliarPadreVive,
-            $request->bFamiliarMadreVive,
-            $request->bFamiliarPadresVivenJuntos,
-            $request->bFichaDGTieneHijos,
-            $request->iFichaDGNroHijos,
+            $request->iFamiliarId,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
+            $data = DB::select('EXEC obe.Sp_SEL_fichasFamiliaresPersonas ?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }
         catch (\Exception $e) {
@@ -42,15 +27,30 @@ class FichaBienestarController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
+
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function updateGeneral(Request $request)
+    public function save(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iPersId,
+            $request->iTipoFamiliarId,
+            $request->bFamiliarVivoConEl,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersNombre,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->dPersNacimiento,
+            $request->cPersSexo,
+            $request->iTipoEstCivId,
+            $request->iNacionId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
+            $request->cPersDomicilio,
             $request->iTipoViaId,
             $request->cFichaDGDireccionNombreVia,
             $request->cFichaDGDireccionNroPuerta,
@@ -61,16 +61,13 @@ class FichaBienestarController extends Controller
             $request->cFichaDGDireccionLote,
             $request->cFichaDGDireccionKm,
             $request->cFichaDGDireccionReferencia,
-            $request->iReligionId,
-            $request->bFamiliarPadreVive,
-            $request->bFamiliarMadreVive,
-            $request->bFamiliarPadresVivenJuntos,
-            $request->bFichaDGTieneHijos,
-            $request->iFichaDGNroHijos,
+            $request->iOcupacionId,
+            $request->iGradoInstId,
+            $request->iTipoIeEstId,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
