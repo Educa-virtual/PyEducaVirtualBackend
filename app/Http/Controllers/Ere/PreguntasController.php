@@ -13,8 +13,12 @@ use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
 use App\Services\ParseSqlErrorService;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class PreguntasController extends ApiController
 {
@@ -516,6 +520,15 @@ class PreguntasController extends ApiController
 
         foreach ($fieldsToDecode as $field) {
             $request[$field] = $this->decodeValue($request->$field);
+        }
+
+        // Extraer imagenes en base64
+        $imagenes = array();
+        preg_match('#data:image.*?base64,([\w=+/]++)#', $request->cPregunta, $imagenes);
+
+        foreach ($imagenes as $key => $value) {
+            $archivo = base64_decode($value);
+            Storage::disk('public')->put('preguntas/', $archivo);
         }
 
         return [
