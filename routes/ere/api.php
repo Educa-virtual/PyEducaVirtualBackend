@@ -53,6 +53,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('handleCrudOperation', [EvaluacionController::class, 'handleCrudOperation']);
         Route::post('obtenerEstudianteAreasEvaluacion', [EvaluacionController::class, 'obtenerEstudianteAreasEvaluacion']);
         Route::post('ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId', [EvaluacionController::class, 'ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId']);
+        Route::post('verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId', [EvaluacionController::class, 'verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId']);
     });
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('handleCrudOperation', [AlternativasController::class, 'handleCrudOperation']);

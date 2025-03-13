@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Options;
+use Carbon\Carbon; // Agrega esta línea para importar Carbon
 
 class GestionInstitucionalController extends Controller
 {
@@ -418,6 +419,96 @@ class GestionInstitucionalController extends Controller
          return new JsonResponse($response, $estado);
      }
 
+     public function importarDocente_IE(Request $request)
+    {
+        $json   = $request->data;
+        $iSedeId = $request->iSedeId;
+        $iYAcadId = $request->iYAcadId;
+        
+        // Variables para almacenar resultados
+        $procesados = [];
+        $observados = [];
+
+        foreach ($json as $item) {
+            // Extraer valores del JSON en cada iteración
+            // $cTipoIdentId    = $item["cTipoIdentId"];
+            // $cPersDocumento  = $item["cPersDocumento"]; // convertir texto
+            // $cPersPaterno    = $item["cPersPaterno"];
+            // $cPersMaterno    = $item["cPersMaterno"];
+            // $cPersNombre     = $item["cPersNombre"];
+            // $cPersSexo       = $item["cPersSexo"];
+            // $dPersNacimiento = $item["dPersNacimiento"]; // convertir en date
+            // $iHorasLabora    = $item["iHorasLabora"]; // convertir int
+
+            // Convertir y formatear los valores del JSON
+            $cTipoIdentId    = isset($item["cTipoIdentId"])    ? trim($item["cTipoIdentId"]) : null;
+            $cPersDocumento  = isset($item["cPersDocumento"])  ? trim($item["cPersDocumento"]) : null;
+            $cPersPaterno    = isset($item["cPersPaterno"])    ? trim($item["cPersPaterno"]) : null;
+            $cPersMaterno    = isset($item["cPersMaterno"])    ? trim($item["cPersMaterno"]) : null;
+            $cPersNombre     = isset($item["cPersNombre"])     ? trim($item["cPersNombre"]) : null;
+            $cPersSexo       = isset($item["cPersSexo"])       ? trim($item["cPersSexo"]) : null;
+
+            // Convertir la fecha usando Carbon, si se proporciona
+            if (isset($item["dPersNacimiento"]) && !empty($item["dPersNacimiento"])) {
+                try {
+                    $dPersNacimiento = Carbon::parse($item["dPersNacimiento"])->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $dPersNacimiento = null;
+                }
+            } else {
+                $dPersNacimiento = null;
+            }
+
+            // Convertir a entero
+            $iHorasLabora    = isset($item["iHorasLabora"]) ? (int)$item["iHorasLabora"] : null;
+
+            try {
+                // Ejecutar el procedimiento almacenado pasando los parámetros en un array
+                $query = DB::select("EXEC acad.SP_INS_ImportarPersonaDocenteIE ?,?,?,?,?,?,?,?,?,?", [
+                    $cTipoIdentId,
+                    $cPersDocumento,
+                    $cPersPaterno,
+                    $cPersMaterno,
+                    $cPersNombre,
+                    $cPersSexo,
+                    $dPersNacimiento,
+                    $iSedeId,
+                    $iYAcadId,
+                    $iHorasLabora
+                ]);
+
+                // Si la ejecución es exitosa, se guarda en 'procesados'
+                $procesados[] = [
+                    'validated' => true,
+                    'message'   => 'Se obtuvo la información',
+                    'data'      => $query,
+                    'item'      => $item
+                ];
+            } catch (Exception $e) {
+                // Si ocurre algún error, se guarda en 'observados'
+                $observados[] = [
+                    'validated' => false,
+                    'message'   => $e->getMessage(),
+                    'data'      => [], // Se puede enviar cualquier dato adicional
+                    'item'      => $item
+                ];
+            }
+        }
+
+        // Construir la respuesta combinada
+        $response = [
+            'procesados' => $procesados,
+            'observados' => $observados,
+        ];
+
+        // Determinar el código de estado: si hay algún error, se asigna 500; de lo contrario, 201
+        $estado = (count($observados) > 0) ? 500 : 201;
+        
+        return new JsonResponse($response, $estado);
+    }
+
+      
+      
 }
 
 

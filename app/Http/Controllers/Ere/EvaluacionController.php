@@ -203,4 +203,31 @@ class EvaluacionController extends Controller
             );
         }
     }
+
+    public function verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iCursoNivelGradId',
+                'iIieeId'
+            ];
+            $parametro = $this->validateRequest($request, $fieldsToDecode, false);
+            $parametros = [
+                $parametro->iEvaluacionId              ??  NULL,
+                $parametro->iCursoNivelGradId          ??  NULL,
+                $parametro->iIieeId                    ??  NULL
+            ];
+            $data = DB::select('exec ere.SP_SEL_verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId ?,?,?', $parametros);
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
+                200
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                500
+            );
+        }
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\acad\CursosController;
+use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\SilabosController;
@@ -38,9 +39,6 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'silabos'], function () {
         Route::post('actualizar', [SilabosController::class, 'actualizar']);
     });
-
-
-    Route::group(['prefix' => 'docentes'], function () {});
 
     Route::group(['prefix' => 'cursos'], function () {
         Route::get('', [CursosController::class, 'listarCursosPorNivel']);
