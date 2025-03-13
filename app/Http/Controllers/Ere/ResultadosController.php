@@ -132,6 +132,7 @@ class ResultadosController extends Controller
 
     private function guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante($request)
     {
+        $iCursoNivelGradId=$this->hashids->decode($request->iCursoNivelGradId);
         $iEvaluacion = $this->hashids->decode($request->iEvaluacionId);
         $parametros = [
             $request->iResultadoId               ??  NULL,
@@ -141,19 +142,19 @@ class ResultadosController extends Controller
             $iEvaluacion[0]                      ??  NULL,
             $request->iYAcadId                   ??  NULL,
             $request->iPreguntaId                ??  NULL,
-            $request->iCursoNivelGradId          ??  NULL,
+            $iCursoNivelGradId[0]          ??  NULL,
             $request->iMarcado                   ??  NULL
         ];
-        $data = DB::select('exec ere.SP_INS_UPD_GuardaRptasEvaluacion ?,?,?,?,?,?,?,?,?', $parametros);
-        if ($data[0]->iResultadoId <= 0) {
+        DB::select('exec ere.SP_INS_UPD_GuardaRptasEvaluacion ?,?,?,?,?,?,?,?,?', $parametros);
+        /*if ($data[0]->iResultadoId <= 0) {
             throw new Exception('No se ha podido actualizar la información');
-        }
+        }*/
     }
 
     public function terminarExamenxiEstudianteId(Request $request)
     {
        // DB::beginTransaction();
-        try {
+        //try {
             $fieldsToDecode = [
                 'iEstudianteId',
                 'iIieeId',
@@ -173,19 +174,19 @@ class ResultadosController extends Controller
             foreach ($request->respuestas as $respuesta) {
                 $this->guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante(json_decode(json_encode($respuesta)));
             }
-            $data = [];//DB::select('exec ere.SP_UPD_terminarExamenxiEstudianteId ?,?,?,?,?', $parametros);
+            $data = DB::select('exec ere.SP_UPD_terminarExamenxiEstudianteId ?,?,?,?,?', $parametros);
 
             //DB::commit();
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se guardó exitosamente', 'data' => $data],
                 200
             );
-        } catch (\Exception $e) {
+        /*} catch (\Exception $e) {
            // DB::rollBack();
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 500
             );
-        }
+        }*/
     }
 }
