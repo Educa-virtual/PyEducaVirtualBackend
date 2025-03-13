@@ -12,7 +12,7 @@ class FichaFamiliarController extends Controller
     public function index(Request $request)
     {
         $parametros = [
-            $request->iFichaFamiliarId,
+            $request->iFichaDGId,
             $request->iPersId,
             $request->iFamiliarId,
         ];
