@@ -56,10 +56,11 @@ class CredencialescCredUsuariocClaveController extends Controller
             if (!$user = $this->customAttempt($credentials)) {
                 if ((int)$intentos[0]->iCredIntentos === 3 && (int)$duracion[0]->duracion < 5) {
                     return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, vuelva a intentar en 5 minutos.'], 401);
-                } else {
-                    if ((int)$duracion[0]->duracion >= 5 || (int)$intentos[0]->iCredIntentos >= 5) {
-                        return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
-                    }
+                } 
+                    else {
+                    // if ((int)$duracion[0]->duracion >= 5 || (int)$intentos[0]->iCredIntentos >= 5) {
+                    //     return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
+                    // }
                     DB::update('update seg.credenciales set iCredIntentos =  (iCredIntentos + 1), dtCredRegistro = GETDATE() where cCredUsuario = ?', [$credentials['cCredUsuario']]);
                 }
             }
@@ -71,9 +72,7 @@ class CredencialescCredUsuariocClaveController extends Controller
         $pass = $request->pass;
         $data = DB::select('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?', [$user, $pass]);
 
-        if (count($data) == 0) {
-            return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
-        }
+        
 
         if (!$user = $this->customAttempt($credentials)) {
             return response()->json(['validated' => false, 'message' => 'Verifica tu usuario y contraseña'], 401);
@@ -89,6 +88,10 @@ class CredencialescCredUsuariocClaveController extends Controller
             } else {
                 return response()->json(['validated' => false, 'message' => 'Debe de actualizar su contraseña'], 401);
             }
+        }
+
+        if (count($data) == 0) {
+            return response()->json(['validated' => false, 'message' => 'El usuario no existe en nuestros registros.', 'data' => []], 403);
         }
 
         $token = JWTAuth::fromUser($user);
