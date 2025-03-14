@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\bienestar\FichaFamiliarController;
 use App\Http\Controllers\bienestar\FichaGeneralController;
-use App\Http\Controllers\FichaBienestarController;
-use App\Http\Controllers\FichaFamiliarController;
+use App\Http\Controllers\bienestar\FichaBienestarController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'bienestar'], function () {

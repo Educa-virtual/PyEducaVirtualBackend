@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\bienestar;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FichaGeneralSaveRequest;
 use App\Services\ParseSqlErrorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class FichaGeneralController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function saveGeneral(Request $request)
+    public function saveGeneral(FichaGeneralSaveRequest $request)
     {
         $parametros = [
             $request->iSesionId,

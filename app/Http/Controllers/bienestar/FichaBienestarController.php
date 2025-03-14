@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\bienestar;
 
+use App\Http\Controllers\Controller;
 use App\Services\ParseSqlErrorService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
