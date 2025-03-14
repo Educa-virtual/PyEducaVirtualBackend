@@ -136,11 +136,11 @@ class ComunicadosController extends Controller
             null,                                      // iActTipoId (pendiente) 13
             null,                                      // iUgelId 14
             $request->input('grado'),                  // iGradoId (pendiente) 15
-            null,                                      // iSemAcadId (pendiente) 16
+            $request->input('iSemAcadId'),             // iSemAcadId (pendiente) 16
             $request->input('iYAcadId'),               // Año académico 17
             $request->input('seccion'),                // iSeccionId (pendiente) 18
             $request->input('curso'),                  // iCursoId (pendiente) 19
-            null,                                      // iSedeId (pendiente) 20
+            $request->input('iSedeId'),                // iSedeId (pendiente) 20
             $iDocenteId,                               // iDocenteId (pendiente) 21
             $iEstudianteId,                            // iEstudianteId (pendiente) 22
             null                                       // iEspecialistaId (pendiente) 23
