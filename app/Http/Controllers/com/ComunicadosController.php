@@ -259,6 +259,23 @@ class ComunicadosController extends Controller
              return ResponseHandler::error("Error al obtener comunicados destino", 500, $e->getMessage());
         }
     }
-    
+    public function obtenerComunicadoPersonalizado(Request $request){
+
+        $iPersId    = $this->decodeValue($request->input('iPersId'));
+        $iPerfilId  = $request->input('iPerfilId');
+
+        $solicitud = [
+            $iPersId,
+            $iPerfilId,
+        ];
+
+        try {
+            // Llamada al SP que obtiene los comunicados destino
+            $data = DB::select('EXEC com.sp_ObtenerComunicadosDestinoPorPersona ?,?', $solicitud);
+            return ResponseHandler::success($data);
+       } catch (Exception $e) {
+            return ResponseHandler::error("Error al obtener comunicados destino", 500, $e->getMessage());
+       }
+    }
     
 }
