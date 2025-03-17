@@ -394,10 +394,107 @@ class GestionInstitucionalController extends Controller
      public function obtenerCredencialesSede(Request $request)
      {                
          $solicitud = [
-             $request->iSedeId]; //INT,
+             $request->iSedeId, //INT,
+             $request->option]; //INT,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+             
             
          //41789603
-         $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?", $solicitud);
+         $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?,?", $solicitud);
  
          try {
              $response = [
@@ -419,7 +516,7 @@ class GestionInstitucionalController extends Controller
          return new JsonResponse($response, $estado);
      }
 
-     public function importarDocente_IE(Request $request)
+    public function importarDocente_IE(Request $request)
     {
         $json   = $request->data;
         $iSedeId = $request->iSedeId;
@@ -507,7 +604,90 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }
 
-      
+    public function importarAmbiente_IE(Request $request)
+    {
+        $json   = $request->data;
+        $iSedeId = $request->iSedeId;
+        $iYAcadId = $request->iYAcadId;
+        $iNivelTipoId = $request->iNivelTipoId;
+        
+        // Variables para almacenar resultados
+        $procesados = [];
+        $observados = [];
+
+        foreach ($json as $item) {
+
+            // Convertir y formatear los valores del JSON
+            
+            $TipoAmbienteId     = isset($item["TipoAmbienteId"])       ? trim($item["TipoAmbienteId"]) : null;
+            $EstadoAmbId        = isset($item["EstadoAmbId"])       ? trim($item["EstadoAmbId"]) : null;
+            $UbicaAmbId         = isset($item["UbicaAmbId "])       ? trim($item["UbicaAmbId "]) : null;
+            $UsoAmbId           = isset($item["UbicaAmbId "])       ? trim($item["UbicaAmbId "]) : null; 
+            $PisoAmbid          = isset($item["PisoAmbid"])       ? trim($item["PisoAmbid"]) : null;
+            $AmbienteEstado     = isset($item["AmbienteEstado"])       ? trim($item["AmbienteEstado"]) : null;
+            $Turno              = isset($item["Turno"])       ? trim($item["Turno"]) : null;
+            $Modalidad          = isset($item["Modalidad"])       ? trim($item["Modalidad"]) : null;
+            $dni_tutor          = isset($item["dni_tutor"])       ? trim($item["dni_tutor"]) : null;
+            $Grado              = isset($item["Grado"])       ? trim($item["Grado"]) : null;
+            $Seccion            = isset($item["Seccion"])       ? trim($item["Seccion"]) : null;
+            $AmbienteNombre     = isset($item["AmbienteNombre"])       ? trim($item["AmbienteNombre"]) : null;
+            $AmbienteArea       = isset($item["AmbienteArea"])       ? trim($item["AmbienteArea"]) : null;
+            $AmbienteAforo      = isset($item["AmbienteAforo"])       ? trim($item["AmbienteAforo"]) : null;
+            $AmbienteObs        = isset($item["AmbienteObs"])       ? trim($item["AmbienteObs"]) : null;
+
+            try {
+                // Ejecutar el procedimiento almacenado pasando los parámetros en un array
+                $query = DB::select("EXEC acad.SP_INS_ImportarAmbientesIE ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", [
+                    $TipoAmbienteId,
+                    $EstadoAmbId,  
+                    $UbicaAmbId,         
+                    $UsoAmbId,           
+                    $PisoAmbid,          
+                    $AmbienteEstado,     
+                    $Turno,             
+                    $Modalidad,         
+                    $dni_tutor,          
+                    $Grado,              
+                    $Seccion,            
+                    $AmbienteNombre,    
+                    $AmbienteArea,       
+                    $AmbienteAforo,     
+                    $AmbienteObs,
+                    
+                    $iSedeId,
+                    $iYAcadId,
+                    $iNivelTipoId
+                ]);
+
+                // Si la ejecución es exitosa, se guarda en 'procesados'
+                $procesados[] = [
+                    'validated' => true,
+                    'message'   => 'Se obtuvo la información',
+                    'data'      => $query,
+                    'item'      => $item
+                ];
+            } catch (Exception $e) {
+                // Si ocurre algún error, se guarda en 'observados'
+                $observados[] = [
+                    'validated' => false,
+                    'message'   => $e->getMessage(),
+                    'data'      => [], // Se puede enviar cualquier dato adicional
+                    'item'      => $item
+                ];
+            }
+        }
+
+        // Construir la respuesta combinada
+        $response = [
+            'procesados' => $procesados,
+            'observados' => $observados,
+        ];
+
+        // Determinar el código de estado: si hay algún error, se asigna 500; de lo contrario, 201
+        $estado = (count($observados) > 0) ? 500 : 201;
+        
+        return new JsonResponse($response, $estado);
+    }  
       
 }
 

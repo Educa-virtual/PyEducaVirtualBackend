@@ -175,7 +175,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('obtenerInformacionEstudianteDNI', [GestionInstitucionalController::class, 'obtenerInformacionEstudianteDNI']);
         Route::post('obtenerCredencialesSede', [GestionInstitucionalController::class, 'obtenerCredencialesSede']);
         Route::post('importarDocente_IE', [GestionInstitucionalController::class, 'importarDocente_IE']);
-  
+        Route::post('importarAmbiente_IE', [GestionInstitucionalController::class, 'importarAmbiente_IE']);
     });
 
     Route::group(['prefix' => 'horario'], function () {
