@@ -250,10 +250,22 @@ class ComunicadosController extends Controller
 
     public function obtenerComunicadosDestino(Request $request)
     {
-        $iPersId = $this->decodeValue($request->input('iPersId'));
+
+        $iPersId = $this->decodeValue($request->iPersId);
+        $iYAcadId =  $request->iYAcadId;
+        $perfil = $request->perfil;
+        $iSedeId = $request->iSedeId;
+
+        $solicitud = [
+            $iPersId,
+            $iYAcadId,
+            $iSedeId,
+            json_encode($perfil),
+        ];
+
         try {
              // Llamada al SP que obtiene los comunicados destino
-             $data = DB::select('EXEC com.Sp_SEL_ObtenerComunicadosDestinoPorPersona ?', [$iPersId]);
+             $data = DB::select('EXEC com.Sp_SEL_ObtenerComunicadosDestinoPorPersona ?,?,?,?', $solicitud);
              return ResponseHandler::success($data);
         } catch (Exception $e) {
              return ResponseHandler::error("Error al obtener comunicados destino", 500, $e->getMessage());
