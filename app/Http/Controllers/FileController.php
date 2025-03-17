@@ -19,11 +19,9 @@ class FileController extends Controller
 
   public function downloadFile(Request $request)
   {
-    $path = $request->input('fileName');
+    $path = $request->input('template');
 
-
-
-    return response()->download(storage_path("templates/import/bulk-data/$path"), basename($path), [
+    return response()->download(storage_path("templates/import/bulk-data/$path.xlsx"), basename($path), [
       'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ]);
   }

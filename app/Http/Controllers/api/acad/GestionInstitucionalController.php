@@ -622,7 +622,7 @@ class GestionInstitucionalController extends Controller
             $TipoAmbienteId     = isset($item["TipoAmbienteId"])       ? trim($item["TipoAmbienteId"]) : null;
             $EstadoAmbId        = isset($item["EstadoAmbId"])       ? trim($item["EstadoAmbId"]) : null;
             $UbicaAmbId         = isset($item["UbicaAmbId "])       ? trim($item["UbicaAmbId "]) : null;
-            $UsoAmbId           = isset($item["UbicaAmbId "])       ? trim($item["UbicaAmbId "]) : null; 
+            $UsoAmbId           = isset($item["iUsoAmbId "])       ? trim($item["iUsoAmbId "]) : null; 
             $PisoAmbid          = isset($item["PisoAmbid"])       ? trim($item["PisoAmbid"]) : null;
             $AmbienteEstado     = isset($item["AmbienteEstado"])       ? trim($item["AmbienteEstado"]) : null;
             $Turno              = isset($item["Turno"])       ? trim($item["Turno"]) : null;
