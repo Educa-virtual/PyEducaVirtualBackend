@@ -13,9 +13,17 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Options;
 use Carbon\Carbon; // Agrega esta línea para importar Carbon
 
+use App\Services\ConsultarDocumentoIdentidadService;
+
 class GestionInstitucionalController extends Controller
 {
-    
+    private $consultarDocumentoIdentidadService;
+
+    public function __construct()
+    {
+        $this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
+
+    }
     // no tocar
     public function listarPersonalIes(Request $request)
     {
@@ -397,102 +405,6 @@ class GestionInstitucionalController extends Controller
              $request->iSedeId, //INT,
              $request->option]; //INT,
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-             
-            
          //41789603
          $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?,?", $solicitud);
  
@@ -544,6 +456,11 @@ class GestionInstitucionalController extends Controller
             $cPersMaterno    = isset($item["cPersMaterno"])    ? trim($item["cPersMaterno"]) : null;
             $cPersNombre     = isset($item["cPersNombre"])     ? trim($item["cPersNombre"]) : null;
             $cPersSexo       = isset($item["cPersSexo"])       ? trim($item["cPersSexo"]) : null;
+
+            IF($cTipoIdentId  === 'DNI'){
+                $servicio = $this->consultarDocumentoIdentidadService->buscar($request->iTipoIdentId, $request->cPersDocumento);
+            }
+           
 
             // Convertir la fecha usando Carbon, si se proporciona
             if (isset($item["dPersNacimiento"]) && !empty($item["dPersNacimiento"])) {
