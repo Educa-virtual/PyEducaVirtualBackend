@@ -11,7 +11,7 @@ use App\Http\Controllers\ApiController;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
-use App\Services\ExtraerBase64;
+use App\Services\Ere\ExtraerBase64;
 use App\Services\ParseSqlErrorService;
 use Hashids\Hashids;
 use Illuminate\Database\QueryException;

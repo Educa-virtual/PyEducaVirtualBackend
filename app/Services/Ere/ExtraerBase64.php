@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Ere;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Ramsey\Uuid\Uuid;
 
 class ExtraerBase64
 {
@@ -26,10 +27,10 @@ class ExtraerBase64
 
             foreach ($imagenesBase64 as $key => $imagenB64) {
                 $extension = explode('/', explode(':', substr($imagenB64, 0, strpos($imagenB64, ';')))[1])[1];
-                $replace = substr($imagenB64, 0, strpos($imagenB64, ',')+1); 
-                $imagen = str_replace($replace, '', $imagenB64); 
+                $replace = substr($imagenB64, 0, strpos($imagenB64, ',') + 1);
+                $imagen = str_replace($replace, '', $imagenB64);
                 $imagen = str_replace(' ', '+', $imagen);
-                $nombre =  Hash::make(date('YmdHis')) . '.' . $extension;
+                $nombre =  Uuid::uuid4() . '.' . $extension; //Hash::make(date('YmdHis')) . '.' . $extension;
                 Storage::disk('public')->put($carpeta . '/' . $nombre, base64_decode($imagen));
                 $urls[$key] = asset('storage/' . $carpeta . '/' . $nombre);
             }
