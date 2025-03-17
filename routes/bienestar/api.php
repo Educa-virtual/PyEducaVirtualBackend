@@ -15,5 +15,6 @@ Route::group(['prefix' => 'bienestar'], function () {
     /* Rutas para gestionar familiares */
     Route::post('searchFichaFamiliares', [FichaFamiliarController::class, 'index']);
     Route::post('guardarFichaFamiliar', [FichaFamiliarController::class, 'save']);
+    Route::post('borrarFichaFamiliar', [FichaFamiliarController::class, 'delete']);
 
 });

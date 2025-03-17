@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\bienestar;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FichaFamiliarSaveRequest;
 use App\Services\ParseSqlErrorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,26 +33,57 @@ class FichaFamiliarController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function save(Request $request)
+    public function save(FichaFamiliarSaveRequest $request)
     {
+        // primero guardar como persona
+        $request->merge([
+            'iTipoPersId' => 1, // Siempre persona natural
+        ]);
+
         $parametros = [
+            $request->iTipoPersId,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->iTipoEstCivId,
+            $request->cPersFotografia,
+            $request->cPersRazonSocialNombre,
+            $request->cPersRazonSocialCorto,
+            $request->cPersRazonSocialSigla,
+            $request->cPersDomicilio,
+            $request->iSesionId,
+            $request->iNacionId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
+        ];
+
+        try {
+            $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+            return new JsonResponse($response, $codeResponse);
+        }
+
+        $request->merge([
+            'iPersId' => $data[0]->iPersId,
+        ]);
+
+        // luego guardar como estudiante
+        $parametros = [
+            $request->iSesionId,
             $request->iFichaDGId,
             $request->iPersId,
             $request->iTipoFamiliarId,
             $request->bFamiliarVivoConEl,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersNombre,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->dPersNacimiento,
-            $request->cPersSexo,
             $request->iTipoEstCivId,
-            $request->iNacionId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-            $request->cPersDomicilio,
             $request->iTipoViaId,
             $request->cFichaDGDireccionNombreVia,
             $request->cFichaDGDireccionNroPuerta,
@@ -68,15 +100,15 @@ class FichaFamiliarController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
+            $data = DB::select('EXEC obe.Sp_INS_fichaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
+
         return new JsonResponse($response, $codeResponse);
     }
 }
