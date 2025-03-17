@@ -1047,11 +1047,18 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
             $request->iCursoId,
             $request->iNivelTipoId,
             $request->iNivelGradoId,
-            $request->iSeccionId
+            $request->iSeccionId,
+            $request->iDsttId,
+            $request->cPersSexo,
+            $request->iUgelId,
+            $request->iIieeId,
+            $request->iSedeId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
         ];
 
         try {
-            $data = DB::select('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?', $parametros);
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
