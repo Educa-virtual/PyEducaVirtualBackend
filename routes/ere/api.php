@@ -64,5 +64,6 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'resultados'], function () {
         Route::post('guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante', [ResultadosController::class, 'guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante']);
         Route::post('terminarExamenxiEstudianteId', [ResultadosController::class, 'terminarExamenxiEstudianteId']);
+        Route::post('guardarRespuestas', [ResultadosController::class, 'guardarRespuestas']);
     });
 });
