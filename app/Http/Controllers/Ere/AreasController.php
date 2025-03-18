@@ -79,8 +79,13 @@ class AreasController extends Controller
 
     private function descargarArchivoPreguntasWord($evaluacion, $area)
     {
-        $url = "http://localhost:7500/api/ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/archivo-preguntas";
-        $response = Http::withOptions(['stream' => true])->get($url);
+        $url = env('APP_ASPNET_URL')."/api/ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/archivo-preguntas";
+
+        $response = Http::withOptions([
+            'stream' => true,
+            'timeout' => 360,
+            'connect_timeout' => 360,
+            ])->get($url);
         if ($response->failed()) {
             abort(404, 'Archivo no encontrado.');
         }
