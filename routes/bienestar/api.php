@@ -3,18 +3,28 @@
 use App\Http\Controllers\bienestar\FichaFamiliarController;
 use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaBienestarController;
+use App\Http\Controllers\bienestar\FichaViviendaController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'bienestar'], function () {
 
-    Route::get('createFichaGeneral', [FichaGeneralController::class, 'createGeneral']);
-    Route::post('searchFichaGeneral', [FichaGeneralController::class, 'showGeneral']);
-    Route::post('guardarFichaGeneral', [FichaGeneralController::class, 'saveGeneral']);
-    Route::post('actualizarFichaGeneral', [FichaGeneralController::class, 'updateGeneral']);
+    Route::get('searchFicha', [FichaBienestarController::class, 'index']);
+    Route::get('createFicha', [FichaBienestarController::class, 'create']);
+    Route::delete('deleteFicha', [FichaBienestarController::class, 'delete']);
+
+    Route::post('searchFichaGeneral', [FichaGeneralController::class, 'show']);
+    Route::post('guardarFichaGeneral', [FichaGeneralController::class, 'save']);
+    Route::post('actualizarFichaGeneral', [FichaGeneralController::class, 'update']);
 
     /* Rutas para gestionar familiares */
     Route::post('searchFichaFamiliares', [FichaFamiliarController::class, 'index']);
     Route::post('guardarFichaFamiliar', [FichaFamiliarController::class, 'save']);
+    Route::post('searchFichaFamiliar', [FichaFamiliarController::class, 'show']);
+    Route::post('guardarFichaFamiliar', [FichaFamiliarController::class, 'update']);
     Route::post('borrarFichaFamiliar', [FichaFamiliarController::class, 'delete']);
+
+    Route::post('searchFichaVivienda', [FichaViviendaController::class, 'show']);
+    Route::post('guardarFichaVivienda', [FichaViviendaController::class, 'save']);
+    Route::post('actualizarFichaVivienda', [FichaViviendaController::class, 'update']);
 
 });

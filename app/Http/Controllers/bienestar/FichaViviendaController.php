@@ -6,36 +6,33 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FichaGeneralSaveRequest;
 use App\Services\ParseSqlErrorService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
-class FichaGeneralController extends Controller
+class FichaViviendaController extends Controller
 {
     public function save(FichaGeneralSaveRequest $request)
     {
         $parametros = [
             $request->iSesionId,
-            $request->iPersId,
-            $request->iTipoViaId,
-            $request->cFichaDGDireccionNombreVia,
-            $request->cFichaDGDireccionNroPuerta,
-            $request->cFichaDGDireccionBlock,
-            $request->cFichaDGDirecionInterior,
-            $request->cFichaDGDirecionPiso,
-            $request->cFichaDGDireccionManzana,
-            $request->cFichaDGDireccionLote,
-            $request->cFichaDGDireccionKm,
-            $request->cFichaDGDireccionReferencia,
-            $request->iReligionId,
-            $request->bFamiliarPadreVive,
-            $request->bFamiliarMadreVive,
-            $request->bFamiliarPadresVivenJuntos,
-            $request->bFichaDGTieneHijos,
-            $request->iFichaDGNroHijos,
+            $request->iFichaDGId,
+            $request->iTipoOcupaVivId,
+            $request->iMatPreId,
+            $request->iTipoVivId,
+            $request->iViviendaCarNroPisos,
+            $request->iViviendaCarNroAmbientes,
+            $request->iViviendaCarNroHabitaciones,
+            $request->iEstadoVivId,
+            $request->iMatPisoVivId,
+            $request->iMatTecVivId,
+            $request->iTiposSsHhId,
+            $request->iTipoSumAId,
+            $request->iTipoAlumId,
+            $request->iEleParaVivId,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -51,28 +48,25 @@ class FichaGeneralController extends Controller
     {
         $parametros = [
             $request->iSesionId,
+            $request->iViendaCarId,
             $request->iFichaDGId,
-            $request->iPersId,
-            $request->iTipoViaId,
-            $request->cFichaDGDireccionNombreVia,
-            $request->cFichaDGDireccionNroPuerta,
-            $request->cFichaDGDireccionBlock,
-            $request->cFichaDGDirecionInterior,
-            $request->cFichaDGDirecionPiso,
-            $request->cFichaDGDireccionManzana,
-            $request->cFichaDGDireccionLote,
-            $request->cFichaDGDireccionKm,
-            $request->cFichaDGDireccionReferencia,
-            $request->iReligionId,
-            $request->bFamiliarPadreVive,
-            $request->bFamiliarMadreVive,
-            $request->bFamiliarPadresVivenJuntos,
-            $request->bFichaDGTieneHijos,
-            $request->iFichaDGNroHijos,
+            $request->iTipoOcupaVivId,
+            $request->iMatPreId,
+            $request->iTipoVivId,
+            $request->iViviendaCarNroPisos,
+            $request->iViviendaCarNroAmbientes,
+            $request->iViviendaCarNroHabitaciones,
+            $request->iEstadoVivId,
+            $request->iMatPisoVivId,
+            $request->iMatTecVivId,
+            $request->iTiposSsHhId,
+            $request->iTipoSumAId,
+            $request->iTipoAlumId,
+            $request->iEleParaVivId,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -91,7 +85,7 @@ class FichaGeneralController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaGeneral ?', $parametros);
+            $data = DB::select('EXEC obe.Sp_SEL_fichaVivienda ?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }
