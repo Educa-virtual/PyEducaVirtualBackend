@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\bienestar;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FichaGeneralSaveRequest;
+use App\Http\Requests\bienestar\FichaGeneralSaveRequest;
 use App\Services\ParseSqlErrorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;

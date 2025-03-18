@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\bienestar;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FichaGeneralSaveRequest extends FormRequest
+class FichaViviendaSaveRequest extends FormRequest
 {
     public function authorize(): bool
     {

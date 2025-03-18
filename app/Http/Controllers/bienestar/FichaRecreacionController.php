@@ -3,36 +3,34 @@
 namespace App\Http\Controllers\bienestar;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\bienestar\FichaViviendaSaveRequest;
+use App\Http\Requests\bienestar\FichaRecreacionSaveRequest;
 use App\Services\ParseSqlErrorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class FichaViviendaController extends Controller
+class FichaRecreacionController extends Controller
 {
-    public function save(FichaViviendaSaveRequest $request)
+    public function save(FichaRecreacionSaveRequest $request)
     {
         $parametros = [
             $request->iSesionId,
             $request->iFichaDGId,
-            $request->iTipoOcupaVivId,
-            $request->iMatPreId,
-            $request->iTipoVivId,
-            $request->iViviendaCarNroPisos,
-            $request->iViviendaCarNroAmbientes,
-            $request->iViviendaCarNroHabitaciones,
-            $request->iEstadoVivId,
-            $request->iMatPisoVivId,
-            $request->iMatTecVivId,
-            $request->iTiposSsHhId,
-            $request->iTipoSumAId,
-            $request->iTipoAlumId,
-            $request->iEleParaVivId,
+            $request->cFichaDGPerteneceLigaDeportiva,
+            $request->iDeporteId,
+            $request->cDepFichaObs,
+            $request->cFichaDGPerteneceCentroArtistico,
+            $request->iPasaTiempoId,
+            $request->cPasaTFichaHoras,
+            $request->cFichaDGAsistioConsultaPsicologica,
+            $request->cProbEFichaPresentePara,
+            $request->iTipoFamiliarId,
+            $request->iTransporteId,
+            $request->nTransFichaGastoSoles,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaRecreacion ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -48,25 +46,22 @@ class FichaViviendaController extends Controller
     {
         $parametros = [
             $request->iSesionId,
-            $request->iViendaCarId,
             $request->iFichaDGId,
-            $request->iTipoOcupaVivId,
-            $request->iMatPreId,
-            $request->iTipoVivId,
-            $request->iViviendaCarNroPisos,
-            $request->iViviendaCarNroAmbientes,
-            $request->iViviendaCarNroHabitaciones,
-            $request->iEstadoVivId,
-            $request->iMatPisoVivId,
-            $request->iMatTecVivId,
-            $request->iTiposSsHhId,
-            $request->iTipoSumAId,
-            $request->iTipoAlumId,
-            $request->iEleParaVivId,
+            $request->cFichaDGPerteneceLigaDeportiva,
+            $request->iDeporteId,
+            $request->cDepFichaObs,
+            $request->cFichaDGPerteneceCentroArtistico,
+            $request->iPasaTiempoId,
+            $request->cPasaTFichaHoras,
+            $request->cFichaDGAsistioConsultaPsicologica,
+            $request->cProbEFichaPresentePara,
+            $request->iTipoFamiliarId,
+            $request->iTransporteId,
+            $request->nTransFichaGastoSoles,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaRecreacion ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -85,7 +80,7 @@ class FichaViviendaController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaVivienda ?', $parametros);
+            $data = DB::select('EXEC obe.Sp_SEL_fichaRecreacion ?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }

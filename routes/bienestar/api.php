@@ -3,6 +3,7 @@
 use App\Http\Controllers\bienestar\FichaFamiliarController;
 use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaBienestarController;
+use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,5 +27,9 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('searchFichaVivienda', [FichaViviendaController::class, 'show']);
     Route::post('guardarFichaVivienda', [FichaViviendaController::class, 'save']);
     Route::post('actualizarFichaVivienda', [FichaViviendaController::class, 'update']);
+
+    Route::post('searchFichaRecreacion', [FichaRecreacionController::class, 'show']);
+    Route::post('guardarFichaRecreacion', [FichaRecreacionController::class, 'save']);
+    Route::post('actualizarFichaRecreacion', [FichaRecreacionController::class, 'update']);
 
 });
