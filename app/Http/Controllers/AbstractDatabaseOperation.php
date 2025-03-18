@@ -48,10 +48,6 @@ abstract class AbstractDatabaseOperation
 
         $params = array_filter($params); // Filtrar valores nulos
         $placeholders = implode(',', array_fill(0, count($params), '?'));
-
-        $msg = new ConsoleOutput();
-        $msg->writeln("EXEC $procedure $placeholders " . implode(", ", $params));
-
         return collect(DB::select("EXEC $procedure $placeholders", $params));
     }
 
@@ -63,10 +59,6 @@ abstract class AbstractDatabaseOperation
         $results = collect();
 
         $params = $this->getParams();
-
-        $msg = new ConsoleOutput();
-
-        // $msg->writeln($queries);
 
         foreach ($queries as $query) {
 
@@ -80,7 +72,7 @@ abstract class AbstractDatabaseOperation
 
             $result = $this->executeQuery($queryParams, $procedure);
 
-            $results->push($result->first());
+            $results->push($result);
         }
 
         return $results;
