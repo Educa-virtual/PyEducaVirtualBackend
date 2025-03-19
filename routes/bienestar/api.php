@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'bienestar'], function () {
 
-    Route::get('searchFicha', [FichaBienestarController::class, 'index']);
+    Route::get('searchFichasEstudiantes', [FichaGeneralController::class, 'indexEstudiantes']);
+    Route::get('searchFichas', [FichaBienestarController::class, 'index']);
     Route::get('createFicha', [FichaBienestarController::class, 'create']);
     Route::delete('deleteFicha', [FichaBienestarController::class, 'delete']);
 
