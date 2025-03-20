@@ -547,7 +547,7 @@ class GestionInstitucionalController extends Controller
             $dni_tutor          = isset($item["dni_tutor"])       ? trim($item["dni_tutor"]) : null;
             $Grado              = isset($item["Grado"])       ? trim($item["Grado"]) : null;
             $Seccion            = isset($item["Seccion"])       ? trim($item["Seccion"]) : null;
-            $AmbienteNombre     = isset($item["AmbienteNombre"])       ? trim($item["AmbienteNombre"]) : null;
+            $AmbienteNombre     = $item["AmbienteNombre"];
             $AmbienteArea       = isset($item["AmbienteArea"])       ? trim($item["AmbienteArea"]) : null;
             $AmbienteAforo      = isset($item["AmbienteAforo"])       ? trim($item["AmbienteAforo"]) : null;
             $AmbienteObs        = isset($item["AmbienteObs"])       ? trim($item["AmbienteObs"]) : null;
@@ -606,6 +606,111 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }  
       
+
+    public function generarCredencialesIE(Request $request)
+    {
+        $json     = $request->data;
+        $iSedeId  = $request->iSedeId;
+        $iYAcadId = $request->iYAcadId;
+
+        $procesados = [];
+        $observados = [];
+
+        // Obtener todos los iPersId existentes en una sola consulta
+        $idsExistentes = DB::table('acad.personal_ies')
+            ->where('iSedeId', $iSedeId)
+            ->where('iYAcadId', $iYAcadId)
+            ->pluck('iPersId')
+            ->toArray();
+
+        // Función auxiliar para registrar credenciales
+        $registrarCredencial = function ($iPersId, $iCredSesionId, $iSedeId, $iPerfilId) {
+            return DB::select("EXEC seg.Sp_INS_credenciales_IE ?,?,?,?,?", [
+                10, $iPersId, $iCredSesionId, $iSedeId, $iPerfilId
+            ]);
+        };
+
+        $perfilMapping = [
+            1 => 4,    // DIRECTOR
+            3 => 7,    // DOCENTE
+            5 => 100,  // ASISTENCIA SOCIAL
+            6 => 9     // AUXILIAR ASISTENCIA
+        ];
+
+        foreach ($json as $item) {
+            if (empty($item["condicion"])) {
+                $observados[] = ['validated' => false, 'message' => 'Falta la condición.', 'item' => $item];
+                continue;
+            }
+
+            $condicion = $item["condicion"];
+
+            try {
+                if ($condicion === 'add_personal_ie') {
+                    if (empty($item["iPersId"]) || empty($item["iPersCargoId"]) || empty($item["iCredSesionId"])) {
+                        $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
+                        continue;
+                    }
+
+                    $iPersId = $item["iPersId"];
+                    $iCredSesionId = $item["iCredSesionId"];
+                    $iPersCargoId = $item["iPersCargoId"];
+                    $iHorasLabora = $item["iHorasLabora"] ?? 0;
+                    $iPerfilId = $perfilMapping[$iPersCargoId] ?? 0;
+
+                    if (in_array($iPersId, $idsExistentes)) {
+                        if ($iPerfilId > 0) {
+                            $query = $registrarCredencial($iPersId, $iCredSesionId, $iSedeId, $iPerfilId);
+                            $procesados[] = ['validated' => true, 'message' => 'Credencial generada para personal existente.', 'data' => $query, 'item' => $item];
+                        }
+                        continue;
+                    }
+
+                    $id = DB::table('acad.personal_ies')->insertGetId([
+                        'iPersId'      => $iPersId,
+                        'iPersCargoId' => $iPersCargoId,
+                        'iHorasLabora' => $iHorasLabora,
+                        'iYAcadId'     => $iYAcadId,
+                        'iSedeId'      => $iSedeId
+                    ]);
+
+                    if ($id && $iPerfilId > 0) {
+                        $query = $registrarCredencial($iPersId, $iCredSesionId, $iSedeId, $iPerfilId);
+                        $procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado y credencial generada.', 'data' => $query, 'item' => $item];
+                    } else {
+                        $procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado sin credencial.', 'item' => $item];
+                    }
+                }
+
+                if ($condicion === 'add_credencial_ie') {
+                    if (empty($item["iPersId"]) || empty($item["iCredSesionId"]) || empty($item["iPerfilId"])) {
+                        $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
+                        continue;
+                    }
+
+                    $iPersId = $item["iPersId"];
+                    $iCredSesionId = $item["iCredSesionId"];
+                    $iPerfilId = $item["iPerfilId"];
+
+                    if (in_array($iPersId, $idsExistentes)) {
+                        $observados[] = ['validated' => false, 'message' => 'Ya existe credencial y perfil asignado para usuario.', 'item' => $item];
+                        continue;
+                    }
+
+                    $query = $registrarCredencial($iPersId, $iCredSesionId, $iSedeId, $iPerfilId);
+                    $procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado y credencial generada.', 'data' => $query, 'item' => $item];
+                }
+            } catch (QueryException $e) {
+                $observados[] = ['validated' => false, 'message' => 'Error en base de datos: ' . $e->getMessage(), 'item' => $item];
+            }
+        }
+
+        $response = ['procesados' => $procesados, 'observados' => $observados];
+        $estado = count($observados) > 0 ? 500 : 201;
+
+        return new JsonResponse($response, $estado);
+    }
+
 }
 
 
