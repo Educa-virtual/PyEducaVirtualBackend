@@ -113,12 +113,12 @@ class ResultadosController extends Controller
             $data = DB::select('exec ere.SP_INS_UPD_GuardaRptasEvaluacion ?,?,?,?,?,?,?,?,?', $parametros);
             if ($data[0]->iResultadoId > 0) {
                 return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se guardó exitosamente', 'data' => null],
+                    ['validated' => true, 'message' => 'Se ha registrado su respuesta', 'data' => null],
                     200
                 );
             } else {
                 return new JsonResponse(
-                    ['validated' => false, 'message' => 'No se ha podido actualizar la información', 'data' => null],
+                    ['validated' => false, 'message' => 'No se ha podido registrar su respuesta', 'data' => null],
                     500
                 );
             }
@@ -151,7 +151,7 @@ class ResultadosController extends Controller
             ];
             $data = DB::select('exec ere.SP_UPD_terminarExamenxiEstudianteId ?,?,?,?,?', $parametros);
             return new JsonResponse(
-                ['validated' => true, 'message' => 'Se guardó exitosamente', 'data' => $data],
+                ['validated' => true, 'message' => 'Su examen ha finalizado', 'data' => $data],
                 200
             );
         } catch (\Exception $e) {
