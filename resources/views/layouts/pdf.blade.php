@@ -111,6 +111,7 @@
             table-layout: fixed;
             margin-bottom: 0;
             float: right;
+            page-break-inside: avoid;
         }
         .table-borderless {
             border: none;

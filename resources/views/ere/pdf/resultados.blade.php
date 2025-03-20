@@ -131,10 +131,10 @@
 
 <br>
 
-<table class="table-aside table-bordered table-condensed table-sm py-4 text-right">
+<table class="table-aside table-bordered table-condensed table-sm py-4 text-right font-lg">
     <thead>
         <tr>
-            <th class="font-lg bg-light text-center" colspan="2">RESUMEN DE NIVELES DE LOGRO</th>
+            <th class="bg-light text-center" colspan="2">RESUMEN DE NIVELES DE LOGRO</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="60%">NIVEL</th>
@@ -192,12 +192,13 @@
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
-            <th class="font-lg bg-light text-center" colspan="7">RESULTADOS SEGÚN COMPETENCIAS</th>
+            <th class="font-lg bg-light text-center" colspan="8">RESULTADOS SEGÚN DESEMPEÑOS</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="7%">PREGUNTA</th>
-            <th class="align-middle bg-light text-center" width="25%">COMPETENCIA</th>
-            <th class="align-middle bg-light text-center" width="34%">DESEMPEÑO</th>
+            <th class="align-middle bg-light text-center" width="15%">COMPETENCIA</th>
+            <th class="align-middle bg-light text-center" width="20%">CAPACIDAD</th>
+            <th class="align-middle bg-light text-center" width="24%">DESEMPEÑO</th>
             <th class="align-middle bg-light text-center" width="7%">ACIERTOS</th>
             <th class="align-middle bg-light text-center" width="10%">DESACIERTOS</th>
             <th class="align-middle bg-light text-center" width="7%">% DE ACIERTOS</th>
@@ -209,6 +210,7 @@
             <tr>
                 <td class="align-middle text-center">{{ $item->pregunta_nro }}</td>
                 <td class="align-middle text-left">{{ $item->competencia }}</td>
+                <td class="align-middle text-left">{{ $item->capacidad }}</td>
                 <td class="align-middle text-left">{{ $item->desempeno }}</td>
                 <td class="align-middle text-center">{{ $item->aciertos }}</td>
                 <td class="align-middle text-center">{{ $item->desaciertos }}</td>
