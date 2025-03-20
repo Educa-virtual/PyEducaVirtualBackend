@@ -171,7 +171,10 @@ foreach( $resultados as $key => $value ) {
         $columnaLetra = Coordinate::stringFromColumnIndex(10 + $indice);
         $hoja2->setCellValue($columnaLetra . ($key + 2), $value->respuesta);
         $color = $value->correcta == true ? Color::COLOR_DARKGREEN : Color::COLOR_RED;
+        $relleno = $value->correcta == true ? Fill::FILL_SOLID : Fill::FILL_NONE;
+        $fondo = $value->correcta == true ? $header_color : Color::COLOR_WHITE;
         $hoja2->getStyle($columnaLetra . ($key + 2))->getFont()->getColor()->setARGB($color);
+        $hoja2->getStyle($columnaLetra . ($key + 2))->getFill()->setFillType($relleno)->getStartColor()->setARGB($fondo);
         $indice++;
     }
 }
@@ -183,7 +186,7 @@ foreach( $resultados as $key => $value ) {
 $ultimaColumnaLetra = Coordinate::stringFromColumnIndex($nro_preguntas);
 
 $hoja3->fromArray($hoja3_datos);
-$hoja3->setCellValue('A1', 'MÉTRICA/PREGUNTA');
+$hoja3->setCellValue('A1', 'PREGUNTA');
 
 $hoja3->getStyle('A1:' . $ultimaColumnaLetra . '1')
     ->getFont()
@@ -206,7 +209,7 @@ $hoja3->getStyle('A:A')
  * FORMATEAR MATRIZ
  */
 
-$hoja4->fromArray($hoja4_datos);
+// $hoja4->fromArray($hoja4_datos);
 $hoja4->setCellValue('A1', 'COMPETENCIA')
     ->setCellValue('B1', 'CAPACIDAD')
     ->setCellValue('C1', 'DESEMPEÑO')
@@ -216,6 +219,17 @@ $hoja4->setCellValue('A1', 'COMPETENCIA')
     ->setCellValue('G1', '% ACIERTOS')
     ->setCellValue('H1', '% DESACIERTOS');
 
+foreach($matriz as $key => $value) {
+    $hoja4->setCellValue('A' . ($key + 2), $value->competencia);
+    $hoja4->setCellValue('B' . ($key + 2), $value->capacidad);
+    $hoja4->setCellValue('C' . ($key + 2), $value->desempeno);
+    $hoja4->setCellValue('D' . ($key + 2), $value->pregunta_nro);
+    $hoja4->setCellValue('E' . ($key + 2), $value->aciertos);
+    $hoja4->setCellValue('F' . ($key + 2), $value->desaciertos);
+    $hoja4->setCellValue('G' . ($key + 2), $value->porcentaje_aciertos);
+    $hoja4->setCellValue('H' . ($key + 2), $value->porcentaje_desaciertos);
+}
+
 $hoja4->getStyle('A1:H1')
     ->getFont()
     ->setBold(true);
@@ -224,14 +238,10 @@ $hoja4->getStyle('A1:H1')
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
     ->setARGB($header_color);
-$hoja4->getStyle('A1:H' . $nro_preguntas)
+$hoja4->getStyle('A1:H' . $nro_preguntas + 1)
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_CENTER)
     ->setVertical(Alignment::VERTICAL_CENTER);
-$hoja4->getStyle('A:C')
-    ->getAlignment()
-    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
-    ->setWrapText(true);
 
 $hojas = [$hoja1, $hoja2, $hoja3, $hoja4];
 
@@ -247,9 +257,18 @@ foreach ($hojas as $hoja)
     }
 }
 
-$hoja4->getColumnDimension('A')->setWidth(40);
-$hoja4->getColumnDimension('B')->setWidth(40);
-$hoja4->getColumnDimension('C')->setWidth(40);
+// Corregir estilos en hoja de matriz (multiples lineas de texto)
+$hoja4->getColumnDimension('A')->setAutoSize(false)->setWidth(40);
+$hoja4->getColumnDimension('B')->setAutoSize(false)->setWidth(40);
+$hoja4->getColumnDimension('C')->setAutoSize(false)->setWidth(40);
+$hoja4->getStyle('A1:C'. $nro_preguntas + 1)
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+    ->setWrapText(true);
+for($pregunta = 1; $pregunta <= $nro_preguntas; $pregunta++) {
+    $hoja4->getRowDimension($pregunta)
+        ->setRowHeight(-1);
+}
 
 /**
  * MOSTRAR DATOS GENERADOS

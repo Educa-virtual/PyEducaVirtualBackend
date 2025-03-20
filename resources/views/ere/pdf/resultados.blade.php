@@ -90,7 +90,7 @@
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
-            <th colspan="{{ $nro_preguntas + 9 }}">RESULTADOS DE ESTUDIANTES</th>
+            <th class="font-lg bg-light text-center" colspan="{{ $nro_preguntas + 9 }}">RESULTADOS DE ESTUDIANTES</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="2%">#</th>
@@ -116,7 +116,7 @@
                 <td class="align-middle text-center">{{ $resultado->seccion }}</td>
                 <td class="align-middle text-left">{{ $resultado->estudiante }}</td>
                 @foreach (json_decode($resultado->respuestas) as $value)
-                    <td class="align-middle text-center {{ $value->correcta == true ? 'text-success' : 'text-danger' }}">
+                    <td class="align-middle text-center {{ $value->correcta == true ? 'text-success bg-light' : 'text-danger' }}">
                         {{ $value->respuesta }}
                     </td>
                 @endforeach
@@ -129,10 +129,12 @@
     </tbody>
 </table>
 
+<br>
+
 <table class="table-aside table-bordered table-condensed table-sm py-4 text-right">
     <thead>
         <tr>
-            <th colspan="2">RESUMEN DE NIVELES DE LOGRO</th>
+            <th class="font-lg bg-light text-center" colspan="2">RESUMEN DE NIVELES DE LOGRO</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="60%">NIVEL</th>
@@ -158,7 +160,7 @@
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
-            <th colspan="{{ $nro_preguntas + 1 }}">RESULTADOS RESUMIDOS POR PREGUNTA</th>
+            <th class="font-lg bg-light text-center" colspan="{{ $nro_preguntas + 1 }}">RESULTADOS RESUMIDOS POR PREGUNTA</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="10%">MÉTRICA</th>
@@ -190,7 +192,7 @@
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
-            <th colspan="7">RESULTADOS SEGÚN COMPETENCIAS</th>
+            <th class="font-lg bg-light text-center" colspan="7">RESULTADOS SEGÚN COMPETENCIAS</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="5%">PREGUNTA</th>

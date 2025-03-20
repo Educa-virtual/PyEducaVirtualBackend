@@ -144,7 +144,7 @@ class ReporteEvaluacionesController extends Controller
         $filtros = $data[0][0];
         $resultados = $data[1];
         $resumen = $this->convertDataToChartForm($data[2]);
-        $matriz = $this->convertDataToChartForm($data[3]);
+        $matriz = $data[3];
         $niveles = $this->calcularResumenNiveles($resultados);
 
         $nro_preguntas = count($matriz);
