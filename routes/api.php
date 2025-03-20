@@ -39,6 +39,7 @@ use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\Ere\ReportesController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -140,9 +141,11 @@ Route::group(['prefix' => 'ere'], function () {
          //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
          Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
         // Obtener evaluaciones, cursos, ies, grados, secciones según año académico
-        Route::post('obtenerEvaluacionesCursosIes', [EvaluacionesController::class, 'obtenerEvaluacionesCursosIes']);
+        Route::post('obtenerEvaluacionesCursosIes', [ReportesController::class, 'obtenerEvaluacionesCursosIes']);
         // Obtener resumen de resultados de evaluacion
-        Route::post('obtenerInformeResumen', [EvaluacionesController::class, 'obtenerInformeResumen']);
+        Route::post('obtenerInformeResumen', [ReportesController::class, 'obtenerInformeResumen']);
+        Route::get('generarPdf', [ReportesController::class, 'generarPdf']);
+        Route::get('generarExcel', [ReportesController::class, 'generarExcel']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
