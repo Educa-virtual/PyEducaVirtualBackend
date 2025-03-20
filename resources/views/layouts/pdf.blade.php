@@ -103,10 +103,12 @@
         }
         .table {
             width: 100%;
+            table-layout: fixed;
             margin-bottom: 0;
         }
         .table-aside {
             width: 25%;
+            table-layout: fixed;
             margin-bottom: 0;
             float: right;
         }

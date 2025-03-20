@@ -47,38 +47,38 @@
 <table class="table table-borderless table-condensed table-sm py-4">
     <thead>
         <tr>
-            <th class="align-middle bg-light text-left" width="5%">EVALUACIÓN:</th>
+            <th class="align-middle bg-light text-left" width="8%">EVALUACIÓN:</th>
             <td class="align-middle text-left">{{ $filtros->evaluacion }}</td>
             @isset( $filtros->cod_ie )
-                <th class="align-middle bg-light text-left" width="5%">I.E.:</th>
+                <th class="align-middle bg-light text-left" width="8%">I.E.:</th>
                 <td class="align-middle text-left">{{ $filtros->cod_ie }}</td>
             @endisset
             @isset( $filtros->sector )
-                <th class="align-middle bg-light text-left" width="5%">Sector:</th>
+                <th class="align-middle bg-light text-left" width="8%">SECTOR:</th>
                 <td class="align-middle text-left">{{ $filtros->sector }}</td>
             @endisset
         </tr>
         <tr>
-            <th class="align-middle bg-light text-left" width="5%">CURSO:</th>
+            <th class="align-middle bg-light text-left" width="8%">CURSO:</th>
             <td class="align-middle text-left">{{ $filtros->curso }}</td>
             @isset( $filtros->distrito )
-                <th class="align-middle bg-light text-left" width="5%">DISTRITO:</th>
+                <th class="align-middle bg-light text-left" width="8%">DISTRITO:</th>
                 <td class="align-middle text-left">{{ $filtros->distrito }}</td>
             @endisset
             @isset( $filtros->zona )
-                <th class="align-middle bg-light text-left" width="5%">ZONA:</th>
+                <th class="align-middle bg-light text-left" width="8%">ZONA:</th>
                 <td class="align-middle text-left">{{ $filtros->zona }}</td>
             @endisset
         </tr>
         <tr>
-            <th class="align-middle bg-light text-left" width="5%">GRADO:</th>
+            <th class="align-middle bg-light text-left" width="8%">GRADO:</th>
             <td class="align-middle text-left">{{ $filtros->grado }}</td>
             @isset( $filtros->seccion )
-                <th class="align-middle bg-light text-left" width="5%">SECCION:</th>
+                <th class="align-middle bg-light text-left" width="8%">SECCION:</th>
                 <td class="align-middle text-left">{{ $filtros->seccion }}</td>
             @endisset
             @isset( $filtros->sexo )
-                <th class="align-middle bg-light text-left" width="5%">SEXO:</th>
+                <th class="align-middle bg-light text-left" width="8%">SEXO:</th>
                 <td class="align-middle text-left">{{ $filtros->sexo }}</td>
             @endisset
         </tr>
@@ -93,18 +93,18 @@
             <th class="font-lg bg-light text-center" colspan="{{ $nro_preguntas + 9 }}">RESULTADOS DE ESTUDIANTES</th>
         </tr>
         <tr>
-            <th class="align-middle bg-light text-center" width="2%">#</th>
-            <th class="align-middle bg-light text-center" width="10%">I.E.</th>
-            <th class="align-middle bg-light text-center" width="5%">DISTRITO</th>
-            <th class="align-middle bg-light text-center" width="2%">SECCION</th>
-            <th class="align-middle bg-light text-center" width="25%">ESTUDIANTE</th>
+            <th class="align-middle bg-light text-center" width="3%">#</th>
+            <th class="align-middle bg-light text-center" width="8%">I.E.</th>
+            <th class="align-middle bg-light text-center" width="8%">DISTRITO</th>
+            <th class="align-middle bg-light text-center font-xs" width="4%">SECCIÓN</th>
+            <th class="align-middle bg-light text-center" width="10%">ESTUDIANTE</th>
             @for ($pregunta = 1; $pregunta <= $nro_preguntas; $pregunta++ )
                 <th class="align-middle bg-light text-center">{{ $pregunta }}</th>
             @endfor
-            <th class="align-middle bg-light text-center" width="5%">ACIERTOS</th>
-            <th class="align-middle bg-light text-center" width="5%">DESACIERTOS</th>
-            <th class="align-middle bg-light text-center" width="5%">BLANCOS</th>
-            <th class="align-middle bg-light text-center" width="5%">NIVEL</th>
+            <th class="align-middle bg-light text-center font-xs" width="4%">ACIERTOS</th>
+            <th class="align-middle bg-light text-center font-xs" width="4%">DESACIERTOS</th>
+            <th class="align-middle bg-light text-center font-xs" width="4%">BLANCOS</th>
+            <th class="align-middle bg-light text-center" width="8%">NIVEL</th>
         </tr>
     </thead>
     <tbody>
@@ -150,7 +150,7 @@
         @endforeach
     </tbody>
     <tfoot>
-        <th class="align-middle bg-light text-center" width="60%">TOTAL</th>
+        <th class="align-middle bg-light text-center" width="60%">TOTAL ESTUDIANTES</th>
         <th class="align-middle bg-light text-center" width="60%">{{ count($resultados) }}</th>
     </tfoot>
 </table>
@@ -195,13 +195,13 @@
             <th class="font-lg bg-light text-center" colspan="7">RESULTADOS SEGÚN COMPETENCIAS</th>
         </tr>
         <tr>
-            <th class="align-middle bg-light text-center" width="5%">PREGUNTA</th>
+            <th class="align-middle bg-light text-center" width="7%">PREGUNTA</th>
             <th class="align-middle bg-light text-center" width="25%">COMPETENCIA</th>
-            <th class="align-middle bg-light text-center" width="50%">DESEMPEÑO</th>
-            <th class="align-middle bg-light text-center" width="5%">ACIERTOS</th>
-            <th class="align-middle bg-light text-center" width="5%">DESACIERTOS</th>
-            <th class="align-middle bg-light text-center" width="5%">% DE ACIERTOS</th>
-            <th class="align-middle bg-light text-center" width="5%">% DE DESACIERTOS</th>
+            <th class="align-middle bg-light text-center" width="34%">DESEMPEÑO</th>
+            <th class="align-middle bg-light text-center" width="7%">ACIERTOS</th>
+            <th class="align-middle bg-light text-center" width="10%">DESACIERTOS</th>
+            <th class="align-middle bg-light text-center" width="7%">% DE ACIERTOS</th>
+            <th class="align-middle bg-light text-center" width="10%">% DE DESACIERTOS</th>
         </tr>
     </thead>
     <tbody>
