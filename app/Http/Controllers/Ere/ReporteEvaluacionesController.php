@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ReportesController extends Controller
+class ReporteEvaluacionesController extends Controller
 {
     public function obtenerEvaluacionesCursosIes(Request $request)
     {
@@ -96,15 +96,20 @@ class ReportesController extends Controller
             return response()->json($response, $codeResponse);
         }
 
-        $resultados = $data[0];
-        $resumen = $data[1];
-        $matriz = $data[2];
+        $filtros = $data[0][0];
+        $resultados = $data[1];
+        $resumen = $data[2];
+        $matriz = $data[3];
+        $niveles = $this->calcularResumenNiveles($resultados);
 
+        $nro_preguntas = count($matriz);
+        
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz'))->setPaper('a4', 'landscape');
+
+        $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles'))->setPaper('a4', 'landscape');
         return $pdf->stream('RESULTADOS-ERE-'.date('Ymdhis').'.pdf');
 
-        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'aciertos', 'desaciertos', 'blancos'));
+        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros'));
 
     }
 
@@ -136,11 +141,15 @@ class ReportesController extends Controller
             return response()->json($response, $codeResponse);
         }
 
-        $resultados = $data[0];
-        $resumen = $this->convertDataToChartForm($data[1]);
-        $matriz = $this->convertDataToChartForm($data[2]);
+        $filtros = $data[0][0];
+        $resultados = $data[1];
+        $resumen = $this->convertDataToChartForm($data[2]);
+        $matriz = $this->convertDataToChartForm($data[3]);
+        $niveles = $this->calcularResumenNiveles($resultados);
 
-        return view('ere.excel.resultados', compact('resultados', 'resumen', 'matriz'));
+        $nro_preguntas = count($matriz);
+
+        return view('ere.excel.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles'));
     }
 
     private function convertDataToChartForm($data)
@@ -156,5 +165,18 @@ class ReportesController extends Controller
             $newData[] = array_values((array) $dataRow);
         }
         return $newData;
+    }
+
+    private function calcularResumenNiveles($data)
+    {
+        return array_reduce($data, function($acc = [], $item) {
+            $nivel = $item->nivel_logro;
+            if (isset($acc[$nivel])) {
+                $acc[$nivel]++;
+            } else {
+                $acc[$nivel] = 1;
+            }
+            return $acc;
+        });
     }
 }

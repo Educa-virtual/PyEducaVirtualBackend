@@ -1,30 +1,119 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+
+/* Definir color de encabezado */
+$header_color = "dae0e5";
 
 $archivo = new Spreadsheet();
 
+/* Configurar hojas de archivo de hojas */
 $archivo->removeSheetByIndex(0);
 
-$hoja1 = new Worksheet($archivo, "Resultados");
+$hoja1 = new Worksheet($archivo, "Parametros");
 $archivo->addSheet($hoja1, 0);
 
-$hoja2 = new Worksheet($archivo, "Resumen");
+$hoja2 = new Worksheet($archivo, "Estudiantes");
 $archivo->addSheet($hoja2, 1);
 
-$hoja3 = new Worksheet($archivo, "Matriz");
+$hoja3 = new Worksheet($archivo, "Preguntas");
 $archivo->addSheet($hoja3, 2);
 
-$hoja1_datos = $resultados;
-$hoja2_datos = $resumen;
-$hoja3_datos = $matriz;
+$hoja4 = new Worksheet($archivo, "Matriz");
+$archivo->addSheet($hoja4, 3);
 
-// $hoja1->fromArray($hoja1_datos);
+$hoja2_datos = $resultados;
+$hoja3_datos = $resumen;
+$hoja4_datos = $matriz;
 
-$hoja1->setCellValue('A1', 'ITEM')
+/**
+ * FORMATEAR PARAMETROS
+ */
+
+$hoja1->mergeCells('A1:B1');
+$hoja1->setCellValue('A1', 'RESULTADOS DE EVALUACIÓN');
+
+$hoja1->setCellValue('A5', 'EVALUACIÓN:')
+    ->setCellValue('B5', $filtros->evaluacion);
+
+$hoja1->setCellValue('A6', 'CURSO:')
+    ->setCellValue('B6', $filtros->curso);
+
+$hoja1->setCellValue('A7', 'GRADO:')
+    ->setCellValue('B7', $filtros->grado);
+
+if( isset($filtros->cod_ie) )
+    $hoja1->setCellValue('A8', 'I.E.:')
+        ->setCellValue('B8', $filtros->cod_ie);
+
+if( isset($filtros->distrito) ) {
+    $hoja1->setCellValue('A9', 'DISTRITO:')
+        ->setCellValue('B9', $filtros->distrito);
+}
+
+if( isset($filtros->seccion) ) {
+    $hoja1->setCellValue('A10', 'SECCION:')
+        ->setCellValue('B10', $filtros->seccion);
+}
+
+if( isset($filtros->sexo) ) {
+    $hoja1->setCellValue('A11', 'SEXO:')
+        ->setCellValue('B11', $filtros->sexo);
+}
+
+if( isset($filtros->sector) ) {
+    $hoja1->setCellValue('A12', 'SECTOR:')
+        ->setCellValue('B12', $filtros->sector);
+}
+
+if( isset($filtros->zona) ) {
+    $hoja1->setCellValue('A13', 'ZONA:')
+        ->setCellValue('B13', $filtros->zona);
+}
+
+$hoja1->mergeCells('A16:B16');
+$hoja1->setCellValue('A16', 'NIVELES DE LOGRO');
+
+$fila = 16;
+foreach($niveles as $nivel => $cantidad) {
+    $fila++;
+    $hoja1->setCellValue('A' . $fila, $nivel . ':')
+        ->setCellValue('B' . $fila, $cantidad);
+}
+$hoja1->setCellValue('A' . ($fila + 1), 'ESTUDIANTES:')
+    ->setCellValue('B' . ($fila + 1), count($resultados));
+
+$hoja1->getStyle('A1:A20')
+    ->getFont()
+    ->setBold(true);
+$hoja1->getStyle('A16:B16')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+    $hoja1->getStyle('A1:B1')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+$hoja1->getStyle('A1:B1')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+    ->setVertical(Alignment::VERTICAL_CENTER);
+$hoja1->getStyle('A1:B1')
+    ->getFont()
+    ->setSize(14);
+
+/**
+ * FORMATEAR RESULTADOS DE ESTUDIANTES
+ */
+
+$hoja2->setCellValue('A1', 'ITEM')
     ->setCellValue('B1', 'I.E.')
     ->setCellValue('C1', 'DISTRITO')
     ->setCellValue('D1', 'SECCION')
@@ -32,15 +121,40 @@ $hoja1->setCellValue('A1', 'ITEM')
     ->setCellValue('F1', 'ACIERTOS')
     ->setCellValue('G1', 'DESACIERTOS')
     ->setCellValue('H1', 'BLANCOS')
-    ->setCellValue('I1', 'DOCENTE')
-    ->setCellValue('J1', 'NIVEL DE LOGRO');
-    foreach (json_decode($resultados[0]->respuestas) as $key => $value) {
-        $columnaLetra = Coordinate::stringFromColumnIndex(11 + $key);
-        $hoja1->setCellValue($columnaLetra . '1', $key + 1);
-    }
+    ->setCellValue('J1', 'NIVEL DE LOGRO')
+    ->setCellValue('I1', 'DOCENTE');
+for ($pregunta = 1; $pregunta <= $nro_preguntas; $pregunta++) {
+    $columnaLetra = Coordinate::stringFromColumnIndex(10 + $pregunta);
+    $hoja2->setCellValue($columnaLetra . '1', $pregunta);
+}
+
+$hoja2->getStyle('A1:' . $columnaLetra . '1')
+    ->getFont()
+    ->setBold(true);
+$hoja2->getStyle('A1:' . $columnaLetra . '1')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+$hoja2->getStyle('A1:' . $columnaLetra . count($resultados) + 1)
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+    ->setVertical(Alignment::VERTICAL_CENTER);
+$hoja2->getStyle('B:B')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+    ->setWrapText(true);
+$hoja2->getStyle('E:E')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+    ->setWrapText(true);
+$hoja2->getStyle('I:I')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+    ->setWrapText(true);
 
 foreach( $resultados as $key => $value ) {
-    $hoja1->setCellValue('A' . ($key + 2), $key + 1)
+    $hoja2->setCellValue('A' . ($key + 2), $key + 1)
         ->setCellValue('B' . ($key + 2), $value->cod_ie)
         ->setCellValue('C' . ($key + 2), $value->distrito)
         ->setCellValue('D' . ($key + 2), $value->seccion)
@@ -48,24 +162,82 @@ foreach( $resultados as $key => $value ) {
         ->setCellValue('F' . ($key + 2), $value->aciertos)
         ->setCellValue('G' . ($key + 2), $value->desaciertos)
         ->setCellValue('H' . ($key + 2), $value->blancos)
-        ->setCellValue('I' . ($key + 2), $value->docente)
-        ->setCellValue('J' . ($key + 2), $value->nivel_logro);
+        ->setCellValue('J' . ($key + 2), $value->nivel_logro)
+        ->setCellValue('I' . ($key + 2), $value->docente);
 
-    $indice = 0;
+    $indice = 1;
 
     foreach (json_decode($value->respuestas) as $value) {
-        $columnaLetra = Coordinate::stringFromColumnIndex(11 + $indice);
-        $hoja1->setCellValue($columnaLetra . ($key + 2), $value->respuesta);
-        $color = $value->correcta == true ? Color::COLOR_GREEN : Color::COLOR_RED;
-        $hoja1->getStyle($columnaLetra . ($key + 2))->getFont()->getColor()->setARGB($color);
+        $columnaLetra = Coordinate::stringFromColumnIndex(10 + $indice);
+        $hoja2->setCellValue($columnaLetra . ($key + 2), $value->respuesta);
+        $color = $value->correcta == true ? Color::COLOR_DARKGREEN : Color::COLOR_RED;
+        $hoja2->getStyle($columnaLetra . ($key + 2))->getFont()->getColor()->setARGB($color);
         $indice++;
     }
 }
 
-$hoja2->fromArray($hoja2_datos);
-$hoja3->fromArray($hoja3_datos);
+/**
+ * FORMATEAR RESULTADOS SEGUN PREGUNTAS
+ */
 
-$hojas = [$hoja1, $hoja2, $hoja3];
+$ultimaColumnaLetra = Coordinate::stringFromColumnIndex($nro_preguntas);
+
+$hoja3->fromArray($hoja3_datos);
+$hoja3->setCellValue('A1', 'MÉTRICA/PREGUNTA');
+
+$hoja3->getStyle('A1:' . $ultimaColumnaLetra . '1')
+    ->getFont()
+    ->setBold(true);
+$hoja3->getStyle('A1:' . $ultimaColumnaLetra . '1')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+$hoja3->getStyle('A1:' . $ultimaColumnaLetra . '7')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+    ->setVertical(Alignment::VERTICAL_CENTER);
+$hoja3->getStyle('A:A')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+    ->setWrapText(true);
+
+/**
+ * FORMATEAR MATRIZ
+ */
+
+$hoja4->fromArray($hoja4_datos);
+$hoja4->setCellValue('A1', 'COMPETENCIA')
+    ->setCellValue('B1', 'CAPACIDAD')
+    ->setCellValue('C1', 'DESEMPEÑO')
+    ->setCellValue('D1', 'PREGUNTA')
+    ->setCellValue('E1', 'ACIERTOS')
+    ->setCellValue('F1', 'DESACIERTOS')
+    ->setCellValue('G1', '% ACIERTOS')
+    ->setCellValue('H1', '% DESACIERTOS');
+
+$hoja4->getStyle('A1:H1')
+    ->getFont()
+    ->setBold(true);
+$hoja4->getStyle('A1:H1')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+$hoja4->getStyle('A1:H' . $nro_preguntas)
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+    ->setVertical(Alignment::VERTICAL_CENTER);
+$hoja4->getStyle('A:C')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+    ->setWrapText(true);
+
+$hojas = [$hoja1, $hoja2, $hoja3, $hoja4];
+
+/**
+ * CONFIGURAR DIMENSIONES DE CELDAS EN TODAS LAS HOJAS
+ */
 
 foreach ($hojas as $hoja)
 {
@@ -75,10 +247,25 @@ foreach ($hojas as $hoja)
     }
 }
 
+$hoja4->getColumnDimension('A')->setWidth(40);
+$hoja4->getColumnDimension('B')->setWidth(40);
+$hoja4->getColumnDimension('C')->setWidth(40);
+
+/**
+ * MOSTRAR DATOS GENERADOS
+ */
+
+$archivo->setActiveSheetIndex(0);
+
+// $writer = new PhpOffice\PhpSpreadsheet\Writer\Html($archivo);
+// $writer->save('php://output');
+
 $writer = new PhpOffice\PhpSpreadsheet\Writer\Xlsx($archivo);
+$writer->save('php://output');
 
 ob_clean();
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 header('Content-Disposition: attachment; filename="'. urlencode('resultados-ere.xlsx') .'"');
 $writer->save('php://output');
+
 ?>
