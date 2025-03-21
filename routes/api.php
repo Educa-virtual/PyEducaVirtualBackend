@@ -177,12 +177,12 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('obtenerCredencialesSede', [GestionInstitucionalController::class, 'obtenerCredencialesSede']);
         Route::post('importarDocente_IE', [GestionInstitucionalController::class, 'importarDocente_IE']);
         Route::post('importarAmbiente_IE', [GestionInstitucionalController::class, 'importarAmbiente_IE']);
+        Route::post('generarCredencialesIE', [GestionInstitucionalController::class, 'generarCredencialesIE']);
     });
 
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
-
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
