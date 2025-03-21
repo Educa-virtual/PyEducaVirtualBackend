@@ -39,6 +39,7 @@ use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\FileController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -333,6 +334,8 @@ Route::group(['prefix' => 'acad'], function () {
 
         Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
         Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
+
+        Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);
     });
 
     Route::group(['prefix' => 'matricula'], function () {
