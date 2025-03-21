@@ -8,6 +8,7 @@ use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
 use App\Http\Controllers\ere\PreguntasController;
+use App\Http\Controllers\Ere\ReporteEvaluacionesController;
 use App\Http\Controllers\ere\ResultadosController;
 use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use Illuminate\Support\Facades\Route;
@@ -67,5 +68,13 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante', [ResultadosController::class, 'guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante']);
         Route::post('terminarExamenxiEstudianteId', [ResultadosController::class, 'terminarExamenxiEstudianteId']);
         Route::post('guardarRespuestas', [ResultadosController::class, 'guardarRespuestas']);
+    });
+
+    Route::group(['prefix' => 'reportes'], function () {
+        // Obtener reporte de resultados de evaluaciones
+        Route::post('obtenerEvaluacionesCursosIes', [ReporteEvaluacionesController::class, 'obtenerEvaluacionesCursosIes']);
+        Route::post('obtenerInformeResumen', [ReporteEvaluacionesController::class, 'obtenerInformeResumen']);
+        Route::post('generarPdf', [ReporteEvaluacionesController::class, 'generarPdf']);
+        Route::post('generarExcel', [ReporteEvaluacionesController::class, 'generarExcel']);
     });
 });
