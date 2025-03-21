@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\acad\CursosController;
-use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\SilabosController;

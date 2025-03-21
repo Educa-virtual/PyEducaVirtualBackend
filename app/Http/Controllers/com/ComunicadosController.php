@@ -282,7 +282,7 @@ class ComunicadosController extends Controller
             $iSedeId,
             json_encode($perfil),
         ];
-
+        
         try {
              // Llamada al SP que obtiene los comunicados destino
              $data = DB::select('EXEC com.Sp_SEL_ObtenerComunicadosDestinoPorPersona ?,?,?,?', $solicitud);
