@@ -11,6 +11,7 @@ use App\Http\Controllers\ApiController;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
+use App\Services\Ere\ExtraerBase64;
 use App\Services\ParseSqlErrorService;
 use Hashids\Hashids;
 use Illuminate\Database\QueryException;
@@ -517,6 +518,10 @@ class PreguntasController extends ApiController
         foreach ($fieldsToDecode as $field) {
             $request[$field] = $this->decodeValue($request->$field);
         }
+
+        $request->merge([
+            'cPregunta' => ExtraerBase64::extraer($request->cPregunta, 'preguntas')
+        ]);
 
         return [
             $request->opcion,
