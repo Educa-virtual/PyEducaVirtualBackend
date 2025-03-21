@@ -40,6 +40,8 @@ Route::group(['prefix' => 'ere'], function () {
         //Route::get('exportar-word', [PreguntasController::class, 'exportar-word']);
         Route::patch('actualizarMatrizPreguntas', [PreguntasController::class, 'actualizarMatrizPreguntas']);
         Route::post('handleCrudOperation', [PreguntasController::class, 'handleCrudOperation']);
+        Route::delete('simples', [PreguntasController::class, 'eliminarPreguntaSimple']);
+        Route::delete('multiples', [PreguntasController::class, 'eliminarPreguntaMultiple']);
     });
 
     Route::group(['prefix' => 'encabezado-preguntas'], function () {

@@ -617,6 +617,24 @@ class PreguntasController extends ApiController
         }
     }
 
+    public function eliminarPreguntaSimple(Request $request) {
+        $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        DB::statement('exec [ere].[Sp_DEL_preguntaSimple] @_iPreguntaId=?, @_iEvaluacionId=?', [$request->iPreguntaId, $evaluacionIdDescifrado[0]]);
+        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado la pregunta de la evaluación'], Response::HTTP_OK);
+    }
+
+    public function eliminarPreguntaMultiple(Request $request) {
+        $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        DB::statement('exec [ere].[Sp_DEL_preguntaMultiple] @_iEncabPregId=?, @_iEvaluacionId=?', [$request->iEncabPregId, $evaluacionIdDescifrado[0]]);
+        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado la pregunta múltiple y todas sus preguntas'], Response::HTTP_OK);
+    }
+
     public function handleCrudOperation(Request $request)
     {
         $parametros = $this->validateRequest($request);
