@@ -141,9 +141,11 @@ class ComunicadosController extends Controller
             $request->input('seccion'),                // iSeccionId (pendiente) 18
             $request->input('curso'),                  // iCursoId (pendiente) 19
             $request->input('iSedeId'),                // iSedeId (pendiente) 20
-            $iDocenteId,                               // iDocenteId (pendiente) 21
-            $iEstudianteId,                            // iEstudianteId (pendiente) 22
-            null                                       // iEspecialistaId (pendiente) 23
+            null,                                      // iDocenteId (pendiente) 21
+            null,                                       // iEstudianteId (pendiente) 22
+            null,                                       // iEspecialistaId (pendiente) 23
+            $request->input('iDestinatarioId') 
+            
         ];
 
         $query = 'EXEC com.Sp_INS_comunicados '.str_repeat('?,',count($solicitud)-1).'?';
@@ -207,7 +209,18 @@ class ComunicadosController extends Controller
     }
     public function actualizar(Request $request) {
         $iComunicadoId = $request->input('iComunicadoId');
-    
+        
+        $iDestinatarioId = $request->input('iDestinatarioId');
+        $iTipoPersona = $request->input('iTipoPersona'); // 1 => Estudiante, 2 => Docente
+
+        $iEstudianteId = null;
+        $iDocenteId = null;
+        if ($iTipoPersona == 1) {
+            $iEstudianteId = $iDestinatarioId;
+        } elseif ($iTipoPersona == 2) {
+            $iDocenteId = $iDestinatarioId;
+        }
+
         // Datos para actualizar
         $updateData = [
             'iTipoComId' => $request->input('iTipoComId'),
@@ -218,6 +231,13 @@ class ComunicadosController extends Controller
             'dtComunicadoHasta' => $request->input('dtComunicadoHasta'),
             'bComunicadoArchivado' => $request->input('iEstado'),
             'iYAcadId' => $request->input('iYAcadId'),
+
+            'iGradoId' => $request->input('grado'),      
+            'iSeccionId' => $request->input('seccion'),  
+            'iCursoId' => $request->input('curso'),      
+            'iSedeId' => $request->input('iSedeId'),     
+            'iDocenteId' => $iDocenteId,                 
+            'iEstudianteId' => $iEstudianteId,           
             
         ];
     
