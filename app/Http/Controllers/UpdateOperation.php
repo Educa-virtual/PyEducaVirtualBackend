@@ -33,7 +33,14 @@ class UpdateOperation extends AbstractDatabaseOperation
     }
     protected function getParamsProcedure(): array
     {
-        return $this->getParamsRequest();
+        return array_values(
+            [
+                'esquema' => $this->request->input('esquema'),
+                'tabla' => $this->request->input('tabla'),
+                'campos' => $this->request->input('campos'),
+                'where' => $this->request->input('where'),
+            ]
+        );
     }
 }
 
