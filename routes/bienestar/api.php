@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\bienestar\FichaAlimentacionController;
 use App\Http\Controllers\bienestar\FichaFamiliarController;
 use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaBienestarController;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'bienestar'], function () {
 
     Route::get('searchFichasEstudiantes', [FichaGeneralController::class, 'indexEstudiantes']);
-    Route::get('searchFichas', [FichaBienestarController::class, 'index']);
+    Route::post('searchFichas', [FichaBienestarController::class, 'index']);
     Route::get('createFicha', [FichaBienestarController::class, 'create']);
     Route::delete('deleteFicha', [FichaBienestarController::class, 'delete']);
 
@@ -32,5 +33,9 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('searchFichaRecreacion', [FichaRecreacionController::class, 'show']);
     Route::post('guardarFichaRecreacion', [FichaRecreacionController::class, 'save']);
     Route::post('actualizarFichaRecreacion', [FichaRecreacionController::class, 'update']);
+
+    Route::post('searchFichaAlimentacion', [FichaAlimentacionController::class, 'show']);
+    Route::post('guardarFichaAlimentacion', [FichaAlimentacionController::class, 'save']);
+    Route::post('actualizarFichaAlimentacion', [FichaAlimentacionController::class, 'update']);
 
 });

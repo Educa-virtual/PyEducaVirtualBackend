@@ -46,12 +46,15 @@ class FichaBienestarController extends Controller
     public function index(Request $request)
     {
         $parametros = [
-            $request->iPersId,
+            $request->iCredSesionId,
             $request->iFichaDGId,
+            $request->iPersId,
+            $request->cPersDocumento,
+            $request->cPersNombresApellidos,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichas ?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_SEL_fichas ?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }
