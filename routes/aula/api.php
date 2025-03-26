@@ -15,6 +15,7 @@ use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\aula\ReunionVirtualesController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -118,6 +119,11 @@ Route::group(['prefix' => 'aula-virtual'], function () {
 
         Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
         Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
+    });
+    Route::group(['prefix' => 'reunion-virtuales'], function () {
+        Route::post('guardarReunionVirtuales', [ReunionVirtualesController::class, 'guardarReunionVirtuales']);
+        Route::post('actualizarReunionVirtuales', [ReunionVirtualesController::class, 'actualizarReunionVirtuales']);
+        Route::post('eliminarReunionVirtuales', [ReunionVirtualesController::class, 'eliminarReunionVirtuales']);
     });
 
 });
