@@ -7,6 +7,7 @@ use App\Http\Controllers\ere\EncabezadoPreguntasController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\Ere\NivelLogrosController;
 use App\Http\Controllers\ere\PreguntasController;
 use App\Http\Controllers\Ere\ReporteEvaluacionesController;
 use App\Http\Controllers\ere\ResultadosController;
@@ -24,9 +25,14 @@ Route::group(['prefix' => 'ere'], function () {
             Route::post('archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
             Route::get('archivo-preguntas', [AreasController::class, 'descargarArchivoPreguntas']);
             Route::get('matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
+            Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
+            Route::post('nivel-logros', [NivelLogrosController::class, 'registrarNivelLogroPorCurso']);
         });
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
     });
+
+    Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogros']);
+
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('guardarActualizarAlternativa', [AlternativaPreguntaController::class, 'guardarActualizarAlternativa']);
         Route::get('obtenerAlternativaByPreguntaId/{id}', [AlternativaPreguntaController::class, 'obtenerAlternativaByPreguntaId']);
@@ -77,4 +83,12 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('generarPdf', [ReporteEvaluacionesController::class, 'generarPdf']);
         Route::post('generarExcel', [ReporteEvaluacionesController::class, 'generarExcel']);
     });
+
+    /*Route::group(['prefix' => 'nivel-logros'], function () {
+        Route::get('', [NivelLogrosController::class, 'obtenerNivelLogros']);
+        Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
+            Route::get('cursos/{cursoId}', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
+            Route::post('cursos/{cursoId}', [NivelLogrosController::class, 'registrarNivelLogro']);
+        });
+    });*/
 });
