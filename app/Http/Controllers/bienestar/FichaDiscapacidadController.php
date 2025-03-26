@@ -3,40 +3,31 @@
 namespace App\Http\Controllers\bienestar;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\bienestar\FichaAlimentacionSaveRequest;
 use App\Services\ParseSqlErrorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class FichaAlimentacionController extends Controller
+class FichaDiscapacidadController extends Controller
 {
-    public function save(FichaAlimentacionSaveRequest $request)
+    public function save(Request $request)
     {
         $parametros = [
             $request->iSesionId,
             $request->iFichaDGId,
-            $request->iLugarAlimIdDesayuno,
-            $request->cLugarAlimDesayuno,
-            $request->iLugarAlimIdAlmuerzo,
-            $request->cLugarAlimAlmuerzo,
-            $request->iLugarAlimIdCena,
-            $request->cLugarAlimCena,
-            $request->iProAlimId,
-            $request->cProAlimNombre,
-            $request->bDietaVegetariana,
-            $request->cDietaVegetarianaObs,
-            $request->bDietaVegana,
-            $request->cDietaVeganaObs,
-            $request->bAlergiasAlim,
-            $request->cAlergiasAlimObs,
-            $request->bIntoleranciaAlim,
-            $request->cIntoleranciaAlimObs,
-            $request->bSumplementosAlim,
-            $request->cSumplementosAlimObs,
-            $request->bDificultadAlim,
-            $request->cDificultadAlimObs,
-            $request->cInfoAdicionalAlimObs,
+            $request->bFichaDGEstaEnCONADIS,
+            $request->cCodigoCONADIS,
+            $request->bFichaDGEstaEnOMAPED,
+            $request->cCodigoOMAPED,
+            $request->cOtroProgramaDiscapacidad,
+            $request->bLimFisica,
+            $request->cLimFisicaObs,
+            $request->bLimSensorial,
+            $request->cLimSensorialObs,
+            $request->bLimIntelectual,
+            $request->cLimIntelectualObs,
+            $request->bLimMental,
+            $request->cLimMentalObs,
         ];
 
         try {
