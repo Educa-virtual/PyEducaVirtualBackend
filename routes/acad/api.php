@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\acad\CursosController;
+use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\SilabosController;
@@ -41,5 +42,11 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'cursos'], function () {
         Route::get('', [CursosController::class, 'listarCursosPorNivel']);
+    });
+
+    // Muestra los docentes con sus cursos
+    Route::group(['prefix' => 'docente'], function () {
+        Route::post('docente_curso', [DocenteCursosController::class, 'buscarDocenteCurso']);
+        Route::post('importar_silabos', [DocenteCursosController::class, 'importarSilabos']);    
     });
 });

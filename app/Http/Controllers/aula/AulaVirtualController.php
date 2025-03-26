@@ -150,11 +150,10 @@ class AulaVirtualController extends ApiController
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
         $iSilaboId = $request->iSilaboId;
-        $iSilaboId = $this->hashids->decode($iSilaboId);
-        $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
-
+        // $iSilaboId = $this->hashids->decode($iSilaboId);
+        // $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         $params = [$iSilaboId, $request->perfil];
-
+        
         $contenidos = [];
         try {
             $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?, @_perfil = ?', $params);
