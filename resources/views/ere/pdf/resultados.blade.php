@@ -23,11 +23,15 @@
 
 <header>
     <main class="container-fluid">
-        <table class="table table-bordered table-condensed text-center table-sm py-2">
+        <table class="table table-condensed text-center table-sm py-2 border-bottom">
             <tr>
-                <td width="15%" class="text-left align-middle"><img src="{{ public_path('images/logo-dremo.png') }}" width="100%"></td>
+                <td width="15%" class="text-left align-middle" rowspan="2"><img src="{{ public_path('images/logo-dremo.png') }}" width="100%"></td>
+                <td width="70%" class="text-center align-middle">{{ $filtros->year_oficial }}</td>
+                <td width="10%" rowspan="2"></td>
+                <td width="5%" class="text-right align-middle" rowspan="2"><img src="{{ public_path('images/logo-plataforma-virtual.png') }}" width="100%"></td>
+            </tr>
+            <tr>
                 <td width="80%" class="text-center align-middle font-xl">RESULTADOS DE EVALUACIÓN ERE</td>
-                <td width="5%" class="text-right align-middle"><img src="{{ public_path('images/logo-plataforma-virtual.png') }}" width="100%"></td>
             </tr>
         </table>
     </main>
@@ -36,8 +40,9 @@
 <footer class="container-fluid">
     <table class="table table-borderless table-condensed table-sm py-2">
         <tr>
-            <td width="80%" class="text-left font-weight-bold">IMPRESO EL {{ date('d/m/Y') }} A LAS {{ date('h:i') }}</td>
             <td width="20%" class="text-right font-weight-bold">PÁGINA <span class="paginacion"></span></td>
+            <td width="60%" class="text-center font-weight-bold">AUTOR</td>
+            <td width="20%" class="text-left font-weight-bold">{{ date('d/m/Y') }} A LAS {{ date('h:i') }}</td>
         </tr>
     </table>
 </footer>
