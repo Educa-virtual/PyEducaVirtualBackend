@@ -13,6 +13,8 @@ Route::group(['prefix' => 'com'], function () {
         Route::post('actualizar_comunicado', [ComunicadosController::class, 'actualizar']);
         Route::post('obtener_comunicados_destino', [ComunicadosController::class, 'obtenerComunicadosDestino']);
         Route::post('comunicado_personalizado', [ComunicadosController::class, 'obtenerComunicadoPersonalizado']);
+        Route::post('obtener_institucionesEspecialista', [ComunicadosController::class, 'obtenerInstitucionesEspecialista']);
+        Route::post('obtener_docentes_por_institucion', [ComunicadosController::class, 'obtenerDocentesPorInstitucion']);
 
     });
     Route::group(['prefix' => 'miembros'], function () {

@@ -59,7 +59,9 @@ class ComunicadosController extends Controller
         
         // Obtiene el año académico desde el request
         $year_id = $request->input('year');
-    
+        $iIieeId = $request->input('iIieeId');
+        $iSedeId = $request->input('iSedeId');
+        $iPerfilId = $request->input('iPerfilId');
         // Obtiene el semestre académico basado en el año recibido
         $semestre_acad_id = null;
         $semestre = DB::select('SELECT iSemAcadId FROM acad.semestre_academicos WHERE iYAcadId = ?', [$year_id]);
@@ -70,25 +72,45 @@ class ComunicadosController extends Controller
 
         $iIieeId = $request->input('iIieeId');
         // Llamada al SP que retorna los datos para los dropdown de Curso, Sección y Grado
-        try {
-            $pdo = DB::getPdo();
-            $stmt = $pdo->prepare('EXEC com.Sp_SEL_ObtenerGruposDestino ?, ?');
-            $stmt->execute([$iIieeId, $year_id]);
-            
-            // Primer conjunto: Cursos
-            $cursos = $stmt->fetchAll(\PDO::FETCH_OBJ);
-            // Segundo conjunto: Secciones
-            $stmt->nextRowset();
-            $secciones = $stmt->fetchAll(\PDO::FETCH_OBJ);
-            // Tercer conjunto: Grados
-            $stmt->nextRowset();
-            $grados = $stmt->fetchAll(\PDO::FETCH_OBJ);
-        } catch (Exception $e) {
-            // En caso de error, se asignan arreglos vacíos
-            $cursos = [];
-            $secciones = [];
-            $grados = [];
-        }
+        if ($iPerfilId == 7) {
+            try {
+                $pdo = DB::getPdo();
+                $stmt = $pdo->prepare('EXEC com.Sp_SEL_docentexcursoxgradoxseccion ?, ?, ?, ?');
+                $stmt->execute([$iPersId, $year_id, $iSedeId, $iIieeId]);
+                
+                // Primer conjunto: Cursos
+                $cursos = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Segundo conjunto: Secciones
+                $stmt->nextRowset();
+                $secciones = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Tercer conjunto: Grados
+                $stmt->nextRowset();
+                $grados = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            } catch (Exception $e) {
+                $cursos = [];
+                $secciones = [];
+                $grados = [];
+            }
+        } else {
+            try {
+                $pdo = DB::getPdo();
+                $stmt = $pdo->prepare('EXEC com.Sp_SEL_ObtenerGruposDestino ?, ?');
+                $stmt->execute([$iIieeId, $year_id]);
+                
+                // Primer conjunto: Cursos
+                $cursos = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Segundo conjunto: Secciones
+                $stmt->nextRowset();
+                $secciones = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Tercer conjunto: Grados
+                $stmt->nextRowset();
+                $grados = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            } catch (Exception $e) {
+                $cursos = [];
+                $secciones = [];
+                $grados = [];
+            }
+        }    
 
         // Retorna la respuesta dentro de 'data'
         return response()->json([
@@ -144,9 +166,9 @@ class ComunicadosController extends Controller
             null,                                      // iDocenteId (pendiente) 21
             null,                                       // iEstudianteId (pendiente) 22
             null,                                       // iEspecialistaId (pendiente) 23
-            $request->input('iDestinatarioId') 
-            
-        ];
+            $request->input('iDestinatarioId'),         // IDestinatarioiD 24
+            $request->input('InstitucionId')            // IDestinatarioiD 26
+        ]; 
 
         $query = 'EXEC com.Sp_INS_comunicados '.str_repeat('?,',count($solicitud)-1).'?';
 
@@ -309,5 +331,24 @@ class ComunicadosController extends Controller
             return ResponseHandler::error("Error al obtener comunicados destino", 500, $e->getMessage());
        }
     }
+
+    public function obtenerInstitucionesEspecialista(Request $request){
+        $iPersId = $this->decodeValue($request->input('iPersId'));
+        try {
+            $data = DB::select('EXEC com.Sp_SEL_institucionesEspecialista ?', [$iPersId]);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error al obtener instituciones", 500, $e->getMessage());
+        }
+    }
     
+    public function obtenerDocentesPorInstitucion(Request $request) {
+        $iIieeId = $request->input('iIieeId');
+        try {
+            $data = DB::select('EXEC com.Sp_SEL_docentesPorInstitucion ?', [$iIieeId]);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error al obtener docentes", 500, $e->getMessage());
+        }
+    }
 }
