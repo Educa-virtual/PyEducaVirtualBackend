@@ -2,7 +2,7 @@
 namespace App\Helpers;
 
 use Hashids\Hashids;
-
+use Illuminate\Http\Request;
 class VerifyHash
 {
     protected static $hashids;
@@ -22,6 +22,13 @@ class VerifyHash
             return null;
         }
         return is_numeric($value) ? $value : (self::$hashids->decode($value)[0] ?? null);
+    }
+
+    public static function validateRequest(Request $request, $fieldsToDecode){
+        foreach ($fieldsToDecode as $field) {
+            $request[$field] = VerifyHash::decode($request->$field);
+        }
+        return $request;
     }
     
 }
