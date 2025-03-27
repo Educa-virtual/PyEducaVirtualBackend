@@ -15,5 +15,6 @@ Route::group(['prefix' => 'seguridad'], function () {
 
   Route::group(['prefix' => 'database'], function () {
     Route::post('backups', [DatabaseController::class, 'store']);
+    Route::get('backups', [DatabaseController::class, 'index']);
   });
 });

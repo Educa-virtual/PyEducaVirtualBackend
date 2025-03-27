@@ -577,29 +577,43 @@ class PreguntasController extends ApiController
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
         $request->validate([
-            'iTipoPregId' => 'required|integer',
-            'iPreguntaId' => 'required|integer',
+            'preguntas' => 'required|array',
+            'preguntas.*.iPreguntaId' => 'required|integer',
+            'preguntas.*.cTipoPregDescripcion' => 'required|string'
         ]);
+        DB::beginTransaction();
         try {
-            if ($request->iTipoPregId == 1) {
-                DB::statement('exec ere.SP_INS_preguntaEnEvaluacion @iPreguntaId=?, @iEvaluacionId=?', [$request->iPreguntaId, $evaluacionIdDescifrado[0]]);
-                return response()->json(['status' => 'Success', 'message' => 'Se ha agregado la pregunta a la evaluación.'], Response::HTTP_OK);
-            } else {
-                $preguntas = DB::select('SELECT iPreguntaId FROM ere.preguntas WHERE iEncabPregId=?', [$request->iPreguntaId]);
-                if (empty($preguntas)) {
-                    return response()->json(['status' => 'Error', 'message' => 'No se encontraron preguntas para el encabezado enviado.'], Response::HTTP_BAD_REQUEST);
+
+            foreach ($request->preguntas as $pregunta) {
+                if ($pregunta['cTipoPregDescripcion'] == 'unica') {
+                    DB::statement('exec ere.SP_INS_preguntaEnEvaluacion @iPreguntaId=?, @iEvaluacionId=?', [$pregunta['iPreguntaId'], $evaluacionIdDescifrado[0]]);
+                } else {
+                    $encabezado=DB::selectOne('SELECT iEncabPregId FROM ere.preguntas WHERE iPreguntaId=?', [$pregunta['iPreguntaId']]);
+                    $preguntasDeEncabezado = DB::select('SELECT iPreguntaId FROM ere.preguntas WHERE iEncabPregId=?', [$encabezado->iEncabPregId]);
+                    if (empty($preguntasDeEncabezado)) {
+                        return response()->json(['status' => 'Error', 'message' => 'No se encontraron preguntas para el encabezado enviado.'], Response::HTTP_BAD_REQUEST);
+                    }
+                    foreach ($preguntasDeEncabezado as $preguntaDeEncabezado) {
+                        DB::statement('exec ere.SP_INS_preguntaEnEvaluacion @iPreguntaId=?, @iEvaluacionId=?', [$preguntaDeEncabezado->iPreguntaId, $evaluacionIdDescifrado[0]]);
+                    }
                 }
-                foreach ($preguntas as $pregunta) {
-                    DB::statement('exec ere.SP_INS_preguntaEnEvaluacion @iPreguntaId=?, @iEvaluacionId=?', [$pregunta->iPreguntaId, $evaluacionIdDescifrado[0]]);
-                }
-                return response()->json(['status' => 'Success', 'message' => 'Se han agregado las preguntas a la evaluación.'], Response::HTTP_OK);
             }
-        } catch (Exception $exception) {
+            DB::commit();
+            if (count($request->preguntas) > 1) {
+                return response()->json(['status' => 'Success', 'message' => 'Se han agregado las preguntas a la evaluación.'], Response::HTTP_OK);
+            } else {
+                return response()->json(['status' => 'Success', 'message' => 'Se ha agregado la pregunta a la evaluación.'], Response::HTTP_OK);
+            }
+        } catch (QueryException $exception) {
+            DB::rollBack();
             $parse = new ParseSqlErrorService();
             return response()->json(
                 ['status' => 'Error', 'message' => $parse->parse($exception->getMessage())],
                 Response::HTTP_BAD_REQUEST
             );
+        } catch (Exception $exception) {
+            DB::rollBack();
+            return response()->json(['status' => 'Error', 'message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 
