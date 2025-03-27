@@ -199,10 +199,16 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         $items = $request->items;
         try {
             foreach ($items as $item) {
-                DB::table('ere.iiee_participa_evaluaciones')->insert([
-                    'iIieeId' => $item['iIieeId'],
-                    'iEvaluacionId' => $item['iEvaluacionId'],
-                ]);
+                DB::table('ere.iiee_participa_evaluaciones')->updateOrInsert(
+                    [
+                        'iIieeId' => $item['iIieeId'],
+                        'iEvaluacionId' => $item['iEvaluacionId'],
+                    ],
+                    [
+                        'iIieeId' => $item['iIieeId'],
+                        'iEvaluacionId' => $item['iEvaluacionId'],
+                    ]
+                );
             }
             return response()->json(['status' => 'success', 'message' => 'Datos guardados correctamente']);
         } catch (Exception $e) {
