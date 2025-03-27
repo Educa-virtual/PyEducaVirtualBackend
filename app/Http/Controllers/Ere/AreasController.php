@@ -5,15 +5,21 @@ namespace App\Http\Controllers\ere;
 use App\Http\Controllers\Controller;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\acad\DocentesRepository;
+use App\Repositories\Acad\IeRepository;
+use App\Repositories\ere\AreasRepository as EreAreasRepository;
 use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\grl\PersonasRepository;
 use App\Repositories\grl\YearsRepository;
+use App\Services\ere\AreasService;
+use App\Services\FechaHoraService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use ErrorException;
 use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Http;
@@ -25,6 +31,50 @@ class AreasController extends Controller
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
+
+    public function registrarHorasAreasPorEvaluacionDirectorIe($evaluacionId, $iieeId, $iPersId, Request $request)
+    {
+        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+        $iPersIdDescifrado = $this->hashids->decode($iPersId);
+        if (empty($evaluacionIdDescifrado) || empty($iPersIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        if (IeRepository::directorPerteneceIe($evaluacionIdDescifrado[0], $iieeId)) {
+            return response()->json(['status' => 'Error', 'message' => 'El director no pertenece a la Institución educativa ingresada.'], Response::HTTP_BAD_REQUEST);
+        }
+        DB::beginTransaction();
+        $iieeParticipaEval=DB::selectOne("SELECT * FROM ere.iiee_participa_evaluaciones WHERE iIieeId=? AND iEvaluacionId=?",[$iieeId, $evaluacionIdDescifrado[0]]);
+        try {
+            //Es mas rapido eliminar que verificar que existe y actualizar, o registrar, o eliminar si las horas estan vacias
+            IeRepository::eliminarHorasExamen($iieeParticipaEval->iIeeParticipaId);
+            foreach ($request->formulario as $fila) {
+
+                if ($fila['horaInicio'] != null && $fila['horaFin'] != null) {
+                    if (FechaHoraService::fechaInicioEsMayorFechaFin($fila['horaInicio'], $fila['horaFin'])) {
+                        throw new Exception('La hora de inicio no puede ser mayor a la hora de fin.');
+                    }
+                    $horaInicio = FechaHoraService::convertirFechaUtcEnHoraLocal($fila['horaInicio']);
+                    $horaFin = FechaHoraService::convertirFechaUtcEnHoraLocal($fila['horaFin']);
+                    AreasRepository::registrarHorasAreasPorEvaluacionIe($fila, $horaInicio, $horaFin);
+                }
+            }
+            DB::commit();
+            return response()->json(['status' => 'Success', 'message' => 'Se han registrado las horas ingresadas'], Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return response()->json(['status' => 'Error', 'message' => $ex->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function obtenerHorasAreasPorEvaluacionDirectorIe($evaluacionId, $iieeId, $iPersId)
+    {
+        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+        $iPersIdDescifrado = $this->hashids->decode($iPersId);
+        if (empty($evaluacionIdDescifrado) || empty($iPersIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        $resultado = AreasRepository::obtenerHorasAreasPorEvaluacionIe($evaluacionIdDescifrado[0], $iieeId);
+        return response()->json(['status' => 'Success', 'message' => 'Se obtuvo la información', 'data' => $resultado], Response::HTTP_OK);
     }
 
     public function guardarArchivoPdf($evaluacionId, $areaId, Request $request)
@@ -79,13 +129,13 @@ class AreasController extends Controller
 
     private function descargarArchivoPreguntasWord($evaluacion, $area)
     {
-        $url = env('APP_ASPNET_URL')."/api/ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/archivo-preguntas";
+        $url = env('APP_ASPNET_URL') . "/api/ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/archivo-preguntas";
 
         $response = Http::withOptions([
             'stream' => true,
             'timeout' => 360,
             'connect_timeout' => 360,
-            ])->get($url);
+        ])->get($url);
         if ($response->failed()) {
             abort(404, 'Archivo no encontrado.');
         }
