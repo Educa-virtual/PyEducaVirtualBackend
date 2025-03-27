@@ -112,7 +112,7 @@ class EvaluacionController extends Controller
                 case 'CONSULTARxiEvaluacionId':
                 case 'CONSULTAR-ESTADOxiEvaluacionId':
                 case 'CONSULTAR-PREGUNTAS-ESTUDIANTExiEvaluacionIdxiCursoNivelGradId':
-                case 'CONSULTAR-ESTADO-ULTIMO-ACTIVO':
+                case 'CONSULTAR-ESTADO-ULTIMO-ACTIVOxiIieeId':
                     $data = DB::select('exec ere.Sp_SEL_evaluacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
                     return new JsonResponse(
@@ -150,15 +150,17 @@ class EvaluacionController extends Controller
             $fieldsToDecode = [
                 'iEstudianteId',
                 'iEvaluacionId',
-                'iYAcadId'
+                'iYAcadId',
+                'iIieeId'
             ];
             $parametro = $this->validateRequest($request, $fieldsToDecode, false);
             $parametros = [
                 $parametro->iEstudianteId              ??  NULL,
                 $parametro->iEvaluacionId              ??  NULL,
-                $parametro->iYAcadId      ??  NULL
+                $parametro->iYAcadId                   ??  NULL,
+                $parametro->iIieeId                    ??  NULL
             ];
-            $data = DB::select('exec ere.SP_SEL_EstudianteEvaluacion ?,?,?', $parametros);
+            $data = DB::select('exec ere.SP_SEL_EstudianteEvaluacion ?,?,?,?', $parametros);
             $data = $this->encodeId($data);
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
@@ -219,6 +221,34 @@ class EvaluacionController extends Controller
                 $parametro->iIieeId                    ??  NULL
             ];
             $data = DB::select('exec ere.SP_SEL_verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId ?,?,?', $parametros);
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
+                200
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                500
+            );
+        }
+    }
+
+    public function obtenerEvaluacionxiEvaluacionIdxiCursoNivelGradIdxiIieeId(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iCursoNivelGradId',
+                'iIieeId',
+            ];
+            $parametro = $this->validateRequest($request, $fieldsToDecode, false);
+            $parametros = [
+                $parametro->iEvaluacionId              ??  NULL,
+                $parametro->iCursoNivelGradId          ??  NULL,
+                $parametro->iIieeId                    ??  NULL
+            ];
+            $data = DB::select('exec ere.SP_SEL_obtenerEvaluacionxiEvaluacionIdxiCursoNivelGradIdxiIieeId ?,?,?', $parametros);
+            $data = $this->encodeId($data);
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
