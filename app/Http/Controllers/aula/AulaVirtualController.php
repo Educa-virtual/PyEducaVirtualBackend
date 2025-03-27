@@ -509,32 +509,25 @@ class AulaVirtualController extends ApiController
             $iForoId = $this->hashids->decode($iForoId);
             $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
 
-            $foro = null;
+            // return $iForoId;
+            $params = [
+                $iForoId
+            ];
             try {
-                $params = [
-                    'iForoId' => $iForoId
-                ];
-                $resp = ProgramacionActividadesRepository::obtenerActividadForo($params);
+                
+                $data =  DB::select('exec aula.SP_SEL_Foro ?', $params);
 
-                if (count($resp) === 0) {
-                    return $this->errorResponse(null, 'La evaluación no existe');
-                }
-                $foro = $resp[0];
-            } catch (Throwable $e) {
-                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
-                return $this->errorResponse(null, $message);
+                $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+                $estado = 200;
+
+            return $response;
+            }
+            catch (\Exception $e) {
+                $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+                $estado = 500;
             }
 
-            try {
-                $preguntas = BancoRepository::obtenerPreguntas(['iEvalucionId' => $iForoId]);
-
-                $foro->preguntas = $preguntas;
-            } catch (Throwable $e) {
-                $message = $this->handleAndLogError($e, 'Error al obtener los datos');
-                return $this->errorResponse(null, $message);
-            }
-
-            return $this->successResponse($foro, 'Datos obtenidos correctamente');
+            return $this->successResponse($response, $estado, 'Datos obtenidos correctamente');
         }
     }
     public function obtenerRespuestaForo(Request $request)

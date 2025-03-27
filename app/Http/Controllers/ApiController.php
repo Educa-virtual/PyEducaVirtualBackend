@@ -33,24 +33,24 @@ class ApiController extends Controller
     public function getData(Request $request)
     {
 
-        return (new SelectOperation())->handleRequest($request, $this->strategy);
+        return (new SelectOperation($request))->handleRequest($request, $this->strategy);
     }
 
     public function insertData(Request $request)
     {
-        return (new InsertOperation())->handleRequest($request, $this->strategy);
+        return (new InsertOperation($request))->handleRequest($request, $this->strategy);
     }
 
     public function updateData(Request $request)
     {
-        return (new UpdateOperation())->handleRequest($request, $this->strategy);
+        return (new UpdateOperation($request))->handleRequest($request, $this->strategy);
     }
 
     public function deleteData(Request $request)
     {
-        return (new DeleteOperation())->handleRequest($request, $this->strategy);
+        return (new DeleteOperation($request))->handleRequest($request, $this->strategy);
     }
-    public function execProcedure(Request $request, $procedure, $params){
-        return (new ExecProcedure($procedure, $params))->handleRequest($request, $this->strategy);
+    public function execProcedure(Request $request, $procedure, $paramsRequest, $paramsProcedure){
+        return (new ExecProcedure($procedure, $paramsRequest, $paramsProcedure))->handleRequest($request, $this->strategy);
     }
 }

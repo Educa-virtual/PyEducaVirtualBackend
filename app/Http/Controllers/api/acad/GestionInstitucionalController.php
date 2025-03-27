@@ -2,20 +2,29 @@
 
 namespace App\Http\Controllers\api\acad;
 
-use App\Http\Controllers\Controller;
 use DateTime;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
-use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Options;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+use App\Services\ConsultarDocumentoIdentidadService;
 use Carbon\Carbon; // Agrega esta línea para importar Carbon
 
 class GestionInstitucionalController extends Controller
 {
-    
+    private $consultarDocumentoIdentidadService;
+
+    public function __construct()
+    {
+        $this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
+
+    }
     // no tocar
     public function listarPersonalIes(Request $request)
     {
@@ -394,10 +403,11 @@ class GestionInstitucionalController extends Controller
      public function obtenerCredencialesSede(Request $request)
      {                
          $solicitud = [
-             $request->iSedeId]; //INT,
-            
+             $request->iSedeId, //INT,
+             $request->option]; //INT,
+
          //41789603
-         $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?", $solicitud);
+         $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?,?", $solicitud);
  
          try {
              $response = [
@@ -419,7 +429,7 @@ class GestionInstitucionalController extends Controller
          return new JsonResponse($response, $estado);
      }
 
-     public function importarDocente_IE(Request $request)
+    public function importarDocente_IE(Request $request)
     {
         $json   = $request->data;
         $iSedeId = $request->iSedeId;
@@ -447,6 +457,11 @@ class GestionInstitucionalController extends Controller
             $cPersMaterno    = isset($item["cPersMaterno"])    ? trim($item["cPersMaterno"]) : null;
             $cPersNombre     = isset($item["cPersNombre"])     ? trim($item["cPersNombre"]) : null;
             $cPersSexo       = isset($item["cPersSexo"])       ? trim($item["cPersSexo"]) : null;
+
+            IF($cTipoIdentId  === 'DNI'){
+                $servicio = $this->consultarDocumentoIdentidadService->buscar($request->iTipoIdentId, $request->cPersDocumento);
+            }
+           
 
             // Convertir la fecha usando Carbon, si se proporciona
             if (isset($item["dPersNacimiento"]) && !empty($item["dPersNacimiento"])) {
@@ -507,8 +522,221 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }
 
+    public function importarAmbiente_IE(Request $request)
+    {
+        $json   = $request->data;
+        $iSedeId = $request->iSedeId;
+        $iYAcadId = $request->iYAcadId;
+        $iNivelTipoId = $request->iNivelTipoId;
+        
+        // Variables para almacenar resultados
+        $procesados = [];
+        $observados = [];
+
+
+
+        foreach ($json as $item) {
+
+            // Convertir y formatear los valores del JSON
+            
+            $TipoAmbienteId     = isset($item["TipoAmbienteId"])       ? trim($item["TipoAmbienteId"]) : null;
+            $EstadoAmbId        = isset($item["EstadoAmbId"])       ? trim($item["EstadoAmbId"]) : null;
+            $UbicaAmbId         = isset($item["UbicaAmbId"])       ? trim($item["UbicaAmbId"]) : null;
+            $UsoAmbId           = isset($item["iUsoAmbId"])       ? trim($item["iUsoAmbId"]) : null; 
+            $PisoAmbid          = isset($item["PisoAmbid"])       ? trim($item["PisoAmbid"]) : null;
+            $AmbienteEstado     = isset($item["AmbienteEstado"])       ? trim($item["AmbienteEstado"]) : null;
+            $Turno              = isset($item["Turno"])       ? trim($item["Turno"]) : null;
+            $Modalidad          = isset($item["Modalidad"])       ? trim($item["Modalidad"]) : null;
+            $dni_tutor          = isset($item["dni_tutor"])       ? trim($item["dni_tutor"]) : null;
+            $Grado              = isset($item["Grado"])       ? trim($item["Grado"]) : null;
+            $Seccion            = isset($item["Seccion"])       ? trim($item["Seccion"]) : null;
+            $AmbienteNombre     = $item["AmbienteNombre"];
+            $AmbienteArea       = isset($item["AmbienteArea"])       ? trim($item["AmbienteArea"]) : null;
+            $AmbienteAforo      = isset($item["AmbienteAforo"])       ? trim($item["AmbienteAforo"]) : null;
+            $AmbienteObs        = isset($item["AmbienteObs"])       ? trim($item["AmbienteObs"]) : null;
+
+            $msg = new ConsoleOutput();
+            $msg->writeln("EXEC acad.SP_INS_ImportarAmbientesIE " . implode(",", [
+               "'" . $TipoAmbienteId . "'",
+               "'" . $EstadoAmbId . "'",  
+               "'" . $UbicaAmbId . "'",         
+               "'" . $UsoAmbId . "'",           
+               "'" . $PisoAmbid . "'",          
+               "'" . $AmbienteEstado . "'",     
+               "'" . $Turno . "'",             
+               "'" . $Modalidad . "'",         
+               "'" . $dni_tutor . "'",          
+               "'" . $Grado . "'",              
+               "'" . $Seccion . "'",            
+               "'" . $AmbienteNombre . "'",    
+               "'" . $AmbienteArea . "'",       
+               "'" . $AmbienteAforo . "'",     
+               "'" . $AmbienteObs . "'",
+                
+               "'" . $iSedeId . "'",
+               "'" . $iYAcadId . "'",
+               "'" . $iNivelTipoId . "'"
+            ]));
+
+            try {
+                // Ejecutar el procedimiento almacenado pasando los parámetros en un array
+                $query = DB::select("EXEC acad.SP_INS_ImportarAmbientesIE ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", [
+                    $TipoAmbienteId,
+                    $EstadoAmbId,  
+                    $UbicaAmbId,         
+                    $UsoAmbId,           
+                    $PisoAmbid,          
+                    $AmbienteEstado,     
+                    $Turno,             
+                    $Modalidad,         
+                    $dni_tutor,          
+                    $Grado,              
+                    $Seccion,            
+                    $AmbienteNombre,    
+                    $AmbienteArea,       
+                    $AmbienteAforo,     
+                    $AmbienteObs,
+                    
+                    $iSedeId,
+                    $iYAcadId,
+                    $iNivelTipoId
+                ]);
+
+                // Si la ejecución es exitosa, se guarda en 'procesados'
+                $procesados[] = [
+                    'validated' => true,
+                    'message'   => 'Se obtuvo la información',
+                    'data'      => $query,
+                    'item'      => $item
+                ];
+            } catch (Exception $e) {
+                // Si ocurre algún error, se guarda en 'observados'
+                $observados[] = [
+                    'validated' => false,
+                    'message'   => $e->getMessage(),
+                    'data'      => [], // Se puede enviar cualquier dato adicional
+                    'item'      => $item
+                ];
+            }
+        }
+
+        // Construir la respuesta combinada
+        $response = [
+            'procesados' => $procesados,
+            'observados' => $observados,
+        ];
+
+        // Determinar el código de estado: si hay algún error, se asigna 500; de lo contrario, 201
+        $estado = (count($observados) > 0) ? 500 : 201;
+        
+        return new JsonResponse($response, $estado);
+    }  
       
-      
+
+    public function generarCredencialesIE(Request $request)
+    {
+        $json     = $request->data;
+        $iSedeId  = $request->iSedeId;
+        $iYAcadId = $request->iYAcadId;
+
+        $procesados = [];
+        $observados = [];
+
+        // Obtener todos los iPersId existentes en una sola consulta
+        $idsExistentes = DB::table('acad.personal_ies')
+            ->where('iSedeId', $iSedeId)
+            ->where('iYAcadId', $iYAcadId)
+            ->pluck('iPersId')
+            ->toArray();
+
+        // Función auxiliar para registrar credenciales
+        $registrarCredencial = function ($iPersId, $iCredSesionId, $iSedeId, $iPerfilId) {
+            return DB::select("EXEC seg.Sp_INS_credenciales_IE ?,?,?,?,?", [
+                10, $iPersId, $iCredSesionId, $iSedeId, $iPerfilId
+            ]);
+        };
+
+        $perfilMapping = [
+            1 => 4,    // DIRECTOR
+            3 => 7,    // DOCENTE
+            5 => 100,  // ASISTENCIA SOCIAL
+            6 => 9     // AUXILIAR ASISTENCIA
+        ];
+
+        foreach ($json as $item) {
+            if (empty($item["condicion"])) {
+                $observados[] = ['validated' => false, 'message' => 'Falta la condición.', 'item' => $item];
+                continue;
+            }
+
+            $condicion = $item["condicion"];
+
+            try {
+                if ($condicion === 'add_personal_ie') {
+                    if (empty($item["iPersId"]) || empty($item["iPersCargoId"]) || empty($item["iCredSesionId"])) {
+                        $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
+                        continue;
+                    }
+
+                    $iPersId = $item["iPersId"];
+                    $iCredSesionId = $item["iCredSesionId"];
+                    $iPersCargoId = $item["iPersCargoId"];
+                    $iHorasLabora = $item["iHorasLabora"] ?? 0;
+                    $iPerfilId = $perfilMapping[$iPersCargoId] ?? 0;
+
+                    if (in_array($iPersId, $idsExistentes)) {
+                        if ($iPerfilId > 0) {
+                            $query = $registrarCredencial($iPersId, $iCredSesionId, $iSedeId, $iPerfilId);
+                            $procesados[] = ['validated' => true, 'message' => 'Credencial generada para personal existente.', 'data' => $query, 'item' => $item];
+                        }
+                        continue;
+                    }
+
+                    $id = DB::table('acad.personal_ies')->insertGetId([
+                        'iPersId'      => $iPersId,
+                        'iPersCargoId' => $iPersCargoId,
+                        'iHorasLabora' => $iHorasLabora,
+                        'iYAcadId'     => $iYAcadId,
+                        'iSedeId'      => $iSedeId
+                    ]);
+
+                    if ($id && $iPerfilId > 0) {
+                        $query = $registrarCredencial($iPersId, $iCredSesionId, $iSedeId, $iPerfilId);
+                        $procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado y credencial generada.', 'data' => $query, 'item' => $item];
+                    } else {
+                        $procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado sin credencial.', 'item' => $item];
+                    }
+                }
+
+                if ($condicion === 'add_credencial_ie') {
+                    if (empty($item["iPersId"]) || empty($item["iCredSesionId"]) || empty($item["iPerfilId"])) {
+                        $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
+                        continue;
+                    }
+
+                    $iPersId = $item["iPersId"];
+                    $iCredSesionId = $item["iCredSesionId"];
+                    $iPerfilId = $item["iPerfilId"];
+
+                    if (in_array($iPersId, $idsExistentes)) {
+                        $observados[] = ['validated' => false, 'message' => 'Ya existe credencial y perfil asignado para usuario.', 'item' => $item];
+                        continue;
+                    }
+
+                    $query = $registrarCredencial($iPersId, $iCredSesionId, $iSedeId, $iPerfilId);
+                    $procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado y credencial generada.', 'data' => $query, 'item' => $item];
+                }
+            } catch (QueryException $e) {
+                $observados[] = ['validated' => false, 'message' => 'Error en base de datos: ' . $e->getMessage(), 'item' => $item];
+            }
+        }
+
+        $response = ['procesados' => $procesados, 'observados' => $observados];
+        $estado = count($observados) > 0 ? 500 : 201;
+
+        return new JsonResponse($response, $estado);
+    }
+
 }
 
 

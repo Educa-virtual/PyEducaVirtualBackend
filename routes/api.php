@@ -39,6 +39,7 @@ use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\FileController;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -171,13 +172,13 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('obtenerInformacionEstudianteDNI', [GestionInstitucionalController::class, 'obtenerInformacionEstudianteDNI']);
         Route::post('obtenerCredencialesSede', [GestionInstitucionalController::class, 'obtenerCredencialesSede']);
         Route::post('importarDocente_IE', [GestionInstitucionalController::class, 'importarDocente_IE']);
-  
+        Route::post('importarAmbiente_IE', [GestionInstitucionalController::class, 'importarAmbiente_IE']);
+        Route::post('generarCredencialesIE', [GestionInstitucionalController::class, 'generarCredencialesIE']);
     });
 
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
-
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
@@ -329,6 +330,8 @@ Route::group(['prefix' => 'acad'], function () {
 
         Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
         Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
+
+        Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);
     });
 
     Route::group(['prefix' => 'matricula'], function () {
