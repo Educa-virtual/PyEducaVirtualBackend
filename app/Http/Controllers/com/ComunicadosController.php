@@ -130,44 +130,33 @@ class ComunicadosController extends Controller
 
         $iPersId = $this->decodeValue($request->input('iPersId'));
         $listaGrupos = $request->input('listaGrupos');
-        
-        $iDestinatarioId = $request->input('iDestinatarioId');
-        $iTipoPersona = $request->input('iTipoPersona'); // 1 => Estudiante, 2 => Docente
-    
-        $iEstudianteId = null;
-        $iDocenteId = null;
-        if ($iTipoPersona == 1) {
-            $iEstudianteId = $iDestinatarioId;
-        } elseif ($iTipoPersona == 2) {
-            $iDocenteId = $iDestinatarioId;
-        }
 
         $solicitud = [
             $iPersId,                                  // ID de la persona 1
-            $request->input('iTipoComId'),             // Tipo de comunicado 2 
-            $request->input('iPrioridadId'),           // Prioridad 3
-            $request->input('cComunicadoTitulo'),      // Título 4 
-            $request->input('cComunicadoDescripcion'), // Descripción 5
-            $request->input('dtComunicadoEmision'),    // Fecha de emisión 6
-            $request->input('dtComunicadoHasta'),      // Fecha de caducidad 7
+            $request->iTipoComId,             // Tipo de comunicado 2 
+            $request->iPrioridadId,           // Prioridad 3
+            $request->cComunicadoTitulo,      // Título 4 
+            $request->cComunicadoDescripcion, // Descripción 5
+            $request->dtComunicadoEmision,    // Fecha de emisión 6
+            $request->dtComunicadoHasta,      // Fecha de caducidad 7
             null,                                      // URL (pendiente) 8 
-            $request->input('iEstado'),                // Estado (bComunicadoArchivado) 9
+            $request->iEstado,                // Estado (bComunicadoArchivado) 9
             null,                                      // bComunicadoUgeles (pendiente) 10
             null,                                      // bComunicadoIes (pendiente)  11
             null,                                      // bComunicadoPerfil (pendiente) 12
             null,                                      // iActTipoId (pendiente) 13
             null,                                      // iUgelId 14
-            $request->input('grado'),                  // iGradoId (pendiente) 15
-            $request->input('iSemAcadId'),             // iSemAcadId (pendiente) 16
-            $request->input('iYAcadId'),               // Año académico 17
-            $request->input('seccion'),                // iSeccionId (pendiente) 18
-            $request->input('curso'),                  // iCursoId (pendiente) 19
-            $request->input('iSedeId'),                // iSedeId (pendiente) 20
+            $request->grado,                  // iGradoId (pendiente) 15
+            $request->iSemAcadId,             // iSemAcadId (pendiente) 16
+            $request->iYAcadId,               // Año académico 17
+            $request->seccion,                // iSeccionId (pendiente) 18
+            $request->curso,                  // iCursoId (pendiente) 19
+            $request->iSedeId,                // iSedeId (pendiente) 20
             null,                                      // iDocenteId (pendiente) 21
             null,                                       // iEstudianteId (pendiente) 22
             null,                                       // iEspecialistaId (pendiente) 23
-            $request->input('iDestinatarioId'),         // IDestinatarioiD 24
-            $request->input('InstitucionId')            // IDestinatarioiD 26
+            $request->iDestinatarioId,         // IDestinatarioiD 24
+            $request->InstitucionId            // IDestinatarioiD 26
         ]; 
 
         $query = 'EXEC com.Sp_INS_comunicados '.str_repeat('?,',count($solicitud)-1).'?';
