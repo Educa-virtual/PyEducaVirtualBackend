@@ -14,7 +14,7 @@ class ReporteEvaluacionesController extends Controller
     public function obtenerEvaluacionesCursosIes(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
+            $request->iCredEntPerfId,
             $request->iYAcadId,
             $request->iEvaluacionId,
             $request->iCursoNivelGradoId,
@@ -31,7 +31,8 @@ class ReporteEvaluacionesController extends Controller
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
             $codeResponse = 500;
         }
 
@@ -54,6 +55,7 @@ class ReporteEvaluacionesController extends Controller
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
+            $request->iCredEntPerfId
         ];
 
         try {
@@ -61,7 +63,8 @@ class ReporteEvaluacionesController extends Controller
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
             $codeResponse = 500;
         }
 
@@ -84,6 +87,7 @@ class ReporteEvaluacionesController extends Controller
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
+            $request->iCredEntPerfId
         ];
 
         try {
@@ -91,7 +95,8 @@ class ReporteEvaluacionesController extends Controller
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
             $codeResponse = 500;
             return response()->json($response, $codeResponse);
         }
@@ -129,6 +134,7 @@ class ReporteEvaluacionesController extends Controller
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
+            $request->iCredEntPerfId
         ];
 
         try {
@@ -136,7 +142,8 @@ class ReporteEvaluacionesController extends Controller
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
             $codeResponse = 500;
             return response()->json($response, $codeResponse);
         }
