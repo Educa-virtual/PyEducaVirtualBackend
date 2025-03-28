@@ -229,14 +229,9 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
 
         return response()->json(['message' => 'Participaciones eliminadas exitosamente']);
     }
+
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
-        // $iSesionId = $this->hashids->decode($request->iSesionId);
-        // if (!empty($iSesionId) && is_array($iSesionId)) {
-        //     $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
-        // }
-        // return $request->all();
-        // Validar solo los campos opcionales
         $request->validate([
             'idTipoEvalId' => 'nullable|integer',
             'iNivelEvalId' => 'nullable|integer',
@@ -249,7 +244,6 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
 
         ]);
 
-        // Preparar los valores para la llamada al procedimiento
         $params = [
             'iEvaluacionId' => $iEvaluacionId,
             'idTipoEvalId' => $request->input('idTipoEvalId', null),
@@ -275,6 +269,51 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
             @dtEvaluacionFechaFin = :dtEvaluacionFechaFin', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
+
+    /*public function actualizarEvaluacion(Request $request, $iEvaluacionId)
+    {
+        // $iSesionId = $this->hashids->decode($request->iSesionId);
+        // if (!empty($iSesionId) && is_array($iSesionId)) {
+        //     $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        // }
+        // return $request->all();
+        // Validar solo los campos opcionales
+        $request->validate([
+            'idTipoEvalId' => 'nullable|integer',
+            'iNivelEvalId' => 'nullable|integer',
+            'dtEvaluacionCreacion' => 'nullable|string',
+            'cEvaluacionNombre' => 'nullable|string|max:255',
+            'cEvaluacionDescripcion' => 'nullable|string|max:255',
+            'cEvaluacionUrlDrive' => 'nullable|string|max:255',
+            'dtEvaluacionFechaInicio' => 'string',
+            'dtEvaluacionFechaFin' => 'string',
+
+        ]);
+        $fechaInicio = Carbon::createFromFormat('d/m/Y',$request->input('dtEvaluacionFechaInicio'));
+        $fechaFin = Carbon::createFromFormat('d/m/Y',$request->input('dtEvaluacionFechaFin'));
+        //Procedimiento ere.SP_UPD_evaluaciones no en uso porque esta con errores
+        DB::statement("UPDATE ere.evaluacion
+        SET
+        idTipoEvalId = COALESCE(?, idTipoEvalId),
+        iNivelEvalId = COALESCE(?, iNivelEvalId),
+        cEvaluacionNombre = COALESCE(?, cEvaluacionNombre),
+        cEvaluacionDescripcion = COALESCE(?, cEvaluacionDescripcion),
+        cEvaluacionUrlDrive = COALESCE(?, cEvaluacionUrlDrive),
+				dtEvaluacionFechaInicio = ?,dtEvaluacionFechaFin = ?,
+
+        dtActualizado = GETDATE()
+    WHERE iEvaluacionId = ?;", [
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+            $request->cEvaluacionNombre,
+            $request->cEvaluacionDescripcion,
+            $request->cEvaluacionUrlDrive,
+            $fechaInicio->format('Y-m-d'),
+            $fechaFin->format('Y-m-d'),
+            $iEvaluacionId
+        ]);
+        return response()->json(['message' => 'Evaluación actualizada exitosamente']);
+    }*/
 
     public function obtenerParticipaciones($iEvaluacionId)
     {
@@ -996,7 +1035,8 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         $parametros = [
             $request->iEvaluacionId,
             $request->iCursoNivelGradId,
-            $request->dtExamenFechaInicio          ??  NULL,
+            $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->setTimezone(env('APP_TIMEZONE'))->format('Y-m-d'),
+            //$request->dtExamenFechaInicio          ??  NULL,
             $request->iExamenCantidadPreguntas     ??  NULL
         ];
 
