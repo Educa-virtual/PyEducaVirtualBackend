@@ -23,7 +23,7 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('searchFichaFamiliares', [FichaFamiliarController::class, 'index']);
     Route::post('guardarFichaFamiliar', [FichaFamiliarController::class, 'save']);
     Route::post('searchFichaFamiliar', [FichaFamiliarController::class, 'show']);
-    Route::post('guardarFichaFamiliar', [FichaFamiliarController::class, 'update']);
+    Route::post('actualizarFichaFamiliar', [FichaFamiliarController::class, 'update']);
     Route::post('borrarFichaFamiliar', [FichaFamiliarController::class, 'delete']);
 
     Route::post('searchFichaVivienda', [FichaViviendaController::class, 'show']);
