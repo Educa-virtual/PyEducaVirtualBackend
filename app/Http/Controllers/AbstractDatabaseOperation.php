@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\DataReturnStrategy;
-use App\Helpers\ResponseHandler;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use App\Helpers\ResponseHandler;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Contracts\DataReturnStrategy;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
@@ -23,7 +23,7 @@ abstract class AbstractDatabaseOperation
     protected function hasValidRequest(Request|array $request): bool
     {
         // Obtener los parámetros esperados (asegurar que sea un array)
-        $params_expected = $this->getParams() ?? [];
+        $params_expected = $this->getParamsRequest() ?? [];
     
         // Obtener los parámetros recibidos dependiendo del tipo de `$request`
         $params_received = $request instanceof Request
@@ -43,22 +43,29 @@ abstract class AbstractDatabaseOperation
     /**
      * Ejecuta una consulta con parámetros y un procedimiento almacenado.
      */
-    protected function executeQuery(array $params, string $procedure)
+    protected function executeQuery()
     {
+        $procedure = $this->getProcedureName();
 
-        $params = array_filter($params); // Filtrar valores nulos
+
+        $params = array_filter($this->getParamsProcedure()); // Filtrar valores nulos
+        
         $placeholders = implode(',', array_fill(0, count($params), '?'));
+
+        $msg = new ConsoleOutput();
+        $msg->writeln("EXEC $procedure $placeholders " . implode(", ", $params));
+
         return collect(DB::select("EXEC $procedure $placeholders", $params));
     }
 
     /**
      * Método para procesar múltiples esquemas/tablas.
      */
-    protected function processMultipleRequests(Request $request, array $queries, string $procedure)
+    protected function processMultipleRequests(Request $request, array $queries)
     {
         $results = collect();
 
-        $params = $this->getParams();
+        $params = $this->getParamsRequest();
 
         foreach ($queries as $query) {
 
@@ -70,7 +77,7 @@ abstract class AbstractDatabaseOperation
 
             $queryParams = array_values(Arr::only($query, $params));
 
-            $result = $this->executeQuery($queryParams, $procedure);
+            $result = $this->executeQuery();
 
             $results->push($result);
         }
@@ -85,16 +92,11 @@ abstract class AbstractDatabaseOperation
     {
         try {
 
-            $procedure = $this->getProcedureName();
 
-            // Obtener parámetros de la solicitud
-            $queryParams = $this->extractQueryParams($request);
 
             if ($this->hasValidRequest($request)) {
 
-
-
-                $query = $this->executeQuery($queryParams, $procedure);
+                $query = $this->executeQuery();
 
                 return $strategy->handle($query);
             }
@@ -103,7 +105,7 @@ abstract class AbstractDatabaseOperation
 
             // Manejo de solicitudes múltiples
             $queries = $request->all();
-            $results = $this->processMultipleRequests($request, $queries, $procedure);
+            $results = $this->processMultipleRequests($request, $queries);
             // $results = $this->handleMultipleRequests($request, $procedure);
             return $strategy->handle($results);
         } catch (Exception $e) {
@@ -116,7 +118,7 @@ abstract class AbstractDatabaseOperation
      */
     private function extractQueryParams(Request $request): array
     {
-        $params = $this->getParams();
+        $params = $this->getParamsRequest();
         return array_values($request->only($params));
     }
 
@@ -134,5 +136,9 @@ abstract class AbstractDatabaseOperation
      */
     abstract protected function getProcedureName(): string;
 
-    abstract protected function getParams(): array;
+    abstract protected function getParamsRequest(): array;
+
+    abstract protected function getParamsProcedure(): array;
+
+    abstract protected function getRequest(): Request;
 }

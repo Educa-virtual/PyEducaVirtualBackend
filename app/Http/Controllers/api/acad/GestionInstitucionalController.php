@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\api\acad;
 
-use App\Http\Controllers\Controller;
 use DateTime;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
-use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Options;
-use Carbon\Carbon; // Agrega esta línea para importar Carbon
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
+
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 use App\Services\ConsultarDocumentoIdentidadService;
+use Carbon\Carbon; // Agrega esta línea para importar Carbon
 
 class GestionInstitucionalController extends Controller
 {
@@ -540,14 +541,16 @@ class GestionInstitucionalController extends Controller
         $procesados = [];
         $observados = [];
 
+
+
         foreach ($json as $item) {
 
             // Convertir y formatear los valores del JSON
             
             $TipoAmbienteId     = isset($item["TipoAmbienteId"])       ? trim($item["TipoAmbienteId"]) : null;
             $EstadoAmbId        = isset($item["EstadoAmbId"])       ? trim($item["EstadoAmbId"]) : null;
-            $UbicaAmbId         = isset($item["UbicaAmbId "])       ? trim($item["UbicaAmbId "]) : null;
-            $UsoAmbId           = isset($item["iUsoAmbId "])       ? trim($item["iUsoAmbId "]) : null; 
+            $UbicaAmbId         = isset($item["UbicaAmbId"])       ? trim($item["UbicaAmbId"]) : null;
+            $UsoAmbId           = isset($item["iUsoAmbId"])       ? trim($item["iUsoAmbId"]) : null; 
             $PisoAmbid          = isset($item["PisoAmbid"])       ? trim($item["PisoAmbid"]) : null;
             $AmbienteEstado     = isset($item["AmbienteEstado"])       ? trim($item["AmbienteEstado"]) : null;
             $Turno              = isset($item["Turno"])       ? trim($item["Turno"]) : null;
@@ -559,6 +562,29 @@ class GestionInstitucionalController extends Controller
             $AmbienteArea       = isset($item["AmbienteArea"])       ? trim($item["AmbienteArea"]) : null;
             $AmbienteAforo      = isset($item["AmbienteAforo"])       ? trim($item["AmbienteAforo"]) : null;
             $AmbienteObs        = isset($item["AmbienteObs"])       ? trim($item["AmbienteObs"]) : null;
+
+            $msg = new ConsoleOutput();
+            $msg->writeln("EXEC acad.SP_INS_ImportarAmbientesIE " . implode(",", [
+               "'" . $TipoAmbienteId . "'",
+               "'" . $EstadoAmbId . "'",  
+               "'" . $UbicaAmbId . "'",         
+               "'" . $UsoAmbId . "'",           
+               "'" . $PisoAmbid . "'",          
+               "'" . $AmbienteEstado . "'",     
+               "'" . $Turno . "'",             
+               "'" . $Modalidad . "'",         
+               "'" . $dni_tutor . "'",          
+               "'" . $Grado . "'",              
+               "'" . $Seccion . "'",            
+               "'" . $AmbienteNombre . "'",    
+               "'" . $AmbienteArea . "'",       
+               "'" . $AmbienteAforo . "'",     
+               "'" . $AmbienteObs . "'",
+                
+               "'" . $iSedeId . "'",
+               "'" . $iYAcadId . "'",
+               "'" . $iNivelTipoId . "'"
+            ]));
 
             try {
                 // Ejecutar el procedimiento almacenado pasando los parámetros en un array
