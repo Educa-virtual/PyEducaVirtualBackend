@@ -199,10 +199,16 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         $items = $request->items;
         try {
             foreach ($items as $item) {
-                DB::table('ere.iiee_participa_evaluaciones')->insert([
-                    'iIieeId' => $item['iIieeId'],
-                    'iEvaluacionId' => $item['iEvaluacionId'],
-                ]);
+                DB::table('ere.iiee_participa_evaluaciones')->updateOrInsert(
+                    [
+                        'iIieeId' => $item['iIieeId'],
+                        'iEvaluacionId' => $item['iEvaluacionId'],
+                    ],
+                    [
+                        'iIieeId' => $item['iIieeId'],
+                        'iEvaluacionId' => $item['iEvaluacionId'],
+                    ]
+                );
             }
             return response()->json(['status' => 'success', 'message' => 'Datos guardados correctamente']);
         } catch (Exception $e) {
@@ -223,14 +229,9 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
 
         return response()->json(['message' => 'Participaciones eliminadas exitosamente']);
     }
+
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
-        // $iSesionId = $this->hashids->decode($request->iSesionId);
-        // if (!empty($iSesionId) && is_array($iSesionId)) {
-        //     $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
-        // }
-        // return $request->all();
-        // Validar solo los campos opcionales
         $request->validate([
             'idTipoEvalId' => 'nullable|integer',
             'iNivelEvalId' => 'nullable|integer',
@@ -243,7 +244,6 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
 
         ]);
 
-        // Preparar los valores para la llamada al procedimiento
         $params = [
             'iEvaluacionId' => $iEvaluacionId,
             'idTipoEvalId' => $request->input('idTipoEvalId', null),
@@ -269,6 +269,51 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
             @dtEvaluacionFechaFin = :dtEvaluacionFechaFin', $params);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
     }
+
+    /*public function actualizarEvaluacion(Request $request, $iEvaluacionId)
+    {
+        // $iSesionId = $this->hashids->decode($request->iSesionId);
+        // if (!empty($iSesionId) && is_array($iSesionId)) {
+        //     $iSesionId = $iSesionId[0]; // Asegúrate de acceder al primer valor del array decodificado
+        // }
+        // return $request->all();
+        // Validar solo los campos opcionales
+        $request->validate([
+            'idTipoEvalId' => 'nullable|integer',
+            'iNivelEvalId' => 'nullable|integer',
+            'dtEvaluacionCreacion' => 'nullable|string',
+            'cEvaluacionNombre' => 'nullable|string|max:255',
+            'cEvaluacionDescripcion' => 'nullable|string|max:255',
+            'cEvaluacionUrlDrive' => 'nullable|string|max:255',
+            'dtEvaluacionFechaInicio' => 'string',
+            'dtEvaluacionFechaFin' => 'string',
+
+        ]);
+        $fechaInicio = Carbon::createFromFormat('d/m/Y',$request->input('dtEvaluacionFechaInicio'));
+        $fechaFin = Carbon::createFromFormat('d/m/Y',$request->input('dtEvaluacionFechaFin'));
+        //Procedimiento ere.SP_UPD_evaluaciones no en uso porque esta con errores
+        DB::statement("UPDATE ere.evaluacion
+        SET
+        idTipoEvalId = COALESCE(?, idTipoEvalId),
+        iNivelEvalId = COALESCE(?, iNivelEvalId),
+        cEvaluacionNombre = COALESCE(?, cEvaluacionNombre),
+        cEvaluacionDescripcion = COALESCE(?, cEvaluacionDescripcion),
+        cEvaluacionUrlDrive = COALESCE(?, cEvaluacionUrlDrive),
+				dtEvaluacionFechaInicio = ?,dtEvaluacionFechaFin = ?,
+
+        dtActualizado = GETDATE()
+    WHERE iEvaluacionId = ?;", [
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+            $request->cEvaluacionNombre,
+            $request->cEvaluacionDescripcion,
+            $request->cEvaluacionUrlDrive,
+            $fechaInicio->format('Y-m-d'),
+            $fechaFin->format('Y-m-d'),
+            $iEvaluacionId
+        ]);
+        return response()->json(['message' => 'Evaluación actualizada exitosamente']);
+    }*/
 
     public function obtenerParticipaciones($iEvaluacionId)
     {
@@ -990,7 +1035,8 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         $parametros = [
             $request->iEvaluacionId,
             $request->iCursoNivelGradId,
-            $request->dtExamenFechaInicio          ??  NULL,
+            $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->setTimezone(env('APP_TIMEZONE'))->format('Y-m-d'),
+            //$request->dtExamenFechaInicio          ??  NULL,
             $request->iExamenCantidadPreguntas     ??  NULL
         ];
 
@@ -1006,56 +1052,6 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
             }
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
-        }
-
-        return response()->json($response, $codeResponse);
-    }
-
-    public function obtenerEvaluacionesCursosIes(Request $request)
-    {
-        $parametros = [
-            $request->iSesionId,
-            $request->iYAcadId,
-            $request->iEvaluacionId,
-            $request->iCursoNivelGradoId,
-            $request->iIieeId,
-            $request->iDsttId,
-            $request->iUgelId,
-            $request->iNivelTipoId,
-            $request->iNivelGradoId,
-            $request->iSeccionId,
-        ];
-
-        try {
-            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesCursosIeGradosSecciones ?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
-            $codeResponse = 500;
-        }
-
-        return response()->json($response, $codeResponse);
-    }
-
-    public function obtenerInformeResumen(Request $request)
-    {
-        $parametros = [
-            $request->iYAcadId,
-            $request->iEvaluacionId,
-            $request->iCursoId,
-            $request->iNivelTipoId,
-            $request->iNivelGradoId,
-            $request->iSeccionId
-        ];
-
-        try {
-            $data = DB::select('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'mensaje' => $e->getMessage()];
             $codeResponse = 500;
         }
 

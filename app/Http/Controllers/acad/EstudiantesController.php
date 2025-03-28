@@ -320,6 +320,7 @@ class EstudiantesController extends Controller
             $datos_hoja['modalidad'],
             $datos_hoja['turno'],
             json_encode($datos_hoja['estudiantes']),
+            $datos_hoja['codigo_modular'],
         ];
 
         if( count($datos_hoja['estudiantes']) === 0 ) {
@@ -327,7 +328,7 @@ class EstudiantesController extends Controller
         }
 
         try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantesMatriculasMasivo ?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC acad.Sp_INS_estudiantesMatriculasMasivo ?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
