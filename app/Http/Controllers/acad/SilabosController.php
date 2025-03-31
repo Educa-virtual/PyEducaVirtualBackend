@@ -142,8 +142,6 @@ class SilabosController extends Controller
         );
         
         $formato = $query[0];
-        
-        
 
         $respuesta = [
             "query" => $formato,

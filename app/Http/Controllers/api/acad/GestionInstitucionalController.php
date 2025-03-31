@@ -758,6 +758,16 @@ class GestionInstitucionalController extends Controller
                     $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
                 }
             }
+            if ($condicion === 'add_credencial') {
+                
+                if (is_null($iPersId) || is_null($iCredId) ) {
+                    $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
+                } else {
+                  
+                    $data = DB::select('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
+                    $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
+                }
+            }
         } catch (\Exception $e) {
             $observados[] = ['validated' => false, 'message' => 'Error en base de datos: ' . $e->getMessage(), 'item' => $item];
         }
