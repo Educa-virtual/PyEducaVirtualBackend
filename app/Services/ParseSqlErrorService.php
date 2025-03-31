@@ -18,7 +18,7 @@ class ParseSqlErrorService
         Input: texto verboso del error emitido por SQL Server
         Output: Mensaje de error sin texto verboso
     */
-    public function parse($error_message)
+    public static function parse($error_message)
     {
         // Ubicar última instancia de ] en mensaje
         $pos_inicio = strripos($error_message, ']') + 1;
