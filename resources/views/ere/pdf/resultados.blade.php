@@ -40,9 +40,9 @@
 <footer class="container-fluid">
     <table class="table table-borderless table-condensed table-sm py-2">
         <tr>
-            <td width="20%" class="text-right font-weight-bold">PÁGINA <span class="paginacion"></span></td>
-            <td width="60%" class="text-center font-weight-bold">AUTOR</td>
-            <td width="20%" class="text-left font-weight-bold">{{ date('d/m/Y') }} A LAS {{ date('h:i') }}</td>
+            <td width="20%" class="text-left"></td>
+            <td width="60%" class="text-center">IMPRESO POR {{ $filtros->autor }}</td>
+            <td width="20%" class="text-right">IMPRESO EL {{ date('d/m/Y') }} A LAS {{ date('h:i') }}</td>
         </tr>
     </table>
 </footer>
@@ -76,8 +76,8 @@
             @endisset
         </tr>
         <tr>
-            <th class="align-middle bg-light text-left" width="8%">GRADO:</th>
-            <td class="align-middle text-left">{{ $filtros->grado }}</td>
+            <th class="align-middle bg-light text-left" width="8%">NIVEL/GRADO:</th>
+            <td class="align-middle text-left">{{ $filtros->nivel }} - {{ $filtros->grado }}</td>
             @isset( $filtros->seccion )
                 <th class="align-middle bg-light text-left" width="8%">SECCION:</th>
                 <td class="align-middle text-left">{{ $filtros->seccion }}</td>
@@ -147,10 +147,10 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ( $niveles as $nivel => $cantidad )
+        @foreach ( $niveles as $nivel )
             <tr>
-                <td class="align-middle text-left">{{ $nivel }}</td>
-                <td class="align-middle text-center">{{ $cantidad }}</td>
+                <td class="align-middle text-left">{{ $nivel->nivel_logro }}</td>
+                <td class="align-middle text-center">{{ $nivel->cantidad }}</td>
             </tr>
         @endforeach
     </tbody>
@@ -227,5 +227,14 @@
 </table>
 
 </main>
+
+<script type="text/php">
+    if ( isset($pdf) ) {
+        $pdf->page_script('
+            $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif", "bold");
+            $pdf->text(57, 560, "PÁGINA $PAGE_NUM DE $PAGE_COUNT", $font, 7);
+        ');
+    }
+</script>
 
 @endsection
