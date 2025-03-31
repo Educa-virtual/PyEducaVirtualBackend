@@ -34,7 +34,9 @@ ec.dtExamenFechaFin, c.cCursoNombre, g.cGradoAbreviacion, g.cGradoNombre, nt.cNi
  INNER JOIN acad.nivel_tipos nt ON nc.iNivelTipoId = nt.iNivelTipoId
  INNER JOIN ere.iiee_participa_evaluaciones AS iepe ON iepe.iEvaluacionId=ec.iEvaluacionId
  LEFT JOIN ere.iiee_cursos_examen AS iece ON iepe.iIeeParticipaId=iece.iIeeParticipaId AND iece.iExamCurId=ec.iExamCurId
- WHERE ec.iEvaluacionId = ? AND iepe.iIieeId = ?", [$evaluacionId, $iieeId]);
+ WHERE ec.iEvaluacionId = ? AND iepe.iIieeId = ?
+ ORDER BY cGradoAbreviacion, cCursoNombre
+", [$evaluacionId, $iieeId]);
     }
 
     public static function eliminarHorasAreasPorEvaluacionIe($iIeeParticipaId) {
