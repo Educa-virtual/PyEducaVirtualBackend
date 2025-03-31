@@ -28,6 +28,10 @@ Route::group(['prefix' => 'ere'], function () {
             Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
             Route::post('nivel-logros', [NivelLogrosController::class, 'registrarNivelLogroPorCurso']);
         });
+        Route::group(['prefix' => 'instituciones-educativas/{iieeId}/directores/{iPersId}'], function () {
+            Route::get('areas/horas', [AreasController::class, 'obtenerHorasAreasPorEvaluacionDirectorIe']);
+            Route::post('areas/horas', [AreasController::class, 'registrarHorasAreasPorEvaluacionDirectorIe']);
+        });
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
     });
 
@@ -63,6 +67,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('obtenerEstudianteAreasEvaluacion', [EvaluacionController::class, 'obtenerEstudianteAreasEvaluacion']);
         Route::post('ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId', [EvaluacionController::class, 'ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId']);
         Route::post('verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId', [EvaluacionController::class, 'verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId']);
+        Route::post('obtenerEvaluacionxiEvaluacionIdxiCursoNivelGradIdxiIieeId', [EvaluacionController::class, 'obtenerEvaluacionxiEvaluacionIdxiCursoNivelGradIdxiIieeId']);
     });
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('handleCrudOperation', [AlternativasController::class, 'handleCrudOperation']);

@@ -60,7 +60,7 @@
 
     <div class="hojas">
         <div class="titulo">
-            <h4>SILABO DE UNIDAD DIDÁCTICA</h4>
+            <h4>SILABO DE ÁREA CURRICULAR</h4>
         </div>
         <h5>I. INFORMACIÓN GENERAL</h5>
         <table>
@@ -77,7 +77,7 @@
                 <th>{{$query->cTipoCursoNombre ?? '-'}}</th>
             </tr>
             <tr>
-                <th>UNIDAD DIDÁCTICA</th>
+                <th>ÁREA CURRICULAR</th>
                 <th>{{$query->cCursoNombre ?? '-'}}</th>
             </tr>
             <tr>
@@ -116,15 +116,15 @@
             </tr>
         </table>
         <table>
-            <caption>III. DESCRIPCIÓN DE UNIDAD DIDÁCTICA</caption>
+            <caption>III. DESCRIPCIÓN DE ÁREA CURRICULAR</caption>
             <tr>
-                <td>{{$query->cSilaboDescripcionCurso ?? '-'}}</td>
+                <td>{{strip_tags($query->cSilaboDescripcionCurso) ?? '-'}}</td>
             </tr>
         </table>
         <table>
             <caption>IV. CAPACIDAD</caption>
             <tr>
-                <td>{{$query->cSilaboCapacidad ?? '-'}}</td>
+                <td>{{strip_tags($query->cSilaboCapacidad) ?? '-'}}</td>
             </tr>
         </table>
     </div>
@@ -195,7 +195,6 @@
         <h5>VII. CRONOGRAMA - DESARROLLO DE APRENDIZAJE</h5>
         <table>
             <tr>
-                <th>NRO ACTIVIDAD</th>
                 <th>SEM.</th>
                 <th>INDICADOR</th>
                 <th>CONTENIDO BÁSICOS</th>
@@ -207,7 +206,6 @@
                             @if (!empty($indi->contenidos))
                                 @foreach($indi->contenidos AS $con)
                                 <tr>
-                                    <td>{{$list->cSilaboActAprendNumero ?? '-'}}</td>
                                     <td>{{$indi->cIndActNumero ?? '-'}}</td>
                                     <td>{{$con->cContenidoSemNumero ?? '-'}}</td>
                                     <td>{{$con->cContenidoSemTitulo ?? '-'}}</td>
@@ -231,7 +229,6 @@
                 <tr>
                     <th>SEMANA</th>
                     <th>INDICADOR DE LOGRO</th>
-                    <th>INDICADOR</th>
                 </tr>
                 @if (!empty($query->actividad))
                     @foreach(json_decode($query->actividad) as $list)
@@ -247,7 +244,6 @@
                         <tr>
                             <td>{{$list->iSilaboActAprendSemanaEval ?? '-'}}</td>
                             <td>{{$list->cSilaboActIndLogro ?? '-'}}</td>
-                            <td>{{intval($list->cSilaboActAprendNumero) ?? '-'}}</td>
                         </tr>
                     @endforeach
                 @else
