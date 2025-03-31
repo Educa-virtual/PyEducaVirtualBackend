@@ -297,6 +297,11 @@ class ComunicadosController extends Controller
         try {
              // Llamada al SP que obtiene los comunicados destino
              $data = DB::select('EXEC com.Sp_SEL_ObtenerComunicadosDestinoPorPersona ?,?,?,?', $solicitud);
+             if(!is_null($data)){
+                foreach($data as &$lista){
+                    $lista->cComunicadoDescripcion=strip_tags($lista->cComunicadoDescripcion);
+                }    
+            }
              return ResponseHandler::success($data);
         } catch (Exception $e) {
              return ResponseHandler::error("Error al obtener comunicados destino", 500, $e->getMessage());
