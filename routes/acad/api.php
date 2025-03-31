@@ -43,4 +43,10 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'cursos'], function () {
         Route::get('', [CursosController::class, 'listarCursosPorNivel']);
     });
+
+    // Muestra los docentes con sus cursos
+    Route::group(['prefix' => 'docente'], function () {
+        Route::post('docente_curso', [DocenteCursosController::class, 'buscarDocenteCurso']);
+        Route::post('importar_silabos', [DocenteCursosController::class, 'importarSilabos']);    
+    });
 });

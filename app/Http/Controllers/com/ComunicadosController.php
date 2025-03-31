@@ -59,7 +59,9 @@ class ComunicadosController extends Controller
         
         // Obtiene el año académico desde el request
         $year_id = $request->input('year');
-    
+        $iIieeId = $request->input('iIieeId');
+        $iSedeId = $request->input('iSedeId');
+        $iPerfilId = $request->input('iPerfilId');
         // Obtiene el semestre académico basado en el año recibido
         $semestre_acad_id = null;
         $semestre = DB::select('SELECT iSemAcadId FROM acad.semestre_academicos WHERE iYAcadId = ?', [$year_id]);
@@ -70,25 +72,45 @@ class ComunicadosController extends Controller
 
         $iIieeId = $request->input('iIieeId');
         // Llamada al SP que retorna los datos para los dropdown de Curso, Sección y Grado
-        try {
-            $pdo = DB::getPdo();
-            $stmt = $pdo->prepare('EXEC com.Sp_SEL_ObtenerGruposDestino ?, ?');
-            $stmt->execute([$iIieeId, $year_id]);
-            
-            // Primer conjunto: Cursos
-            $cursos = $stmt->fetchAll(\PDO::FETCH_OBJ);
-            // Segundo conjunto: Secciones
-            $stmt->nextRowset();
-            $secciones = $stmt->fetchAll(\PDO::FETCH_OBJ);
-            // Tercer conjunto: Grados
-            $stmt->nextRowset();
-            $grados = $stmt->fetchAll(\PDO::FETCH_OBJ);
-        } catch (Exception $e) {
-            // En caso de error, se asignan arreglos vacíos
-            $cursos = [];
-            $secciones = [];
-            $grados = [];
-        }
+        if ($iPerfilId == 7) {
+            try {
+                $pdo = DB::getPdo();
+                $stmt = $pdo->prepare('EXEC com.Sp_SEL_docentexcursoxgradoxseccion ?, ?, ?, ?');
+                $stmt->execute([$iPersId, $year_id, $iSedeId, $iIieeId]);
+                
+                // Primer conjunto: Cursos
+                $cursos = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Segundo conjunto: Secciones
+                $stmt->nextRowset();
+                $secciones = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Tercer conjunto: Grados
+                $stmt->nextRowset();
+                $grados = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            } catch (Exception $e) {
+                $cursos = [];
+                $secciones = [];
+                $grados = [];
+            }
+        } else {
+            try {
+                $pdo = DB::getPdo();
+                $stmt = $pdo->prepare('EXEC com.Sp_SEL_ObtenerGruposDestino ?, ?');
+                $stmt->execute([$iIieeId, $year_id]);
+                
+                // Primer conjunto: Cursos
+                $cursos = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Segundo conjunto: Secciones
+                $stmt->nextRowset();
+                $secciones = $stmt->fetchAll(\PDO::FETCH_OBJ);
+                // Tercer conjunto: Grados
+                $stmt->nextRowset();
+                $grados = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            } catch (Exception $e) {
+                $cursos = [];
+                $secciones = [];
+                $grados = [];
+            }
+        }    
 
         // Retorna la respuesta dentro de 'data'
         return response()->json([
@@ -108,43 +130,34 @@ class ComunicadosController extends Controller
 
         $iPersId = $this->decodeValue($request->input('iPersId'));
         $listaGrupos = $request->input('listaGrupos');
-        
-        $iDestinatarioId = $request->input('iDestinatarioId');
-        $iTipoPersona = $request->input('iTipoPersona'); // 1 => Estudiante, 2 => Docente
-    
-        $iEstudianteId = null;
-        $iDocenteId = null;
-        if ($iTipoPersona == 1) {
-            $iEstudianteId = $iDestinatarioId;
-        } elseif ($iTipoPersona == 2) {
-            $iDocenteId = $iDestinatarioId;
-        }
 
         $solicitud = [
             $iPersId,                                  // ID de la persona 1
-            $request->input('iTipoComId'),             // Tipo de comunicado 2 
-            $request->input('iPrioridadId'),           // Prioridad 3
-            $request->input('cComunicadoTitulo'),      // Título 4 
-            $request->input('cComunicadoDescripcion'), // Descripción 5
-            $request->input('dtComunicadoEmision'),    // Fecha de emisión 6
-            $request->input('dtComunicadoHasta'),      // Fecha de caducidad 7
+            $request->iTipoComId,             // Tipo de comunicado 2 
+            $request->iPrioridadId,           // Prioridad 3
+            $request->cComunicadoTitulo,      // Título 4 
+            $request->cComunicadoDescripcion, // Descripción 5
+            $request->dtComunicadoEmision,    // Fecha de emisión 6
+            $request->dtComunicadoHasta,      // Fecha de caducidad 7
             null,                                      // URL (pendiente) 8 
-            $request->input('iEstado'),                // Estado (bComunicadoArchivado) 9
+            $request->iEstado,                // Estado (bComunicadoArchivado) 9
             null,                                      // bComunicadoUgeles (pendiente) 10
             null,                                      // bComunicadoIes (pendiente)  11
             null,                                      // bComunicadoPerfil (pendiente) 12
             null,                                      // iActTipoId (pendiente) 13
             null,                                      // iUgelId 14
-            $request->input('grado'),                  // iGradoId (pendiente) 15
-            $request->input('iSemAcadId'),             // iSemAcadId (pendiente) 16
-            $request->input('iYAcadId'),               // Año académico 17
-            $request->input('seccion'),                // iSeccionId (pendiente) 18
-            $request->input('curso'),                  // iCursoId (pendiente) 19
-            $request->input('iSedeId'),                // iSedeId (pendiente) 20
-            $iDocenteId,                               // iDocenteId (pendiente) 21
-            $iEstudianteId,                            // iEstudianteId (pendiente) 22
-            null                                       // iEspecialistaId (pendiente) 23
-        ];
+            $request->grado,                  // iGradoId (pendiente) 15
+            $request->iSemAcadId,             // iSemAcadId (pendiente) 16
+            $request->iYAcadId,               // Año académico 17
+            $request->seccion,                // iSeccionId (pendiente) 18
+            $request->curso,                  // iCursoId (pendiente) 19
+            $request->iSedeId,                // iSedeId (pendiente) 20
+            null,                                      // iDocenteId (pendiente) 21
+            null,                                       // iEstudianteId (pendiente) 22
+            null,                                       // iEspecialistaId (pendiente) 23
+            $request->iDestinatarioId,         // IDestinatarioiD 24
+            $request->InstitucionId            // IDestinatarioiD 26
+        ]; 
 
         $query = 'EXEC com.Sp_INS_comunicados '.str_repeat('?,',count($solicitud)-1).'?';
 
@@ -207,7 +220,18 @@ class ComunicadosController extends Controller
     }
     public function actualizar(Request $request) {
         $iComunicadoId = $request->input('iComunicadoId');
-    
+        
+        $iDestinatarioId = $request->input('iDestinatarioId');
+        $iTipoPersona = $request->input('iTipoPersona'); // 1 => Estudiante, 2 => Docente
+
+        $iEstudianteId = null;
+        $iDocenteId = null;
+        if ($iTipoPersona == 1) {
+            $iEstudianteId = $iDestinatarioId;
+        } elseif ($iTipoPersona == 2) {
+            $iDocenteId = $iDestinatarioId;
+        }
+
         // Datos para actualizar
         $updateData = [
             'iTipoComId' => $request->input('iTipoComId'),
@@ -218,6 +242,13 @@ class ComunicadosController extends Controller
             'dtComunicadoHasta' => $request->input('dtComunicadoHasta'),
             'bComunicadoArchivado' => $request->input('iEstado'),
             'iYAcadId' => $request->input('iYAcadId'),
+
+            'iGradoId' => $request->input('grado'),      
+            'iSeccionId' => $request->input('seccion'),  
+            'iCursoId' => $request->input('curso'),      
+            'iSedeId' => $request->input('iSedeId'),     
+            'iDocenteId' => $iDocenteId,                 
+            'iEstudianteId' => $iEstudianteId,           
             
         ];
     
@@ -262,7 +293,7 @@ class ComunicadosController extends Controller
             $iSedeId,
             json_encode($perfil),
         ];
-
+        
         try {
              // Llamada al SP que obtiene los comunicados destino
              $data = DB::select('EXEC com.Sp_SEL_ObtenerComunicadosDestinoPorPersona ?,?,?,?', $solicitud);
@@ -289,5 +320,24 @@ class ComunicadosController extends Controller
             return ResponseHandler::error("Error al obtener comunicados destino", 500, $e->getMessage());
        }
     }
+
+    public function obtenerInstitucionesEspecialista(Request $request){
+        $iPersId = $this->decodeValue($request->input('iPersId'));
+        try {
+            $data = DB::select('EXEC com.Sp_SEL_institucionesEspecialista ?', [$iPersId]);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error al obtener instituciones", 500, $e->getMessage());
+        }
+    }
     
+    public function obtenerDocentesPorInstitucion(Request $request) {
+        $iIieeId = $request->input('iIieeId');
+        try {
+            $data = DB::select('EXEC com.Sp_SEL_docentesPorInstitucion ?', [$iIieeId]);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error al obtener docentes", 500, $e->getMessage());
+        }
+    }
 }
