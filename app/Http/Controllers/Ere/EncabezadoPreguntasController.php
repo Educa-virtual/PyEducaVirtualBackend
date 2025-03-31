@@ -106,9 +106,6 @@ class EncabezadoPreguntasController extends Controller
                     break;
                 case 'ACTUALIZARxiEncabPregId':
                     $parametros[5] = ExtraerBase64::extraer($parametros[5], $parametros[2], 'multiple');
-                    $myfile = fopen("D:\\newfile.txt", "w") or die("Unable to open file!");
-                    fwrite($myfile, json_encode($parametros));
-                    fclose($myfile);
                     $data = DB::select('exec ere.Sp_UPD_encabezadoPreguntas ?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEncabPregId > 0) {
                         $request['opcion'] = 'ACTUALIZARxiDesempenoId';
