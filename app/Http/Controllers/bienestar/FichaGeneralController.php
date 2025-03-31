@@ -32,10 +32,12 @@ class FichaGeneralController extends Controller
             $request->bFamiliarPadresVivenJuntos,
             $request->bFichaDGTieneHijos,
             $request->iFichaDGNroHijos,
+            $request->cTipoViaOtro,
+            $request->cReligionOtro,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -69,10 +71,12 @@ class FichaGeneralController extends Controller
             $request->bFamiliarPadresVivenJuntos,
             $request->bFichaDGTieneHijos,
             $request->iFichaDGNroHijos,
+            $request->cTipoViaOtro,
+            $request->cReligionOtro,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -88,10 +92,12 @@ class FichaGeneralController extends Controller
     {
         $parametros = [
             $request->iFichaDGId,
+            $request->iPersId,
+            $request->iYAcadId,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaGeneral ?', $parametros);
+            $data = DB::select('EXEC obe.Sp_SEL_fichaGeneral ?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }

@@ -32,6 +32,8 @@ class FichaGeneralSaveRequest extends FormRequest
             'bFamiliarPadresVivenJuntos' => 'nullable|boolean',
             'bFichaDGTieneHijos' => 'nullable|boolean',
             'iFichaDGNroHijos' => 'nullable|integer',
+            'cTipoViaOtro' => 'nullable|string',
+            'cReligionOtro' => 'nullable|string',
         ];
     }
 
@@ -56,6 +58,8 @@ class FichaGeneralSaveRequest extends FormRequest
             'bFamiliarPadresVivenJuntos' => 'padres viven juntos',
             'bFichaDGTieneHijos' => 'tiene hijos',
             'iFichaDGNroHijos' => 'número de hijos',
+            'cTipoViaOtro' => 'otro tipo de vía',
+            'cReligionOtro' => 'otra religión',
         ];
     }
 }
