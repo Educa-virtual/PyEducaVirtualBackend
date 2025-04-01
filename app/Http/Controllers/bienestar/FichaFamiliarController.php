@@ -111,4 +111,40 @@ class FichaFamiliarController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
+    public function show(Request $request)
+    {
+        $parametros = [
+            $request->iFamiliarId,
+        ];
+
+        try {
+            $data = DB::select('EXEC obe.Sp_SEL_fichaFamiliar ?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function delete(Request $request)
+    {
+        $parametros = [
+            $request->iFamiliarId,
+        ];
+
+        try {
+            $data = DB::select('EXEC obe.Sp_DEL_fichaFamiliar ?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
 }

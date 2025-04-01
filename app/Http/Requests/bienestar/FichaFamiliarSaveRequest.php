@@ -18,7 +18,7 @@ class FichaFamiliarSaveRequest extends FormRequest
             'iFichaDGId' => 'required|integer',
             'iPersId' => 'nullable|integer',
             'iTipoFamiliarId' => 'required|integer',
-            'bFamiliarVivoConEl' => 'required|boolean',
+            'bFamiliarVivoConEl' => 'nullable|boolean',
             'iTipoIdentId' => 'required|integer',
             'cPersDocumento' => 'nullable|string|min:8|max:15',
             'cPersNombre' => 'required|string|max:50',
