@@ -2,17 +2,19 @@
 
 namespace App\Services;
 
+use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 
 class ConsultarDocumentoIdentidadService
 {
 
-    private $token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODE3MiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.p2RZAOErCiVI8_Hdk1hp5ZtDs3n-alc6Vqdbz9oo2tM';
+    private $token;
     private $divirApellidoNombresService;
         
     
     public function __construct()
     {
+        $this->token = env('FACTILIZA_TOKEN');
         $this->divirApellidoNombresService = new DividirApellidoNombresService();
     }
 
@@ -24,6 +26,7 @@ class ConsultarDocumentoIdentidadService
      */
     public function buscar($tipo_documento, $documento)
     {
+
         switch ($tipo_documento) {
             case 1:
                 return $this->buscarDni($documento);
@@ -52,17 +55,33 @@ class ConsultarDocumentoIdentidadService
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api.factiliza.com/v1/dni/info/" . $documento,
+            CURLOPT_URL => "https://api.factiliza.com/v1/dni/info/$documento",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer " . $this->token
+              "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODI5NCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.copUQgWw48hZQHavntG2s0r9phlR4M8UZc0nhSUOhXg"
             ],
-        ]);
+          ]);
+
+      
+
+
+        // curl_setopt_array($curl, [
+        //     CURLOPT_URL => "https://api.factiliza.com/v1/dni/info/" . $documento,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 10,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "GET",
+        //     CURLOPT_HTTPHEADER => [
+        //         "Authorization: Bearer " . $this->token
+        //     ],
+        // ]);
 
         $response = curl_exec($curl);
         $err = curl_error($curl);
@@ -209,6 +228,9 @@ class ConsultarDocumentoIdentidadService
             // No devolver error
         }
 
+        $fecha_nacimiento = DateTimeImmutable::createFromFormat('d/m/Y', trim($respuesta->fecha_nacimiento));
+        $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');;
+
         return [
             'iTipoIdentId' => "1",
             'cPersDocumento' => trim($respuesta->numero) ?: NULL,
@@ -216,7 +238,7 @@ class ConsultarDocumentoIdentidadService
             'cPersMaterno' => trim($respuesta->apellido_materno),
             'cPersNombre' => trim($respuesta->nombres),
             'cPersSexo' => trim($respuesta->sexo) ?: NULL,
-            'dPersNacimiento' => trim($respuesta->fecha_nacimiento) ?: NULL,
+            'dPersNacimiento' => $fecha_nacimiento_formateada,
             'iTipoEstCivId' => trim($respuesta->estado_civil) ?: NULL,
             'iNacionId' => "193",
             'cPersFotografia' => trim($respuesta->foto),

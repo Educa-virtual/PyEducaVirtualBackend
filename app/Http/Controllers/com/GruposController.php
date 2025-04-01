@@ -70,7 +70,6 @@ class GruposController extends Controller
             $iPersId,
         ];
         $query = 'EXEC acad.Sp_SEL_estudianteXdocenteXespecialista '.str_repeat('?,',count($solicitud)-1).'?';
-        $data = DB::select($query, $solicitud);
         try {
             $data = DB::select($query, $solicitud);
             return ResponseHandler::success($data);
@@ -88,7 +87,6 @@ class GruposController extends Controller
         ];
 
         $query = 'EXEC com.Sp_SEL_grupo ?,?';
-        $data = DB::select($query, $solicitud);
         try {
             $data = DB::select($query, $solicitud);
             return ResponseHandler::success($data);
@@ -114,7 +112,6 @@ class GruposController extends Controller
         ];
 
         $query = 'EXEC com.Sp_UPD_grupo '.str_repeat('?,',count($solicitud)-1).'?';
-        $data = DB::select($query, $solicitud);
         try {
             $data = DB::select($query, $solicitud);
             return ResponseHandler::success($data);

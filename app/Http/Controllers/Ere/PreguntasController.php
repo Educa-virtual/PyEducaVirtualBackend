@@ -11,6 +11,7 @@ use App\Http\Controllers\ApiController;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
+use App\Services\Ere\ExtraerBase64;
 use App\Services\ParseSqlErrorService;
 use Hashids\Hashids;
 use Illuminate\Database\QueryException;
@@ -588,7 +589,7 @@ class PreguntasController extends ApiController
                 if ($pregunta['cTipoPregDescripcion'] == 'unica') {
                     DB::statement('exec ere.SP_INS_preguntaEnEvaluacion @iPreguntaId=?, @iEvaluacionId=?', [$pregunta['iPreguntaId'], $evaluacionIdDescifrado[0]]);
                 } else {
-                    $encabezado=DB::selectOne('SELECT iEncabPregId FROM ere.preguntas WHERE iPreguntaId=?', [$pregunta['iPreguntaId']]);
+                    $encabezado = DB::selectOne('SELECT iEncabPregId FROM ere.preguntas WHERE iPreguntaId=?', [$pregunta['iPreguntaId']]);
                     $preguntasDeEncabezado = DB::select('SELECT iPreguntaId FROM ere.preguntas WHERE iEncabPregId=?', [$encabezado->iEncabPregId]);
                     if (empty($preguntasDeEncabezado)) {
                         return response()->json(['status' => 'Error', 'message' => 'No se encontraron preguntas para el encabezado enviado.'], Response::HTTP_BAD_REQUEST);
@@ -617,6 +618,26 @@ class PreguntasController extends ApiController
         }
     }
 
+    public function eliminarPreguntaSimple(Request $request)
+    {
+        $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        DB::statement('exec [ere].[Sp_DEL_preguntaSimple] @_iPreguntaId=?, @_iEvaluacionId=?', [$request->iPreguntaId, $evaluacionIdDescifrado[0]]);
+        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado la pregunta de la evaluación'], Response::HTTP_OK);
+    }
+
+    public function eliminarPreguntaMultiple(Request $request)
+    {
+        $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        DB::statement('exec [ere].[Sp_DEL_preguntaMultiple] @_iEncabPregId=?, @_iEvaluacionId=?', [$request->iEncabPregId, $evaluacionIdDescifrado[0]]);
+        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado la pregunta múltiple y todas sus preguntas'], Response::HTTP_OK);
+    }
+
     public function handleCrudOperation(Request $request)
     {
         $parametros = $this->validateRequest($request);
@@ -638,9 +659,10 @@ class PreguntasController extends ApiController
                     }
                     break;
                 case 'ACTUALIZARxiPreguntaId':
+                    $parametros[5] = ExtraerBase64::extraer($request->cPregunta, $request->iPreguntaId, 'simple');
+                    $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
                     $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iPreguntaId > 0) {
-                        $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
                         $resp = new AlternativasController();
                         return $resp->handleCrudOperation($request);
                     } else {
