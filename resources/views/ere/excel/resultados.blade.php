@@ -47,43 +47,46 @@ $hoja1->setCellValue('A6', 'CURSO:')
 $hoja1->setCellValue('A7', 'GRADO:')
     ->setCellValue('B7', $filtros->grado);
 
+$hoja1->setCellValue('A8', 'NIVEL:')
+    ->setCellValue('B8', $filtros->nivel);
+
 if( isset($filtros->cod_ie) )
-    $hoja1->setCellValue('A8', 'I.E.:')
-        ->setCellValue('B8', $filtros->cod_ie);
+    $hoja1->setCellValue('A9', 'I.E.:')
+        ->setCellValue('B9', $filtros->cod_ie);
 
 if( isset($filtros->distrito) ) {
-    $hoja1->setCellValue('A9', 'DISTRITO:')
-        ->setCellValue('B9', $filtros->distrito);
+    $hoja1->setCellValue('A10', 'DISTRITO:')
+        ->setCellValue('B10', $filtros->distrito);
 }
 
 if( isset($filtros->seccion) ) {
-    $hoja1->setCellValue('A10', 'SECCION:')
-        ->setCellValue('B10', $filtros->seccion);
+    $hoja1->setCellValue('A11', 'SECCION:')
+        ->setCellValue('B11', $filtros->seccion);
 }
 
 if( isset($filtros->sexo) ) {
-    $hoja1->setCellValue('A11', 'SEXO:')
-        ->setCellValue('B11', $filtros->sexo);
+    $hoja1->setCellValue('A12', 'SEXO:')
+        ->setCellValue('B12', $filtros->sexo);
 }
 
 if( isset($filtros->sector) ) {
-    $hoja1->setCellValue('A12', 'SECTOR:')
-        ->setCellValue('B12', $filtros->sector);
+    $hoja1->setCellValue('A13', 'SECTOR:')
+        ->setCellValue('B13', $filtros->sector);
 }
 
 if( isset($filtros->zona) ) {
-    $hoja1->setCellValue('A13', 'ZONA:')
-        ->setCellValue('B13', $filtros->zona);
+    $hoja1->setCellValue('A14', 'ZONA:')
+        ->setCellValue('B14', $filtros->zona);
 }
 
 $hoja1->mergeCells('A16:B16');
 $hoja1->setCellValue('A16', 'NIVELES DE LOGRO');
 
 $fila = 16;
-foreach($niveles as $nivel => $cantidad) {
+foreach($niveles as $nivel) {
     $fila++;
-    $hoja1->setCellValue('A' . $fila, $nivel . ':')
-        ->setCellValue('B' . $fila, $cantidad);
+    $hoja1->setCellValue('A' . $fila, $nivel->nivel_logro . ':')
+        ->setCellValue('B' . $fila, $nivel->cantidad);
 }
 $hoja1->setCellValue('A' . ($fila + 1), 'ESTUDIANTES:')
     ->setCellValue('B' . ($fila + 1), count($resultados));

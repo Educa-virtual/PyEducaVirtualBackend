@@ -161,6 +161,9 @@
         .border {
             border: 1px solid;
         }
+        .border-bottom {
+            border-bottom: 1px solid;
+        }
         .border-dark {
             border-color: black;
         }
