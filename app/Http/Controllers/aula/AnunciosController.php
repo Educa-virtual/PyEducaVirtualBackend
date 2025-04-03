@@ -62,6 +62,7 @@ class AnunciosController extends Controller
     {
         try {
             $fieldsToDecode = [
+                'iAnuncioId',
                 'iCursosNivelGradId',
                 'idDocCursoId',
                 'iCredId',
@@ -80,6 +81,7 @@ class AnunciosController extends Controller
                     @_iCredId=?',
                 $parametros
             );
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK
