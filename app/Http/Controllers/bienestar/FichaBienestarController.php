@@ -99,4 +99,25 @@ class FichaBienestarController extends Controller
         }
         return new JsonResponse($response, $codeResponse);
     }
+
+    public function show(Request $request)
+    {
+        $parametros = [
+            $request->iFichaDGId,
+            $request->iPersId,
+            $request->iYAcadId,
+        ];
+
+        try {
+            $data = DB::select('EXEC obe.Sp_SEL_ficha ?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
 }
