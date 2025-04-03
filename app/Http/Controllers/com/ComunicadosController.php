@@ -221,16 +221,15 @@ class ComunicadosController extends Controller
     public function actualizar(Request $request) {
         $iComunicadoId = $request->input('iComunicadoId');
         
-        $iDestinatarioId = $request->input('iDestinatarioId');
-        $iTipoPersona = $request->input('iTipoPersona'); // 1 => Estudiante, 2 => Docente
-
-        $iEstudianteId = null;
-        $iDocenteId = null;
-        if ($iTipoPersona == 1) {
-            $iEstudianteId = $iDestinatarioId;
-        } elseif ($iTipoPersona == 2) {
-            $iDocenteId = $iDestinatarioId;
-        }
+        // $iDestinatarioId = $request->input('iDestinatarioId');
+        // $iTipoPersona = $request->input('iTipoPersona'); // 1 => Estudiante, 2 => Docente
+        // $iEstudianteId = null;
+        // $iDocenteId = null;
+        // if ($iTipoPersona == 1) {
+        //     $iEstudianteId = $iDestinatarioId;
+        // } elseif ($iTipoPersona == 2) {
+        //     $iDocenteId = $iDestinatarioId;
+        // }
 
         // Datos para actualizar
         $updateData = [
@@ -246,10 +245,9 @@ class ComunicadosController extends Controller
             'iGradoId' => $request->input('grado'),      
             'iSeccionId' => $request->input('seccion'),  
             'iCursoId' => $request->input('curso'),      
-            'iSedeId' => $request->input('iSedeId'),     
-            'iDocenteId' => $iDocenteId,                 
-            'iEstudianteId' => $iEstudianteId,           
-            
+            'iSedeId' => $request->input('iSedeId'),
+            'iDestinatarioId' => $request->input('iDestinatarioId'),
+            'iIieeId' => $request->input('InstitucionId'),
         ];
     
         try {
