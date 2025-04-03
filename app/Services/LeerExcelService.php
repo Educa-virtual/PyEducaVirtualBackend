@@ -11,12 +11,12 @@ class LeerExcelService
         return $this->leer($request);
     }
 
-    /*
-        Leer datos de archivo Excel
-        Input: request
-        Output: array: [hoja => [fila => [columna => valor]]]
+    /**
+     * Leer datos de archivo Excel
+     * @param Request $request
+     * @return array [hoja => [fila => [columna => valor]]]
     */
-    public function leer($request)
+    public static function leer($request)
     {
         $data = [];
 

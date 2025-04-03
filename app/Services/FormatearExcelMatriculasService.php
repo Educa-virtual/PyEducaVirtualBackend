@@ -14,7 +14,18 @@ class FormatearExcelMatriculasService
         return $this->formatear($hojas);
     }
 
-    public function formatear($hojas)
+    /**
+     * Formatear datos de matriculas
+     * @param array $hojas [hoja => [fila => [columna => valor]]]
+     * @return array [
+     *      codigo_modular => valor,
+     *      modalidad => valor,
+     *      nivel => valor,
+     *      turno => valor,
+     *      estudiantes => [...]
+     * ]
+     */
+    public static function formatear($hojas)
     {
         if( count($hojas) == 0 ) {
             return [];
@@ -29,8 +40,18 @@ class FormatearExcelMatriculasService
         $data['turno'] = trim($filas[8]['O']);
 
         // Reemplazar texto a códigos identificadores
-        $sexos = ['Hombre' => 'M', 'Mujer' => 'F'];
-        $tipos_docs = ['01' => 'DNI', '04' => 'CE', '06' => 'RUC', '07' => 'PAS', '00' => 'OT'];
+        $sexos = [
+            'HOMBRE' => 'M',
+            'MUJER' => 'F',
+            'H' => 'M',
+            'F' => 'F',
+            'M' => 'M'
+        ];
+        $tipos_docs = [
+            '01' => 'DNI',
+            '04' => 'CE',
+            '06' => 'RUC',
+            '00' => 'OT'];
 
         foreach($filas as $index_fila => $fila)
         {
@@ -55,7 +76,7 @@ class FormatearExcelMatriculasService
                     'paterno' => $fila['N'],
                     'materno' => $fila['R'],
                     'nombres' => $fila['U'],
-                    'sexo' => $sexos[$fila['X']],
+                    'sexo' => $sexos[strtoupper($fila['X'])],
                     'nacimiento' => Carbon::createFromFormat('d/m/Y', $fila['Y'])->format('Y-m-d'),
                     'estado_matricula' => $fila['AA'],
                     'tipo_vacante' => $fila['AB'],
