@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class AreasController extends Controller
 {
@@ -102,17 +103,12 @@ class AreasController extends Controller
             return response()->json(['status' => 'Error', 'message' => $error[0]], Response::HTTP_UNPROCESSABLE_ENTITY);
         } else {
 
-            $archivo = $request->file('archivo');
-            $nombreArchivo = 'examen.pdf';
-            $rutaDestino = public_path("ere/evaluaciones/$evaluacionId/areas/$areaId");
-            if (!file_exists($rutaDestino)) {
-                mkdir($rutaDestino, 0755, true);
-            }
-            $archivo->move($rutaDestino, $nombreArchivo);
+            AreasService::guardarArchivoErePdf($request, $evaluacionIdDescifrado[0], $areaIdDescifrado[0]);
             return response()->json(['status' => 'Success', 'message' => 'Archivo guardado correctamente.'], Response::HTTP_OK);
         }
     }
 
+    /*
     private function descargarArchivoPreguntasPdf($evaluacion, $area)
     {
         $rutaArchivo = public_path("ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/examen.pdf");
@@ -124,6 +120,20 @@ class AreasController extends Controller
 
         return response()->download($rutaArchivo, $nombreArchivo, [
             'Content-Type' => 'application/pdf'
+        ]);
+    }
+    */
+
+    private function descargarArchivoPreguntasPdf($evaluacion, $area)
+    {
+        try {
+            $data = AreasService::obtenerArchivoErePdf($evaluacion, $area);
+        } catch (Exception $ex) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+        return response($data['contenido'], 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$data['nombreArchivo'].'"'//"attachment; filename=\"$nombreArchivo\"",
         ]);
     }
 
