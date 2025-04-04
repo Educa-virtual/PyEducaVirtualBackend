@@ -25,7 +25,8 @@ class EvaluacionesController extends ApiController
 {
     public function __construct()
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length')); //new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+        $this->middleware('auth:api');
     }
 
     public function obtenerAniosEvaluaciones()
@@ -40,35 +41,6 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
             'data' => $anios
         ]);
     }
-    /*public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
-
-        if (!is_numeric($iEvaluacionId) && !is_numeric($iCursosNivelGradId)) {
-            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
-            $iCursosNivelGradId= $this->hashids->decode($iCursosNivelGradId)[0];
-        } else {
-            return response()->json(['error' => 'Los ID deben estar cifrados'], 400);
-        }
-        $params = [
-            'iEvaluacionId' => $iEvaluacionId,  // ID de la evaluación
-            'iCursosNivelGradId' => $iCursosNivelGradId,  // ID del área (curso o nivel de grado)
-            'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
-            'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
-            'bPreguntaEstado' => 1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
-            'ids' => NULL // ID de las preguntas (si lo necesitas)
-        ];
-
-        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($iEvaluacionId);
-        $area = AreasRepository::obtenerAreaPorId($iCursosNivelGradId);
-        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-
-        if (count($preguntasDB) == 0) {
-            return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 400);
-        }
-
-        $exportador = new ExportarPreguntasPorAreaWordService($evaluacion, $area, $preguntasDB);
-        return $exportador->exportar();
-
-    }*/
 
     public function obtenerEvaluaciones()
     {
