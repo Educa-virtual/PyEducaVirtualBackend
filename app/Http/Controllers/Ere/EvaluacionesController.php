@@ -32,9 +32,9 @@ class EvaluacionesController extends ApiController
     public function obtenerAniosEvaluaciones()
     {
         $anios = DB::select('SELECT DISTINCT(YEAR(dtEvaluacionFechaInicio)) AS anio
-FROM ere.evaluacion
-WHERE dtEvaluacionFechaInicio IS NOT NULL
-ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
+        FROM ere.evaluacion
+        WHERE dtEvaluacionFechaInicio IS NOT NULL
+        ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         return response()->json([
             'status' => 'Error',
             'message' => 'Datos obtenidos',
