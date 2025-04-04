@@ -103,7 +103,7 @@ class AreasController extends Controller
             return response()->json(['status' => 'Error', 'message' => $error[0]], Response::HTTP_UNPROCESSABLE_ENTITY);
         } else {
 
-            AreasService::guardarArchivoErePdf($request, $evaluacionIdDescifrado[0], $areaIdDescifrado[0]);
+            AreasService::guardarArchivoErePdf($request, $evaluacionId, $areaId);
             return response()->json(['status' => 'Success', 'message' => 'Archivo guardado correctamente.'], Response::HTTP_OK);
         }
     }
@@ -139,7 +139,7 @@ class AreasController extends Controller
 
     private function descargarArchivoPreguntasWord($evaluacion, $area)
     {
-        $url = env('APP_ASPNET_URL') . "/api/ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/archivo-preguntas";
+        $url = env('APP_ASPNET_URL') . "/api/ere/evaluaciones/$evaluacion->evaluacionIdHashed/areas/$area->areaIdCifrado/archivo-preguntas";
 
         $response = Http::withOptions([
             'stream' => true,
@@ -178,7 +178,7 @@ class AreasController extends Controller
         if ($area == null) {
             return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
-        $evaluacion->evaluacionidCifrado = $evaluacionId;
+        $evaluacion->evaluacionIdHashed = $evaluacionId;
         $area->areaIdCifrado = $areaId;
         switch ($request->query('tipo')) {
             case 'pdf':

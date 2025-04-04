@@ -14,9 +14,9 @@ class AreasService
         return file_exists(public_path("ere/evaluaciones/$iEvaluacionid/areas/$iCursosNivelGradId/examen.pdf"));
     }*/
 
-    public static function tieneArchivoErePdfSubido($iEvaluacionid, $iCursosNivelGradId)
+    public static function tieneArchivoErePdfSubido($iEvaluacionId, $iCursosNivelGradId)
     {
-        $rutaArchivo = "ere/evaluaciones/$iEvaluacionid/areas/$iCursosNivelGradId/examen.pdf";
+        $rutaArchivo = "ere/evaluaciones/$iEvaluacionId/areas/$iCursosNivelGradId/examen.pdf";
         return Storage::disk('public')->exists($rutaArchivo);
     }
 
@@ -35,7 +35,7 @@ class AreasService
     public static function obtenerArchivoErePdf($evaluacion, $area)
     {
         $fechaInicio = new Carbon($evaluacion->dtEvaluacionFechaInicio);
-        $rutaArchivo = "ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/examen.pdf";
+        $rutaArchivo = "ere/evaluaciones/$evaluacion->evaluacionIdHashed/areas/$area->areaIdCifrado/examen.pdf";
         if (!Storage::disk('public')->exists($rutaArchivo)) {
             throw new Exception('El archivo no existe');
         }
