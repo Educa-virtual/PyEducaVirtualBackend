@@ -21,7 +21,7 @@ class DividirApellidoNombresService
      * @param string $apellidos_nombres Apellidos y nombres combinados
      * @return array Contiene primer apellido, segundo apellido y nombres
      */
-    public function dividir($apellidos_nombres)
+    public static function dividir($apellidos_nombres)
     {
         // Poner todo en mayúsculas
         $apenom = strtoupper($apellidos_nombres);
