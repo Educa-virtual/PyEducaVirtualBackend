@@ -1,0 +1,142 @@
+<?php
+
+namespace App\Http\Controllers\aula;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Helpers\VerifyHash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+
+class ReunionVirtualesController extends Controller
+{
+    public function guardarReunionVirtuales(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iProgActId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $parametros = [
+                $request->cRVirtualTema               ??  NULL,
+                $request->dtRVirtualInicio            ??  NULL,
+                $request->dtRVirtualFin               ??  NULL,
+                $request->cRVirtualUrlJoin            ??  NULL,
+                $request->iProgActId                  ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec aula.SP_INS_reunionVirtuales 
+                    @_cRVirtualTema=?, 
+                    @_dtRVirtualInicio=?, 
+                    @_dtRVirtualFin=?, 
+                    @_cRVirtualUrlJoin=?, 
+                    @_iProgActId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            if ($data[0]->iRVirtualId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido guardar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarReunionVirtuales(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iRVirtualId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $parametros = [
+                $request->iRVirtualId                  ??  NULL,
+                $request->cRVirtualTema               ??  NULL,
+                $request->dtRVirtualInicio            ??  NULL,
+                $request->dtRVirtualFin               ??  NULL,
+                $request->cRVirtualUrlJoin            ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec aula.SP_UPD_reunionVirtuales 
+                    @_iRVirtualId=?, 
+                    @_cRVirtualTema=?, 
+                    @_dtRVirtualInicio=?, 
+                    @_dtRVirtualFin=?, 
+                    @_cRVirtualUrlJoin=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            if ($data[0]->iRVirtualId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido actualizar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+    public function eliminarReunionVirtuales(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iRVirtualId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $parametros = [
+                $request->iRVirtualId                  ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec aula.SP_DEL_reunionVirtuales 
+                    @_iRVirtualId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            if ($data[0]->iRVirtualId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha eliminado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido eliminar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+}
