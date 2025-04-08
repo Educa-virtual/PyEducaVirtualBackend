@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RefreshTokenMiddleware
 {
@@ -20,8 +21,9 @@ class RefreshTokenMiddleware
 
         try {
             if (Auth::guard('api')->check()) {
-                $newToken = Auth::guard('api')->refresh(); // Renovar token
-                $response->headers->set('Authorization', 'Bearer ' . $newToken);
+                $newToken = JWTAuth::refresh(JWTAuth::getToken(), false);//Auth::guard('api')->refresh();
+                $response->headers->set('Access-Control-Expose-Headers', 'Authorization');
+                $response->headers->set('Authorization', $newToken);
             }
         } catch (\Exception $e) {
             // Si el token ya no es válido, se ignora y se deja expirar normalmente

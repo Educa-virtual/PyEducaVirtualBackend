@@ -2,19 +2,28 @@
 
 use App\Http\Controllers\ere\AlternativasController;
 use App\Http\Controllers\ere\AreasController;
+use App\Http\Controllers\ere\CapacidadesController;
+use App\Http\Controllers\ere\CompetenciasController;
+use App\Http\Controllers\ere\cursoController;
 use App\Http\Controllers\ere\DesempenosController;
 use App\Http\Controllers\ere\EncabezadoPreguntasController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\ere\InstitucionesEducativasController;
+use App\Http\Controllers\ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\NivelLogrosController;
+use App\Http\Controllers\ere\NivelTipoController;
 use App\Http\Controllers\ere\PreguntasController;
 use App\Http\Controllers\Ere\ReporteEvaluacionesController;
 use App\Http\Controllers\ere\ResultadosController;
+use App\Http\Controllers\ere\TipoEvaluacionController;
+use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
+use App\Http\Middleware\RefreshTokenMiddleware;
 use Illuminate\Support\Facades\Route;
-
-Route::group(['prefix' => 'ere'], function () {
+//$this->middleware('auth:api');
+Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshTokenMiddleware::class]], function () {
     Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
@@ -87,6 +96,104 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('obtenerInformeResumen', [ReporteEvaluacionesController::class, 'obtenerInformeResumen']);
         Route::post('generarPdf', [ReporteEvaluacionesController::class, 'generarPdf']);
         Route::post('generarExcel', [ReporteEvaluacionesController::class, 'generarExcel']);
+    });
+
+    Route::group(['prefix' => 'ie'], function () {
+        Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
+    });
+    Route::group(['prefix' => 'nivelTipo'], function () {
+        Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);
+    });
+
+    Route::group(['prefix' => 'tipoEvaluacion'], function () {
+        Route::get('obtenerTipoEvaluacion', [TipoEvaluacionController::class, 'obtenerTipoEvaluacion']);
+    });
+
+    Route::group(['prefix' => 'nivelEvaluacion'], function () {
+        Route::get('obtenerNivelEvaluacion', [NivelEvaluacionController::class, 'obtenerNivelEvaluacion']);
+    });
+
+    Route::group(['prefix' => 'competencias'], function () {
+        Route::get('obtenerCompetencias', [CompetenciasController::class, 'obtenerCompetencias']);
+    });
+
+    Route::group(['prefix' => 'capacidades'], function () {
+        Route::get('obtenerCapacidades', [CapacidadesController::class, 'obtenerCapacidades']);
+    });
+
+
+    Route::group(['prefix' => 'desempenos'], function () {
+        Route::get('obtenerDesempenos', [DesempenosController::class, 'obtenerDesempenos']);
+    });
+
+    Route::group(['prefix' => 'curso'], function () {
+        Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
+    });
+    Route::group(['prefix' => 'Evaluaciones'], function () {
+        Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
+
+        Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
+        Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
+        Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        //Agregando participacion y eliminando participacion, IE
+        Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
+        Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
+        //Agregando participacion nuevo
+        Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
+        // Ruta para actualizar la evaluación
+        Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        // Ruta para obtener las participaciones
+        //Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        Route::get('obtenerParticipaciones/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        //Nuevo Ver con Datos completos
+        Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
+        //Obtener Cursos
+        Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
+        //Insertar Cursos
+        Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
+        //Eliminar Cursos
+        Route::delete('eliminarCursos', [EvaluacionesController::class, 'eliminarCursos']);
+        //Ver Cursos
+        Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
+        //Actualizar Cursos COMENTADO
+        Route::post('evaluaciones/{iEvaluacionId}/actualizarCursos', [EvaluacionesController::class, 'actualizarCursosEvaluacion']);
+        //Obtener Evaluacion Copiar
+        Route::get('/obtenerEvaluacionCopia', [EvaluacionesController::class, 'obtenerEvaluacionCopia']);
+        //Obtener evaluacion Copiar 2
+        Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
+        // ACTUALIZAAR En routes/api.php o routes/web.php
+        Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
+        //Agregando CopiarEvaluacion
+        Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
+        //ObtenerMatrizCompetencia
+        Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
+        //ObtenerMatrizCapacidad
+        Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
+        //InsertarMatrizDesempeno
+        Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
+        //ObtenerEspecialistas
+        Route::get('obtenerEspDrem', [EvaluacionesController::class, 'obtenerEspDrem']);
+        //Obtener por el iGradoId los Cursos del Especialista
+        Route::get('obtenerEspDremCurso', [EvaluacionesController::class, 'obtenerEspDremCurso']);
+        //Matriz Descargar
+        Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
+        //Insertar pregunta seleccionada
+        Route::post('insertarPreguntaSeleccionada', [EvaluacionesController::class, 'insertarPreguntaSeleccionada']);
+        //Obtener pregunta seleccionada
+        Route::get('obtenerPreguntaSeleccionada', [EvaluacionesController::class, 'obtenerPreguntaSeleccionada']);
+        //Obtener preguntas por EvaluacionId y preguntaId
+        Route::get('obtenerPreguntaInformacion', [EvaluacionesController::class, 'obtenerPreguntaInformacion']);
+        //Obtener conteo por curso
+        Route::post('obtenerConteoPorCurso', [EvaluacionesController::class, 'obtenerConteoPorCurso']);
+        //Guardar fecha inicio fin de cursos
+        Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
+        //Eliminar una pregunta de una evaluación.
+        Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
+         //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+    });
+    Route::group(['prefix' => 'Ugeles'], function () {
+        Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
     });
 
     /*Route::group(['prefix' => 'nivel-logros'], function () {

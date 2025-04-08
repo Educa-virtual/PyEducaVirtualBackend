@@ -26,7 +26,6 @@ class EvaluacionesController extends ApiController
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-        $this->middleware('auth:api');
     }
 
     public function obtenerAniosEvaluaciones()
@@ -226,9 +225,17 @@ class EvaluacionesController extends ApiController
             'dtEvaluacionFechaInicio' => $request->input('dtEvaluacionFechaInicio', null),
             'dtEvaluacionFechaFin' => $request->input('dtEvaluacionFechaFin', null),
         ];
+
         // return $params;
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
+        if ($params['dtEvaluacionFechaInicio'] != null) {
+            $params['dtEvaluacionFechaInicio'] = Carbon::createFromFormat('d/m/Y', $request->input('dtEvaluacionFechaInicio'))->format('Y-m-d');
+        }
+        if ($params['dtEvaluacionFechaFin'] != null) {
+            $params['dtEvaluacionFechaFin'] = Carbon::createFromFormat('d/m/Y', $request->input('dtEvaluacionFechaFin'))->format('Y-m-d');
+        }
+
         DB::statement('EXEC ere.SP_UPD_evaluaciones
             @iEvaluacionId = :iEvaluacionId,
             @idTipoEvalId = :idTipoEvalId,
