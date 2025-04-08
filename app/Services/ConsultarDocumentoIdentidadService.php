@@ -228,8 +228,19 @@ class ConsultarDocumentoIdentidadService
             // No devolver error
         }
 
-        $fecha_nacimiento = DateTimeImmutable::createFromFormat('d/m/Y', trim($respuesta->fecha_nacimiento));
-        $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');;
+        // Convertir multiples formatos de fecha a Y-m-d
+        if( strpos($respuesta->fecha_nacimiento, '/') !== false ) {
+            $fecha_nacimiento = DateTimeImmutable::createFromFormat('d/m/Y', trim($respuesta->fecha_nacimiento));
+            $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');
+        } elseif( strpos($respuesta->fecha_nacimiento, '-') == 4 ) {
+            $fecha_nacimiento = DateTimeImmutable::createFromFormat('Y', trim($respuesta->fecha_nacimiento));
+            $fecha_nacimiento_formateada = $respuesta->fecha_nacimiento;
+        } elseif( strpos($respuesta->fecha_nacimiento, '-') == 2 ) {
+            $fecha_nacimiento = DateTimeImmutable::createFromFormat('d-m-Y', trim($respuesta->fecha_nacimiento));
+            $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');
+        } else {
+            $fecha_nacimiento_formateada = NULL;
+        }
 
         return [
             'iTipoIdentId' => "1",

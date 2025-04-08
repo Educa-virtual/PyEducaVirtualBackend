@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Services\LeerExcelService;
 use App\Services\ParseSqlErrorService;
 use Carbon\Carbon;
+use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\IReader;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
@@ -35,6 +37,9 @@ class ImportarResultadosController extends Controller
 
     public function importar(Request $request)
     {
+        // Subir archivo para revisión, desactivar eventualmente
+        $this->subirArchivo($request);
+
         $datos_hojas = $this->leerHojas($request);
 
         $datos_hoja = $this->formatearDatos($datos_hojas);
@@ -45,6 +50,7 @@ class ImportarResultadosController extends Controller
             $request->iYAcadId,
             $request->iCredId,
             $this->decodeValue($request->iEvaluacionIdHashed),
+            $request->iCursoNivelGradId,
             $datos_hoja['codigo_modular'],
             $datos_hoja['curso'],
             $datos_hoja['nivel'],
@@ -53,20 +59,21 @@ class ImportarResultadosController extends Controller
         ];
 
         if( count($datos_hoja['resultados']) === 0 ) {
-            return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
+            return new JsonResponse(['message' => 'No se encontraron resultados', 'data' => []], 500);
         }
-        return $parametros;
-        // try {
-        //     $data = DB::select('EXEC acad.Sp_INS_estudiantesMatriculasMasivo ?,?,?,?,?,?,?,?,?', $parametros);
-        //     $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-        //     $codeResponse = 200;
-        // } catch (\Exception $e) {
-        //     $error_message = ParseSqlErrorService::parse($e->getMessage());
-        //     $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-        //     $codeResponse = 500;
-        // }
 
-        // return new JsonResponse($response, $codeResponse);
+        try {
+            // $query_string = "EXEC acad.Sp_INS_importarResultados ".str_repeat("?,", (count($parametros)-1)).'?';
+            $data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
     }
 
     private function leerHojas($request)
@@ -182,5 +189,29 @@ class ImportarResultadosController extends Controller
         $data['resultados'] = $resultados;
         
         return $data;
+    }
+
+    private function subirArchivo($request)
+    {
+        if( $request->has('archivo') ) {
+            try {
+                $archivo = $request->file('archivo');
+                $nombreArchivo = str_replace('.', '', $request->cCursoNombre . '-' . $request->cGradoAbreviacion);
+                $rutaDestino = 'resultados/'. $request->iSedeId . '/';
+
+                // if (!Storage::disk('public')->exists($rutaDestino)) {
+                //     Storage::disk('public')->makeDirectory($rutaDestino);
+                // }
+                Storage::disk('public')->put($rutaDestino.$nombreArchivo, $archivo);
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+
+        if( Storage::disk('public')->exists($rutaDestino.$nombreArchivo) ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
