@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\acad;
+namespace App\Http\Controllers\cap;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -20,7 +20,7 @@ class NivelPedagogicosController extends Controller
             ];
             
             $data = DB::select(
-                'exec acad.SP_SEL_nivelPedagogicos',
+                'exec cap.SP_SEL_nivelPedagogicos',
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
             return new JsonResponse(

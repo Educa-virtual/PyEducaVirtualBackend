@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\acad;
+namespace App\Http\Controllers\cap;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,17 +10,17 @@ use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 
-class TipoPublicosController extends Controller
+class TipoCapacitacionesController extends Controller
 {
-    public function listarTipoPublicos()
+    public function listarTipoCapacitaciones()
     {
         try {
             $fieldsToDecode = [
-                'iTipoPubId',
+                'iTipoCapId',
             ];
             
             $data = DB::select(
-                'exec acad.SP_SEL_tipoPublicos',
+                'exec cap.SP_SEL_tipoCapacitaciones',
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
             return new JsonResponse(
