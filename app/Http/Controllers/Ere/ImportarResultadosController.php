@@ -6,24 +6,45 @@ use App\Http\Controllers\Controller;
 use App\Services\LeerExcelService;
 use App\Services\ParseSqlErrorService;
 use Carbon\Carbon;
+use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\IReader;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class ReporteEvaluacionesController extends Controller
+class ImportarResultadosController extends Controller
 {
+    protected $hashids;
+
+    public function __construct()
+    {
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
+
+    private function decodeValue($value)
+    {
+        if (is_null($value)) {
+            return null;
+        }
+        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
+    }
+
     public function importar(Request $request)
     {
-        $datos_hojas = LeerExcelService::leer($request);
+        $datos_hojas = $this->leerHojas($request);
 
         $datos_hoja = $this->formatearDatos($datos_hojas);
+
         $parametros = [
             $request->iSedeId,
             $request->iSemAcadId,
             $request->iYAcadId,
             $request->iCredId,
+            $this->decodeValue($request->iEvaluacionIdHashed),
             $datos_hoja['codigo_modular'],
             $datos_hoja['curso'],
             $datos_hoja['nivel'],
@@ -34,18 +55,52 @@ class ReporteEvaluacionesController extends Controller
         if( count($datos_hoja['resultados']) === 0 ) {
             return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
         }
+        return $parametros;
+        // try {
+        //     $data = DB::select('EXEC acad.Sp_INS_estudiantesMatriculasMasivo ?,?,?,?,?,?,?,?,?', $parametros);
+        //     $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+        //     $codeResponse = 200;
+        // } catch (\Exception $e) {
+        //     $error_message = ParseSqlErrorService::parse($e->getMessage());
+        //     $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+        //     $codeResponse = 500;
+        // }
 
-        try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantesMatriculasMasivo ?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        // return new JsonResponse($response, $codeResponse);
+    }
+
+    private function leerHojas($request)
+    {
+        $data = [];
+
+        // Validar que request tiene al menos un archivo
+        if($request->allFiles()) {
+
+            // Obtener data solo del primer archivo
+            foreach( $request->file() as $file) {
+                $archivo = $file;
+                break;
+            }
+
+            if( !$archivo ) {
+                return $data;
+            }
+
+            $spreadsheet = IOFactory::load(
+                    $archivo, 
+                    IReader::READ_DATA_ONLY | IReader::IGNORE_ROWS_WITH_NO_CELLS | IReader::IGNORE_EMPTY_CELLS,
+                    [IOFactory::READER_XLSX]
+                );
+
+            /* CONSOLIDADO */
+            $hoja = $spreadsheet->getSheet(3);
+            $data[0] = $hoja->toArray(null, true, true, true);
+            /* PARAMETROS */
+            $hoja = $spreadsheet->getSheet(4);
+            $data[1] = $hoja->toArray(null, true, true, true);
         }
 
-        return new JsonResponse($response, $codeResponse);
+        return $data;
     }
 
     private function formatearDatos($hojas)
@@ -54,27 +109,29 @@ class ReporteEvaluacionesController extends Controller
             return [];
         }
 
-        $estudiantes = [];
-        $config = $hojas[4];
-        $filas = $hojas[3];
+        $resultados = [];
+        $filas = $hojas[0];
+        $config = $hojas[1];
 
-        $data['codigo_modular'] = trim($config[9]['C']);
-        $data['curso'] = trim($config[7]['H']);
-        $data['nivel'] = trim($config[7]['C']);
-        $data['grado'] = trim($config[7]['N']);
+        $data['codigo_modular'] = trim($config[10]['C']);
+        $data['curso'] = trim($config[8]['H']);
+        $data['nivel'] = trim($config[8]['C']);
+        $data['grado'] = trim($config[8]['N']);
 
         // Reemplazar texto a códigos identificadores
         $sexos = [
-            'FEMENINO' => 'F',
-            'MASCULINO' => 'M',
             'Femenino' => 'F',
             'Masculino' => 'M',
+            'F' => 'F',
+            'M' => 'M',
+            'FEMENINO' => 'F',
+            'MASCULINO' => 'M',
         ];
 
         foreach($filas as $index_fila => $fila)
         {
-            // Extraer datos a partir de la fila 13
-            if($index_fila >= 1)
+            // Extraer datos a partir de la fila 2
+            if($index_fila > 1)
             {
                 // Limpiar datos de la fila
                 $fila = array_map('trim', $fila);
@@ -85,14 +142,16 @@ class ReporteEvaluacionesController extends Controller
                 }
 
                 // Formatear resultados de estudiantes en nuevo array
+                $fecha = Date::excelToDateTimeObject($fila['B']);
                 $resultados[] = array(
-                    'fecha' => Carbon::createFromFormat('d/m/Y', $fila['B'])->format('Y-m-d'),
+                    // 'fecha' => Carbon::createFromFormat('d/m/Y', $fila['B'])->format('Y-m-d'),
+                    'fecha' => $fecha->format('Y-m-d'),
                     'documento' => $fila['C'],
-                    'grado' => $fila['C'],
-                    'paterno' => $fila['D'],
-                    'materno' => $fila['E'],
-                    'nombres' => $fila['F'],
-                    'sexo' => $fila['I'],
+                    'grado' => $fila['AK'],
+                    'paterno' => strtoupper($fila['D']),
+                    'materno' => strtoupper($fila['E']),
+                    'nombres' => strtoupper($fila['F']),
+                    'sexo' => $sexos[$fila['I']],
                     'cod_modular' => $fila['K'],
                     'seccion' => $fila['P'],
                     'respuesta01' => $fila['Q'],
@@ -115,7 +174,7 @@ class ReporteEvaluacionesController extends Controller
                     'respuesta18' => $fila['AH'],
                     'respuesta19' => $fila['AI'],
                     'respuesta20' => $fila['AJ'],
-                    'documento_doccente' => $fila['AN'],
+                    'documento_docente' => $fila['AN'],
                 );
             }
         }

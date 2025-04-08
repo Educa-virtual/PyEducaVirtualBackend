@@ -7,6 +7,7 @@ use App\Http\Controllers\ere\EncabezadoPreguntasController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\Ere\ImportarResultadosController;
 use App\Http\Controllers\Ere\NivelLogrosController;
 use App\Http\Controllers\ere\PreguntasController;
 use App\Http\Controllers\Ere\ReporteEvaluacionesController;
@@ -87,6 +88,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('obtenerInformeResumen', [ReporteEvaluacionesController::class, 'obtenerInformeResumen']);
         Route::post('generarPdf', [ReporteEvaluacionesController::class, 'generarPdf']);
         Route::post('generarExcel', [ReporteEvaluacionesController::class, 'generarExcel']);
+        Route::post('importarResultados', [ImportarResultadosController::class, 'importar']);
     });
 
     /*Route::group(['prefix' => 'nivel-logros'], function () {
