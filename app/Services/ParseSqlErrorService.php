@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class ParseSqlErrorService
@@ -18,10 +19,18 @@ class ParseSqlErrorService
         Input: texto verboso del error emitido por SQL Server
         Output: Mensaje de error sin texto verboso
     */
-    public static function parse($error_message)
+    public static function parse($error)
     {
+        if( is_array($error) ) {
+            $error_message = $error['errorInfo'][2];
+        } elseif ( is_string($error) ) {
+            $error_message = $error;
+        } else {
+            $error_message = json_encode($error);
+        }
+
         // Ubicar última instancia de ] en mensaje
-        $pos_inicio = strripos($error_message, ']') + 1;
+        $pos_inicio = strripos($error_message, 'SQL Server]') + 11;
         $pos_cierre = stripos($error_message, '(Connection: sqlsrv');
 
 

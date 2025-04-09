@@ -44,13 +44,14 @@ class ImportarResultadosController extends Controller
 
         $datos_hoja = $this->formatearDatos($datos_hojas);
 
+        $curso_nivel_grado = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
         $parametros = [
             $request->iSedeId,
             $request->iSemAcadId,
             $request->iYAcadId,
             $request->iCredId,
             $this->decodeValue($request->iEvaluacionIdHashed),
-            null,
+            $this->decodeValue($curso_nivel_grado),
             $datos_hoja['codigo_modular'],
             $datos_hoja['curso'],
             $datos_hoja['nivel'],
