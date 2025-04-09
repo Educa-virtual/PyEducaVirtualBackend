@@ -50,7 +50,7 @@ class ImportarResultadosController extends Controller
             $request->iYAcadId,
             $request->iCredId,
             $this->decodeValue($request->iEvaluacionIdHashed),
-            $request->iCursoNivelGradId,
+            null,
             $datos_hoja['codigo_modular'],
             $datos_hoja['curso'],
             $datos_hoja['nivel'],
