@@ -38,7 +38,7 @@ class ImportarResultadosController extends Controller
     public function importar(Request $request)
     {
         // Subir archivo para revisión, desactivar eventualmente
-        $this->subirArchivo($request);
+        // $this->subirArchivo($request);
 
         $datos_hojas = $this->leerHojas($request);
 
