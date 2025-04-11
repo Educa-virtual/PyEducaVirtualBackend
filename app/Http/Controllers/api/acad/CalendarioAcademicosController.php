@@ -393,7 +393,8 @@ class CalendarioAcademicosController extends Controller
         ];
 
         $query = DB::select(
-            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
+            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+            
             $solicitud
         );
 
@@ -425,7 +426,8 @@ class CalendarioAcademicosController extends Controller
         ];
 
         $query = DB::select(
-            "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
+            "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+            
             $solicitud
         );
 
@@ -787,6 +789,30 @@ class CalendarioAcademicosController extends Controller
         $estado = 500;
         }
 
+        return new JsonResponse($response, $estado);
+    }
+    public function generarConfiguracionMasivaInicio(Request $request)
+    {
+        $query = DB::select("EXEC acad.Sp_INS_ConfiguracionXiYAcadId ?", $request-> iYAcadId);
+        //  [$json, $opcion ]);
+
+        try {
+        $response = [
+            'validated' => true,
+            'message' => 'se obtuvo la información',
+            'data' => $query,
+        ];
+
+        $estado = 200;
+        } catch (Exception $e) {
+        $response = [
+            'validated' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ];
+        
+        $estado = 500;
+        }
         return new JsonResponse($response, $estado);
     }
 }
