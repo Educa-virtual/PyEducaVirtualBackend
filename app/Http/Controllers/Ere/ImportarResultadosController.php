@@ -118,12 +118,12 @@ class ImportarResultadosController extends Controller
                 }, $fila);
                 $fila = array_map('trim', $fila);
 
-                // Cancelar si hay estudiante sin documento
-                if( !isset($fila['C']) || $fila['C'] == '' ) {
-                    $data['message'] = 'Uno o más estudiantes no tienen documento, por favor indique DNI, CE o código de estudiante';
-                    $resultados = [];
-                    exit;
-                }
+                // // Cancelar si hay estudiante sin documento
+                // if( !isset($fila['C']) || $fila['C'] == '' ) {
+                //     $data['message'] = 'Uno o más estudiantes no tienen documento, por favor indique DNI, CE o código de estudiante';
+                //     $resultados = [];
+                //     exit;
+                // }
 
                 // Ignorar filas sin apellido y nombres
                 if( (!isset($fila['D'])) || (!isset($fila['F'])) ) {
