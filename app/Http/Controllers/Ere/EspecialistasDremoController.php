@@ -5,6 +5,8 @@ namespace App\Http\Controllers\ere;
 use App\Http\Controllers\Controller;
 use App\Repositories\PreguntasRepository;
 use App\Services\ere\AreasService;
+use App\Services\ParseSqlErrorService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -59,35 +61,40 @@ class EspecialistasDremoController extends Controller
         return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_OK);
     }
 
-    public function obtenerAreasPorEvaluacionyEspecialista($evaluacionId, $personaId, $perfilId)
+    public function obtenerAreasPorEvaluacionyEspecialista($evaluacionId, $personaId, $iCredEntPerfId)
     {
         $evaluacionIdDescifrado =  $this->hashids->decode($evaluacionId);
         $personaIdDescifrado =  $this->hashids->decode($personaId);
         if (empty($evaluacionIdDescifrado) || empty($personaIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        $resultados = DB::select('EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @iEvaluacionId=?, @iPersId=?, @iPerfilId=?', [$evaluacionIdDescifrado[0], $personaIdDescifrado[0], $perfilId]);
+        try {
+            $resultados = DB::select('EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @iEvaluacionId=?, @iPersId=?, @iCredEntPerfId=?', [$evaluacionIdDescifrado[0], $personaIdDescifrado[0], $iCredEntPerfId]);
 
-        if (empty($resultados)) {
-            return response()->json(['status' => 'Error', 'message' => 'No se encontraron datos para los cursos asociados.'], Response::HTTP_NOT_FOUND);
+            if (empty($resultados)) {
+                return response()->json(['status' => 'Error', 'message' => 'No se encontraron datos para los cursos asociados.'], Response::HTTP_NOT_FOUND);
+            }
+
+            foreach ($resultados as $fila) {
+                $params = [
+                    'iEvaluacionId' => $evaluacionIdDescifrado[0],
+                    'iCursosNivelGradId' => $fila->iCursosNivelGradId,
+                    'busqueda' => '',
+                    'iTipoPregId' => 0,
+                    'bPreguntaEstado' => 1,
+                    'iPreguntaId' => NULL,
+                    'ids' => NULL
+                ];
+                $fila->iCantidadPreguntas = PreguntasRepository::obtenerCantidadPreguntasPorEvaluacion($evaluacionIdDescifrado[0], $fila->iCursosNivelGradId);
+                $fila->iEvaluacionid = $evaluacionIdDescifrado[0];
+                $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
+                $fila->bTieneArchivo = AreasService::tieneArchivoErePdfSubido($evaluacionId, $fila->iCursosNivelGradId);
+                $fila->iEvaluacionIdHashed= $evaluacionId;
+            }
+            return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return response()->json(['status' => 'Error', 'message' => $ex->getMessage()], Response::HTTP_BAD_REQUEST);
         }
 
-        foreach ($resultados as $fila) {
-            $params = [
-                'iEvaluacionId' => $evaluacionIdDescifrado[0],
-                'iCursosNivelGradId' => $fila->iCursosNivelGradId,
-                'busqueda' => '',
-                'iTipoPregId' => 0,
-                'bPreguntaEstado' => 1,
-                'iPreguntaId' => NULL,
-                'ids' => NULL
-            ];
-            $fila->iCantidadPreguntas = PreguntasRepository::obtenerCantidadPreguntasPorEvaluacion($evaluacionIdDescifrado[0], $fila->iCursosNivelGradId);
-            $fila->iEvaluacionid = $evaluacionIdDescifrado[0];
-            $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
-            $fila->bTieneArchivo = AreasService::tieneArchivoPdfSubido($evaluacionId, $fila->iCursosNivelGradId);
-            $fila->iEvaluacionIdHashed= $evaluacionId;
-        }
-        return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);
     }
 }

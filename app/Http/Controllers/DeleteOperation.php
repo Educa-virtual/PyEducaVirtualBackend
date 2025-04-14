@@ -36,8 +36,9 @@ class DeleteOperation extends AbstractDatabaseOperation
             [
                 'esquema' => $this->request->input('esquema'),
                 'tabla' => $this->request->input('tabla'),
-                'campos' => $this->request->input('campos'),
-                'where' => $this->request->input('where'),
+                'campoId' => $this->request->input('campoId'),
+                'valorId' => $this->request->input('valorId'),
+                'tablaHija' => $this->request->input('tablaHija'),
             ]
         );
     }

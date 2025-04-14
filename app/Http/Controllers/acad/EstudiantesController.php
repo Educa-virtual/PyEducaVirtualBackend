@@ -107,7 +107,7 @@ class EstudiantesController extends Controller
         try {
             $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
             return new JsonResponse($response, $codeResponse);
@@ -139,7 +139,7 @@ class EstudiantesController extends Controller
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
@@ -181,7 +181,7 @@ class EstudiantesController extends Controller
         try {
             $data = DB::select('EXEC grl.Sp_UPD_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
             return new JsonResponse($response, $codeResponse);
@@ -212,7 +212,7 @@ class EstudiantesController extends Controller
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
@@ -244,7 +244,7 @@ class EstudiantesController extends Controller
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
@@ -268,7 +268,7 @@ class EstudiantesController extends Controller
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
@@ -278,39 +278,10 @@ class EstudiantesController extends Controller
 
     public function importarEstudiantesPadresExcel(Request $request)
     {
-        $datos_hojas = $this->leerExcelService->leer($request);
+        $datos_hojas = LeerExcelService::leer($request);
         
-        $datos_hoja = $this->formatearExcelPadresService->formatear($datos_hojas);
+        $datos_hoja = FormatearExcelPadresService::formatear($datos_hojas);
 
-        $parametros = [
-            $request->iSedeId,
-            $request->iSemAcadId,
-            $request->iYAcadId,
-            $request->iCredId,
-            $datos_hoja['nivel'],
-            $datos_hoja['modalidad'],
-            $datos_hoja['turno'],
-            json_encode($datos_hoja['estudiantes']),
-        ];
-
-        try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantes_padres_masivo ?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-        
-        return new JsonResponse($response, $codeResponse);
-    }
-
-    public function importarEstudiantesMatriculasExcel(Request $request)
-    {
-        $datos_hojas = $this->leerExcelService->leer($request);
-
-        $datos_hoja = $this->formatearExcelMatriculasService->formatear($datos_hojas);
         $parametros = [
             $request->iSedeId,
             $request->iSemAcadId,
@@ -323,6 +294,39 @@ class EstudiantesController extends Controller
             $datos_hoja['codigo_modular'],
         ];
 
+        try {
+            $data = DB::select('EXEC acad.Sp_INS_estudiantes_padres_masivo ?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function importarEstudiantesMatriculasExcel(Request $request)
+    {
+        $datos_hojas = LeerExcelService::leer($request);
+
+        $datos_hoja = FormatearExcelMatriculasService::formatear($datos_hojas);
+
+        $json_estudiantes = str_replace("'", "''", json_encode($datos_hoja['estudiantes']));
+
+        $parametros = [
+            $request->iSedeId,
+            $request->iSemAcadId,
+            $request->iYAcadId,
+            $request->iCredId,
+            $datos_hoja['nivel'],
+            $datos_hoja['modalidad'],
+            $datos_hoja['turno'],
+            $json_estudiantes,
+            $datos_hoja['codigo_modular'],
+        ];
+
         if( count($datos_hoja['estudiantes']) === 0 ) {
             return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
         }
@@ -332,7 +336,7 @@ class EstudiantesController extends Controller
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
