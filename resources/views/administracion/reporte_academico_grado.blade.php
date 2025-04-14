@@ -186,9 +186,6 @@
 <body>
 
 <header>
-        <div  class="header-titulo" style="text-align: center;">
-        
-        </div>
         
         <div class="logo-izquierda">
             <img src="{{$logo}}" style="height: 60px;">

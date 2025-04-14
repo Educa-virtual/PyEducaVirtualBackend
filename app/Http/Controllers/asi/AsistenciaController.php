@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\asi;
 
+use App\Helpers\ResponseHandler;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
@@ -30,53 +32,82 @@ class AsistenciaController extends Controller
     }
      
     // Obtener las fechas de las areas curriculares para registrar la asistencia
-    public function obtenerCursoHorario(Request $request){
-
-        $iCursoId = $this->decodificar($request["iCursoId"]);
-        $iYAcadId = $this->decodificar($request["iYAcadId"]);
-        $iDocenteId = $this->decodificar($request["iDocenteId"]);
-        $iSeccionId = $this->decodificar($request["iSeccionId"]);
+    public function obtenerDetallesCurricular(Request $request){
+        $iGradoId = $request["iGradoId"];
+        $iCursoId = $request["iCursoId"];
+        $iCicloId = $request["iCicloId"];
+        $iSeccionId = $request["iSeccionId"];
+        $iNivelId = $request["iNivelId"];
 
         $solicitud = [
-            'buscar_curso_horario',
-            $iDocenteId ?? NULL,
-            $iYAcadId ?? NULL,
-            $iCursoId ?? NULL,
-            $iSeccionId ?? NULL,
+            $iGradoId,
+            $iSeccionId,
+            $iCicloId,
+            $iCursoId,
+            $iNivelId,
         ];
 
-        $query = DB::select("execute acad.Sp_SEL_buscar_cursos_horario ?,?,?,?,?", $solicitud);
-        
-        try{
-            $response = [
-                'validated' => true, 
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
+        $query = 'EXEC acad.Sp_SEL_detalles_curriculares '.str_repeat('?,',count($solicitud)-1).'?';
 
-            $estado = 200;
+        try {
+            $data = DB::select($query, $solicitud);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
 
-        } catch(Exception $e){
-            $response = [
-                'validated' => true, 
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-            $estado = 500;
+    }
+    public function obtenerCursoHorario(Request $request){
+
+        $iSedeId = $request["iSedeId"];
+        $iIieeId = $request["iIieeId"];
+        $iCursoId = $request["iCursoId"];
+        $iYAcadId = $request["iYAcadId"];
+        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iSeccionId = $request["iSeccionId"];
+        $iNivelGradoId = $request["iNivelGradoId"];
+        $iGradoId = $request["iGradoId"];
+        $idDocCursoId = $request["idDocCursoId"];
+        $iCicloId = $request["iCicloId"];
+
+        $solicitud = [
+            1,
+            $iDocenteId     ?? NULL,
+            $iYAcadId       ?? NULL,
+            $iCursoId       ?? NULL,
+            $iSeccionId     ?? NULL,
+            $iNivelGradoId  ?? NULL,
+            $iGradoId       ?? NULL,
+            $idDocCursoId   ?? NULL,
+            $iCicloId       ?? NULL,
+            $iSedeId        ?? NULL,
+            $iIieeId        ?? NULL,
+        ];
+
+        $query = 'EXEC acad.Sp_SEL_buscar_cursos_horario '.str_repeat('?,',count($solicitud)-1).'?';
+        try {
+            $data = DB::select($query, $solicitud);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
         }
 
         return new JsonResponse($response,$estado);
     }
     public function obtenerAsistencia(Request $request){
         // Se Decodifica los id hasheados que son enviados por el frontend
-        $iSedeId = $this->decodificar($request["iSedeId"]);
-        $iCursoId = $this->decodificar($request["iCursoId"]);
-        $iYAcadId = $this->decodificar($request["iYAcadId"]);
-        $iSeccionId = $this->decodificar($request["iSeccionId"]);
-        $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        $iGradoId = $request["iGradoId"];
+        $iIieeId = $request["iIieeId"];
+        $iSedeId = $request["iSedeId"];
+        $iCursoId = $request["iCursoId"];
+        $iYAcadId = $request["iYAcadId"];
+        $iSeccionId = $request["iSeccionId"];
+        $iNivelGradoId = $request["iNivelGradoId"];
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
         
         $solicitud = [
+            $iGradoId ?? NULL,
+            $iIieeId ?? NULL,
             $iSedeId ?? NULL,
             $iCursoId ?? NULL,
             $iYAcadId ?? NULL,
@@ -84,14 +115,15 @@ class AsistenciaController extends Controller
             $iNivelGradoId ?? NULL,
             $iDocenteId ?? NULL,
         ];
-        
-        $query=DB::select("execute asi.Sp_SEL_fechas_asistencia ?,?,?,?,?,?", $solicitud);
+
+        $query = "execute asi.Sp_SEL_fechas_asistencia ".str_repeat('?,',count($solicitud)-1)."?";
         
         try{
+            $data = DB::select($query, $solicitud);
             $response = [
                 'validated' => true, 
                 'message' => 'se obtuvo la información',
-                'data' => $query,
+                'data' => $data,
             ];
 
             $estado = 200;
@@ -125,11 +157,15 @@ class AsistenciaController extends Controller
             $iNivelGradoId ?? NULL,
             $iDocenteId,
             $request->iGradoId ?? NULL,
+            $request->iSedeId ?? NULL,
+            $request->iIieeId ?? NULL,
+            $request->idDocCursoId ?? null,
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-    
-        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+
+        $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
+        $query = DB::select($consulta, $solicitud);
   
         try{
             $response = [
@@ -265,51 +301,9 @@ class AsistenciaController extends Controller
     // }
     public function report(Request $request)
     {
-        $request['valorBusqueda'] = is_null($request->valorBusqueda)
-            ? null
-            : (is_numeric($request->valorBusqueda)
-                ? $request->valorBusqueda
-                : ($this->hashids->decode($request->valorBusqueda)[0] ?? null));
-
-        $request['iCursoId'] = is_null($request->iCursoId)
-            ? null
-            : (is_numeric($request->iCursoId)
-                ? $request->iCursoId
-                : ($this->hashids->decode($request->iCursoId)[0] ?? null));
-
-        $request['iSeccionId'] = is_null($request->iSeccionId)
-            ? null
-            : (is_numeric($request->iSeccionId)
-                ? $request->iSeccionId
-                : ($this->hashids->decode($request->iSeccionId)[0] ?? null));
-
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
-
-        $request['iGradoId'] = is_null($request->iGradoId)
-            ? null
-            : (is_numeric($request->iGradoId)
-                ? $request->iGradoId
-                : ($this->hashids->decode($request->iGradoId)[0] ?? null));
-
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-
-        $request['iNivelGradoId'] = is_null($request->iNivelGradoId)
-            ? null
-            : (is_numeric($request->iNivelGradoId)
-                ? $request->iNivelGradoId
-                : ($this->hashids->decode($request->iNivelGradoId)[0] ?? null));
-
-
-        $inicio = $request['id'];
-        
+    
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $inicio = $request['id'];    
         $fecha_inicial = str_pad($inicio, 2, "0", STR_PAD_LEFT);
         $year_actual = date('Y');
         $combinar = $year_actual . "-" . $fecha_inicial . "-01";
@@ -333,6 +327,7 @@ class AsistenciaController extends Controller
             'Friday' => 'V',
             'Saturday' => 'S'
         ];
+        $meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
         $dia_elegido  = $dia_semana[$nombre_dia];
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -351,66 +346,77 @@ class AsistenciaController extends Controller
             $request->iSeccionId ?? NULL,
             $request->iYAcadId ?? NULL,
             $request->iNivelGradoId ?? NULL,
-            $request->iDocenteId ?? NULL,
+            $iDocenteId ?? NULL,
             $request->iGradoId ?? NULL,
+            $request->iSedeId ?? NULL,
+            $request->iIieeId ?? NULL,
+            $request->idDocCursoId ?? null,
             $request->inicio ?? $combinar,
             $request->fin ?? NULL,
         ];
 
-        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
+        $query = DB::select($consulta, $solicitud);
 
         $json_registro = [];
 
-        
-
         for ($i = 1; $i <= $ultimo; $i++) {
-            $json_registro[] = ["diaMes" => strval($i), "cTipoAsiLetra" => ""];
+            $json_registro[] = ["diaMes" => intval($i), "cTipoAsiLetra" => ""];
         }
-       
-        foreach ($query as $index => $valor) {
-            $registro = json_decode($valor->diasAsistencia);
+    
+        $json_asistencia = json_decode($query[0]->asistencia,true);
+
+        foreach ($json_asistencia as &$valor) {
+            $registro = $valor["diasAsistencia"];  
             $paquete = [];
             
-            foreach ((array) $registro as $fila) {
-                $paquete[] = $fila->diaMes;
+            foreach ($registro as &$fila) {
+                $fila["diaMes"] = intval($fila["diaMes"]);
+                $paquete[] = intval($fila["diaMes"]);
             }
-    
+            
             $filtrar = array_filter($json_registro, function ($valor) use ($paquete) {
-                return !in_array($valor["diaMes"], $paquete);
+                return !in_array(intval($valor["diaMes"]), $paquete);
             });
-
-            $convertir = json_decode(json_encode($registro), true);
+            
+            $convertir = $registro;
 
             if(!is_array($convertir)){
                 $convertir = [];
             }
-
+            
             $unir = array_merge($filtrar, $convertir);
-
             usort($unir, function ($a, $b) {
                 return $a["diaMes"] > $b["diaMes"] ? 1 : -1;
             });
+            
+            $valor["diasAsistencia"] = $unir; 
+        }
 
-            $valor->diasAsistencia = $unir;
+        $json_institucion = json_decode($query[0]->institucion,true);
+        $logo = $json_institucion[0]["cIieeLogo"];
+        $verLogo = explode(",",$logo);
+        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if (base64_decode($base64Image, true) === false) {
+            $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
 
         $respuesta = [
-            "ultimodia" => $ultimo,
-            "query" => $query,
-            "dias_Semana" => $unir_dias,
-            "year" => date('Y'),
-            "docente" => $request->nombrecompleto,
-            "mes" => "2024-10-01 2024-10-31",
-            "modular" => "000005600",
-            "dre" => "DRE MOQUEGUA UGEL",
-            "fecha_reporte" => "2024-10-01",
-            "fecha_cierre" => "2024-10-31",
-            "nivel" => $request->cNivelTipoNombre,
-            "periodo" => "",
-            "grado" => $request->cGradoAbreviacion,
-            "ciclo" => $request->cCicloRomanos,
-            "seccion" => $request->cSeccion,
-            "turno" => "Mañana",
+            "iiee"              => $json_institucion[0]["cIieeNombre"],
+            "logo"              => $logo,
+            "docente"           => strtolower($query[0]->docentes),
+            "area_curricular"   => strtolower($query[0]->curso),
+            "grado"             => $request->cGradoAbreviacion,
+            "seccion"           => $request->cSeccionNombre,
+            "modular"           => $json_institucion[0]["cIieeCodigoModular"],
+            "nivel"             => $request->cNivelTipoNombre,
+            "query"             => $json_asistencia,
+            "ultimodia"         => $ultimo,
+            "dias_Semana"       => $unir_dias,
+            "mes"               => $meses[$inicio-1],
+            "inicio"            => "2024-10-01",
+            "fin"               => "2024-10-31",
+            "ciclo"             => $request->cCicloRomanos,
         ];
     
         $pdf = Pdf::loadView('asistencia_reporte_mensual', $respuesta)
@@ -420,47 +426,8 @@ class AsistenciaController extends Controller
     }
     public function reporte_diario(Request $request)
     {
-        $request['valorBusqueda'] = is_null($request->valorBusqueda)
-            ? null
-            : (is_numeric($request->valorBusqueda)
-                ? $request->valorBusqueda
-                : ($this->hashids->decode($request->valorBusqueda)[0] ?? null));
-
-        $request['iCursoId'] = is_null($request->iCursoId)
-            ? null
-            : (is_numeric($request->iCursoId)
-                ? $request->iCursoId
-                : ($this->hashids->decode($request->iCursoId)[0] ?? null));
-
-        $request['iSeccionId'] = is_null($request->iSeccionId)
-            ? null
-            : (is_numeric($request->iSeccionId)
-                ? $request->iSeccionId
-                : ($this->hashids->decode($request->iSeccionId)[0] ?? null));
-
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
-
-        $request['iGradoId'] = is_null($request->iGradoId)
-            ? null
-            : (is_numeric($request->iGradoId)
-                ? $request->iGradoId
-                : ($this->hashids->decode($request->iGradoId)[0] ?? null));
-
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-
-        $request['iNivelGradoId'] = is_null($request->iNivelGradoId)
-            ? null
-            : (is_numeric($request->iNivelGradoId)
-                ? $request->iNivelGradoId
-                : ($this->hashids->decode($request->iNivelGradoId)[0] ?? null));
+    
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
 
         $inicio = $request['id'];
         $fin = $request['id'];
@@ -474,25 +441,30 @@ class AsistenciaController extends Controller
         $fecha_inicio = new DateTime($inicio);
         $fecha_fin = new DateTime($fin);
 
-        $meses = $fecha_inicio->diff($fecha_fin);
-        $meses_restantes = $meses->m;
+        // $meses = $fecha_inicio->diff($fecha_fin);
+        // $meses_restantes = $meses->m;
 
         $solicitud = [
             $request->opcion ?? 'REPORTE_PERSONALIZADO',
-            $request['iCursoId'] ?? NULL,
-            $request->dtCtrlAsistencia ?? '2024-11-01',
+            $request->iCursoId ?? NULL,
+            $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? 1,
-            $request['iSeccionId'] ?? NULL,
-            $request['iYAcadId'] ?? NULL,
-            $request['iNivelGradoId'] ?? NULL,
-            $request['iDocenteId'] ?? NULL,
-            $request['iGradoId'] ?? NULL,
+            $request->iSeccionId ?? NULL,
+            $request->iYAcadId ?? NULL,
+            $request->iNivelGradoId ?? NULL,
+            $iDocenteId ?? NULL,
+            $request->iGradoId ?? NULL,
+            $request->iSedeId ?? NULL,
+            $request->iIieeId ?? NULL,
+            $request->idDocCursoId ?? null,
             $inicio,
             $fin,
         ];
+        
+        $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
 
-        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
-
+        $query = DB::select($consulta, $solicitud);
+    
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -511,33 +483,42 @@ class AsistenciaController extends Controller
         $fechas[0]["ultimo_dia"] = $dia;
         $fechas[0]["dia"] = $dia_indice;
 
+        
+        $json_institucion = json_decode($query[0]->institucion,true);
+        $json_asistencia = json_decode($query[0]->asistencia,true);
+        
+        $logo = $json_institucion[0]["cIieeLogo"];
+        $verLogo = explode(",",$logo);
+        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if (base64_decode($base64Image, true) === false) {
+            $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+        }
+
         $datos = [];
-        foreach ($query as $key => $indice) {
-            $datos["lista"][$key][] = $indice->completoalumno;
-            $valor = json_decode($indice->diasAsistencia, true);
+        foreach ($json_asistencia as $key => $indice) {
+            $datos["lista"][$key][] = $indice["completoalumno"];
+            $valor = $indice["diasAsistencia"];
             $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["cTipoAsiLetra"];
         }
 
+        
         $formato_fecha = new DateTime($inicio);
         $fecha_fija = $formato_fecha->format('Y-m-d');
 
         $respuesta = [
-            "year" => date('Y'),
-            "ie" => 'Ricardo German Agip Rubio',
-            "docente" => $request->nombrecompleto,
-            "mes" => strtoupper($fechas[0]["mes_calendario"]),
-            "modular" => "000005600",
-            "dre" => "DRE MOQUEGUA UGEL",
-            "fecha_reporte" => date('Y-m-d H:i:s'),
-            "fecha_cierre" => "--",
+            "iiee" => $json_institucion[0]["cIieeNombre"],
+            "docente" => strtolower($query[0]->docentes),
+            "mes" => strtolower($fechas[0]["mes_calendario"]),
+            "modular" => $json_institucion[0]["cIieeCodigoModular"],
             "nivel" => $request->cNivelTipoNombre,
             "grado" => $request->cGradoAbreviacion,
             "ciclo" => $request->cCicloRomanos,
-            "seccion" => $request->cSeccion,
-            "turno" => "Mañana",
+            "seccion" => $request->cSeccionNombre,
+            "area_curricular" => strtolower($query[0]->curso),
             "fecha_actual" => $fecha_fija,
             "dias" => $dias,
-            "respuesta" => $datos
+            "respuesta" => $datos,
+            "logo" => $logo
         ];
 
         $pdf = Pdf::loadView('asistencia_reporte_diario', $respuesta)
@@ -546,51 +527,12 @@ class AsistenciaController extends Controller
     }
     public function reporte_personalizado(Request $request)
     {
-        $request['valorBusqueda'] = is_null($request->valorBusqueda)
-            ? null
-            : (is_numeric($request->valorBusqueda)
-                ? $request->valorBusqueda
-                : ($this->hashids->decode($request->valorBusqueda)[0] ?? null));
-
-        $request['iCursoId'] = is_null($request->iCursoId)
-            ? null
-            : (is_numeric($request->iCursoId)
-                ? $request->iCursoId
-                : ($this->hashids->decode($request->iCursoId)[0] ?? null));
-
-        $request['iSeccionId'] = is_null($request->iSeccionId)
-            ? null
-            : (is_numeric($request->iSeccionId)
-                ? $request->iSeccionId
-                : ($this->hashids->decode($request->iSeccionId)[0] ?? null));
-
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
-
-        $request['iGradoId'] = is_null($request->iGradoId)
-            ? null
-            : (is_numeric($request->iGradoId)
-                ? $request->iGradoId
-                : ($this->hashids->decode($request->iGradoId)[0] ?? null));
-
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-
-        $request['iNivelGradoId'] = is_null($request->iNivelGradoId)
-            ? null
-            : (is_numeric($request->iNivelGradoId)
-                ? $request->iNivelGradoId
-                : ($this->hashids->decode($request->iNivelGradoId)[0] ?? null));
+    
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
 
         $inicio = $request['id'][0];
         $fin = $request['id'][1];
-
+    
         $year = date("Y");
         $convertir_year = strtotime($year);
         $years = date('Y', $convertir_year);
@@ -605,23 +547,29 @@ class AsistenciaController extends Controller
 
         $solicitud = [
             $request->opcion ?? 'REPORTE_PERSONALIZADO',
-            $request['iCursoId'] ?? NULL,
-            $request->dtCtrlAsistencia ?? '2024-11-01',
+            $request->iCursoId ?? NULL,
+            $request->dtCtrlAsistencia ?? NULL,
             $request->asistencia_json ?? 1,
-            $request['iSeccionId'] ?? NULL,
-            $request['iYAcadId'] ?? NULL,
-            $request['iNivelGradoId'] ?? NULL,
-            $request['iDocenteId'] ?? NULL,
-            $request['iGradoId'] ?? NULL,
+            $request->iSeccionId ?? NULL,
+            $request->iYAcadId ?? NULL,
+            $request->iNivelGradoId ?? NULL,
+            $iDocenteId ?? NULL,
+            $request->iGradoId ?? NULL,
+            $request->iSedeId ?? NULL,
+            $request->iIieeId ?? NULL,
+            $request->idDocCursoId ?? null,
             $inicio,
             $fin,
         ];
 
-        $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
+        $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
+        $query = DB::select($consulta, $solicitud);
 
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+
+        $json_asistencia = json_decode($query[0]->asistencia,true);
 
         if ($meses_restantes == 0) {
             $numero_mes = intval(date("m", strtotime($inicio . "+ " . 0 . " month")));    // Se extrae el mes y se aumenta 1 mes
@@ -637,10 +585,10 @@ class AsistenciaController extends Controller
             $fechas[0]["mes"] = $mes;
             $fechas[0]["ultimo_dia"] = $dia;
             $fechas[0]["dia"] = $dia_indice;
-            foreach ($query as $key => $sql) {
+            foreach ($json_asistencia as $key => $sql) {
 
-                $fechas[0]["nombre"][$key] = $sql->completoalumno;
-                $verificar = json_decode($sql->diasAsistencia);
+                $fechas[0]["nombre"][$key] = $sql["completoalumno"];
+                $verificar = $sql["diasAsistencia"];
                 $ver = array_column($verificar, "diaMes");
 
                 for ($j = 1; $j <= $fechas[0]["ultimo_dia"]; $j++) {
@@ -648,13 +596,13 @@ class AsistenciaController extends Controller
 
                     if (in_array($analizar, $ver)) {
                         $index = array_search($analizar, $ver);
-                        $fechas[0]["asistido"][$key][] = $verificar[$index]->cTipoAsiLetra;
+                        $fechas[0]["asistido"][$key][] = $verificar[$index]["cTipoAsiLetra"];
                     } else {
                         $fechas[0]["asistido"][$key][] = "";
                     }
                 }
             }
-        } else {
+        }else {
 
             for ($i = 0; $i <= $meses_restantes; $i++) {
 
@@ -672,10 +620,10 @@ class AsistenciaController extends Controller
                 $fechas[$i]["ultimo_dia"] = $dia;
                 $fechas[$i]["dia"] = $dia_indice;
 
-                foreach ($query as $key => $sql) {
+                foreach ($json_asistencia as $key => $sql) {
 
-                    $fechas[$i]["nombre"][$key] = $sql->completoalumno;
-                    $verificar = json_decode($sql->diasAsistencia);
+                    $fechas[$i]["nombre"][$key] = $sql["completoalumno"];
+                    $verificar = $sql["diasAsistencia"];
                     if(!is_array($verificar)){
                         $verificar = [];
                     }
@@ -686,7 +634,7 @@ class AsistenciaController extends Controller
 
                         if (in_array($analizar, $ver)) {
                             $index = array_search($analizar, $ver);
-                            $fechas[$i]["asistido"][$key][] = $verificar[$index]->cTipoAsiLetra;
+                            $fechas[$i]["asistido"][$key][] = $verificar[$index]["cTipoAsiLetra"];
                         } else {
                             $fechas[$i]["asistido"][$key][] = "";
                         }
@@ -694,22 +642,30 @@ class AsistenciaController extends Controller
                 }
             }
         }
+        
+        $json_institucion = json_decode($query[0]->institucion,true);
 
+        $logo = $json_institucion[0]["cIieeLogo"];
+        $verLogo = explode(",",$logo);
+        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if (base64_decode($base64Image, true) === false) {
+            $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
+        }
 
         $respuesta = [
+            "logo" => $logo,
             "year" => date('Y'),
-            "ie" => 'Ricardo German Agip Rubio',
-            "docente" => $request->nombrecompleto,
-            "mes" => $inicio . " - " . $fin,
-            "modular" => "000005600",
-            "dre" => "DRE MOQUEGUA UGEL",
+            "iiee" => $json_institucion[0]["cIieeNombre"],
+            "docente" => strtolower($query[0]->docentes),
+            "rango" => date('Y-m-d',strtotime($inicio)) . " - " . date('Y-m-d',strtotime($fin)),
+            "modular" => $json_institucion[0]["cIieeCodigoModular"],
             "fecha_reporte" => date('Y-m-d H:i:s'),
             "fecha_cierre" => "--",
             "nivel" => $request->cNivelTipoNombre,
             "grado" => $request->cGradoAbreviacion,
             "ciclo" => $request->cCicloRomanos,
-            "seccion" => $request->cSeccion,
-            "turno" => "Mañana",
+            "seccion" => $request->cSeccionNombre,
+            "area_curricular" => strtolower($query[0]->curso),
             "fecha_actual" => "2024-11-15",
             "dias" => $dias,
             "respuesta" => $fechas
