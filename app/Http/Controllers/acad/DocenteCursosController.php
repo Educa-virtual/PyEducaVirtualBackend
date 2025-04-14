@@ -133,8 +133,8 @@ class DocenteCursosController extends Controller
         $idDocCursoId=$request->idDocCursoId;
 
         $solicitud = [
-            $iSilaboId,
-            $idDocCursoId,
+            VerifyHash::decodes($iSilaboId),
+            VerifyHash::decodes($idDocCursoId),
         ];
         
         $query = 'EXEC acad.Sp_INS_importarSilabos '.str_repeat('?,',count($solicitud)-1).'?';

@@ -40,6 +40,9 @@ use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
 use App\Http\Controllers\FileController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
@@ -175,7 +178,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('importarAmbiente_IE', [GestionInstitucionalController::class, 'importarAmbiente_IE']);
         Route::post('generarCredencialesIE', [GestionInstitucionalController::class, 'generarCredencialesIE']);
     });
-
+ Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
@@ -201,6 +204,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); // procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
         Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']); // procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
 
+        Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
 
         /*
          * * Peticiones de información de varios calendarios
@@ -382,4 +386,38 @@ Route::group(['prefix' => 'grl'], function () {
     Route::post('guardarPersona', [PersonaController::class, 'save']);
     Route::post('searchPersona', [PersonaController::class, 'show']);
     Route::post('validarPersona', [PersonaController::class, 'validate']);
+});
+
+Route::get('/enlaces-ayuda', function () {
+    $path = 'enlaces-ayuda.json'; // Nombre del archivo dentro de storage/app/public/
+
+    if (Storage::disk('public')->exists($path)) {
+        return Response::json(json_decode(Storage::disk('public')->get($path)), 200);
+    }
+
+    return response()->json(['error' => 'Archivo no encontrado'], 404);
+});
+
+Route::put('/enlaces-ayuda/actaulizar', function (Request $request, $index) {
+    $path = 'data/miarchivo.json';
+
+    if (!Storage::exists($path)) {
+        return response()->json(['error' => 'Archivo no encontrado'], 404);
+    }
+
+    // Obtener el contenido del JSON
+    $data = json_decode(Storage::get($path), true);
+
+    // Verificar si el índice existe
+    if (!isset($data[$index])) {
+        return response()->json(['error' => 'Elemento no encontrado'], 404);
+    }
+
+    // Actualizar los datos
+    $data[$index] = array_merge($data[$index], $request->all());
+
+    // Guardar el JSON actualizado
+    Storage::put($path, json_encode($data, JSON_PRETTY_PRINT));
+
+    return response()->json(['message' => 'Datos actualizados correctamente', 'data' => $data[$index]], 200);
 });

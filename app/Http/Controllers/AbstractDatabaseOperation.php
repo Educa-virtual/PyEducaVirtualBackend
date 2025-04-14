@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Contracts\DataReturnStrategy;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
@@ -53,7 +54,12 @@ abstract class AbstractDatabaseOperation
         $placeholders = implode(',', array_fill(0, count($params), '?'));
 
         $msg = new ConsoleOutput();
+        
+        $text = "EXEC $procedure $placeholders " . implode(", ", $params);
+
         $msg->writeln("EXEC $procedure $placeholders " . implode(", ", $params));
+
+        Log::info($text);
 
         return collect(DB::select("EXEC $procedure $placeholders", $params));
     }
@@ -69,13 +75,9 @@ abstract class AbstractDatabaseOperation
 
         foreach ($queries as $query) {
 
-
-            
             if (!$this->hasValidRequest($query)) {
                 throw new Exception('Error en la solicitud de los datos.');
             }
-
-            $queryParams = array_values(Arr::only($query, $params));
 
             $result = $this->executeQuery();
 
