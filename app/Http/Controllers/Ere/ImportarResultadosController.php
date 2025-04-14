@@ -40,11 +40,14 @@ class ImportarResultadosController extends Controller
         // Subir archivo para revisión, desactivar eventualmente
         // $this->subirArchivo($request);
 
-        $datos_hojas = $this->leerHojas($request);
+        $datos_hojas = $request['datos_hojas'];
 
         $datos_hoja = $this->formatearDatos($datos_hojas);
 
         $curso_nivel_grado = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
+
+        $json_resultados = str_replace("'", "''", json_encode($datos_hoja['resultados']));
+
         $parametros = [
             $request->iSedeId,
             $request->iSemAcadId,
@@ -56,7 +59,7 @@ class ImportarResultadosController extends Controller
             $datos_hoja['curso'],
             $datos_hoja['nivel'],
             $datos_hoja['grado'],
-            json_encode($datos_hoja['resultados']),
+            $json_resultados,
         ];
 
         if( count($datos_hoja['resultados']) === 0 ) {
@@ -77,40 +80,6 @@ class ImportarResultadosController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    private function leerHojas($request)
-    {
-        $data = [];
-
-        // Validar que request tiene al menos un archivo
-        if($request->allFiles()) {
-
-            // Obtener data solo del primer archivo
-            foreach( $request->file() as $file) {
-                $archivo = $file;
-                break;
-            }
-
-            if( !$archivo ) {
-                return $data;
-            }
-
-            $spreadsheet = IOFactory::load(
-                    $archivo, 
-                    IReader::READ_DATA_ONLY | IReader::IGNORE_ROWS_WITH_NO_CELLS | IReader::IGNORE_EMPTY_CELLS,
-                    [IOFactory::READER_XLSX]
-                );
-
-            /* CONSOLIDADO */
-            $hoja = $spreadsheet->getSheet(3);
-            $data[0] = $hoja->toArray(null, true, true, true);
-            /* PARAMETROS */
-            $hoja = $spreadsheet->getSheet(4);
-            $data[1] = $hoja->toArray(null, true, true, true);
-        }
-
-        return $data;
-    }
-
     private function formatearDatos($hojas)
     {
         if( count($hojas) == 0 ) {
@@ -118,8 +87,8 @@ class ImportarResultadosController extends Controller
         }
 
         $resultados = [];
-        $filas = $hojas[0];
-        $config = $hojas[1];
+        $config = $hojas[0];
+        $filas = $hojas[1];
 
         $data['codigo_modular'] = trim($config[10]['C']);
         $data['curso'] = trim($config[8]['H']);
@@ -128,12 +97,12 @@ class ImportarResultadosController extends Controller
 
         // Reemplazar texto a códigos identificadores
         $sexos = [
-            'Femenino' => 'F',
-            'Masculino' => 'M',
             'F' => 'F',
             'M' => 'M',
             'FEMENINO' => 'F',
             'MASCULINO' => 'M',
+            'MUJER' => 'F',
+            'HOMBRE' => 'M',
         ];
 
         foreach($filas as $index_fila => $fila)
@@ -142,47 +111,64 @@ class ImportarResultadosController extends Controller
             if($index_fila > 1)
             {
                 // Limpiar datos de la fila
+                $fila = array_map('strtoupper', $fila);
+                $fila = array_map(function($string) {
+                    $simbolos_invalidos = ['.', ',', '+', '(', ')', ':', ';', '=', '_'];
+                    return str_replace($simbolos_invalidos, '', $string);
+                }, $fila);
                 $fila = array_map('trim', $fila);
 
+                // // Cancelar si hay estudiante sin documento
+                // if( !isset($fila['C']) || $fila['C'] == '' ) {
+                //     $data['message'] = 'Uno o más estudiantes no tienen documento, por favor indique DNI, CE o código de estudiante';
+                //     $resultados = [];
+                //     exit;
+                // }
+
                 // Ignorar filas sin apellido y nombres
-                if (($fila['D'] == '') && ($fila['F'] == '')) {
+                if( (!isset($fila['D'])) || (!isset($fila['F'])) ) {
                     continue;
+                } else {
+                    if (($fila['D'] == '') && ($fila['F'] == '')) {
+                        continue;
+                    }
                 }
 
                 // Formatear resultados de estudiantes en nuevo array
-                $fecha = Date::excelToDateTimeObject($fila['B']);
+                $fecha = isset($fila['B']) ? Date::excelToDateTimeObject($fila['B']) : null;
+                $sexo = isset($fila['I']) ? ( $sexos[$fila['I']] ?? null ) : null;
                 $resultados[] = array(
                     // 'fecha' => Carbon::createFromFormat('d/m/Y', $fila['B'])->format('Y-m-d'),
-                    'fecha' => $fecha->format('Y-m-d'),
-                    'documento' => $fila['C'],
-                    'grado' => $fila['AK'],
-                    'paterno' => strtoupper($fila['D']),
-                    'materno' => strtoupper($fila['E']),
-                    'nombres' => strtoupper($fila['F']),
-                    'sexo' => $sexos[$fila['I']],
-                    'cod_modular' => $fila['K'],
-                    'seccion' => $fila['P'],
-                    'respuesta01' => $fila['Q'],
-                    'respuesta02' => $fila['R'],
-                    'respuesta03' => $fila['S'],
-                    'respuesta04' => $fila['T'],
-                    'respuesta05' => $fila['U'],
-                    'respuesta06' => $fila['V'],
-                    'respuesta07' => $fila['W'],
-                    'respuesta08' => $fila['X'],
-                    'respuesta09' => $fila['Y'],
-                    'respuesta10' => $fila['Z'],
-                    'respuesta11' => $fila['AA'],
-                    'respuesta12' => $fila['AB'],
-                    'respuesta13' => $fila['AC'],
-                    'respuesta14' => $fila['AD'],
-                    'respuesta15' => $fila['AE'],
-                    'respuesta16' => $fila['AF'],
-                    'respuesta17' => $fila['AG'],
-                    'respuesta18' => $fila['AH'],
-                    'respuesta19' => $fila['AI'],
-                    'respuesta20' => $fila['AJ'],
-                    'documento_docente' => $fila['AN'],
+                    'fecha' => isset($fecha) ? $fecha->format('Y-m-d') : null,
+                    'documento' => isset($fila['C']) ? $fila['C'] : null,
+                    'grado' => isset($fila['AK']) ? $fila['AK'] : null,
+                    'paterno' => isset($fila['D']) ? $fila['D'] : null,
+                    'materno' => isset($fila['E']) ? $fila['E'] : null,
+                    'nombres' => isset($fila['F']) ? $fila['F'] : null,
+                    'sexo' => isset($sexo) ? $sexo : null,
+                    'cod_modular' => isset($fila['K']) ? $fila['K'] : null,
+                    'seccion' => isset($fila['P']) ? $fila['P'] : null,
+                    'respuesta01' => isset($fila['Q']) ? $fila['Q'] : null,
+                    'respuesta02' => isset($fila['R']) ? $fila['R'] : null,
+                    'respuesta03' => isset($fila['S']) ? $fila['S'] : null,
+                    'respuesta04' => isset($fila['T']) ? $fila['T'] : null,
+                    'respuesta05' => isset($fila['U']) ? $fila['U'] : null,
+                    'respuesta06' => isset($fila['V']) ? $fila['V'] : null,
+                    'respuesta07' => isset($fila['W']) ? $fila['W'] : null,
+                    'respuesta08' => isset($fila['X']) ? $fila['X'] : null,
+                    'respuesta09' => isset($fila['Y']) ? $fila['Y'] : null,
+                    'respuesta10' => isset($fila['Z']) ? $fila['Z'] : null,
+                    'respuesta11' => isset($fila['AA']) ? $fila['AA'] : null,
+                    'respuesta12' => isset($fila['AB']) ? $fila['AB'] : null,
+                    'respuesta13' => isset($fila['AC']) ? $fila['AC'] : null,
+                    'respuesta14' => isset($fila['AD']) ? $fila['AD'] : null,
+                    'respuesta15' => isset($fila['AE']) ? $fila['AE'] : null,
+                    'respuesta16' => isset($fila['AF']) ? $fila['AF'] : null,
+                    'respuesta17' => isset($fila['AG']) ? $fila['AG'] : null,
+                    'respuesta18' => isset($fila['AH']) ? $fila['AH'] : null,
+                    'respuesta19' => isset($fila['AI']) ? $fila['AI'] : null,
+                    'respuesta20' => isset($fila['AJ']) ? $fila['AJ'] : null,
+                    'documento_docente' => isset($fila['AN']) ? $fila['AN'] : null,
                 );
             }
         }
