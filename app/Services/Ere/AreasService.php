@@ -29,7 +29,7 @@ class AreasService
         if (!Storage::disk('public')->exists($rutaDestino)) {
             Storage::disk('public')->makeDirectory($rutaDestino);
         }
-        Storage::disk('public')->putFileAs($rutaDestino, $archivo, $nombreArchivo);
+        $archivo->move(Storage::disk('public')->path($rutaDestino), $nombreArchivo);
     }
 
     public static function obtenerArchivoErePdf($evaluacion, $area)
