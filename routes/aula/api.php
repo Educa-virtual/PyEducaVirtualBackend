@@ -94,6 +94,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('guardarAnuncios', [AnunciosController::class, 'guardarAnuncios']);
         Route::post('listarAnuncios', [AnunciosController::class, 'listarAnuncios']);
         Route::post('eliminarAnuncios', [AnunciosController::class, 'eliminarAnuncios']);
+        Route::post('fijarAnuncios', [AnunciosController::class, 'fijarAnuncios']);
     });
 
     Route::group(['prefix' => 'foros'], function () {

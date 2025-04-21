@@ -131,5 +131,43 @@ class AnunciosController extends Controller
             );
         }
     }
+
+    public function fijarAnuncios(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iAnuncioId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $parametros = [
+                $request->iAnuncioId                  ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec aula.SP_UPD_anunciosFijarxiAnuncioId 
+                    @_iAnuncioId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            if ($data[0]->iAnuncioId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha fijado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido fijar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
     
 }
