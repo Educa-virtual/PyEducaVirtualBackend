@@ -20,5 +20,6 @@ Route::group(['prefix' => 'cap'], function () {
     Route::post('guardarCapacitaciones', [CapacitacionesController::class, 'guardarCapacitaciones']);
     Route::post('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
     Route::post('actualizarCapacitaciones', [CapacitacionesController::class, 'actualizarCapacitaciones']);
+    Route::post('eliminarCapacitaciones', [CapacitacionesController::class, 'eliminarCapacitaciones']);
   });
 });
