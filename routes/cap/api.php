@@ -1,0 +1,24 @@
+<?php
+
+use App\Http\Controllers\cap\CapacitacionesController;
+use App\Http\Controllers\cap\NivelPedagogicosController;
+use App\Http\Controllers\cap\TipoCapacitacionesController;
+use App\Http\Controllers\cap\TipoPublicosController;
+use Illuminate\Support\Facades\Route;
+
+Route::group(['prefix' => 'cap'], function () {
+  Route::group(['prefix' => 'tipo-capacitaciones'], function () {
+    Route::post('listarTipoCapacitaciones', [TipoCapacitacionesController::class, 'listarTipoCapacitaciones']);
+  });
+  Route::group(['prefix' => 'nivel-pedagogicos'], function () {
+    Route::post('listarNivelPedagogicos', [NivelPedagogicosController::class, 'listarNivelPedagogicos']);
+  });
+  Route::group(['prefix' => 'tipo-publicos'], function () {
+    Route::post('listarTipoPublicos', [TipoPublicosController::class, 'listarTipoPublicos']);
+  });
+  Route::group(['prefix' => 'capacitaciones'], function () {
+    Route::post('guardarCapacitaciones', [CapacitacionesController::class, 'guardarCapacitaciones']);
+    Route::post('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
+    Route::post('actualizarCapacitaciones', [CapacitacionesController::class, 'actualizarCapacitaciones']);
+  });
+});
