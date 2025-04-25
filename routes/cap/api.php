@@ -24,5 +24,7 @@ Route::group(['prefix' => 'cap'], function () {
   });
   Route::group(['prefix' => 'inscripciones'], function () {
     Route::post('persona-inscripcion', [InscripcionesController::class, 'listarPersonaInscripcion']);
+    Route::post('inscripciones', [InscripcionesController::class, 'listarInscripcionesxiCapacitacionId']);
+    Route::post('inscripcion', [InscripcionesController::class, 'guardarInscripcion']);
   });
 });
