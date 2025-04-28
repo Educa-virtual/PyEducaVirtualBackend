@@ -22,6 +22,7 @@ class InscripcionesController extends Controller
 
     public function listarPersonaInscripcion(Request $request)
     {
+        // return $request -> all();
         try {
             $fieldsToDecode = [
                 'iTipoIdentId',
@@ -31,8 +32,11 @@ class InscripcionesController extends Controller
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $data = new PersonaController();
-            $data = $data->validate($request)->getData(true);
-            if (isset($data['data']['iPersId'])) {
+            // $data = $data->validate($request)->getData(true);
+            $data = ($data->validate($request))->getContent();
+            $data = json_decode($data, true);
+             //return ($data);
+            if (isset($data['iPersId'])) {
                 $request->merge(['iPersId' => $data['data']['iPersId']]);
                 $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
