@@ -64,7 +64,7 @@
             @endisset
         </tr>
         <tr>
-            <th class="align-middle bg-light text-left" width="8%">CURSO:</th>
+            <th class="align-middle bg-light text-left" width="8%">ÁREA:</th>
             <td class="align-middle text-left">{{ $filtros->curso }}</td>
             @isset( $filtros->distrito )
                 <th class="align-middle bg-light text-left" width="8%">DISTRITO:</th>
@@ -95,14 +95,34 @@
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
-            <th class="font-lg bg-light text-center" colspan="{{ $nro_preguntas + 9 }}">RESULTADOS DE ESTUDIANTES</th>
+            @php
+                $otras_columnas = 9;
+                if( !isset($filtros->cod_ie) && !isset($filtros->distrito) ) {
+                    $otras_columnas = 9;
+                } elseif( isset($filtros->distrito) && !isset($filtros->cod_ie) ) {
+                    $otras_columnas = 8;
+                } else {
+                    $otras_columnas = 7;
+                }
+            @endphp
+            <th class="font-lg bg-light text-center" colspan="{{ $nro_preguntas + $otras_columnas }}">RESULTADOS DE ESTUDIANTES</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="3%">#</th>
-            <th class="align-middle bg-light text-center" width="8%">I.E.</th>
-            <th class="align-middle bg-light text-center" width="8%">DISTRITO</th>
+            @if( !isset($filtros->cod_ie) && !isset($filtros->distrito) )
+                <th class="align-middle bg-light text-center" width="8%">I.E.</th>
+                <th class="align-middle bg-light text-center" width="8%">DISTRITO</th>
+            @elseif( isset($filtros->distrito) && !isset($filtros->cod_ie) )
+                <th class="align-middle bg-light text-center" width="8%">DISTRITO</th>
+            @endif
             <th class="align-middle bg-light text-center font-xs" width="4%">SECCIÓN</th>
-            <th class="align-middle bg-light text-center" width="10%">ESTUDIANTE</th>
+            @if( isset($filtros->cod_ie) && isset($filtros->distrito) )
+                <th class="align-middle bg-light text-center" width="26%">ESTUDIANTE</th>
+            @elseif( isset($filtros->cod_ie) || isset($filtros->distrito) )
+                <th class="align-middle bg-light text-center" width="18%">ESTUDIANTE</th>
+            @else
+                <th class="align-middle bg-light text-center" width="10%">ESTUDIANTE</th>
+            @endif
             @for ($pregunta = 1; $pregunta <= $nro_preguntas; $pregunta++ )
                 <th class="align-middle bg-light text-center">{{ $pregunta }}</th>
             @endfor
@@ -116,8 +136,12 @@
         @foreach ( $resultados as $resultado )
             <tr>
                 <td class="align-middle text-center">{{ $loop->iteration }}</td>
-                <td class="align-middle text-left">{{ $resultado->cod_ie }}</td>
-                <td class="align-middle text-left">{{ $resultado->distrito }}</td>
+                @if( !isset($filtros->cod_ie) && !isset($filtros->distrito) )
+                    <td class="align-middle text-left">{{ $resultado->cod_ie }}</td>
+                    <td class="align-middle text-left">{{ $resultado->distrito }}</td>
+                @elseif( isset($filtros->distrito) && !isset($filtros->cod_ie) )
+                    <td class="align-middle text-left">{{ $resultado->distrito }}</td>
+                @endif
                 <td class="align-middle text-center">{{ $resultado->seccion }}</td>
                 <td class="align-middle text-left">{{ $resultado->estudiante }}</td>
                 @foreach (json_decode($resultado->respuestas) as $value)

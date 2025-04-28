@@ -27,7 +27,7 @@ class ReporteEvaluacionesController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesCursosIeGradosSecciones ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesInforme ?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
