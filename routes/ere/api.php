@@ -21,10 +21,10 @@ use App\Http\Controllers\ere\ResultadosController;
 use App\Http\Controllers\ere\TipoEvaluacionController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
-use App\Http\Middleware\RefreshTokenMiddleware;
+use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 //$this->middleware('auth:api');
-Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshTokenMiddleware::class]], function () {
+Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
