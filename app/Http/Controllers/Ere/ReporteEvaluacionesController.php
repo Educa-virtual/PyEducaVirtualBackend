@@ -56,6 +56,7 @@ class ReporteEvaluacionesController extends Controller
             $request->iTipoSectorId,
             $request->iZonaId,
             $request->iCredEntPerfId,
+            0, // No mostrar detalle en vista
         ];
 
         try {
@@ -87,7 +88,8 @@ class ReporteEvaluacionesController extends Controller
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
-            $request->iCredEntPerfId
+            $request->iCredEntPerfId,
+            1, // Mostrar detalle en PDF
         ];
 
         try {
@@ -134,7 +136,8 @@ class ReporteEvaluacionesController extends Controller
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
-            $request->iCredEntPerfId
+            $request->iCredEntPerfId,
+            1, // Mostrar detalle en EXCEL
         ];
 
         try {
