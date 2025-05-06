@@ -27,7 +27,7 @@ class ReporteEvaluacionesController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesCursosIeGradosSecciones ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesInforme ?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -56,6 +56,7 @@ class ReporteEvaluacionesController extends Controller
             $request->iTipoSectorId,
             $request->iZonaId,
             $request->iCredEntPerfId,
+            0, // No mostrar detalle en vista
         ];
 
         try {
@@ -87,7 +88,8 @@ class ReporteEvaluacionesController extends Controller
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
-            $request->iCredEntPerfId
+            $request->iCredEntPerfId,
+            1, // Mostrar detalle en PDF
         ];
 
         try {
@@ -134,7 +136,8 @@ class ReporteEvaluacionesController extends Controller
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
-            $request->iCredEntPerfId
+            $request->iCredEntPerfId,
+            1, // Mostrar detalle en EXCEL
         ];
 
         try {
