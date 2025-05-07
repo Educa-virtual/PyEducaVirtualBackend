@@ -319,6 +319,9 @@ Route::group(['prefix' => 'acad'], function () {
 
         //* DELETE: Periodos académicos de un calendario
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
+
+        Route::post('obtenerCursosDiasHorarios', [CalendarioAcademicosController::class, 'obtenerCursosDiasHorarios']);
+        Route::post('CursosDiasHorarios', [CalendarioAcademicosController::class, 'guardarRemoverCursosDiasHorarios']);
     });
 
     Route::group(['prefix' => 'estudiante'], function () {
