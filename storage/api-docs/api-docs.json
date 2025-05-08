@@ -5,16 +5,60 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/acad/buzon-sugerencias": {
+        "/api/acad/estudiantes/buzon-sugerencias": {
             "get": {
                 "tags": [
                     "Buzón de sugerencias"
                 ],
-                "summary": "Permite a un estudiante obtener la lista de sus sugerencias registradas.",
-                "operationId": "f5bace4d0390a02a94f1d394b5846438",
+                "summary": "Lista las sugerencias registradas por el alumno, que no estén marcadas como eliminadas.",
+                "operationId": "e2f5b162600e28e212f71b87c0a8e69c",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iSugerenciaId",
+                        "in": "query",
+                        "description": "Id de la sugerencia a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Sugerencia registrada exitosamente"
+                        "description": "Datos obtenidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Datos obtenidos"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "Lista de sugerencias"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 },
                 "security": [
@@ -28,7 +72,7 @@
                     "Buzón de sugerencias"
                 ],
                 "summary": "Permite a un estudiante registrar una sugerencia en el buzón de sugerencias.",
-                "operationId": "ce6b70cab7f63c3c588da0f6afb4dc7f",
+                "operationId": "e47bae1b367d762713673d82372241b4",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/iCredEntPerfId"
@@ -71,11 +115,15 @@
                                     "properties": {
                                         "status": {
                                             "type": "string",
-                                            "example": "success"
+                                            "example": "Success"
                                         },
                                         "message": {
                                             "type": "string",
                                             "example": "Se ha registrado su sugerencia"
+                                        },
+                                        "data": {
+                                            "type": "integer",
+                                            "example": "ID de la sugerencia registrada"
                                         }
                                     },
                                     "type": "object"
@@ -84,24 +132,59 @@
                         }
                     },
                     "400": {
-                        "description": "Problema al registrar",
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/acad/estudiantes/buzon-sugerencias/{iCredEntPerfId}": {
+            "delete": {
+                "tags": [
+                    "Buzón de sugerencias"
+                ],
+                "summary": "Marca la sugerencia de un alumno como eliminada.",
+                "operationId": "d69dcb847c634b6c41d2e41bf34819bb",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sugerencia eliminada",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
                                         "status": {
                                             "type": "string",
-                                            "example": "danger"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Hubo un problema al registrar: [detalle del error]"
+                                            "example": "Success"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 },
                 "security": [
@@ -194,6 +277,84 @@
         }
     },
     "components": {
+        "responses": {
+            "204": {
+                "description": "Registro eliminado",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Success"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "400": {
+                "description": "Error en la solicitud",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Error"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Mensaje de error de la solicitud"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "403": {
+                "description": "Sin autorización",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Error"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "No tiene permiso para realizar esta acción"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "422": {
+                "description": "Error de validación",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Error"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Mensaje de error de validación"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "parameters": {
             "iCredEntPerfId": {
                 "name": "iCredEntPerfId",

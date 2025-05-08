@@ -16,14 +16,13 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
 
     Route::group(['prefix' => 'estudiantes'], function () {
+        Route::post('buzon-sugerencias', [BuzonSugerenciaController::class, 'registrarSugerencia']);
+        Route::get('buzon-sugerencias', [BuzonSugerenciaController::class, 'obtenerListaSugerencias']);
+        Route::delete('buzon-sugerencias/{iSugerenciaId}', [BuzonSugerenciaController::class, 'eliminarSugerencia']);
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
     });
     Route::group(['prefix' => 'grados'], function () {
         Route::post('handleCrudOperation', [GradosController::class, 'handleCrudOperation']);
-    });
-
-    Route::group(['prefix' => 'buzon-sugerencias'], function () {
-        Route::post('/', [BuzonSugerenciaController::class, 'store']);
     });
 
     Route::group(['prefix' => 'especialistas-dremo'], function () {

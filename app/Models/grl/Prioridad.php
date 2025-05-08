@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class Prioridad extends Model
 {
-    public static function obtenerListaPrioridades()
+    public static function selPrioridades()
     {
-        //REVISAR QUERY
-        return DB::select("SELECT iPrioridadId, cPrioridadNombre FROM grl.prioridades ORDER BY iPrioridadId");
+        return DB::select("EXEC grl.SP_SEL_prioridades");
     }
 }

@@ -3,8 +3,14 @@
 namespace App\Http\Controllers\acad;
 
 use App\Enums\Perfil;
+use App\Helpers\FormatearErrorHelper;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\acad\EliminarSugerenciaRequest;
+use App\Http\Requests\acad\RegistrarSugerenciaRequest;
+use App\Http\Requests\GeneralFormRequest;
 use App\Models\acad\BuzonSugerencia;
+use App\Services\acad\BuzonSugerenciasService;
 use App\Services\ParseSqlErrorService;
 use Exception;
 use Hashids\Hashids;
@@ -14,12 +20,13 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class BuzonSugerenciaController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/acad/buzon-sugerencias",
+     *     path="/api/acad/estudiantes/buzon-sugerencias",
      *     tags={"Buzón de sugerencias"},
      *     summary="Permite a un estudiante registrar una sugerencia en el buzón de sugerencias.",
      *     security={{"bearerAuth":{}}},
@@ -49,44 +56,94 @@ class BuzonSugerenciaController extends Controller
      *         response=201,
      *         description="Sugerencia registrada exitosamente",
      *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="success"),
-     *             @OA\Property(property="message", type="string", example="Se ha registrado su sugerencia")
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="Se ha registrado su sugerencia"),
+     *             @OA\Property(property="data", type="int", example="ID de la sugerencia registrada")
      *         )
      *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Problema al registrar",
-     *          @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", example="danger"),
-     *             @OA\Property(property="message", type="string", example="Hubo un problema al registrar: [detalle del error]")
-     *         )
-     *     )
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
-    public function store(Request $request)
+    public function registrarSugerencia(RegistrarSugerenciaRequest $request)
     {
-        Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
         try {
-            $usuario = Auth::user();
-            BuzonSugerencia::registrarBuzon($request, $usuario);
-            return response()->json(['status' => 'success', 'message' => 'Se ha registrado su sugerencia', 'data'=>$usuario], Response::HTTP_CREATED);
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $data = BuzonSugerencia::insBuzonSugerencias($request);
+            BuzonSugerenciasService::guardarArchivos($data,$request->file('fArchivos'));
+            return FormatearMensajeHelper::ok('Se ha registrado su sugerencia', $data, Response::HTTP_CREATED);
         } catch (Exception $ex) {
-            return response()->json(['status' => 'danger', 'message' => 'Hubo un problema al registrar: ' . $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return FormatearMensajeHelper::error($ex);
         }
     }
 
     /**
-     *
      * @OA\Get(
-     *     path="/api/acad/buzon-sugerencias",
+     *     path="/api/acad/estudiantes/buzon-sugerencias",
      *     tags={"Buzón de sugerencias"},
-     *     summary="Permite a un estudiante obtener la lista de sus sugerencias registradas.",
+     *     summary="Lista las sugerencias registradas por el alumno, que no estén marcadas como eliminadas.",
      *     security={{"bearerAuth":{}}},
-     *    @OA\Response(response=200,description="Sugerencia registrada exitosamente"),
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Parameter(
+     *         name="iSugerenciaId",
+     *         in="query",
+     *         required=true,
+     *         description="Id de la sugerencia a eliminar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Datos obtenidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="Datos obtenidos"),
+     *             @OA\Property(property="data", type="object", example="Lista de sugerencias")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
-    public function index()
+    public function obtenerListaSugerencias(Request $request)
     {
-        return response()->json(['status' => 'success', 'message' => 'Datos obtenidos'], Response::HTTP_OK);
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $data = BuzonSugerencia::selBuzonSugerencias($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/acad/estudiantes/buzon-sugerencias/{iCredEntPerfId}",
+     *     tags={"Buzón de sugerencias"},
+     *     summary="Marca la sugerencia de un alumno como eliminada.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sugerencia eliminada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
+     * )
+     */
+    public function eliminarSugerencia($iSugerenciaId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            BuzonSugerencia::delBuzonSugerencias($iSugerenciaId, $request);
+            return FormatearMensajeHelper::ok('Success', null, Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 }
