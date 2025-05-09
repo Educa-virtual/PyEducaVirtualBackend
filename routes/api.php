@@ -15,6 +15,7 @@ use App\http\Controllers\api\acad\CalendarioAcademicosController;
 use App\http\Controllers\api\acad\GestionInstitucionalController;
 use App\http\Controllers\api\acad\HorarioController;
 use App\http\Controllers\api\acad\PeriodoAcademicosController;
+use App\http\Controllers\api\acad\AdministradorController;
 use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
@@ -47,6 +48,12 @@ use Illuminate\Support\Facades\Storage;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+
+Route::group(['prefix' => 'administrador'], function () {
+    Route::post('addCurriculas', [administradorController::class, 'addCurriculas']);
+    Route::post('mensaje', [administradorController::class, 'mensaje']);
+});
+
 
 Route::group(['prefix' => 'ere'], function () {
 
@@ -81,6 +88,8 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
+
+
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
