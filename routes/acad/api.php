@@ -19,6 +19,8 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
         Route::post('buzon-sugerencias', [BuzonSugerenciaController::class, 'registrarSugerencia']);
         Route::get('buzon-sugerencias', [BuzonSugerenciaController::class, 'obtenerListaSugerencias']);
         Route::delete('buzon-sugerencias/{iSugerenciaId}', [BuzonSugerenciaController::class, 'eliminarSugerencia']);
+        Route::get('buzon-sugerencias/{iSugerenciaId}/archivos', [BuzonSugerenciaController::class, 'obtenerArchivosSugerencia']);
+        Route::get('buzon-sugerencias/{iSugerenciaId}/archivos/{nombreArchivo}', [BuzonSugerenciaController::class, 'descargarArchivosSugerencia']);
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
     });
     Route::group(['prefix' => 'grados'], function () {

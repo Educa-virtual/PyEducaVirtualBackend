@@ -15,15 +15,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/iCredEntPerfId"
-                    },
-                    {
-                        "name": "iSugerenciaId",
-                        "in": "query",
-                        "description": "Id de la sugerencia a eliminar",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
                     }
                 ],
                 "responses": {
@@ -148,6 +139,69 @@
                 ]
             }
         },
+        "/api/acad/estudiantes/buzon-sugerencias/{iSugerenciaId}/archivos": {
+            "post": {
+                "tags": [
+                    "Buzón de sugerencias"
+                ],
+                "summary": "Obtiene la lista de archivos subidos para una sugerencia.",
+                "operationId": "fc809a9f0c939a299a078c6b5a31249b",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iSugerenciaId",
+                        "in": "path",
+                        "description": "Id de la sugerencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sugerencia registrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Se ha registrado su sugerencia"
+                                        },
+                                        "data": {
+                                            "type": "integer",
+                                            "example": "ID de la sugerencia registrada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/acad/estudiantes/buzon-sugerencias/{iCredEntPerfId}": {
             "delete": {
                 "tags": [
@@ -156,6 +210,15 @@
                 "summary": "Marca la sugerencia de un alumno como eliminada.",
                 "operationId": "d69dcb847c634b6c41d2e41bf34819bb",
                 "parameters": [
+                    {
+                        "name": "iSugerenciaId",
+                        "in": "path",
+                        "description": "Id de la sugerencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
                     {
                         "$ref": "#/components/parameters/iCredEntPerfId"
                     }

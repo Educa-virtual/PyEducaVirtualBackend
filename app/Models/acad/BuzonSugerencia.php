@@ -8,6 +8,7 @@ use App\Http\Requests\GeneralFormRequest;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class BuzonSugerencia extends Model
 {
@@ -38,5 +39,24 @@ class BuzonSugerencia extends Model
             $iSugerenciaId,
         ]);
         return $data;
+    }
+
+    public static function obtenerArchivosSugerencia($iSugerenciaId) {
+        $rutaCarpeta = "sugerencias/$iSugerenciaId/";
+        if (!Storage::disk('public')->exists($rutaCarpeta)) {
+            return []; // Retorna un array vacío si la carpeta no existe
+        }
+
+        $archivos = Storage::disk('public')->files($rutaCarpeta);
+        $listaArchivos = [];
+
+        foreach ($archivos as $archivo) {
+            $listaArchivos[] = [
+                'nombreArchivo' => basename($archivo),
+                'rutaCompleta' => $archivo,
+            ];
+        }
+
+        return $listaArchivos;
     }
 }

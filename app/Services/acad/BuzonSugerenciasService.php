@@ -2,6 +2,7 @@
 
 namespace App\Services\acad;
 
+use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class BuzonSugerenciasService
@@ -22,5 +23,28 @@ class BuzonSugerenciasService
                 $archivo->storeAs($rutaDestino, $nombreArchivo, 'public');
             }
         }
+    }
+
+    public static function descargarArchivo($id, $archivo)
+    {
+        /*
+        $rutaCarpeta = "sugerencias/$iSugerenciaId/";
+            $rutaArchivo = $rutaCarpeta . $nombreArchivo;
+
+            if (!Storage::disk('public')->exists($rutaArchivo)) {
+                return FormatearMensajeHelper::error(new Exception('El archivo no existe'), Response::HTTP_NOT_FOUND);
+            }
+
+            return Storage::disk('public')->download($rutaArchivo, $nombreArchivo);
+        */
+        $rutaArchivo = "sugerencias/".$id."/".$archivo;
+        if (!Storage::disk('public')->exists($rutaArchivo)) {
+            throw new Exception('El archivo no existe');
+        }
+        $data = [];
+        $data['contenido'] = Storage::disk('public')->get($rutaArchivo);
+        $data['nombreArchivo'] = $archivo;/*ucwords(strtolower($area->cCursoNombre)) . '-' . $area->cGradoAbreviacion . '-'
+            . str_replace('Educación ', '', $area->cNivelTipoNombre) . '-' . $fechaInicio->year . '.pdf';*/
+        return $data;
     }
 }
