@@ -4,6 +4,7 @@ use App\Http\Controllers\acad\ApoderadoController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\MatriculaController;
+use App\Http\Controllers\acad\AdministradorController;
 use App\Http\Controllers\ere\InstitucionesEducativasController;
 use App\Http\Controllers\ere\CapacidadesController;
 use App\Http\Controllers\ere\CompetenciasController;
@@ -47,6 +48,11 @@ use Illuminate\Support\Facades\Storage;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+Route::group(['prefix' => 'administrador'], function () {
+    Route::post('addCurriculas', [administradorController::class, 'addCurriculas']);
+    Route::post('mensaje', [administradorController::class, 'mensaje']);
+});
+
 
 Route::group(['prefix' => 'ere'], function () {
 
