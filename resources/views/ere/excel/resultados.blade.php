@@ -175,12 +175,12 @@ foreach( $resultados as $key => $value ) {
 
     $indice = 1;
 
-    foreach (json_decode($value->respuestas) as $value) {
+    foreach ($value->respuestas as $value) {
         $columnaLetra = Coordinate::stringFromColumnIndex(10 + $indice);
-        $hoja2->setCellValue($columnaLetra . ($key + 2), $value->respuesta);
-        $color = $value->correcta == true ? Color::COLOR_DARKGREEN : Color::COLOR_RED;
-        $relleno = $value->correcta == true ? Fill::FILL_SOLID : Fill::FILL_NONE;
-        $fondo = $value->correcta == true ? $header_color : Color::COLOR_WHITE;
+        $hoja2->setCellValue($columnaLetra . ($key + 2), $value->r);
+        $color = $value->c == true ? Color::COLOR_DARKGREEN : Color::COLOR_RED;
+        $relleno = $value->c == true ? Fill::FILL_SOLID : Fill::FILL_NONE;
+        $fondo = $value->c == true ? $header_color : Color::COLOR_WHITE;
         $hoja2->getStyle($columnaLetra . ($key + 2))->getFont()->getColor()->setARGB($color);
         $hoja2->getStyle($columnaLetra . ($key + 2))->getFill()->setFillType($relleno)->getStartColor()->setARGB($fondo);
         $indice++;

@@ -60,7 +60,7 @@ class ReporteEvaluacionesController extends Controller
         ];
 
         try {
-            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -93,7 +93,7 @@ class ReporteEvaluacionesController extends Controller
         ];
 
         try {
-            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -105,18 +105,23 @@ class ReporteEvaluacionesController extends Controller
 
         $filtros = $data[0][0];
         $resultados = $data[1];
+        foreach ( $resultados as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
         $niveles = $data[2];
         $resumen = $data[3];
         $matriz = $data[4];
 
         $nro_preguntas = count($matriz);
-        
+
+        gc_collect_cycles();
+
         $pdf = App::make('dompdf.wrapper');
 
         $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf'))->setPaper('a4', 'landscape');
         return $pdf->stream('RESULTADOS-ERE-'.date('Ymdhis').'.pdf');
 
-        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros'));
+        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf'));
 
     }
 
@@ -141,7 +146,7 @@ class ReporteEvaluacionesController extends Controller
         ];
 
         try {
-            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumen ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -153,6 +158,9 @@ class ReporteEvaluacionesController extends Controller
 
         $filtros = $data[0][0];
         $resultados = $data[1];
+        foreach ( $resultados as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
         $niveles = $data[2];
         $resumen = $this->convertDataToChartForm($data[3]);
         $matriz = $data[4];

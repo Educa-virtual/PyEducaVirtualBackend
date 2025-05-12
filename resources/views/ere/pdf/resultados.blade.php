@@ -145,8 +145,8 @@
                 <td class="align-middle text-center">{{ $resultado->seccion }}</td>
                 <td class="align-middle text-left">{{ $resultado->estudiante }}</td>
                 @foreach (json_decode($resultado->respuestas) as $value)
-                    <td class="align-middle text-center {{ $value->correcta == true ? 'text-success bg-light' : 'text-danger' }}">
-                        {{ $value->respuesta }}
+                    <td class="align-middle text-center {{ $value->c == 1 ? 'text-success bg-light' : 'text-danger' }}">
+                        {{ $value->r }}
                     </td>
                 @endforeach
                 <td class="align-middle text-center">{{ (int) $resultado->aciertos }}</td>
