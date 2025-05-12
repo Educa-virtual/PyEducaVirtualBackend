@@ -36,6 +36,50 @@ class CredencialescCredUsuariocClaveController extends Controller
         return false;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Login de usuario",
+     *     description="Autentica un usuario y retorna un token JWT junto con la data del usuario.",
+     *     tags={"Autenticación"},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="query",
+     *         required=true,
+     *         description="Usuario",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="pass",
+     *         in="query",
+     *         required=true,
+     *         description="Contraseña del usuario",
+     *         @OA\Schema(type="string", minLength=6)
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Errores de autenticación posibles:
+     *                      - Ya alcanzó el límite de intentos
+     *                      - Usuario y contraseña incorrectos
+     *                      - Debe actualizar su contraseña
+     *                      - Usuario no existe",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="validated", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Verifica tu usuario y contraseña")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Inicio de sesión correcto",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="accessToken", type="string", description="JWT token"),
+     *             @OA\Property(property="token_type", type="string", example="bearer"),
+     *             @OA\Property(property="expires_in", type="integer", description="Tiempo de duración del token"),
+     *             @OA\Property(property="user", type="object", description="Data del usuario")
+     *         )
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
 
@@ -52,12 +96,11 @@ class CredencialescCredUsuariocClaveController extends Controller
         $intentos = DB::select('select iCredIntentos from seg.credenciales where cCredUsuario = ?', [$credentials['cCredUsuario']]);
         $duracion =  DB::select('select DATEDIFF(minute, dtCredRegistro, GETDATE()) as duracion from seg.credenciales where cCredUsuario = ?', [$credentials['cCredUsuario']]);
 
-         if (count($intentos)>0 && count($duracion) > 0) {
+        if (count($intentos) > 0 && count($duracion) > 0) {
             if (!$user = $this->customAttempt($credentials)) {
                 if ((int)$intentos[0]->iCredIntentos === 3 && (int)$duracion[0]->duracion < 5) {
                     return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, vuelva a intentar en 5 minutos.'], 401);
-                } 
-                    else {
+                } else {
                     // if ((int)$duracion[0]->duracion >= 5 || (int)$intentos[0]->iCredIntentos >= 5) {
                     //     return response()->json(['validated' => false, 'message' => 'Ya alcanzó el límite de intentos, comuníquese con el administrador'], 401);
                     // }
@@ -72,7 +115,7 @@ class CredencialescCredUsuariocClaveController extends Controller
         $pass = $request->pass;
         $data = DB::select('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?', [$user, $pass]);
 
-        
+
 
         if (!$user = $this->customAttempt($credentials)) {
             return response()->json(['validated' => false, 'message' => 'Verifica tu usuario y contraseña'], 401);
@@ -95,7 +138,7 @@ class CredencialescCredUsuariocClaveController extends Controller
         }
 
         $token = JWTAuth::fromUser($user);
-        //Obtener roles 
+        //Obtener roles
         $perfiles = DB::select('EXEC seg.Sp_SEL_credenciales_entidades_perfilesXiCredId ?', [$data[0]->iCredId]);
         $data[0]->perfiles = $perfiles;
         if ($data[0]->contactar) {

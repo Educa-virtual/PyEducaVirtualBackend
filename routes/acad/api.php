@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\acad\BuzonSugerenciaController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
@@ -9,16 +10,23 @@ use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
+use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'acad'], function () {
+Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
 
     Route::group(['prefix' => 'estudiantes'], function () {
+        Route::post('buzon-sugerencias', [BuzonSugerenciaController::class, 'registrarSugerencia']);
+        Route::get('buzon-sugerencias', [BuzonSugerenciaController::class, 'obtenerListaSugerencias']);
+        Route::delete('buzon-sugerencias/{iSugerenciaId}', [BuzonSugerenciaController::class, 'eliminarSugerencia']);
+        Route::get('buzon-sugerencias/{iSugerenciaId}/archivos', [BuzonSugerenciaController::class, 'obtenerArchivosSugerencia']);
+        Route::get('buzon-sugerencias/{iSugerenciaId}/archivos/{nombreArchivo}', [BuzonSugerenciaController::class, 'descargarArchivosSugerencia']);
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
     });
     Route::group(['prefix' => 'grados'], function () {
         Route::post('handleCrudOperation', [GradosController::class, 'handleCrudOperation']);
     });
+
     Route::group(['prefix' => 'especialistas-dremo'], function () {
         Route::get('', [EspecialistasDremoController::class, 'obtenerEspecialistas']);
         Route::get('{docenteId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEspecialista']);
