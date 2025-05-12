@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use DateTimeImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -65,6 +66,22 @@ class FormatearExcelMatriculasService
                 // Limpiar datos de la fila
                 $fila = array_map('trim', $fila);
 
+                // Formatear fecha de nacimiento a Y-m-d
+                $fecha_nacimiento_formateada = NULL;
+                if ($fila['Y'] != '') {
+                    if( strpos($fila['Y'], '/') !== false ) {
+                        $fecha_nacimiento = DateTimeImmutable::createFromFormat('d/m/Y', $fila['Y']);
+                        $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');
+                    } elseif( strpos($fila['Y'], '-') == 4 ) {
+                        $fecha_nacimiento = DateTimeImmutable::createFromFormat('Y', $fila['Y']);
+                        $fecha_nacimiento_formateada = $fila['Y'];
+                    } elseif( strpos($fila['Y'], '-') == 2 ) {
+                        $fecha_nacimiento = DateTimeImmutable::createFromFormat('d-m-Y', $fila['Y']);
+                        $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');
+                    } else {
+                        $fecha_nacimiento_formateada = NULL;
+                    }
+                }
                 // Formatear datos de estudiantes y padres en nuevo array
                 $estudiantes[] = array(
                     'grado' => $fila['C'],
@@ -77,7 +94,7 @@ class FormatearExcelMatriculasService
                     'materno' => $fila['R'],
                     'nombres' => $fila['U'],
                     'sexo' => $sexos[strtoupper($fila['X'])],
-                    'nacimiento' => Carbon::createFromFormat('d/m/Y', $fila['Y'])->format('Y-m-d'),
+                    'nacimiento' => $fecha_nacimiento_formateada,
                     'estado_matricula' => $fila['AA'],
                     'tipo_vacante' => $fila['AB'],
                 );

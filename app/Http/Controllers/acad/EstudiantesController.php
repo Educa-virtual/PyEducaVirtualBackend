@@ -312,6 +312,9 @@ class EstudiantesController extends Controller
         $datos_hojas = LeerExcelService::leer($request);
 
         $datos_hoja = FormatearExcelMatriculasService::formatear($datos_hojas);
+
+        $json_estudiantes = str_replace("'", "''", json_encode($datos_hoja['estudiantes']));
+
         $parametros = [
             $request->iSedeId,
             $request->iSemAcadId,
@@ -320,7 +323,7 @@ class EstudiantesController extends Controller
             $datos_hoja['nivel'],
             $datos_hoja['modalidad'],
             $datos_hoja['turno'],
-            json_encode($datos_hoja['estudiantes']),
+            $json_estudiantes,
             $datos_hoja['codigo_modular'],
         ];
 

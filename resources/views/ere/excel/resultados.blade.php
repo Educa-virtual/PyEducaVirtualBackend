@@ -91,7 +91,7 @@ foreach($niveles as $nivel) {
 $hoja1->setCellValue('A' . ($fila + 1), 'ESTUDIANTES:')
     ->setCellValue('B' . ($fila + 1), count($resultados));
 
-$hoja1->getStyle('A1:A20')
+$hoja1->getStyle('A1:A21')
     ->getFont()
     ->setBold(true);
 $hoja1->getStyle('A16:B16')
@@ -99,7 +99,12 @@ $hoja1->getStyle('A16:B16')
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
     ->setARGB($header_color);
-    $hoja1->getStyle('A1:B1')
+$hoja1->getStyle('A21:B21')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+$hoja1->getStyle('A1:B1')
     ->getFill()
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
@@ -186,7 +191,7 @@ foreach( $resultados as $key => $value ) {
  * FORMATEAR RESULTADOS SEGUN PREGUNTAS
  */
 
-$ultimaColumnaLetra = Coordinate::stringFromColumnIndex($nro_preguntas);
+$ultimaColumnaLetra = Coordinate::stringFromColumnIndex($nro_preguntas + 1);
 
 $hoja3->fromArray($hoja3_datos);
 $hoja3->setCellValue('A1', 'PREGUNTA');

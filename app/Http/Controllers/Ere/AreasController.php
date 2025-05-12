@@ -226,7 +226,7 @@ class AreasController extends Controller
             'persona' => $persona
         ];
         $pdf = PDF::loadView('ere.areas.pdf.matriz-competencias', $data)->setPaper('a4', 'landscape')->set_option("enable_php", true);
-        return $pdf->download('Matriz competencias - ' . $evaluacion->cEvaluacionNombre . '.pdf');
+        return $pdf->download('Matriz - ' . $evaluacion->cEvaluacionNombre .' - '.$area->cCursoNombre.' '.$area->cGradoAbreviacion.' '.str_replace("Educación ","",$area->cNivelTipoNombre). '.pdf');
     }
 
     public function actualizarLiberacionAreasPorEvaluacion($evaluacionId)

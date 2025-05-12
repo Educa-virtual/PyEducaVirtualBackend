@@ -183,7 +183,7 @@
             </tbody>
         </table>
 
-        <footer>
+        <div>
             <header>
                 <h4>Nota de Confidencialidad:</h4>
             </header>
@@ -194,7 +194,7 @@
                 distribución o utilización
                 con fines distintos a los educativos establecidos, protegiendo así la privacidad de alumnos y docentes.
             </div>
-        </footer>
+        </div>
     </main>
 
     <script type="text/php">

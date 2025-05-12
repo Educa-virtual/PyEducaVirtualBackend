@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\cap\CapacitacionesController;
+use App\Http\Controllers\cap\InscripcionesController;
 use App\Http\Controllers\cap\NivelPedagogicosController;
 use App\Http\Controllers\cap\TipoCapacitacionesController;
 use App\Http\Controllers\cap\TipoPublicosController;
@@ -21,5 +22,10 @@ Route::group(['prefix' => 'cap'], function () {
     Route::post('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
     Route::post('actualizarCapacitaciones', [CapacitacionesController::class, 'actualizarCapacitaciones']);
     Route::post('eliminarCapacitaciones', [CapacitacionesController::class, 'eliminarCapacitaciones']);
+  });
+  Route::group(['prefix' => 'inscripciones'], function () {
+    Route::post('persona-inscripcion', [InscripcionesController::class, 'listarPersonaInscripcion']);
+    Route::post('inscripciones', [InscripcionesController::class, 'listarInscripcionesxiCapacitacionId']);
+    Route::post('inscripcion', [InscripcionesController::class, 'guardarInscripcion']);
   });
 });

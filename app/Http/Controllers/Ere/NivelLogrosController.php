@@ -46,7 +46,7 @@ class NivelLogrosController extends Controller
 
         $nivelesRegistrar = [];
         foreach ($request->formulario as $fila) {
-            if (!empty($fila['iDesde']) && !empty($fila['iHasta']) && !empty($fila['iNivelLogroId'])) {
+            if (!empty($fila['iHasta'] ?? 0) && !empty($fila['iHasta']) && !empty($fila['iNivelLogroId'])) {
 
                 if ($fila['iDesde'] > $fila['iHasta']) {
                     return response()->json(['status' => 'Error', 'message' => 'El valor de "Desde" no puede ser mayor al valor de "Hasta". Por favor cambie los valores ingresados antes de continuar'], Response::HTTP_BAD_REQUEST);
