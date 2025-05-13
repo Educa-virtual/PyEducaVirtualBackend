@@ -27,7 +27,7 @@ class CapacitacionesController extends Controller
                 'iTipoCapId',
                 'iNivelPedId',
                 'iTipoPubId',
-                'iDocenteId',
+                'iInstId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -41,7 +41,7 @@ class CapacitacionesController extends Controller
                 $request->iTotalHrs            ??  NULL,
                 $request->dFechaInicio         ??  NULL,
                 $request->dFechaFin            ??  NULL,
-                $request->iDocenteId           ??  NULL,
+                $request->iInstId           ??  NULL,
                 $request->iCosto               ??  NULL,
                 $request->nCosto               ??  NULL,
                 $request->iCantidad            ??  NULL,
@@ -61,7 +61,7 @@ class CapacitacionesController extends Controller
                     @_iTotalHrs=?,
                     @_dFechaInicio=?,
                     @_dFechaFin=?,
-                    @_iDocenteId=?,
+                    @_iInstId=?,
                     @_iCosto=?,
                     @_nCosto=?,
                     @_iCantidad=?,
@@ -97,7 +97,7 @@ class CapacitacionesController extends Controller
                 'iTipoCapId',
                 'iNivelPedId',
                 'iTipoPubId',
-                'iDocenteId',
+                'iInstId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -134,7 +134,7 @@ class CapacitacionesController extends Controller
                 'iTipoCapId',
                 'iNivelPedId',
                 'iTipoPubId',
-                'iDocenteId',
+                'iInstId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -149,7 +149,7 @@ class CapacitacionesController extends Controller
                 $request->iTotalHrs            ??  NULL,
                 $request->dFechaInicio         ??  NULL,
                 $request->dFechaFin            ??  NULL,
-                $request->iDocenteId           ??  NULL,
+                $request->iInstId           ??  NULL,
                 $request->iCosto               ??  NULL,
                 $request->nCosto               ??  NULL,
                 $request->iCantidad            ??  NULL,
@@ -170,7 +170,7 @@ class CapacitacionesController extends Controller
                     @_iTotalHrs=?,
                     @_dFechaInicio=?,
                     @_dFechaFin=?,
-                    @_iDocenteId=?,
+                    @_iInstId=?,
                     @_iCosto=?,
                     @_nCosto=?,
                     @_iCantidad=?,
