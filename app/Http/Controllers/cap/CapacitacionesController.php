@@ -46,7 +46,6 @@ class CapacitacionesController extends Controller
                 $request->nCosto               ??  NULL,
                 $request->iImageAleatorio      ??  NULL,
                 $request->cImagenUrl           ??  NULL,
-                $request->cHorario             ??  NULL,
                 $request->iCredId              ??  NULL,
 
                 $request->jsonHorario          ??  NULL
@@ -68,7 +67,6 @@ class CapacitacionesController extends Controller
                     @_nCosto=?,
                     @_iImageAleatorio=?,
                     @_cImagenUrl=?,
-                    @_cHorario=?,   
                     @_iCredId=?,
                     @_jsonHorario=?',
                 $parametros
@@ -157,7 +155,6 @@ class CapacitacionesController extends Controller
                 $request->nCosto               ??  NULL,
                 $request->iImageAleatorio      ??  NULL,
                 $request->cImagenUrl           ??  NULL,
-                $request->cHorario             ??  NULL,
                 $request->iCredId              ??  NULL,
 
                 $request->jsonHorario          ??  NULL
@@ -179,8 +176,7 @@ class CapacitacionesController extends Controller
                     @_iCosto=?,
                     @_nCosto=?,
                     @_iImageAleatorio=?,
-                    @_cImagenUrl=?,
-                    @_cHorario=?,   
+                    @_cImagenUrl=?, 
                     @_iCredId=?,
                     @_jsonHorario=?',
                 $parametros
