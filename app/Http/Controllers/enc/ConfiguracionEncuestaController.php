@@ -106,7 +106,7 @@ class ConfiguracionEncuestaController extends Controller
                 $request->dConfEncFin               ??  NULL,
                 $request->iTiemDurId                ??  NULL,
                 $request->cConfEncDesc              ??  NULL,
-                json_encode($request->cDirigido)                 ??  NULL, //Formato JSON
+                $request->cDirigido                 ??  NULL, //Formato JSON
                 $request->jsonPublicoObjetivo       ??  NULL,
                 $request->iCredId                   ??  NULL
             ];
