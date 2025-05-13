@@ -35,7 +35,38 @@ class AdministradorController extends Controller
             'data' => $request->all(),
         ]);
     }
+    public function updCurriculas(Request $request)
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
     
+            $query = DB::select("EXEC acad.SP_UPD_CurriculaCursosCursoNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
+
+
     public function addCurriculas(Request $request)
     {
         $solicitud = [
