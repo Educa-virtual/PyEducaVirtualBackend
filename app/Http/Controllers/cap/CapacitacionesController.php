@@ -41,13 +41,15 @@ class CapacitacionesController extends Controller
                 $request->iTotalHrs            ??  NULL,
                 $request->dFechaInicio         ??  NULL,
                 $request->dFechaFin            ??  NULL,
-                $request->iInstId           ??  NULL,
+                $request->iInstId              ??  NULL,
                 $request->iCosto               ??  NULL,
                 $request->nCosto               ??  NULL,
-                $request->iCantidad            ??  NULL,
+                $request->iImageAleatorio      ??  NULL,
                 $request->cImagenUrl           ??  NULL,
                 $request->cHorario             ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iCredId              ??  NULL,
+
+                $request->jsonHorario          ??  NULL
 
             ];
 
@@ -64,10 +66,11 @@ class CapacitacionesController extends Controller
                     @_iInstId=?,
                     @_iCosto=?,
                     @_nCosto=?,
-                    @_iCantidad=?,
+                    @_iImageAleatorio=?,
                     @_cImagenUrl=?,
                     @_cHorario=?,   
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_jsonHorario=?',
                 $parametros
             );
             if ($data[0]->iCapacitacionId > 0) {
@@ -149,13 +152,15 @@ class CapacitacionesController extends Controller
                 $request->iTotalHrs            ??  NULL,
                 $request->dFechaInicio         ??  NULL,
                 $request->dFechaFin            ??  NULL,
-                $request->iInstId           ??  NULL,
+                $request->iInstId              ??  NULL,
                 $request->iCosto               ??  NULL,
                 $request->nCosto               ??  NULL,
-                $request->iCantidad            ??  NULL,
+                $request->iImageAleatorio      ??  NULL,
                 $request->cImagenUrl           ??  NULL,
                 $request->cHorario             ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iCredId              ??  NULL,
+
+                $request->jsonHorario          ??  NULL
 
             ];
 
@@ -173,10 +178,11 @@ class CapacitacionesController extends Controller
                     @_iInstId=?,
                     @_iCosto=?,
                     @_nCosto=?,
-                    @_iCantidad=?,
+                    @_iImageAleatorio=?,
                     @_cImagenUrl=?,
                     @_cHorario=?,   
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_jsonHorario=?',
                 $parametros
             );
             if ($data[0]->iCapacitacionId > 0) {
