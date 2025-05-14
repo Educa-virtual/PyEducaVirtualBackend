@@ -49,10 +49,6 @@ class User extends Authenticatable implements JWTSubject
             $arrayPerfiles[] = $perfil->value;
         }
         try {
-            $myfile = fopen("D:\\test.txt", "w") or die("Unable to open file!");
-$txt = $this->iPersId.' - '.$iCredEntPerfId.' - '.implode(',', $arrayPerfiles);
-fwrite($myfile, $txt);
-fclose($myfile);
             DB::statement("EXEC [seg].[Sp_SEL_validarPersonaCredencialPerfil] @_iPersId=?, @_iCredEntPerfId=?,
             @_cPerfilesPermitidos=?", [$this->iPersId, $iCredEntPerfId, implode(',', $arrayPerfiles)]);
             return true;

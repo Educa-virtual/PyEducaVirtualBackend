@@ -95,8 +95,8 @@ class UsuarioController
         try {
             //Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
             $parametros = [
-                'json' => '{\"id\":\"1289\"}',
-                '_opcion' => 'getPerfilesUsuario',
+                '{"id":1289}',
+                'getPerfilesUsuario'
             ];
             $data = Usuario::selPerfilesUsuario($parametros);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data, Response::HTTP_OK);
