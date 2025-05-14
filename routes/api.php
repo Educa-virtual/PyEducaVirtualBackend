@@ -52,6 +52,8 @@ use Illuminate\Support\Facades\Storage;
 Route::group(['prefix' => 'administrador'], function () {
     Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']); 
     Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
+    Route::post('addNiveles', [AdministradorController::class, 'addNiveles']); 
+    Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);
 });
 
