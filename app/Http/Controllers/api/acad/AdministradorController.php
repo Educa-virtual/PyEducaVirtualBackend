@@ -67,7 +67,101 @@ class AdministradorController extends Controller
             return new JsonResponse($response, $estado);
     }
 
+    public function updCurriculas(Request $request)
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
+    
+            $query = DB::select("EXEC acad.SP_UPD_CurriculaCursosCursoNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
 
+
+
+
+    public function addNiveles(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
+    
+            $query = DB::select("EXEC acad.SP_INS_NivelCicloGradosNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
+
+    public function updNiveles(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
+    
+            $query = DB::select("EXEC acad.SP_UPD_NivelCicloGradosNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
 
     //***********************PROCEDIMIENTO  */
     public function listarPersonalIes(Request $request)
