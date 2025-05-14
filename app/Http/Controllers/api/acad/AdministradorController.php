@@ -4,8 +4,6 @@ namespace App\Http\Controllers\api\acad;
 
 use DateTime;
 use Exception;
-use App\Helpers\ResponseHandler;
-use App\Helpers\VerifyHash;
 use Dompdf\Options;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -18,7 +16,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use App\Services\ConsultarDocumentoIdentidadService;
 use Carbon\Carbon; // Agrega esta línea para importar Carbon
 
-class GestionInstitucionalController extends Controller
+class AdministradorController extends Controller
 {
     private $consultarDocumentoIdentidadService;
 
@@ -27,7 +25,146 @@ class GestionInstitucionalController extends Controller
         $this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
 
     }
-    // no tocar
+    // Nuevos procedimientos para tablas maestras
+
+    public function mensaje(Request $request)
+    {
+        return response()->json([
+            'validated' => true,
+            'message' => 'se obtuvo la información',
+            'data' => $request->all(),
+        ]);
+    }
+    public function updCurriculas(Request $request)
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
+    
+            $query = DB::select("EXEC acad.SP_UPD_CurriculaCursosCursoNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
+
+
+    public function addCurriculas(Request $request)
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
+    
+            $query = DB::select("EXEC acad.SP_INS_CurriculaCursosCursoNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
+
+    
+
+    public function addNiveles(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
+    
+            $query = DB::select("EXEC acad.SP_INS_NivelCicloGradosNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
+
+    public function updNiveles(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [
+            $request->json,
+            $request->opcion
+            ];
+    
+            $query = DB::select("EXEC acad.SP_UPD_NivelCicloGradosNivelGrado ?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
+
+
+
+    //***********************PROCEDIMIENTO  */
     public function listarPersonalIes(Request $request)
     {
         $solicitud = [
@@ -59,386 +196,7 @@ class GestionInstitucionalController extends Controller
         return new JsonResponse($response, $estado);
     }
 
-    public function insertMaestroDetalle(Request $request)
-    {
-        $solicitud = [
-
-            $request->esquema,       //-- Esquema de la tabla maestra
-            $request->tablaMaestra, //NVARCHAR(128),   -- Nombre de la tabla maestra
-            $request->datosJSONMaestro, // NVARCHAR(MAX), -- Datos en formato JSON para la tabla maestra
-            $request->tablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
-            $request->datosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
-            $request->campoFK // NVARCHAR(128)
     
-        ];
-
-        $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
-        $solicitud);
-
-        try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
-
-        $estado = 201;
-        } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
-        }
-
-        return new JsonResponse($response, $estado);
-    }
-
-    public function insertMaestro(Request $request)
-    {
-        $solicitud = [
-            $request->esquema,    //NVARCHAR(128),   -- Esquema de la tabla
-            $request->tabla,      //NVARCHAR(128),    -- Nombre de la tabla
-            $request->datosJSON,  //NVARCHAR(MAX) -- Datos en formato JSON
-        ];
-
-        $query = DB::select("EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?", //actualizado
-        $solicitud);
-
-        try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
-
-        $estado = 201;
-        } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
-        }
-
-        return new JsonResponse($response, $estado);
-    }
-
-
-
-    public function updateMaestro(Request $request)
-    {
-        //    $json = json_encode($request->json);
-        //    $opcion = $request->_opcion;
-        $condiciones = json_encode(
-            [
-                'COLUMN_NAME' => $request->campo,
-                'VALUE' => $request->condicion
-            ]
-        );
-
-        $solicitud = [
-            $request->esquema,     // NVARCHAR(128),          -- Esquema de la tabla
-            $request->tabla,     // NVARCHAR(128),           -- Nombre de la tabla
-            $request->json,  // NVARCHAR(MAX),       -- Datos en formato JSON para la actualización
-            $condiciones // NVARCHAR(MAX)  -- JSON con condiciones para el WHERE (Array de condiciones AND)
-        ];
-
-        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select(
-            "EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?",
-            $solicitud
-        );
-        //  [$json, $opcion ]);
-
-        try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
-
-            $estado = 201;
-        } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
-        }
-        return new JsonResponse($response, $estado);
-    }
-
-    public function deleteMaestro(Request $request)
-    {
-        //    $json = json_encode($request->json);
-        //    $opcion = $request->_opcion;
-
-        $solicitud = [
-            $request->esquema, //NVARCHAR(128),       -- Nombre del esquema
-            $request->tabla, // NVARCHAR(128),   -- Nombre de la tabla principal
-            $request->campo, //NVARCHAR(128),       -- Nombre del campo ID de la tabla principal
-            $request->valorId, // BIGINT,              -- Valor del ID a eliminar
-            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)        
-        ];
-
-        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select(
-            "EXEC grl.SP_DEL_RegistroConTransaccion ?,?,?,?",
-            $solicitud
-        );
-        //  [$json, $opcion ]);
-
-        try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
-
-            $estado = 201;
-        } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-
-            $estado = 500;
-        }
-
-        return new JsonResponse($response, $estado);
-    }
-
-    public function reporteHorasNivelGrado(Request $request)
-    {
-       
-        $solicitud = [
-            $request->iNivelTipoId, //INT,
-            $request->iProgId, //INT,
-            $request->iConfigId, //INT,
-            $request->iYAcadId, //INT        
-        ];
-
-        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select(
-            "EXEC acad.SP_SEL_generarHorasGradosSeccionesCiclosXiNivelTipoId ?,?,?,?",
-            $solicitud
-        );
-        //  [$json, $opcion ]);
-
-        try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
-
-            $estado = 201;
-        } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-
-            $estado = 500;
-        }
-
-        return new JsonResponse($response, $estado);
-    }
-    public function reporteSeccionesNivelGrado(Request $request)
-    {
-       
-        $solicitud = [
-            $request->iNivelTipoId, //INT,
-            $request->iConfigId, //INT,      
-        ];
-
-        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
-        $query = DB::select(
-            "EXEC acad.SP_SEL_generarGradosSeccionesXiNivelTipoIdXiConfigId ?,?",
-            $solicitud
-        );
-        //  [$json, $opcion ]);
-
-        try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
-
-            $estado = 201;
-        } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-
-            $estado = 500;
-        }
-
-        return new JsonResponse($response, $estado);
-    }
-
-    public function reportePDFResumenAmbientes(Request $request)
-    {
-        // Decodificar JSON a un arreglo asociativo
-        $secciones = $request->secciones;
-        $r_horas = $request->r_horas;
-        $perfil = $request->perfil;
-        $configuracion = $request->configuracion;
- 
-        
-        $cTipoSectorNombre = $perfil["cTipoSectorNombre"];
-        $cPersNombreLargo = $perfil["cPersNombreLargo"];
-        $cPersDocumento = $perfil["cPersDocumento"];
-        $cPerfilNombre = $perfil["cPerfilNombre"];
-        $cNivelTipoNombre = $perfil["cNivelTipoNombre"];
-        $cNivelNombre = $perfil["cNivelNombre"];
-        $cIieeNombre = $perfil["cIieeNombre"];
-        $cIieeCodigoModular = $perfil["cIieeCodigoModular"];
-     
-        $cYAcadNombre = $configuracion[0]["cYAcadNombre"];
-        // $cEstadoConfigNombre = $perfil["cEstadoConfigNombre"];
-        // $cSedeNombre = $perfil["cSedeNombre"];
-        // $cModalServId = $perfil["cModalServId"];
-        // $cYAcadNombre = $perfil["cYAcadNombre"];
-        // $iProgId = $perfil["iProgId"];
-
-
-  
-
-        switch($request->iNivelTipoId){
-            case 3:
-                $title = 'Primaria'; break;
-            case 4: 
-                $title = 'Secundaria'; break;
-            
-            default :
-                $title = 'Sin nivel';
-                break;
-        }
-       
-   
-        $imagePath = public_path('images\logo_IE\dremo.jpg');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $region = 'data:image/jpeg;base64,' . $imageData;
-
-        $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $insignia = 'data:image/jpeg;base64,' . $imageData;
-
-        $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $virtual = 'data:image/jpeg;base64,' . $imageData;
-
- 
-        $respuesta = [
-            "totalHorasPendientes" => $request->totalHorasPendientes,
-            "title" => $title,
-            "fecha" => date("F j, Y, g:i a"),
-            "total_aulas" => $request->total_aulas,
-            "r_horas" =>  $r_horas,
-            "secciones" =>  $secciones,
-            "dre" => "DRE MOQUEGUA UGEL",
-            "totalHoras" => $request->totalHoras,
-            "bConfigEsBilingue" => $request->bConfigEsBilingue,
-            "contador" => 1,
-            "imageLogo" => $region,// Ruta absoluta
-            "logoVirtual" => $virtual,// Ruta absoluta
-            "logoInsignia" => $insignia,// Ruta absoluta
-            "cIieeCodigoModular" => $cIieeCodigoModular,
-            "cIieeNombre" =>$cIieeNombre,
-            "cNivelNombre" =>$cNivelNombre,
-            "cYAcadNombre" => $cYAcadNombre, 
-            "cPersNombreLargo" =>$cPersNombreLargo,
-            "cNivelTipoNombre" =>$cNivelTipoNombre, 
-            // "cPerfilNombre" =>$cPerfilNombre, 
-            // "cPersDocumento" =>$cPersDocumento, 
-            // "cPersNombreLargo" =>$cPersNombreLargo,
-            // "cTipoSectorNombre" =>$cTipoSectorNombre,
-           
-        ];
-//portrait landscape
-        $pdf = Pdf::loadView('resumen_reporte_ambientes_primaria', $respuesta)
-            ->setPaper('a4', 'landscape')
-            ->stream('reporte.pdf');
-        return $pdf;
-    }
-
-    public function buscarDni(Request $request){
-   
-        $servicio = $this->consultarDocumentoIdentidadService->buscar($request->iTipoIdentId, $request->cPersDocumento);
-        $response = ['validated' => true, 'message' => $servicio['message'], 'data' => $servicio['data']];
-        $codeResponse = $servicio['status'];
-        return new JsonResponse($response, $codeResponse);
-    }
-    // consulta para traslados
-    public function obtenerInformacionEstudianteDNI(Request $request)
-    {                
-        $solicitud = [
-            $request->dni]; //INT,
-           
-        //41789603
-        $query = DB::select("EXEC acad.SP_SEL_ObtenerInformacionEsdudianteXdni ?", $solicitud);
-
-        try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
-
-            $estado = 201;
-        } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-            $estado = 500;
-        }
-
-        return new JsonResponse($response, $estado);
-    }
-
-     // consulta para traslados
-     public function obtenerCredencialesSede(Request $request)
-     {                
-         $solicitud = [
-             $request->iSedeId, //INT,
-             $request->option]; //INT,
-
-         //41789603
-         $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?,?", $solicitud);
- 
-         try {
-             $response = [
-                 'validated' => true,
-                 'message' => 'se obtuvo la información',
-                 'data' => $query,
-             ];
- 
-             $estado = 201;
-         } catch (Exception $e) {
-             $response = [
-                 'validated' => false,
-                 'message' => $e->getMessage(),
-                 'data' => [],
-             ];
-             $estado = 500;
-         }
- 
-         return new JsonResponse($response, $estado);
-     }
-
     public function importarDocente_IE(Request $request)
     {
         $json   = $request->data;
@@ -928,33 +686,7 @@ class GestionInstitucionalController extends Controller
         DB::select('EXEC seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
         $procesados[] = ['validated' => true, 'message' => 'Credencial generada.'];
     }
-
-    public function obtenerEstudiantesMatriculados(Request $request)
-    {  
-      // \Log::info($request->all());
-      $solicitud = [
-        //30902,//
-        (int) $request->iCredEntPerfId,
-        (int)$request->iYAcadId,
-        VerifyHash::decodes($request->iCursosNivelGradId),
-        (int)$request->iSedeId,
-        
-       // 5 //(int)
-    ];
-
-        try {
-            $data = DB::select('EXEC ere.Sp_SEL_obtenerEstudiantesMatriculados ?,?,?,?', $solicitud);
-            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'mensaje' => $error_message];
-            $codeResponse = 500;
-        }
-
-   // return response()->json($solicitud);
-      return response()->json($response, $codeResponse);
-    }
+    
 }
 
 
