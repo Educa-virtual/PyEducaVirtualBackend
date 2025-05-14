@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\VerifyHash;
+use App\Http\Controllers\api\grl\PersonaController;
+use Illuminate\Http\Response;
 
 class PersonasController extends Controller
 {
@@ -129,5 +132,48 @@ class PersonasController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
+    }
+
+    public function buscarPersonaxiTipoIdentIdxcPersDocumento(Request $request)
+    {   
+        try {
+            $fieldsToDecode = ['iTipoIdentId','iCredId'];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $data = new PersonaController();
+            $data = ($data->validate($request))->getContent();
+            
+            $data = json_decode($data, true); 
+            
+          return $data;
+            if (isset($data['iPersId'])) {
+                $request->merge(['iPersId' => $data['iPersId']]);
+                $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+                
+                $contacto = new PersonasContactosController();
+                
+                $contacto = $contacto->obtenerxiPersId($request)->getData(true);
+                $contacto = $contacto['data'];
+                $data['cPersDireccion'] = $contacto['cPersDireccion'];
+                $data['cPersCel'] = $contacto['cPersCel'];
+                $data['cPersCorreo'] = $contacto['cPersCorreo'];
+                $data['cPersTel'] = $contacto['cPersTel'];
+                $data['cPersRedSoc'] = $contacto['cPersRedSoc'];
+                
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'No se ha encontrado información ', 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

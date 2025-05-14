@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 use function PHPUnit\Framework\isNull;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\VerifyHash;
 
 class AulaVirtualController extends ApiController
 {
@@ -149,9 +150,8 @@ class AulaVirtualController extends ApiController
 
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
-        $iSilaboId = $request->iSilaboId;
-        // $iSilaboId = $this->hashids->decode($iSilaboId);
-        // $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
+       
+        $iSilaboId =  VerifyHash::decodes($request->iSilaboId);
         $params = [$iSilaboId, $request->perfil];
         
         $contenidos = [];
