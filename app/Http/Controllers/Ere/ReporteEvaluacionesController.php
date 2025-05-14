@@ -57,10 +57,11 @@ class ReporteEvaluacionesController extends Controller
             $request->iZonaId,
             $request->iCredEntPerfId,
             0, // No mostrar detalle en vista
+            $request->cTipoReporte,
         ];
 
         try {
-            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -90,10 +91,11 @@ class ReporteEvaluacionesController extends Controller
             $request->iZonaId,
             $request->iCredEntPerfId,
             1, // Mostrar detalle en PDF
+            $request->cTipoReporte,
         ];
 
         try {
-            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -105,12 +107,28 @@ class ReporteEvaluacionesController extends Controller
 
         $filtros = $data[0][0];
         $resultados = $data[1];
-        foreach ( $resultados as $resultado) {
-            $resultado->respuestas = json_decode($resultado->respuestas);
-        }
         $niveles = $data[2];
         $resumen = $data[3];
         $matriz = $data[4];
+
+        if( $filtros->tipo_reporte == 'ESTUDIANTES' ) {
+            foreach ( $resultados as $resultado) {
+                $resultado->respuestas = json_decode($resultado->respuestas);
+            }
+        } else {
+            foreach ( $resultados as $resultado) {
+                $sumatoria = 0;
+                foreach( $niveles as $nivel) {
+                    $nivel_logro_id = $nivel->nivel_logro_id . '';
+                    $sumatoria += $resultado->$nivel_logro_id;
+                }
+                foreach( $niveles as $nivel) {
+                    $nivel_logro_id = $nivel->nivel_logro_id . '';
+                    $resultado->$nivel_logro_id = round($resultado->$nivel_logro_id / $sumatoria * 100, 2);
+                }
+                $resultado->total = $sumatoria;
+            }
+        }
 
         $nro_preguntas = count($matriz);
 
@@ -143,10 +161,11 @@ class ReporteEvaluacionesController extends Controller
             $request->iZonaId,
             $request->iCredEntPerfId,
             1, // Mostrar detalle en EXCEL
+            $request->cTipoReporte,
         ];
 
         try {
-            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeResumenOpt ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -158,12 +177,28 @@ class ReporteEvaluacionesController extends Controller
 
         $filtros = $data[0][0];
         $resultados = $data[1];
-        foreach ( $resultados as $resultado) {
-            $resultado->respuestas = json_decode($resultado->respuestas);
-        }
         $niveles = $data[2];
         $resumen = $this->convertDataToChartForm($data[3]);
         $matriz = $data[4];
+
+        if( $filtros->tipo_reporte == 'ESTUDIANTES' ) {
+            foreach ( $resultados as $resultado) {
+                $resultado->respuestas = json_decode($resultado->respuestas);
+            }
+        } else {
+            foreach ( $resultados as $resultado) {
+                $sumatoria = 0;
+                foreach( $niveles as $nivel) {
+                    $nivel_logro_id = $nivel->nivel_logro_id . '';
+                    $sumatoria += $resultado->$nivel_logro_id;
+                }
+                foreach( $niveles as $nivel) {
+                    $nivel_logro_id = $nivel->nivel_logro_id . '';
+                    $resultado->$nivel_logro_id = round($resultado->$nivel_logro_id / $sumatoria * 100, 2);
+                }
+                $resultado->total = $sumatoria;
+            }
+        }
 
         $nro_preguntas = count($matriz);
 

@@ -1,6 +1,7 @@
 <?php
 
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Color;
@@ -18,7 +19,7 @@ $archivo->removeSheetByIndex(0);
 $hoja1 = new Worksheet($archivo, "Parametros");
 $archivo->addSheet($hoja1, 0);
 
-$hoja2 = new Worksheet($archivo, "Estudiantes");
+$hoja2 = new Worksheet($archivo, "Detalle");
 $archivo->addSheet($hoja2, 1);
 
 $hoja3 = new Worksheet($archivo, "Preguntas");
@@ -54,44 +55,51 @@ if( isset($filtros->cod_ie) )
     $hoja1->setCellValue('A9', 'I.E.:')
         ->setCellValue('B9', $filtros->cod_ie);
 
+if( isset($filtros->ugel) ) {
+    $hoja1->setCellValue('A10', 'UGEL:')
+        ->setCellValue('B10', $filtros->ugel);
+}
+
 if( isset($filtros->distrito) ) {
-    $hoja1->setCellValue('A10', 'DISTRITO:')
-        ->setCellValue('B10', $filtros->distrito);
+    $hoja1->setCellValue('A11', 'DISTRITO:')
+        ->setCellValue('B11', $filtros->distrito);
 }
 
 if( isset($filtros->seccion) ) {
-    $hoja1->setCellValue('A11', 'SECCION:')
-        ->setCellValue('B11', $filtros->seccion);
+    $hoja1->setCellValue('A12', 'SECCION:')
+        ->setCellValue('B12', $filtros->seccion);
 }
 
 if( isset($filtros->sexo) ) {
-    $hoja1->setCellValue('A12', 'SEXO:')
-        ->setCellValue('B12', $filtros->sexo);
+    $hoja1->setCellValue('A13', 'SEXO:')
+        ->setCellValue('B13', $filtros->sexo);
 }
 
 if( isset($filtros->sector) ) {
-    $hoja1->setCellValue('A13', 'SECTOR:')
-        ->setCellValue('B13', $filtros->sector);
+    $hoja1->setCellValue('A14', 'SECTOR:')
+        ->setCellValue('B14', $filtros->sector);
 }
 
 if( isset($filtros->zona) ) {
-    $hoja1->setCellValue('A14', 'ZONA:')
-        ->setCellValue('B14', $filtros->zona);
+    $hoja1->setCellValue('A15', 'ZONA:')
+        ->setCellValue('B15', $filtros->zona);
 }
 
 $hoja1->mergeCells('A16:B16');
 $hoja1->setCellValue('A16', 'NIVELES DE LOGRO');
 
 $fila = 16;
+$count_estudiantes = 0;
 foreach($niveles as $nivel) {
     $fila++;
     $hoja1->setCellValue('A' . $fila, $nivel->nivel_logro . ':')
         ->setCellValue('B' . $fila, $nivel->cantidad);
+    $count_estudiantes += $nivel->cantidad;
 }
-$hoja1->setCellValue('A' . ($fila + 1), 'ESTUDIANTES:')
-    ->setCellValue('B' . ($fila + 1), count($resultados));
+$hoja1->setCellValue('A' . ($fila+1), 'TOTAL DE ESTUDIANTES:')
+    ->setCellValue('B' . ($fila+1), $count_estudiantes);
 
-$hoja1->getStyle('A1:A21')
+$hoja1->getStyle('A1:A'.$fila+1)
     ->getFont()
     ->setBold(true);
 $hoja1->getStyle('A16:B16')
@@ -99,7 +107,7 @@ $hoja1->getStyle('A16:B16')
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
     ->setARGB($header_color);
-$hoja1->getStyle('A21:B21')
+$hoja1->getStyle('A'.($fila+1).':B'.($fila+1))
     ->getFill()
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
@@ -118,8 +126,10 @@ $hoja1->getStyle('A1:B1')
     ->setSize(14);
 
 /**
- * FORMATEAR RESULTADOS DE ESTUDIANTES
+ * FORMATEAR RESULTADOS
  */
+
+if( $filtros->tipo_reporte == 'ESTUDIANTES' ) {
 
 $hoja2->setCellValue('A1', 'ITEM')
     ->setCellValue('B1', 'I.E.')
@@ -184,6 +194,46 @@ foreach( $resultados as $key => $value ) {
         $hoja2->getStyle($columnaLetra . ($key + 2))->getFont()->getColor()->setARGB($color);
         $hoja2->getStyle($columnaLetra . ($key + 2))->getFill()->setFillType($relleno)->getStartColor()->setARGB($fondo);
         $indice++;
+    }
+}
+} else {
+    $hoja2->setCellValue('A1', 'ITEM')
+        ->setCellValue('B1', 'AGRUPADO POR')
+        ->setCellValue('C1', 'TOTAL');
+
+    foreach ($niveles as $key_nivel => $nivel) {
+        $columnaLetra = Coordinate::stringFromColumnIndex(4 + $key_nivel);
+        $hoja2->setCellValue($columnaLetra . '1', $nivel->nivel_logro);
+    }
+
+    $hoja2->getStyle('A1:' . $columnaLetra . '1')
+        ->getFont()
+        ->setBold(true);
+    $hoja2->getStyle('A1:' . $columnaLetra . '1')
+        ->getFill()
+        ->setFillType(Fill::FILL_SOLID)
+        ->getStartColor()
+        ->setARGB($header_color);
+    $hoja2->getStyle('A1:' . $columnaLetra . count($resultados) + 1)
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+        ->setVertical(Alignment::VERTICAL_CENTER);
+    $hoja2->getStyle('B:B')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+        ->setWrapText(true);
+
+    foreach( $resultados as $key => $value ) {
+        $hoja2->setCellValue('A' . ($key + 2), $key + 1)
+            ->setCellValue('B' . ($key + 2), $value->agrupado)
+            ->setCellValue('C' . ($key + 2), $value->total);
+
+        foreach ($niveles as $key_nivel => $nivel) {
+            $columnaLetra = Coordinate::stringFromColumnIndex(4 + $key_nivel);
+            $nivel_logro_id = $nivel->nivel_logro_id . '';
+            $hoja2->setCellValueExplicit($columnaLetra . ($key + 2), $value->$nivel_logro_id / 100, DataType::TYPE_NUMERIC);
+            $hoja2->getStyle($columnaLetra . ($key + 2))->getNumberFormat()->setFormatCode('0.00%');
+        }
     }
 }
 
