@@ -1,4 +1,3 @@
-@@ -0,0 +1,24 @@
 <?php
 
 use App\Http\Controllers\enc\ConfiguracionEncuestaController;
