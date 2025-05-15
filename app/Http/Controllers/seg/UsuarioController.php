@@ -5,9 +5,12 @@ namespace App\Http\Controllers\seg;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Models\seg\Usuario;
+use App\Services\seg\UsuariosService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class UsuarioController
@@ -43,47 +46,16 @@ class UsuarioController
     function obtenerListaUsuariosPerfiles(Request $request)
     {
         try {
-            //Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            switch ($request->get('opcionBusquedaSeleccionada')) {
-                case 'documento':
-                    $documento = $request->get('criterioBusqueda', NULL);
-                    $apellidos = null;
-                    $nombres = null;
-                    break;
-                case 'apellidos':
-                    $documento = null;
-                    $apellidos = $request->get('criterioBusqueda', NULL);
-                    $nombres = null;
-                    break;
-                case 'nombres':
-                    $documento = null;
-                    $apellidos = null;
-                    $nombres = $request->get('criterioBusqueda', NULL);
-                    break;
-                default:
-                    $documento = null;
-                    $apellidos = null;
-                    $nombres = null;
-                    break;
-            }
-            $parametros = [
-                0,
-                $request->get('offset', 0),
-                $request->get('limit', 20),
-                $documento,
-                $apellidos,
-                $nombres,
-                $request->get('filtroInstitucionSeleccionada', NULL),
-                $request->get('filtroPerfilSeleccionado', NULL)
-            ];
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('data', $request);
             $dataUsuarios = Usuario::selUsuariosPerfiles($parametros);
-            $total = 20; //Usuario::selUsuariosPerfiles($parametros);
+            $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('cantidad', $request);
+            $dataCantidad = Usuario::selUsuariosPerfiles($parametros);
             $resultado = [
-                'total' => 20, //$total[0]->totalFilas,
-                'data' => $dataUsuarios
+                'totalFilas' => $dataCantidad[0]->totalFilas,
+                'dataUsuarios' => $dataUsuarios,
+                'fechaServidor' => new Carbon()
             ];
-            //$total = Customer::count();
-            //$customers = Customer::skip($skip)->take($limit)->get();
             return FormatearMensajeHelper::ok('Datos obtenidos', $resultado, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -93,9 +65,10 @@ class UsuarioController
     public function obtenerPerfilesUsuario($iCredId)
     {
         try {
-            //Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $iPersId = Usuario::obtenerIdPersonaPorIdCred($iCredId);
             $parametros = [
-                '{"id":1289}',
+                '{"id":' . $iPersId . '}',
                 'getPerfilesUsuario'
             ];
             $data = Usuario::selPerfilesUsuario($parametros);
@@ -108,23 +81,44 @@ class UsuarioController
     public function cambiarEstadoUsuario($iCredId, Request $request)
     {
         try {
-            //Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            /*$usuario = Usuario::find($request->get('iUsuarioId'));
-            if ($usuario) {
-                $usuario->estado = $request->get('estado');
-                $usuario->save();
-                return FormatearMensajeHelper::ok('Estado del usuario actualizado', null, Response::HTTP_OK);
-            } else {
-                return FormatearMensajeHelper::error('Usuario no encontrado', null, Response::HTTP_NOT_FOUND);
-            }*/
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
             $parametros = [
                 $iCredId,
                 $request->iCredEstado,
-                1
+                Auth::user()->iCredId
             ];
             Usuario::updiCredEstadoCredencialesXiCredId($parametros);
             $mensaje = $request->iCredEstado == 1 ? 'activado' : 'desactivado';
             return FormatearMensajeHelper::ok('El usuario ha sido ' . $mensaje, null, Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function restablecerClaveUsuario($iCredId)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $parametros = [
+                $iCredId,
+                Auth::user()->iCredId
+            ];
+            Usuario::updReseteoClaveCredencialesXiCredId($parametros);
+            return FormatearMensajeHelper::ok('La contraseña del usuario ha sido restablecida. Ahora es su usuario.', null, Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function eliminarPerfilUsuario($iCredId, $iCredEntPerfId)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $parametros = [
+                $iCredEntPerfId
+            ];
+            Usuario::delCredencialesEentidadesPperfiles($parametros);
+            return FormatearMensajeHelper::ok('El perfil del usuario ha sido eliminado', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
