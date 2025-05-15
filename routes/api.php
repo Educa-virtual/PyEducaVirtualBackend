@@ -4,7 +4,7 @@ use App\Http\Controllers\acad\ApoderadoController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\MatriculaController;
-use App\Http\Controllers\acad\AdministradorController;
+
 use App\Http\Controllers\ere\InstitucionesEducativasController;
 use App\Http\Controllers\ere\CapacidadesController;
 use App\Http\Controllers\ere\CompetenciasController;
@@ -16,6 +16,7 @@ use App\http\Controllers\api\acad\CalendarioAcademicosController;
 use App\http\Controllers\api\acad\GestionInstitucionalController;
 use App\http\Controllers\api\acad\HorarioController;
 use App\http\Controllers\api\acad\PeriodoAcademicosController;
+use App\Http\Controllers\api\acad\AdministradorController;
 use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
@@ -49,11 +50,115 @@ use Illuminate\Support\Facades\Storage;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 Route::group(['prefix' => 'administrador'], function () {
-    Route::post('addCurriculas', [administradorController::class, 'addCurriculas']);
-    Route::post('mensaje', [administradorController::class, 'mensaje']);
+    Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']);
+    Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
+    Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
+    Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
+    Route::post('mensaje', [AdministradorController::class, 'mensaje']);
 });
 
 
+Route::group(['prefix' => 'ere'], function () {
+
+    Route::group(['prefix' => 'ie'], function () {
+        Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
+
+    });
+    Route::group(['prefix' => 'nivelTipo'], function () {
+        Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);
+    });
+
+    Route::group(['prefix' => 'tipoEvaluacion'], function () {
+        Route::get('obtenerTipoEvaluacion', [TipoEvaluacionController::class, 'obtenerTipoEvaluacion']);
+    });
+
+    Route::group(['prefix' => 'nivelEvaluacion'], function () {
+        Route::get('obtenerNivelEvaluacion', [NivelEvaluacionController::class, 'obtenerNivelEvaluacion']);
+    });
+
+    Route::group(['prefix' => 'competencias'], function () {
+        Route::get('obtenerCompetencias', [CompetenciasController::class, 'obtenerCompetencias']);
+    });
+
+    Route::group(['prefix' => 'capacidades'], function () {
+        Route::get('obtenerCapacidades', [CapacidadesController::class, 'obtenerCapacidades']);
+    });
+
+
+    Route::group(['prefix' => 'desempenos'], function () {
+        Route::get('obtenerDesempenos', [DesempenosController::class, 'obtenerDesempenos']);
+    });
+
+    Route::group(['prefix' => 'curso'], function () {
+        Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
+    });
+    Route::group(['prefix' => 'Evaluaciones'], function () {
+        Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
+
+        Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
+        Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
+        Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        //Agregando participacion y eliminando participacion, IE
+        Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
+        Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
+        //Agregando participacion nuevo
+        Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
+        // Ruta para actualizar la evaluación
+        Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
+        // Ruta para obtener las participaciones
+        //Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        Route::get('obtenerParticipaciones/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        //Nuevo Ver con Datos completos
+        Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
+        //Obtener Cursos
+        Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
+        //Insertar Cursos
+        Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
+        //Eliminar Cursos
+        Route::delete('eliminarCursos', [EvaluacionesController::class, 'eliminarCursos']);
+        //Ver Cursos
+        Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
+        //Actualizar Cursos COMENTADO
+        Route::post('evaluaciones/{iEvaluacionId}/actualizarCursos', [EvaluacionesController::class, 'actualizarCursosEvaluacion']);
+        //Obtener Evaluacion Copiar
+        Route::get('/obtenerEvaluacionCopia', [EvaluacionesController::class, 'obtenerEvaluacionCopia']);
+        //Obtener evaluacion Copiar 2
+        Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
+        // ACTUALIZAAR En routes/api.php o routes/web.php
+        Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
+        //Agregando CopiarEvaluacion
+        Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
+        //ObtenerMatrizCompetencia
+        Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
+        //ObtenerMatrizCapacidad
+        Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
+        //InsertarMatrizDesempeno
+        Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
+        //ObtenerEspecialistas
+        Route::get('obtenerEspDrem', [EvaluacionesController::class, 'obtenerEspDrem']);
+        //Obtener por el iGradoId los Cursos del Especialista
+        Route::get('obtenerEspDremCurso', [EvaluacionesController::class, 'obtenerEspDremCurso']);
+        //Matriz Descargar
+        Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
+        //Insertar pregunta seleccionada
+        Route::post('insertarPreguntaSeleccionada', [EvaluacionesController::class, 'insertarPreguntaSeleccionada']);
+        //Obtener pregunta seleccionada
+        Route::get('obtenerPreguntaSeleccionada', [EvaluacionesController::class, 'obtenerPreguntaSeleccionada']);
+        //Obtener preguntas por EvaluacionId y preguntaId
+        Route::get('obtenerPreguntaInformacion', [EvaluacionesController::class, 'obtenerPreguntaInformacion']);
+        //Obtener conteo por curso
+        Route::post('obtenerConteoPorCurso', [EvaluacionesController::class, 'obtenerConteoPorCurso']);
+        //Guardar fecha inicio fin de cursos
+        Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
+        //Eliminar una pregunta de una evaluación.
+        Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
+         //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+    });
+    Route::group(['prefix' => 'Ugeles'], function () {
+        Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
+    });
+});
 Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'AutenticarU'], function () {
@@ -83,6 +188,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('importarDocente_IE', [GestionInstitucionalController::class, 'importarDocente_IE']);
         Route::post('importarAmbiente_IE', [GestionInstitucionalController::class, 'importarAmbiente_IE']);
         Route::post('generarCredencialesIE', [GestionInstitucionalController::class, 'generarCredencialesIE']);
+
+        Route::post('obtenerEstudiantesMatriculados', [GestionInstitucionalController::class, 'obtenerEstudiantesMatriculados']);
     });
  Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
     Route::group(['prefix' => 'horario'], function () {
@@ -297,35 +404,35 @@ Route::group(['prefix' => 'grl'], function () {
 Route::group(['prefix' => 'enlaces-ayuda'], function () {
     Route::get('obtenerEnlaces', function () {
         $path = 'enlaces-ayuda.json'; // Nombre del archivo dentro de storage/app/public/
-    
+
         if (Storage::disk('public')->exists($path)) {
             return Response::json(json_decode(Storage::disk('public')->get($path)), 200);
         }
-    
+
         return response()->json(['error' => 'Archivo no encontrado'], 404);
     });
-    
+
     Route::post('actualizarEnlaces', function (Request $request, $index) {
         $path = 'data/miarchivo.json';
-    
+
         if (!Storage::exists($path)) {
             return response()->json(['error' => 'Archivo no encontrado'], 404);
         }
-    
+
         // Obtener el contenido del JSON
         $data = json_decode(Storage::get($path), true);
-    
+
         // Verificar si el índice existe
         if (!isset($data[$index])) {
             return response()->json(['error' => 'Elemento no encontrado'], 404);
         }
-    
+
         // Actualizar los datos
         $data[$index] = array_merge($data[$index], $request->all());
-    
+
         // Guardar el JSON actualizado
         Storage::put($path, json_encode($data, JSON_PRETTY_PRINT));
-    
+
         return response()->json(['message' => 'Datos actualizados correctamente', 'data' => $data[$index]], 200);
     });
 
