@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\enc\ConfiguracionEncuestaController;
+use App\Http\Controllers\enc\PublicoObjetivoController;
 use App\Http\Controllers\enc\TiempoDuracionController;
 use App\Http\Controllers\enc\TipoPublicoController;
 use Illuminate\Support\Facades\Route;
@@ -17,5 +18,8 @@ Route::group(['prefix' => 'enc'], function () {
     Route::post('/', [ConfiguracionEncuestaController::class, 'guardarConfiguracionEncuesta']); // Para crear
     Route::put('/{iConfEncId}', [ConfiguracionEncuestaController::class, 'actualizarConfiguracionEncuesta']); // Para actualizar
     Route::delete('/{iConfEncId}', [ConfiguracionEncuestaController::class, 'eliminarConfiguracionEncuesta']); // Para eliminar
+  });
+  Route::prefix('publico-objetivo')->group(function () {
+    Route::get('/', [PublicoObjetivoController::class, 'listarPublicoObjetivo']); // Para listar
   });
 });
