@@ -5,6 +5,7 @@ use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
+use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
@@ -14,6 +15,11 @@ use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
+
+    Route::group(['prefix' => 'instituciones-educativas'], function () {
+        Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
+        Route::get('{iIieeId}/sedes', [InstitucionEducativaController::class, 'obtenerSedesIe']);
+    });
 
     Route::group(['prefix' => 'estudiantes'], function () {
         Route::post('buzon-sugerencias', [BuzonSugerenciaController::class, 'registrarSugerencia']);

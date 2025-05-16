@@ -13,18 +13,6 @@ class InstitucionesEducativasController extends ApiController
     //
     public function obtenerInstitucionesEducativas()
     {
-
-        $campos = 'iIieeId,cIieeCodigoModular,cIieeNombre';
-        $where = '';
-
-        $params = [
-            'ere',
-            'vistaInstitucionEducativa',
-            $campos,
-            $where
-
-        ];
-
         try {
             $preguntas = DB::select('EXEC ere.SP_SEL_instituciones');
             return $this->successResponse(
