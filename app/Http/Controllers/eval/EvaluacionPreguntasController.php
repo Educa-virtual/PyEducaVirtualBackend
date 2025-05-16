@@ -37,51 +37,73 @@ class EvaluacionPreguntasController extends Controller
             ['opcion.required' => 'Hubo un problema al obtener la acción']
         );
 
-        foreach (['valorBusqueda','iEvalPregId','iEvaluacionId','iBancoId'] as $f) {
+        foreach (['valorBusqueda', 'iEvalPregId', 'iEvaluacionId', 'iBancoId'] as $f) {
             $request[$f] = $this->decodeValue($request->$f);
         }
 
+        $iCredId = $request->iCredId ?? 0; 
+        if ($iCredId === null) {
+            $iCredId = 0; 
+        }
+
         return [
-            $request->opcion,
-            $request->valorBusqueda           ?? '-',
-            $request->iPreguntaId             ?? null,
-            $request->iDesempenoId            ?? null,
-            $request->iTipoPregId             ?? null,
-            $request->cPregunta               ?? null,
-            $request->cPreguntaTextoAyuda     ?? null,
-            $request->iPreguntaNivel          ?? null,
-            $request->iPreguntaPeso           ?? null,
-            $request->dtPreguntaTiempo        ?? null,
-            $request->bPreguntaEstado         ?? 1,
-            $request->cPreguntaClave          ?? null,
-            $request->iEspecialistaId         ?? null,
-            $request->iNivelGradoId           ?? null,
-            $request->iEncabPregId            ?? null,
-            $request->iCursosNivelGradId      ?? null,
-            $request->iCredId                 ?? null,
-            $request->iPreguntaOrden          ?? 0,
+            'opcion' => $request->opcion,
+            'valorBusqueda' => $request->valorBusqueda ?? '-',
+            'iPreguntaId' => $request->iPreguntaId ?? null,
+            'iDesempenoId' => $request->iDesempenoId ?? null,
+            'iTipoPregId' => $request->iTipoPregId ?? null,
+            'cPregunta' => $request->cPregunta ?? null,
+            'cPreguntaTextoAyuda' => $request->cPreguntaTextoAyuda ?? null,
+            'iPreguntaNivel' => $request->iPreguntaNivel ?? null,
+            'iPreguntaPeso' => $request->iPreguntaPeso ?? null,
+            'dtPreguntaTiempo' => $request->dtPreguntaTiempo ?? null,
+            'bPreguntaEstado' => $request->bPreguntaEstado ?? 1,
+            'cPreguntaClave' => $request->cPreguntaClave ?? null,
+            'iEspecialistaId' => $request->iEspecialistaId ?? null,
+            'iNivelGradoId' => $request->iNivelGradoId ?? null,
+            'iEncabPregId' => $request->iEncabPregId ?? null,
+            'iCursosNivelGradId' => $request->iCursosNivelGradId ?? null,
+            'iCredId' => $iCredId, 
         ];
     }
 
     public function handleCrudOperation(Request $request)
     {
         $params = $this->validateRequest($request);
-        $bindings = array_values($params);
 
         switch ($request->opcion) {
             case 'GUARDAR-PREGUNTAS':
-                $placeholders = implode(',', array_fill(0, count($bindings), '?'));
-                $sql = "EXEC ere.Sp_INS_preguntas {$placeholders}";
-
                 try {
-                    $data = DB::select($sql, $bindings);
+                    $sql = "
+                    DECLARE @result INT
+                    EXEC @result = ere.Sp_INS_preguntas 
+                        @_opcion = :opcion, 
+                        @_valorBusqueda = :valorBusqueda,
+                        @_iPreguntaId = :iPreguntaId,
+                        @_iDesempenoId = :iDesempenoId,
+                        @_iTipoPregId = :iTipoPregId,
+                        @_cPregunta = :cPregunta,
+                        @_cPreguntaTextoAyuda = :cPreguntaTextoAyuda,
+                        @_iPreguntaNivel = :iPreguntaNivel,
+                        @_iPreguntaPeso = :iPreguntaPeso,
+                        @_dtPreguntaTiempo = :dtPreguntaTiempo,
+                        @_bPreguntaEstado = :bPreguntaEstado,
+                        @_cPreguntaClave = :cPreguntaClave,
+                        @_iEspecialistaId = :iEspecialistaId,
+                        @_iNivelGradoId = :iNivelGradoId,
+                        @_iEncabPregId = :iEncabPregId,
+                        @_iCursosNivelGradId = :iCursosNivelGradId,
+                        @_iCredId = :iCredId;
+                    SELECT @result AS result;
+                    ";
+
+                    $data = DB::select($sql, $params);
 
                     return new JsonResponse([
                         'validated' => true,
                         'message'   => 'Pregunta guardada',
                         'data'      => $data
                     ], 200);
-
                 } catch (\Exception $e) {
                     return new JsonResponse([
                         'validated' => false,
