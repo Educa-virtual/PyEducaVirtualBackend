@@ -109,7 +109,7 @@ class DocenteCursosController extends Controller
         $iSedeId=$request->iSedeId;
         $iIieeId=$request->iIieeId;
         
-        $docente = VerifyHash::decodes($iDocenteId);
+        $docente = VerifyHash::decodesxId($iDocenteId);
 
         $solicitud = [
             $opcion
@@ -133,8 +133,8 @@ class DocenteCursosController extends Controller
         $idDocCursoId=$request->idDocCursoId;
 
         $solicitud = [
-            VerifyHash::decodes($iSilaboId),
-            VerifyHash::decodes($idDocCursoId),
+            VerifyHash::decodesxId($iSilaboId),
+            VerifyHash::decodesxId($idDocCursoId),
         ];
         
         $query = 'EXEC acad.Sp_INS_importarSilabos '.str_repeat('?,',count($solicitud)-1).'?';
