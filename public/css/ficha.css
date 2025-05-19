@@ -72,7 +72,8 @@ th, td {
 }
 
 td {
-    font-size: small;
+   
+    font-size:smaller;
 }
 
 th {
@@ -111,3 +112,5 @@ th {
         page-break-inside: auto; /* Permite que las tablas fluyan mejor en las páginas */
     }
 }
+
+

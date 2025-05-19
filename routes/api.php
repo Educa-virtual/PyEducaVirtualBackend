@@ -39,6 +39,8 @@ use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\bienestar\FichaPdfController;
+use App\Http\Controllers\bienestar\EstudianteController;
 
 //Linea 18 de febrero------------------------------------- 
 //use App\Http\Controllers\VacantesController;
@@ -386,3 +388,7 @@ Route::group(['prefix' => 'grl'], function () {
     Route::post('searchPersona', [PersonaController::class, 'show']);
     Route::post('validarPersona', [PersonaController::class, 'validate']);
 });
+
+Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+
+

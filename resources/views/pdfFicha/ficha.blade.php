@@ -16,7 +16,8 @@
             <h3>Dirección Domiciliaria en Moquegua</h3>
             <table>
             <th>Dirección actual</th>
-            <td>{{ $direccion_procedencia['tipo_via'] ?? 'N/A' }}</td>
+            <td>{{ $direccion_domiciliaria['tipo_via'] ?? 'N/A' }}</td>
+
             </table>
             <table>
                 <tr>
@@ -115,109 +116,26 @@
                         <td>{{ $nacimiento['distrito'] }}</td>
                     </tr>
                 </table>
-        </div>
+          </div>
       
          <!-- Sección 6: Lugar de Nacimiento -->
         
-        <div class="section">
             <h2>II. ASPECTO FAMILIAR</h2>
             <table>
                 <th>¿Vive su padre?</th>
-                <td>SI</td>
-                <th>¿Vive su padre?</th>
-                <td>SI</td>             
-            </table>
-
-            <h3>Dirección domiciliaria en Moquegua</h3>
-            <table> 
-                <tr>
-                    <th>2.1- Dirección actual del Padre</th>
-                    <td>{{ $direccion_padre['tipo_via'] }}</td> 
-                </tr>
-                </table>  
-            <table>
- 
-                <tr>
-                    <th>Nombre de Vía</th>
-                    <th>N° de Puerta</th>
-                    <th>Block</th>
-                    <th>Interior</th>
-                    <th>Piso</th>
-                    <th>Mz</th>
-                    <th>Lote</th>
-                    <th>Km</th>
-                </tr>
-                <tr>
-                    <td>{{ $direccion_padre['nombre_via'] }}</td>   
-                    <td>{{ $direccion_padre['numero_puerta'] }}</td>
-                    <td>{{ $direccion_padre['block'] }}</td>
-                    <td>{{ $direccion_padre['interior'] }}</td>
-                    <td>{{ $direccion_padre['piso'] }}</td>
-                    <td>{{ $direccion_padre['mz'] }}</td>
-                    <td>{{ $direccion_padre['lote'] }}</td>
-                    <td>{{ $direccion_padre['km'] }}</td>
-                </tr>
-            </table>
-            <table>
-                <th>Referencia de ubicación domiciliaria</th>
-                <td>{{ $direccion_padre['referencia'] }}</td>
-            </table>
-        </div>
-        
- 
-            <table> 
-                <tr>
-                    <th>2.1- Dirección actual de la Madre</th>
-                    <td>{{ $direccion_madre['tipo_via'] }}</td> 
-                </tr>
-                </table>  
-            <table>
- 
-                <tr>
-                    <th>Nombre de Vía</th>
-                    <th>N° de Puerta</th>
-                    <th>Block</th>
-                    <th>Interior</th>
-                    <th>Piso</th>
-                    <th>Mz</th>
-                    <th>Lote</th>
-                    <th>Km</th>
-                </tr>
-                <tr>
-                    <td>{{ $direccion_madre['nombre_via'] }}</td>   
-                    <td>{{ $direccion_madre['numero_puerta'] }}</td>
-                    <td>{{ $direccion_madre['block'] }}</td>
-                    <td>{{ $direccion_madre['interior'] }}</td>
-                    <td>{{ $direccion_madre['piso'] }}</td>
-                    <td>{{ $direccion_madre['mz'] }}</td>
-                    <td>{{ $direccion_madre['lote'] }}</td>
-                    <td>{{ $direccion_madre['km'] }}</td>
-                </tr>
-            </table>
-            <table>
-                <th>Referencia de ubicación domiciliaria</th>
-                <td>{{ $direccion_madre['referencia'] }}</td>
+                <td>{{ $direccion_domiciliaria['vive_padre'] }}</td>
+                <th>¿Vive su madre?</th>
+                <td>{{ $direccion_domiciliaria['vive_madre'] }}</td> 
             </table>
  
-            <!-- Sección 6: Lugar de Nacimiento -->
-             <div class="section">
-                <table>
-                    <tr>
-                        <th>2.3. Estado civil de los padres:</th>
-                        <td>{{ $est_civil_padres['estado_civil'] }}</td>
-                    </tr>
-                </table>
-
-             </div>
-           
-             <!-- Sección 7: Estructura Familiar -->
-           <div class="section">
+            <!-- Sección 7: Estructura Familiar -->
+            <div class="section">
                 <table>
                     <tr>
                         <th>2.4. Estructura familiar (Incluido el estudiante)</th>
                     <table>
                         <tr>
-                            <th>Nombres y Apellidos</th>
+                            <th>Nombres</th>
                             <th>Edad</th>
                             <th>Parentesco</th>
                             <th>Estado civil</th>
@@ -225,114 +143,64 @@
                             <th>Ocupación</th>                            
                             <th>Residencia actual</th>                            
                         </tr>
+                        
                         <tr>
-                            <td>MARIA FERNANDA RODRIGUEZ FERNANDEZ</td>
-                            <td>32</td>
-                            <td>Madre</td>
-                            <td>Casada</td>
-                            <td>Superior Universitaria</td>
-                            <td>Ama de casa</td>
-                            <td>San Antonio Z-24</td>
+                            @foreach ($familiares as $familiar)
+                                <tr>
+                                    <td>{{ $familiar['apellido_paterno'] }} {{ $familiar['apellido_materno'] }} {{ $familiar['nombres'] }} </td>
+                                    <td>{{ $familiar['edad'] }}</td>
+                                    <td>{{ $familiar['tipo_familiar'] }}</td>
+                                    <td>{{ $familiar['estado_civil'] }}</td>
+                                    <td>{{ $familiar['grado_instruccion'] }}</td>
+                                    <td>{{ $familiar['ocupacion'] }}</td>
+                                    <td>{{ $familiar['residencia_actual'] }}</td>
+                                </tr>
+                            @endforeach
                         </tr>
-                        <tr>    
-                            <td>PEDRO ROMERO RODRIGUEZ</td>
-                            <td>33</td>
-                            <td>Padre</td>
-                            <td>Casado</td>
-                            <td>Superior Universitaria</td>
-                            <td>Ing de Sistemas e Inform</td>
-                            <td>San Antonio Z-24</td>
-                        </tr>
-                            <td>ORLANDO ROMERO SANTIVAÑEZ</td>
-                            <td>33</td>
-                            <td>Padre</td>
-                            <td>Casado</td>
-                            <td>Superior Universitaria</td>
-                            <td>Ing de Sistemas e Inform</td>
-                            <td>San Antonio Z-24</td>
-                        </tr>
-                            <td>MILAGROS ROMERO SANTIVAÑEZ</td>
-                            <td>33</td>
-                            <td>Padre</td>
-                            <td>Casado</td>
-                            <td>Superior Universitaria</td>
-                            <td>Ing de Sistemas e Informa</td>
-                            <td>San Antonio Z-24</td>
-                        </tr>
-                    </table>
+                     </table>
                     </tr>
                 </table>
              </div>
-            
-             <!-- Sección 8: Lugar de Nacimiento -->           
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>2.5. ¿Con quién reside actualmente?:</th>
-                        <td>Otros: Cuarto Alquilado</td>
-                    </tr>
-                </table>
-            </div>
 
-            <!-- Sección 9: Persona de contacto emergencia -->           
-            <div class="section">
-                <table>
-                    <tr>
-                        <th>2.6. Nombre de la persona y parentesco en caso de emergencia:</th>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>Nombres y Apellidos</th>
-                        <th>Parentesco</th>
-                        <th>Teléfono fijo o celularl
-                        </th>
-                    </tr>
-                    <tr>
-                        <td>MILAGROS ROMERO SANTIVAÑEZ</td>
-                        <td>mamá</td>
-                        <td>990464520</td>
-                    </tr>
-                </table>
-            </div>
-            
-            <!-- Sección 10: Persona de contacto emergencia --> 
-            <div class="section">       
+           <!-- Sección 10: Aspecto econimico --> 
+           <div class="section">       
                 <h2>III. ASPECTO ECONÓMICO</h2>
                 </div>
                 <table>
                     <tr>
                         <th>3.1. Ingreso Familiar</th>
-                        <td>De S/. 951.00 a S/. 1500.00</td>
+                        <td>{{ $aspecto_economico['rango_sueldo'] }}</td>
+                        <!--<td>De S/. 951.00 a S/. 1500.00</td>-->
                     </tr>
                     <tr>
                         <th>3.2. Depeden Económivcamente de:</th>
-                        <td>ambos padres</td>
+                        <td>{{ $aspecto_economico['depende_economicamente_de'] }}</td>
                     </tr>
                     <tr>
                         <th>3.3. Apoyo que recibe es:</th>
-                        <td>Ninguno</td>
+                        <td>{{ $aspecto_economico['tipo_apoyo_economico'] }}</td>
                     </tr>
                     <tr>
                         <th>3.4. El estudiante, ¿Desempeña alguna actividad económica:</th>
-                        <td>ambos padres</td>
+                        <td>{{ $aspecto_economico['actividad_ingreso'] }}</td>
                     </tr>
                     <tr>
                         <th>3.5. Ingreso mensual del estudiante:</th>
-                        <td>-</td>
+                        <td>{{ $aspecto_economico['aporte_estudiante'] }}</td>
                     </tr>
                     <tr>
                         <th>3.6. Su labor es:</th>
-                        <td>ambos padres</td>
+                        <td>{{ $aspecto_economico['horas_trabajo'] }}</td>
                     </tr>
                     <tr>
                         <th>3.7. Horas destinadas al trabajo que realiza :</th>
-                        <td>0</td>
+                        <td>{{ $aspecto_economico['jornada_trabajo'] }}</td>
                     </tr>
                 </table>  
-            
-           <!-- Sección 11: Persona de contacto emergencia --> 
-            <div class="section">
+   
+
+          <!-- Sección 11: Aspecto de la vivienda --> 
+          <div class="section">
                 <table>
                     <tr>
                         <h2>IV. ASPECTOS DE LA VIVIENDA (Donde actualmente radica el estudiante)</h2>
@@ -341,9 +209,9 @@
                         <th>4.3 Estado de la vivienda:</th>
                     </tr>   
                     <tr>
-                        <td>Propia</td>
-                        <td>3 pisos</td>
-                        <td>terminada</td>
+                    <td>{{ $aspecto_vivienda['vivienda_es'] }}</td>
+                    <td>{{ $aspecto_vivienda['npisos'] }}</td>
+                    <td>{{ $aspecto_vivienda['estado'] }}</td>
                     </tr>
                 </table>
             </div>
@@ -358,9 +226,9 @@
                         <th>4.6 Los techos de la vivienda es:</th>
                     </tr>
                     <tr>
-                        <td>ladrillo revestido</td>
-                        <td>mayolica</td>
-                        <td>concreto armado</td>
+                        <td>{{ $aspecto_vivienda['mat_pred_pared'] }}</td>
+                        <td>{{ $aspecto_vivienda['mat_piso'] }}</td>
+                        <td>{{ $aspecto_vivienda['mat_techo'] }}</td>
                     </tr>
                 </table>
              </div>
@@ -371,9 +239,9 @@
                         <th>4.9. ¿Cuántas habitaciones se usan exclusivamente para dormir?</th>
                     </tr>
                     <tr>
-                        <td>Cuarto / habitacióno</td>
-                        <td>1</td>
-                        <td>1</td>
+                        <td>{{ $aspecto_vivienda['tipo_vivienda'] }}</td>
+                        <td>{{ $aspecto_vivienda['nro_ambientes'] }}</td>
+                        <td>{{ $aspecto_vivienda['nro_habitaciones'] }}</td>
                     </tr>
                 </table>
                 
@@ -384,516 +252,332 @@
                         <th>4.12. ¿Cuál es el tipo de alumbrado que tiene su hogar? (puede marcar más de una alternativa)</th>
                     </tr>
                     <tr>
-                        <td>Red pública dentro de la vivienda</td>
-                        <td>Red pública de desagüe</td>  
-                            <td>
-                                <ul>
-                                    <li>Electricidad: SI</li>
-                                    <li>Mechero: NO</li>
-                                    <li>Vela: NO</li>
-                                    <li>Panel Solar: NO</li>
-                            </td>
-                            </ul>
+                        <td>{{ $aspecto_vivienda['tipo_servicio'] }}</td>
+                        <td>{{ $aspecto_vivienda['tipo_sshh'] }}</td>
+                        <td>{{ $aspecto_vivienda['tipo_alumbrado'] }}</td>
                     </tr> 
                  </table>
-          
-<!-- Sección 11: Persona de contacto emergencia --> 
-        <div class="section">
-            <table>
-                    <th>4.13 Su hogar tiene:</th> 
-                    <th>Opcion</th>
-                    <th>Su hogar tiene</th> 
-                    <th>Opcion</th>          
-                    <tr>
-                        <td>1. Equipo de sonido</td>
-                        <td>No</td>
-                        <td>8. Computadora (PC)</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>2. Televisor</td>
-                        <td>Si</td>
-                        <td>9. Laptop</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>3. Servicio de cable</td>
-                        <td>No</td>
-                        <td>10. Servicio de internet</td>
-                    </tr>
-                    <tr>
-                        <td>4. Refrigeradora/congeladora</td>
-                        <td>Si</td>
-                        <td>11. Tablet
-                        <td>No</td>
-                        </td>
-                    </tr>    
-                    <tr>
-                        <td>5. Cocina a gas</td>
-                        <td>Si</td>
-                        <td>12. Automóvil / camioneta</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>6. Teléfono fijo</td>
-                        <td>No</td>
-                        <td>13. Moto / mototaxi</td>
-                        <td>No</td>
-                    </tr>
-                        <td>7. Celular</td>
-                        <td>No</td>
-                        <td>14. Otro</td>
-                        <td>No</td>
-                    </tr>
+
+         <!-- Sección 11: Equipamiento --> 
+            <div class="section">
+                <table>
+                        <th>Item</th>
+                        <th>4.13 Su hogar tiene:</th> 
+                        @foreach ($equipamiento as $equipos)
+                            <tr>
+                            <td>{{ $loop->iteration }}</td> <!-- Este es el contador -->    
+                            <td>{{ $equipos['electrodm_hogar'] }}</td>
+                            </tr>
+                        @endforeach
                 </table> 
             </div>
 
-            <!-- Sección 12: Persona de contacto emergencia --> 
-                <div class="section">
-                    <table>
-                        <h2>V. ALIMENTACIÓN DEL ESTUDIANTE</h2>
-                        <tr>
-                        <th>5.1. ¿Dónde consume sus alimentos el estudiante? (De Lunes a viernes)</th> 
-                    </table>
-                    <table>
-                        <tr>
-                            <td>a) Desayuno</td>
-                            <td>Pensión</td>
-                        </tr>
-                        <tr>
-                            <td>b) Almuerzo</td>
-                            <td>Pensión</td>
-                        </tr>
-                        <tr>
-                            <td>c) Cena</td>
-                            <td>Hogar</td>
-                        </tr>
-                    </table>
+            <!-- Sección 12: Alimentacion del estudiante --> 
+            <div class="section">
+                        <table>
+                            <h2>V. ALIMENTACIÓN DEL ESTUDIANTE</h2>
+                            <tr>
+                            <th>5.1. ¿Dónde consume sus alimentos el estudiante? (De Lunes a viernes)</th> 
+                        </table>
                         <table>
                             <tr>
-                                <th>5.2. ¿Tuvo acceso al comedor universitario?</th>
-                                <td>Si</td>
+                            <td>a) Desayuno </td>
+                            <td>{{ $alimentos_std['lugar_desayuno'] }}</td>
+
+                           </tr>
+                            <tr>
+                                <td>b) Almuerzo</td>
+                                <td>{{ $alimentos_std['lugar_almuerzo'] }}</td>
                             </tr>
-                        </table>
-                        <!-- Sección 13: Persona de contacto emergencia --> 
-                        <div class="section">
-                            <table>
-                                <h2>VI. DISCAPACIDAD</h2>
-                                <th>6.1. ¿tiene ud. limitaciones de forma permanente para?:</th>
+                            <tr>
+                                <td>c) Cena</td>
+                                <td>{{ $alimentos_std['lugar_ceba'] }}</td>
+                                
+                            </tr>
                             </table>
                             <table>
                                 <tr>
-                                    <td>1. Moverse o caminar, para usar brazos o piernas</td>
-                                    <td>No</td>
-                                </tr>
-                                <tr>
-                                    <td>2. Ver, aun usando anteojos</td>
-                                    <td>No</td>
-                                </tr>
-                                <tr>
-                                    <td>3. Hablar o comunicarse, aún usando la lengua de señas u otro</td>
-                                    <td>No</td>
-                                </tr>
-                                <tr>
-                                    <td>4. Oír, aun usando audífonos</td>
+                                    <th>5.2. ¿Tuvo acceso al comedor universitario?</th>
                                     <td>Si</td>
                                 </tr>
-                                <tr>
-                                    <td>5. Entender o aprender (concentrarse y recordar)s</td>
-                                    <td>Si</td>
-                                </tr>
-                                <tr>
-                                    <td>6. Relacionarse con los demás, por sus pensamientos, sentimientos, emociones o conductas</td>
-                                    <td>Si</td>
-                                </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <th>6.2. ¿ESTÁ REGISTRADO EN (Puede marcar las dos opciones)</th>
-                        </tr>
-                    </table>    
-                    <table>
-                        <tr>
-                            <td>1.- OMAPED: NO</td>
-                            <td>2.- CONADIS: NO</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-                
-                         <!-- Sección 14: Persona de contacto emergencia --> 
+                            </table>
+                        </table>
+
+            <!-- Sección 13: Discapacidad --> 
             <div class="section">
-                <table>
-                    <tr>
-                        <h2>VII. SALUD</h2>
-                        <h3>7.1. ¿padece de alguna enfermedad crónica (puede marcar una o más opciones)</h3>
-                    </tr>
-                </table>    
-                <table>
-                    <tr>
-                        <td>Asma</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Diabetes</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Epilepsia</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Artritis</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Reumatismo</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Hipertensión</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Estrés</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Otros</td>
-                        <td>No</td>
-                    </tr>
-                </table>
-             </div>            
-                <table>
-                    <tr>
-                        <th>7.2 ¿Padece de algún tipo de alergia?</th>
-                    </tr>
-                </table>
-                <table>
-                <tr>
-                    <td>A medicamentos</td>
-                    <td>No</td>
-                </tr> 
-                <tr>
-                    <td>A alimentos</td>
-                    <td>No</td>
-                </tr>                  
-                <tr>
-                    <td>Otros</td>
-                    <td>No</td>
-                </tr>                
-                </table>
-                <table>
-                    <tr>
-                        <th>7.3 Seguro de Salud</th>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>El Sistema de prestación de Seguro de Salud al cual Ud. esta afiliado actualmente es:</th>
-                        <th>¿Quién aporta las cuotas por estar afiliado?</th>
-                    </tr>  
-                    <tr>
-                        <td>ESSALUD</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Seguro Privado de salud</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Entidad Prestadora de salud</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Seguro de Fuerzas Armadas/Policiales</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Seguro Integral de Salud</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Otro</td>
-                        <td>No</td>
-                    </tr>                 
-                    
-                </table>
- 
-                <!-- Sección 14: Persona de contacto emergencia --> 
-               <!-- <div class="section">-->
-                    <table>
+           <h2>VI. DISCAPACIDAD</h2>
+
+            <table border="1" cellpadding="6" cellspacing="0" width="100%">
+                    <thead style="background-color: #f2f2f2;">
                         <tr>
-                            <h2>VIII. INFORMACIÓN COMPLEMENTARIA</h2>
-                            <h3>Deporte</h3>
-                            <th>8.1. ¿Que disciplinas deportivas practica?</th>
+                            <th>N°</th>
+                            <th>6.1. ¿Tiene usted limitaciones de forma permanente para?</th>
                         </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <td>Fútbol</td>
-                            <td>Si</td>
-                        </tr>
-                        <tr>
-                            <td>Vóley</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>Básquet</td>
-                            <td>Si</td>
-                        </tr>
-                        <tr>
-                            <td>Natación</td>
-                            <td>Si</td>
-                        </tr>
-                        <tr>
-                            <td>Otros</td>
-                            <td>No</td>
-                        </tr>
-                    </table>
-                    <table>
-                    <tr>
-                        <th style="width: 512px;">8.2 ¿Has participado o participaras en un Club, Liga, o Federación Deportiva?</th>
-                        <td>Si</td>
-                    </tr>
-                    </table>
-                    <table>
-                    <tr>  
-                    <th>CULTURA Y RECREACIÓN</th>
-                    </tr> 
-                    </table>
-                    <table>
-                    <tr>  
-                        <th>8.3 ¿Que Actividad Artística Prácticas?</th>
-                    </tr> 
-                    </table>           
-                    <table>
-                 <tr>     
-                        <td>Danza</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>     
-                        <td>Teatro</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>     
-                        <td>Música</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>     
-                        <td>Natación</td>
-                        <td>Si</td>
-                    </tr>          
-                    </table>
-                    <table>
-                    <tr>
-                        <th>8.4 ¿Has formado o formas parte de un Centro Artístico o Cultural?</th>
-                        <td>No</td>
-                    </tr>
-                    </table>
+                    </thead>
+                    <tbody>
+                        @foreach($pers_discapacidad as $index => $discapacidad)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $discapacidad['nomb_discapacidad'] }}</td>
         
-                    <table>
+                            </tr>
+                        @endforeach
+                    </tbody>
+            </table>
+            <table>
+                <tr>
+                    <th>6.1. ¿Esta registrado en:?</th>
+                </tr>
+            </table>
+             <table>
+                <tr>
+                    <td>¿Está en OMAPED?</td> 
+                    <td>{{ $discapacidad['esta_en_omaped'] }}</td>
+                    <td>¿Está en CONADIS?</td>
+                    <td>{{ $discapacidad['esta_en_conadis'] }}</td>
+                </tr>
+        </table>
+    </div>
+
+    <div class="section">
+    <h2>VII. SALUD</h2>
+
+    <h3>7.1. ¿Padece de alguna enfermedad crónica? (puede marcar una o más opciones)</h3>
+
+    <table border="1" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th style="width: 10%;">N°</th>
+                <th>Enfermedad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($pers_salud as $item)
+                <tr>
+                    <td style="text-align: center;">{{ $loop->iteration }}</td>
+                    <td>{{ $item['enfermedad_nomb'] }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="2" style="text-align: center;">No registra enfermedades crónicas</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <br>
+
+    <h3>7.2. ¿Padece de algún tipo de alergia?</h3>
+
+    <table border="1" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Tipo de Alergia</th>
+                <th>Respuesta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>A medicamentos</td>
+                <td>{{ $alergias['AlergiaMedicamentos'] ?? 'No' }}</td>
+            </tr>
+            <tr>
+                <td>A alimentos</td>
+                <td>{{ $alergias['AlergiaAlimentos'] ?? 'No' }}</td>
+            </tr>
+            <tr>
+                <td>Otros</td>
+                <td>{{ $alergias['AlergiaOtros'] ?? 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<table>
+    <tr>
+        <th>El Sistema de prestación de Seguro de Salud al cual Ud. está afiliado actualmente es:</th>
+        <th>¿Quién aporta las cuotas por estar afiliado?</th>
+    </tr>
+    @forelse($pers_seguros as $item)
+        <tr>
+            <td>{{ $item['seguro_salud'] }}</td>
+            <td>{{ $item['seguro_aportacion'] }}</td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="2">No se registran seguros de salud.</td>
+        </tr>
+    @endforelse
+</table>
+
+<div class="section">
+    <h2>VIII. INFORMACIÓN COMPLEMENTARIA</h2>
+    <h3>Deporte</h3>
+
+    <table border="1" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>8.1. ¿Qué disciplinas deportivas practica?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($pers_deportes as $item)
+                <tr>
+                    <td>{{ $item['deporte_nombre'] }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td>No se registran disciplinas deportivas.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <br>
+
+    <table border="1" cellpadding="5" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>8.2. ¿Pertenece a una liga deportiva?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ $liga_deportiva ?? 'NO' }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<table>
+    <tr>
+        <th colspan="2">CULTURA Y RECREACIÓN</th>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>8.3 ¿Qué Actividad Artística Prácticas?</th>
+    </tr>
+</table>
+
+<table border="1" cellpadding="5" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Actividad Artística</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse($pers_artes as $item)
+            <tr>
+                <td>{{ $item['pasatiempo_artistico'] }}</td>
+            </tr>
+        @empty
+            <tr>
+                <td>No se registran actividades artísticas.</td>
+            </tr>
+        @endforelse
+    </tbody>
+</table>
+
+<br>
+
+<table>
+    <tr>
+        <th>¿Pertenece a un centro artístico?</th>
+    </tr>
+    <tr>
+        <td>{{ $centro_artistico ?? 'NO' }}</td>
+    </tr>
+</table>
+
+<table>
                     <tr>
                         <th style="width: 512px;">8.5 ¿Qué religión profesas?</th>
                         <td>Católica</td>
                     </tr>
-                    </table>
+
+
                     <table>
-                    <th>8.6 ¿Qué actividades realizas como pasatiempo?</th>
-                    </table>
-                    <table>
-                    <tr>
-                        <td>Cine</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Lectura</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Escuchar música</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Videojuegos</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Juegos online</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Reuniones con amigos</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Pasear</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Otros</td>
-                        <td>Si</td>
-                    </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <th>PSICOPEDAGÓGICO</th>
-                        </tr>
-                    </table>    
-                    <table>
-                        <tr>
-                            <th>8.7 ¿Has asistido alguna vez a una consulta Psicológica?</th>
-                            <td>Si, cuando postule</td>
-                        </tr>
-                        </table>
-                    <table>
-                        <tr>
-                            <th>8.8 ¿A quién acudes cuando tienes un problema emocional?</th>
-                        </tr>
-                        </table>
-                    <table>
-                        <tr>
-                            <td>Padre</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>Madre</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>Hermanos</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>Amigos</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>Tutor</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>Psicólogo</td>
-                            <td>No</td>
-                        </tr>
-                        <tr>
-                            <td>Otros</td>
-                            <td>No</td>
-                        </tr>
-                    </table>
-                    <table>
-                        <tr>
-                            <th>8.9 ¿Cómo califica Ud. su relación con sus padres o familiares? </th>
-                            <td>Buena</td>
-                        </tr>
-                    </table>
-                <table>
-                    <tr>
-                        <th>TRANSPORTE</th>
-                    </tr>
-                    <tr>
-                        <th>8.10 ¿Qué temas te gustaria abordar para mejorar tu desarrollo personal? </th>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <td>Inteligencia Emocional</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Habilidades Socioemocionales</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Control de las emociones</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Resilencia</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Autoestima</td>
-                        <td>Si</td>
-                    </tr>
-                    <tr>
-                        <td>Otros</td>
-                        <td>No</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>8.11 ¿Cuál es el medio de transporte que mas que mas utilizas? </th>
-                        <td>Transporte Urbano</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>8.12 ¿Cuánto gastas aproximadamente en pasajes para asistir a diario a la Universidad? </th>
-                        <td>5 soles o menos</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>8.13 ¿Qué tan seguidp utilizas el transporte de la UNAM?</th>
-                        <td>Tres o cuatro veces a la semana</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <h2>IX. CUESTIONARIO</h2>
-                    </tr>
-                    <tr>
-                        <th>9.1 ¿Presenta usted alguna enfermedad crónica no transmosible?</th>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <td>Diabetes</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Hipertensión</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Obesidad</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Cáncer</td>
-                        <td>No</td>
-                    </tr>
-                    <tr>
-                        <td>Otros</td>
-                        <td>No</td>
-                    </tr>
-                </table>
-                <table>
-                    <tr>
-                        <th>9.2 ¿Recibió la vacuna contra el COVID-19?</th>
-                        <td>Si, 3era dosis</td>
-                    </tr>
-                </table>
-                <table>
-                    <th>9.3 ¿Tuvo usted algún familiar que enfermo gravemente y falleció con COVID-19?</th>
-                </table>
-                <table>
-                    <tr>
-                        <td>Madre</td>
-                        <td>No</td>
-                    </tr>
-                 <tr>
-                    <td>Padre</td>
-                    <td>No</td>
-                 </tr>
-                 <tr>
-                    <td>Hermano(a)</td>
-                    <td>No</td>
-                 </tr>
-                </table>
-                <!--</div>-->
-    </div>
+    <tr>
+        <th>8.6 ¿Qué actividades realizas como pasatiempo?</th>
+    </tr>
+</table>
+
+<table border="1" cellpadding="5" cellspacing="0" width="100%">
+     <tbody>
+        @forelse($pers_pasatiempos as $item)
+            <tr>
+                <td>{{ $item['pasatiempo_nombre'] }}</td>
+            </tr>
+        @empty
+            <tr>
+                <td>No se registran pasatiempos.</td>
+            </tr>
+        @endforelse
+    </tbody>
+</table>
+
+<table>
+    <tr>
+        <th>PSICOPEDAGÓGICO</th>
+    </tr>
+</table>    
+
+<table>
+    <tr>
+        <th>8.7 ¿Has asistido alguna vez a una consulta Psicológica?</th>
+        <td>
+            {{ $datos['pers_psicopedagogico'][0]['asistio_consulta'] ?? 'No hay información' }}
+        </td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>8.8 ¿A quién acudes cuando tienes un problema emocional?</th>
+        <td>
+            @if(!empty($datos['pers_psicopedagogico'][0]['familiares']))
+                {{ implode(', ', $datos['pers_psicopedagogico'][0]['familiares']) }}
+            @else
+                No hay información
+            @endif
+        </td>
+    </tr>
+</table>
+
+
+
+
+<table>
+    <tr>
+        <th>TRANSPORTE</th>
+    </tr>
+    <tr>
+        <th>8.10 ¿Qué temas te gustaría abordar para mejorar tu desarrollo personal?</th>
+    </tr>
+
+    @if (!empty($datos['medio_transporte']))
+        @foreach ($datos['medio_transporte'] as $mtransporte)
+            <tr>
+                <td>
+                    <strong>Transporte:</strong> {{ $mtransporte['transporte_nombre'] }} <br>
+                    <strong>Dolencia:</strong> {{ $mtransporte['dolencia_nombre'] }}
+                </td>
+            </tr>
+        @endforeach
+    @else
+        <tr>
+            <td>No se encontraron registros de transporte asociados.</td>
+        </tr>
+    @endif
+</table>
+
+
+
+
+
+
 </body>
 </html>
 

@@ -7,6 +7,8 @@ use App\Http\Controllers\bienestar\FichaBienestarController;
 use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
 use Illuminate\Support\Facades\Route;
+//Se agrego codigo el 22 Abril--------
+use app\Http\Controllers\bienestar\EstudianteController;
 
 Route::group(['prefix' => 'bienestar'], function () {
 
@@ -38,4 +40,7 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('guardarFichaAlimentacion', [FichaAlimentacionController::class, 'save']);
     Route::post('actualizarFichaAlimentacion', [FichaAlimentacionController::class, 'update']);
 
+    Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+
 });
+
