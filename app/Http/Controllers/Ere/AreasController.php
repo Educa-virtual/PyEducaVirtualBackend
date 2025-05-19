@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\acad\DocentesRepository;
@@ -16,10 +18,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use ErrorException;
 use Exception;
+use Faker\Calculator\Ean;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Http;
@@ -36,6 +40,7 @@ class AreasController extends Controller
 
     public function registrarHorasAreasPorEvaluacionDirectorIe($evaluacionId, $iieeId, $iPersId, Request $request)
     {
+        Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $iPersIdDescifrado = $this->hashids->decode($iPersId);
         if (empty($evaluacionIdDescifrado) || empty($iPersIdDescifrado)) {
@@ -45,7 +50,7 @@ class AreasController extends Controller
             return response()->json(['status' => 'Error', 'message' => 'El director no pertenece a la Institución educativa ingresada.'], Response::HTTP_BAD_REQUEST);
         }
         DB::beginTransaction();
-        $iieeParticipaEval=DB::selectOne("SELECT * FROM ere.iiee_participa_evaluaciones WHERE iIieeId=? AND iEvaluacionId=?",[$iieeId, $evaluacionIdDescifrado[0]]);
+        $iieeParticipaEval = DB::selectOne("SELECT * FROM ere.iiee_participa_evaluaciones WHERE iIieeId=? AND iEvaluacionId=?", [$iieeId, $evaluacionIdDescifrado[0]]);
         try {
             //Es mas rapido eliminar que verificar que existe y actualizar, o registrar, o eliminar si las horas estan vacias
             IeRepository::eliminarHorasExamen($iieeParticipaEval->iIeeParticipaId);
@@ -69,6 +74,7 @@ class AreasController extends Controller
 
     public function obtenerHorasAreasPorEvaluacionDirectorIe($evaluacionId, $iieeId, $iPersId)
     {
+        Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $iPersIdDescifrado = $this->hashids->decode($iPersId);
         if (empty($evaluacionIdDescifrado) || empty($iPersIdDescifrado)) {
@@ -80,6 +86,7 @@ class AreasController extends Controller
 
     public function guardarArchivoPdf($evaluacionId, $areaId, Request $request)
     {
+        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
         if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
@@ -108,24 +115,9 @@ class AreasController extends Controller
         }
     }
 
-    /*
     private function descargarArchivoPreguntasPdf($evaluacion, $area)
     {
-        $rutaArchivo = public_path("ere/evaluaciones/$evaluacion->evaluacionidCifrado/areas/$area->areaIdCifrado/examen.pdf");
-        if (!file_exists($rutaArchivo)) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-        $nombreArchivo = $evaluacion->cEvaluacionNombre . ' - ' . ucwords(strtolower($area->cCursoNombre)) . ' ' . $area->cGradoAbreviacion . ' '
-            . str_replace('Educación ', '', $area->cNivelTipoNombre) . '.pdf';
-
-        return response()->download($rutaArchivo, $nombreArchivo, [
-            'Content-Type' => 'application/pdf'
-        ]);
-    }
-    */
-
-    private function descargarArchivoPreguntasPdf($evaluacion, $area)
-    {
+        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
         try {
             $data = AreasService::obtenerArchivoErePdf($evaluacion, $area);
         } catch (Exception $ex) {
@@ -133,12 +125,13 @@ class AreasController extends Controller
         }
         return response($data['contenido'], 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="'.$data['nombreArchivo'].'"'//"attachment; filename=\"$nombreArchivo\"",
+            'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"' //"attachment; filename=\"$nombreArchivo\"",
         ]);
     }
 
     private function descargarArchivoPreguntasWord($evaluacion, $area)
     {
+        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
         $url = env('APP_ASPNET_URL') . "/api/ere/evaluaciones/$evaluacion->evaluacionIdHashed/areas/$area->areaIdCifrado/archivo-preguntas";
 
         $response = Http::withOptions([
@@ -165,6 +158,7 @@ class AreasController extends Controller
 
     public function descargarArchivoPreguntas($evaluacionId, $areaId, Request $request)
     {
+
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
         if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
@@ -190,21 +184,13 @@ class AreasController extends Controller
         }
     }
 
-    public function generarMatrizCompetencias($evaluacionId, $areaId, Request $request)
+    public function descargarCartillaRespuestas($evaluacionId, $areaId)
     {
-        date_default_timezone_set('America/Lima');
-        $docenteIdDescifrado = $this->hashids->decode($request->input('docente'));
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
-        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado) || empty($docenteIdDescifrado)) {
+        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        $year = YearsRepository::obtenerYearPorId(date('Y'));
-        $docente = DocentesRepository::obtenerDocentePorId($docenteIdDescifrado[0]);
-        if ($docente == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe el docente con el ID enviado.'], Response::HTTP_NOT_FOUND);
-        }
-        $persona = PersonasRepository::obtenerPersonaPorId($docente->iPersId);
         $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
         if ($evaluacion == null) {
             return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
@@ -213,20 +199,27 @@ class AreasController extends Controller
         if ($area == null) {
             return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
         }
-
-        $dataMatriz = AreasRepository::obtenerMatrizPorEvaluacionArea($evaluacionIdDescifrado[0], $areaIdDescifrado[0]);
-        if (empty($dataMatriz)) {
-            return response()->json(['status' => 'Error', 'message' => 'No hay preguntas para generar la matriz.'], Response::HTTP_NOT_FOUND);
+        $evaluacion->evaluacionIdHashed = $evaluacionId;
+        $area->areaIdCifrado = $areaId;
+        try {
+            $data = AreasService::obtenerCartillaRespuestas($evaluacion, $area);
+        } catch (Exception $ex) {
+            abort(Response::HTTP_NOT_FOUND);
         }
-        $data = [
-            'year' => $year,
-            'dataMatriz' => $dataMatriz,
-            'evaluacion' => $evaluacion,
-            'area' => $area,
-            'persona' => $persona
-        ];
-        $pdf = PDF::loadView('ere.areas.pdf.matriz-competencias', $data)->setPaper('a4', 'landscape')->set_option("enable_php", true);
-        return $pdf->download('Matriz - ' . $evaluacion->cEvaluacionNombre .' - '.$area->cCursoNombre.' '.$area->cGradoAbreviacion.' '.str_replace("Educación ","",$area->cNivelTipoNombre). '.pdf');
+        return response($data['contenido'], 200, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"' //"attachment; filename=\"$nombreArchivo\"",
+        ]);
+    }
+
+    public function generarMatrizCompetencias($evaluacionId, $areaId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+            return AreasService::generarMatrizCompetencias($evaluacionId, $areaId, $request);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 
     public function actualizarLiberacionAreasPorEvaluacion($evaluacionId)

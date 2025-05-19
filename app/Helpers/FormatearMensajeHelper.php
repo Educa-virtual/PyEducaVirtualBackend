@@ -31,7 +31,7 @@ class FormatearMensajeHelper
                 $posicionCierre = stripos($mensajeError, '(Connection: sqlsrv');
                 $message = substr($mensajeError, $posicionInicio, $posicionCierre - $posicionInicio);
             } else {
-                $codigo = $exception->getCode();
+                $codigo = $exception->getCode()=='0' ? Response::HTTP_BAD_REQUEST : $exception->getCode();
                 $message = $exception->getMessage();
             }
         }

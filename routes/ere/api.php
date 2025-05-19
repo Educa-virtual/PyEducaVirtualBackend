@@ -24,7 +24,7 @@ use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 //$this->middleware('auth:api');
-Route::group(['prefix' => 'ere'], function () {
+Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
@@ -35,6 +35,7 @@ Route::group(['prefix' => 'ere'], function () {
             Route::post('archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
             Route::get('archivo-preguntas', [AreasController::class, 'descargarArchivoPreguntas']);
             Route::get('matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
+            Route::get('cartilla-respuestas', [AreasController::class, 'descargarCartillaRespuestas']);
             Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
             Route::post('nivel-logros', [NivelLogrosController::class, 'registrarNivelLogroPorCurso']);
         });
