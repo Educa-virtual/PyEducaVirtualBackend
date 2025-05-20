@@ -8,6 +8,7 @@ use App\Helpers\VerifyHash;
 use App\Http\Requests\seg\LoginUsuarioRequest;
 use App\Models\seg\Credencial;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -82,8 +83,10 @@ class User extends Authenticatable implements JWTSubject
 
     private static function encriptarIds($usuario)
     {
-        $usuario->iDocenteId = VerifyHash::encode($usuario->iDocenteId);
-        $usuario->iPersId = VerifyHash::encode($usuario->iPersId);
+        $hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+        //$hashids->encode($usuario->iCredId);
+        $usuario->iDocenteId =$hashids->encode($usuario->iDocenteId);//VerifyHash::encode($usuario->iDocenteId);
+        $usuario->iPersId = $hashids->encode($usuario->iDocenteId);//$hashids->encode($usuario->iPersId)[0];//VerifyHash::encode($usuario->iPersId);
     }
 
     private static function obtenerOtrosDatos($usuario)
