@@ -28,6 +28,11 @@ $archivo->addSheet($hoja3, 2);
 $hoja4 = new Worksheet($archivo, "Matriz");
 $archivo->addSheet($hoja4, 3);
 
+if( $filtros->tipo_reporte == 'IE' ) {
+    $hoja5 = new Worksheet($archivo, "Agrupado");
+    $archivo->addSheet($hoja5, 4);
+}
+
 $hoja2_datos = $resultados;
 $hoja3_datos = $resumen;
 $hoja4_datos = $matriz;
@@ -76,7 +81,7 @@ if( isset($filtros->sexo) ) {
 }
 
 if( isset($filtros->sector) ) {
-    $hoja1->setCellValue('A14', 'SECTOR:')
+    $hoja1->setCellValue('A14', 'GESTIÓN:')
         ->setCellValue('B14', $filtros->sector);
 }
 
@@ -90,6 +95,7 @@ $hoja1->setCellValue('A16', 'NIVELES DE LOGRO');
 
 $fila = 16;
 $count_estudiantes = 0;
+
 foreach($niveles as $nivel) {
     $fila++;
     $hoja1->setCellValue('A' . $fila, $nivel->nivel_logro . ':')
@@ -128,8 +134,6 @@ $hoja1->getStyle('A1:B1')
 /**
  * FORMATEAR RESULTADOS
  */
-
-if( $filtros->tipo_reporte == 'ESTUDIANTES' ) {
 
 $hoja2->setCellValue('A1', 'ITEM')
     ->setCellValue('B1', 'I.E.')
@@ -196,46 +200,6 @@ foreach( $resultados as $key => $value ) {
         $indice++;
     }
 }
-} else {
-    $hoja2->setCellValue('A1', 'ITEM')
-        ->setCellValue('B1', 'AGRUPADO POR')
-        ->setCellValue('C1', 'TOTAL');
-
-    foreach ($niveles as $key_nivel => $nivel) {
-        $columnaLetra = Coordinate::stringFromColumnIndex(4 + $key_nivel);
-        $hoja2->setCellValue($columnaLetra . '1', $nivel->nivel_logro);
-    }
-
-    $hoja2->getStyle('A1:' . $columnaLetra . '1')
-        ->getFont()
-        ->setBold(true);
-    $hoja2->getStyle('A1:' . $columnaLetra . '1')
-        ->getFill()
-        ->setFillType(Fill::FILL_SOLID)
-        ->getStartColor()
-        ->setARGB($header_color);
-    $hoja2->getStyle('A1:' . $columnaLetra . count($resultados) + 1)
-        ->getAlignment()
-        ->setHorizontal(Alignment::HORIZONTAL_CENTER)
-        ->setVertical(Alignment::VERTICAL_CENTER);
-    $hoja2->getStyle('B:B')
-        ->getAlignment()
-        ->setHorizontal(Alignment::HORIZONTAL_LEFT)
-        ->setWrapText(true);
-
-    foreach( $resultados as $key => $value ) {
-        $hoja2->setCellValue('A' . ($key + 2), $key + 1)
-            ->setCellValue('B' . ($key + 2), $value->agrupado)
-            ->setCellValue('C' . ($key + 2), $value->total);
-
-        foreach ($niveles as $key_nivel => $nivel) {
-            $columnaLetra = Coordinate::stringFromColumnIndex(4 + $key_nivel);
-            $nivel_logro_id = $nivel->nivel_logro_id . '';
-            $hoja2->setCellValueExplicit($columnaLetra . ($key + 2), $value->$nivel_logro_id / 100, DataType::TYPE_NUMERIC);
-            $hoja2->getStyle($columnaLetra . ($key + 2))->getNumberFormat()->setFormatCode('0.00%');
-        }
-    }
-}
 
 /**
  * FORMATEAR RESULTADOS SEGUN PREGUNTAS
@@ -288,6 +252,55 @@ foreach($matriz as $key => $value) {
     $hoja4->setCellValue('H' . ($key + 2), $value->porcentaje_desaciertos);
 }
 
+/**
+ * FORMATEAR AGRUPADO POR IE
+ */
+
+if( $filtros->tipo_reporte == 'IE' ) {
+    $hoja5->setCellValue('A1', 'ITEM')
+        ->setCellValue('B1', 'IE')
+        ->setCellValue('C1', 'UGEL')
+        ->setCellValue('D1', 'DISTRITO')
+        ->setCellValue('E1', 'TOTAL');
+
+    foreach ($niveles as $key_nivel => $nivel) {
+        $columnaLetra = Coordinate::stringFromColumnIndex(6 + $key_nivel);
+        $hoja5->setCellValue($columnaLetra . '1', $nivel->nivel_logro);
+    }
+
+    $hoja5->getStyle('A1:' . $columnaLetra . '1')
+        ->getFont()
+        ->setBold(true);
+    $hoja5->getStyle('A1:' . $columnaLetra . '1')
+        ->getFill()
+        ->setFillType(Fill::FILL_SOLID)
+        ->getStartColor()
+        ->setARGB($header_color);
+    $hoja5->getStyle('A1:' . $columnaLetra . count($ies) + 1)
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+        ->setVertical(Alignment::VERTICAL_CENTER);
+    $hoja5->getStyle('B:D')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_LEFT)
+        ->setWrapText(true);
+
+    foreach( $ies as $key => $value ) {
+        $hoja5->setCellValue('A' . ($key + 2), $key + 1)
+            ->setCellValue('B' . ($key + 2), $value->agrupado)
+            ->setCellValue('C' . ($key + 2), $value->ugel)
+            ->setCellValue('D' . ($key + 2), $value->distrito)
+            ->setCellValue('E' . ($key + 2), $value->total);
+
+        foreach ($niveles as $key_nivel => $nivel) {
+            $columnaLetra = Coordinate::stringFromColumnIndex(6 + $key_nivel);
+            $nivel_logro_id = $nivel->nivel_logro_id . '';
+            $hoja5->setCellValueExplicit($columnaLetra . ($key + 2), $value->$nivel_logro_id / 100, DataType::TYPE_NUMERIC);
+            $hoja5->getStyle($columnaLetra . ($key + 2))->getNumberFormat()->setFormatCode('0.00%');
+        }
+    }
+}
+
 $hoja4->getStyle('A1:H1')
     ->getFont()
     ->setBold(true);
@@ -301,7 +314,11 @@ $hoja4->getStyle('A1:H' . $nro_preguntas + 1)
     ->setHorizontal(Alignment::HORIZONTAL_CENTER)
     ->setVertical(Alignment::VERTICAL_CENTER);
 
-$hojas = [$hoja1, $hoja2, $hoja3, $hoja4];
+if( $filtros->tipo_reporte == 'IE' ) {
+    $hojas = [$hoja1, $hoja2, $hoja3, $hoja4, $hoja5];
+} else {
+    $hojas = [$hoja1, $hoja2, $hoja3, $hoja4];
+}
 
 /**
  * CONFIGURAR DIMENSIONES DE CELDAS EN TODAS LAS HOJAS

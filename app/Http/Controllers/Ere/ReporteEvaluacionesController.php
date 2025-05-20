@@ -110,23 +110,24 @@ class ReporteEvaluacionesController extends Controller
         $niveles = $data[2];
         $resumen = $data[3];
         $matriz = $data[4];
+        $ies = null;
 
-        if( $filtros->tipo_reporte == 'ESTUDIANTES' ) {
-            foreach ( $resultados as $resultado) {
-                $resultado->respuestas = json_decode($resultado->respuestas);
-            }
-        } else {
-            foreach ( $resultados as $resultado) {
+        foreach ( $resultados as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
+        if( $filtros->tipo_reporte == 'IE' ) {
+            $ies = $data[5];
+            foreach ( $ies as $ie) {
                 $sumatoria = 0;
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $sumatoria += $resultado->$nivel_logro_id;
+                    $sumatoria += $ie->$nivel_logro_id;
                 }
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $resultado->$nivel_logro_id = round($resultado->$nivel_logro_id / $sumatoria * 100, 2);
+                    $ie->$nivel_logro_id = round($ie->$nivel_logro_id / $sumatoria * 100, 2);
                 }
-                $resultado->total = $sumatoria;
+                $ie->total = $sumatoria;
             }
         }
 
@@ -136,10 +137,10 @@ class ReporteEvaluacionesController extends Controller
 
         $pdf = App::make('dompdf.wrapper');
 
-        $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf'))->setPaper('a4', 'landscape');
+        $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies'))->setPaper('a4', 'landscape');
         return $pdf->stream('RESULTADOS-ERE-'.date('Ymdhis').'.pdf');
 
-        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf'));
+        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies));
 
     }
 
@@ -180,29 +181,30 @@ class ReporteEvaluacionesController extends Controller
         $niveles = $data[2];
         $resumen = $this->convertDataToChartForm($data[3]);
         $matriz = $data[4];
+        $ies = null;
 
-        if( $filtros->tipo_reporte == 'ESTUDIANTES' ) {
-            foreach ( $resultados as $resultado) {
-                $resultado->respuestas = json_decode($resultado->respuestas);
-            }
-        } else {
-            foreach ( $resultados as $resultado) {
+        foreach ( $resultados as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
+        if( $filtros->tipo_reporte == 'IE' ) {
+            $ies = $data[5];
+            foreach ( $ies as $ie) {
                 $sumatoria = 0;
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $sumatoria += $resultado->$nivel_logro_id;
+                    $sumatoria += $ie->$nivel_logro_id;
                 }
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $resultado->$nivel_logro_id = round($resultado->$nivel_logro_id / $sumatoria * 100, 2);
+                    $ie->$nivel_logro_id = round($ie->$nivel_logro_id / $sumatoria * 100, 2);
                 }
-                $resultado->total = $sumatoria;
+                $ie->total = $sumatoria;
             }
         }
 
         $nro_preguntas = count($matriz);
 
-        return view('ere.excel.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles'));
+        return view('ere.excel.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'ies'));
     }
 
     public function obtenerInformeComparacion(Request $request)

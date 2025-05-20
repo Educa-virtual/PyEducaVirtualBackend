@@ -59,7 +59,7 @@
                 <td class="align-middle text-left">{{ $filtros->cod_ie }}</td>
             @endisset
             @isset( $filtros->sector )
-                <th class="align-middle bg-light text-left" width="8%">SECTOR:</th>
+                <th class="align-middle bg-light text-left" width="8%">GESTIÓN:</th>
                 <td class="align-middle text-left">{{ $filtros->sector }}</td>
             @endisset
         </tr>
@@ -92,7 +92,6 @@
 
 <br>
 
-@if( $filtros->tipo_reporte == 'ESTUDIANTES' )
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
@@ -156,37 +155,7 @@
         @endforeach
     </tbody>
 </table>
-@else
-    <table class="table table-bordered table-condensed table-sm py-4">
-        <thead>
-            <tr>
-                @php( $otras_columnas = 3 );
-                <th class="font-lg bg-light text-center" colspan="{{ count($niveles) + $otras_columnas }}">RESULTADOS AGRUPADOS POR {{ $filtros->tipo_reporte }}</th>
-            </tr>
-            <tr>
-                <th class="align-middle bg-light text-center" width="3%">#</th>
-                    <th class="align-middle bg-light text-center" width="50%">AGRUPADO POR</th>
-                    <th class="align-middle bg-light text-center" width="8%">TOTAL</th>
-                @foreach ($niveles as $nivel)
-                    <th class="align-middle bg-light text-center">% {{ $nivel->nivel_logro }}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ( $resultados as $resultado )
-                <tr>
-                    <td class="align-middle text-center">{{ $loop->iteration }}</td>
-                    <td class="align-middle text-left">{{ $resultado->agrupado }}</td>
-                    <td class="align-middle text-center">{{ $resultado->total }}</td>
-                    @foreach ($niveles as $nivel)
-                        @php( $nivel_logro_id = $nivel->nivel_logro_id . '' )
-                        <td class="align-middle text-center">{{ number_format($resultado->$nivel_logro_id, 2) }}</td>
-                    @endforeach
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-@endif
+
 <br>
 
 <table class="table-aside table-bordered table-condensed table-sm py-4 text-right font-lg">
@@ -214,6 +183,43 @@
 </table>
 
 <div class="page-break"></div>
+
+@if( $filtros->tipo_reporte == 'IE' )
+    <table class="table table-bordered table-condensed table-sm py-4">
+        <thead>
+            <tr>
+                @php( $otras_columnas = 5 );
+                <th class="font-lg bg-light text-center" colspan="{{ count($niveles) + $otras_columnas }}">RESULTADOS AGRUPADOS POR IE</th>
+            </tr>
+            <tr>
+                <th class="align-middle bg-light text-center" width="3%">#</th>
+                    <th class="align-middle bg-light text-center" width="20%">IE</th>
+                    <th class="align-middle bg-light text-center" width="15%">UGEL</th>
+                    <th class="align-middle bg-light text-center" width="15%">DISTRITO</th>
+                    <th class="align-middle bg-light text-center" width="8%">TOTAL</th>
+                @foreach ($niveles as $nivel)
+                    <th class="align-middle bg-light text-center">% {{ $nivel->nivel_logro }}</th>
+                @endforeach
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ( $ies as $ie )
+                <tr>
+                    <td class="align-middle text-center">{{ $loop->iteration }}</td>
+                    <td class="align-middle text-left">{{ $ie->agrupado }}</td>
+                    <td class="align-middle text-left">{{ $ie->ugel }}</td>
+                    <td class="align-middle text-left">{{ $ie->distrito }}</td>
+                    <td class="align-middle text-center">{{ $ie->total }}</td>
+                    @foreach ($niveles as $nivel)
+                        @php( $nivel_logro_id = $nivel->nivel_logro_id . '' )
+                        <td class="align-middle text-center">{{ number_format($ie->$nivel_logro_id, 2) }}</td>
+                    @endforeach
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div class="page-break"></div>
+@endif
 
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
