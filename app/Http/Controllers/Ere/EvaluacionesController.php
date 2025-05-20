@@ -229,12 +229,12 @@ class EvaluacionesController extends ApiController
         // return $params;
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
-        if ($params['dtEvaluacionFechaInicio'] != null) {
-            $params['dtEvaluacionFechaInicio'] = Carbon::createFromFormat('d/m/Y', $request->input('dtEvaluacionFechaInicio'))->format('Y-m-d');
-        }
-        if ($params['dtEvaluacionFechaFin'] != null) {
+        /*if ($params['dtEvaluacionFechaInicio'] != null) {
+            $params['dtEvaluacionFechaInicio'] =$params['dtEvaluacionFechaInicio'].''; //Carbon::createFromFormat('Y-m-d', $request->input('dtEvaluacionFechaInicio'))->format('Y-m-d');
+        }*/
+        /*if ($params['dtEvaluacionFechaFin'] != null) {
             $params['dtEvaluacionFechaFin'] = Carbon::createFromFormat('d/m/Y', $request->input('dtEvaluacionFechaFin'))->format('Y-m-d');
-        }
+        }*/
 
         DB::statement('EXEC ere.SP_UPD_evaluaciones
             @iEvaluacionId = :iEvaluacionId,
