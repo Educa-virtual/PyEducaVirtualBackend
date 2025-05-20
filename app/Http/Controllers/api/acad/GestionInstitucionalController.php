@@ -936,7 +936,7 @@ class GestionInstitucionalController extends Controller
         //30902,//
         (int) $request->iCredEntPerfId,
         (int)$request->iYAcadId,
-        VerifyHash::decodes($request->iCursosNivelGradId),
+        VerifyHash::decodesxId($request->iCursosNivelGradId),
         (int)$request->iSedeId,
         
        // 5 //(int)

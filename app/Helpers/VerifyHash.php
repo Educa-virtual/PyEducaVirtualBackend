@@ -80,4 +80,19 @@ class VerifyHash
             self::initialize(); // Inicializar si no está inicializado
         }
     }
+
+    // codificar los id de los registros a enviar al frontend
+    public static function encodexId($valor){
+        $hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $hashing = $hashids->encode($valor);
+        return $hashing;
+        // return array_map([self::class, 'encodeFields'], $value);
+    }
+
+    public static function decodesxId($hash){
+       
+        $hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $decoded = $hashids->decode($hash);
+        return $decoded ? $decoded[0] : null;
+    }
 }

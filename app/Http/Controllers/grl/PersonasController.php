@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\api\grl\PersonaController;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class PersonasController extends Controller
 {
@@ -85,6 +86,11 @@ class PersonasController extends Controller
 
     public function obtenerPersonasxiPersId(Request $request)
     {
+        $fieldsToDecode = [
+            'iPersId',
+        ];
+
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
         $parametros = [
             $request->iPersId
         ];
@@ -104,6 +110,10 @@ class PersonasController extends Controller
 
     public function guardarPersonasxDatosPersonales(Request $request)
     {
+        $fieldsToDecode = [
+            'iPersId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iPersId,
@@ -111,12 +121,11 @@ class PersonasController extends Controller
             $request->cPersFotografia,
             $request->cPersDomicilio,
             $request->cPersCorreo,
-            $request->cPersCelular,
-            $request->cPersPassword
+            $request->cPersCelular
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_UPD_personasxDatosPersonales ?,?,?,?,?,?,?", $parametros);
+            $data = DB::select("execute grl.Sp_UPD_personasxDatosPersonales ?,?,?,?,?,?", $parametros);
 
             if ($data[0]->iPersId > 0) {
 
