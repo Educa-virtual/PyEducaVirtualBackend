@@ -258,33 +258,42 @@
                     </tr> 
                  </table>
 
-         <!-- Sección 11: Equipamiento --> 
-            <div class="section">
-                <table>
-                        <th>Item</th>
-                        <th>4.13 Su hogar tiene:</th> 
-                        @foreach ($equipamiento as $equipos)
+                <!-- Sección 11: Equipamiento --> 
+                <div class="section">
+                    <h2>IV. EQUIPAMIENTO</h2>
+                    <table border="1" cellspacing="0" cellpadding="5">
+                        <thead>
                             <tr>
-                            <td>{{ $loop->iteration }}</td> <!-- Este es el contador -->    
-                            <td>{{ $equipos['electrodm_hogar'] }}</td>
+                                <th>Item</th>
+                                <th>4.13 Su hogar tiene:</th>
                             </tr>
-                        @endforeach
-                </table> 
-            </div>
+                        </thead>
+                        <tbody>
+                            @foreach ($equipamiento as $equipos)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>    
+                                    <td>{{ $equipos['electrodm_hogar'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-            <!-- Sección 12: Alimentacion del estudiante --> 
-            <div class="section">
-                        <table>
-                            <h2>V. ALIMENTACIÓN DEL ESTUDIANTE</h2>
-                            <tr>
-                            <th>5.1. ¿Dónde consume sus alimentos el estudiante? (De Lunes a viernes)</th> 
-                        </table>
-                        <table>
-                            <tr>
-                            <td>a) Desayuno </td>
-                            <td>{{ $alimentos_std['lugar_desayuno'] }}</td>
+                <!-- Sección 12: Alimentación del estudiante --> 
+                <div class="section">
+                    <h2>V. ALIMENTACIÓN DEL ESTUDIANTE</h2>
 
-                           </tr>
+                    <table border="1" cellspacing="0" cellpadding="5">
+                        <thead>
+                            <tr>
+                                <th colspan="2">5.1. ¿Dónde consume sus alimentos el estudiante? (De lunes a viernes)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>a) Desayuno</td>
+                                <td>{{ $alimentos_std['lugar_desayuno'] }}</td>
+                            </tr>
                             <tr>
                                 <td>b) Almuerzo</td>
                                 <td>{{ $alimentos_std['lugar_almuerzo'] }}</td>
@@ -292,16 +301,21 @@
                             <tr>
                                 <td>c) Cena</td>
                                 <td>{{ $alimentos_std['lugar_ceba'] }}</td>
-                                
                             </tr>
-                            </table>
-                            <table>
-                                <tr>
-                                    <th>5.2. ¿Tuvo acceso al comedor universitario?</th>
-                                    <td>Si</td>
-                                </tr>
-                            </table>
-                        </table>
+                        </tbody>
+                    </table>
+
+                    <br>
+
+                    <table border="1" cellspacing="0" cellpadding="5">
+                        <tr>
+                            <th>5.2. ¿Tuvo acceso al comedor universitario?</th>
+                            <td>Si</td>
+                        </tr>
+                    </table>
+                </div>
+
+
 
             <!-- Sección 13: Discapacidad --> 
             <div class="section">
@@ -545,8 +559,6 @@
         </td>
     </tr>
 </table>
-
-
 
 
 <table>
