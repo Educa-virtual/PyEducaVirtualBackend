@@ -121,11 +121,11 @@ class ReporteEvaluacionesController extends Controller
                 $sumatoria = 0;
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $sumatoria += $ie->$nivel_logro_id;
+                    $sumatoria += (int) $ie->$nivel_logro_id;
                 }
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $ie->$nivel_logro_id = round($ie->$nivel_logro_id / $sumatoria * 100, 2);
+                    $ie->$nivel_logro_id = round((int) $ie->$nivel_logro_id / $sumatoria * 100, 2);
                 }
                 $ie->total = $sumatoria;
             }
@@ -192,11 +192,11 @@ class ReporteEvaluacionesController extends Controller
                 $sumatoria = 0;
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $sumatoria += $ie->$nivel_logro_id;
+                    $sumatoria += (int) $ie->$nivel_logro_id;
                 }
                 foreach( $niveles as $nivel) {
                     $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $ie->$nivel_logro_id = round($ie->$nivel_logro_id / $sumatoria * 100, 2);
+                    $ie->$nivel_logro_id = round((int) $ie->$nivel_logro_id / $sumatoria * 100, 2);
                 }
                 $ie->total = $sumatoria;
             }
@@ -286,20 +286,20 @@ class ReporteEvaluacionesController extends Controller
         }
 
         $total1 = array_reduce($niveles1, function($sum, $item) {
-            return $sum += $item->cantidad;
+            return $sum += (int) $item->cantidad;
         });
         $total2 = array_reduce($niveles2, function($sum, $item) {
-            return $sum += $item->cantidad;
+            return $sum += (int) $item->cantidad;
         });
 
         $niveles = null;
         foreach( $niveles1 as $key => $nivel) {
             $niveles[] = [
                 'nivel' => $nivel->nivel_logro,
-                'cantidad1' => $nivel->cantidad,
-                'porcentaje1' => round($nivel->cantidad / $total1 * 100, 2),
-                'cantidad2' => $niveles2[$key]->cantidad,
-                'porcentaje2' => round($niveles2[$key]->cantidad / $total2 * 100, 2),
+                'cantidad1' => (int) $nivel->cantidad,
+                'porcentaje1' => round( (int) $nivel->cantidad / $total1 * 100, 2),
+                'cantidad2' => (int) $niveles2[$key]->cantidad,
+                'porcentaje2' => round( (int) $niveles2[$key]->cantidad / $total2 * 100, 2),
             ];
         }
 
@@ -359,20 +359,20 @@ class ReporteEvaluacionesController extends Controller
         }
 
         $total1 = array_reduce($niveles1, function($sum, $item) {
-            return $sum += $item->cantidad;
+            return $sum += (int) $item->cantidad;
         });
         $total2 = array_reduce($niveles2, function($sum, $item) {
-            return $sum += $item->cantidad;
+            return $sum += (int) $item->cantidad;
         });
 
         $niveles = null;
         foreach( $niveles1 as $key => $nivel) {
             $niveles[] = [
                 'nivel' => $nivel->nivel_logro,
-                'cantidad1' => $nivel->cantidad,
-                'porcentaje1' => round($nivel->cantidad / $total1 * 100, 2),
-                'cantidad2' => $niveles2[$key]->cantidad,
-                'porcentaje2' => round($niveles2[$key]->cantidad / $total2 * 100, 2),
+                'cantidad1' => (int) $nivel->cantidad,
+                'porcentaje1' => round( (int) $nivel->cantidad / $total1 * 100, 2),
+                'cantidad2' => (int) $niveles2[$key]->cantidad,
+                'porcentaje2' => round( (int) $niveles2[$key]->cantidad / $total2 * 100, 2),
             ];
         }
 
