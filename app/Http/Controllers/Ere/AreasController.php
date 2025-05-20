@@ -22,6 +22,7 @@ use Faker\Calculator\Ean;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -117,7 +118,7 @@ class AreasController extends Controller
 
     private function descargarArchivoPreguntasPdf($evaluacion, $area)
     {
-        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
         try {
             $data = AreasService::obtenerArchivoErePdf($evaluacion, $area);
         } catch (Exception $ex) {
@@ -125,7 +126,7 @@ class AreasController extends Controller
         }
         return response($data['contenido'], 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"' //"attachment; filename=\"$nombreArchivo\"",
+            'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"'
         ]);
     }
 
@@ -212,11 +213,12 @@ class AreasController extends Controller
         ]);
     }
 
-    public function generarMatrizCompetencias($evaluacionId, $areaId, Request $request)
+    public function generarMatrizCompetencias($evaluacionId, $areaId)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
-            return AreasService::generarMatrizCompetencias($evaluacionId, $areaId, $request);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+            $usuario = Auth::user();
+            return AreasService::generarMatrizCompetencias($evaluacionId, $areaId, $usuario);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

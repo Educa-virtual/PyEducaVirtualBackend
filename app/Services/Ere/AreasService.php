@@ -71,21 +71,17 @@ class AreasService
         return $data;
     }
 
-    public static function generarMatrizCompetencias($evaluacionId, $areaId, Request $request)
+    public static function generarMatrizCompetencias($evaluacionId, $areaId, $usuario)
     {
         date_default_timezone_set('America/Lima');
-        $docenteIdDescifrado = VerifyHash::decodes($request->input('docente'));
         $evaluacionIdDescifrado = VerifyHash::decodes($evaluacionId);
         $areaIdDescifrado = VerifyHash::decodes($areaId);
-        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado) || empty($docenteIdDescifrado)) {
+        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
             throw new Exception('El ID enviado no se pudo descifrar.');
         }
         $year = YearsRepository::obtenerYearPorId(date('Y'));
-        $docente = DocentesRepository::obtenerDocentePorId($docenteIdDescifrado);
-        if ($docente == null) {
-            throw new Exception('No existe el docente con el ID enviado.');
-        }
-        $persona = PersonasRepository::obtenerPersonaPorId($docente->iPersId);
+
+        $persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
         $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado);
         if ($evaluacion == null) {
             throw new Exception('No existe la evaluación con el ID enviado.');
@@ -100,7 +96,7 @@ class AreasService
             throw new Exception('No hay preguntas para generar la matriz.');
         }
         //Validar si es docente o director y si puede descargar el archivo
-        DB::select("EXEC [ere].[Sp_SEL_validarDescargaEvaluacionPdf] ?, ?", [request()->header('icredentperfid'), $evaluacionIdDescifrado]);
+        //DB::statement("EXEC [ere].Sp_SEL_validarDescargaArchivoFinEvaluacionPdf ?, ?", [request()->header('icredentperfid'), $evaluacionIdDescifrado]);
         $data = [
             'year' => $year,
             'dataMatriz' => $dataMatriz,
