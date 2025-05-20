@@ -27,7 +27,7 @@ class ReporteEvaluacionesController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesInforme ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC ere.Sp_SEL_evaluacionesInformeOpt ?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -203,6 +203,40 @@ class ReporteEvaluacionesController extends Controller
         $nro_preguntas = count($matriz);
 
         return view('ere.excel.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles'));
+    }
+
+    public function obtenerInformeComparacion(Request $request)
+    {
+        $parametros = [
+            $request->iYAcadId,
+            $request->iEvaluacion1,
+            $request->iEvaluacion2,
+            $request->iCursoId,
+            $request->iNivelTipoId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iDsttId,
+            $request->cPersSexo,
+            $request->iUgelId,
+            $request->iIieeId,
+            $request->iSedeId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
+            $request->iCredEntPerfId,
+            0, // No mostrar detalle en vista
+        ];
+
+        try {
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeComparacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
+            $codeResponse = 500;
+        }
+
+        return response()->json($response, $codeResponse);
     }
 
     private function convertDataToChartForm($data)
