@@ -241,6 +241,144 @@ class ReporteEvaluacionesController extends Controller
         return response()->json($response, $codeResponse);
     }
 
+    public function obtenerInformeComparacionPdf(Request $request)
+    {
+        $parametros = [
+            $request->iYAcadId,
+            $request->iEvaluacion1,
+            $request->iEvaluacion2,
+            $request->iCursoId,
+            $request->iNivelTipoId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iDsttId,
+            $request->cPersSexo,
+            $request->iUgelId,
+            $request->iIieeId,
+            $request->iSedeId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
+            $request->iCredEntPerfId,
+            1, // No mostrar detalle en vista
+        ];
+
+        try {
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeComparacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
+            $codeResponse = 500;
+            return response()->json($response, $codeResponse);
+        }
+        $filtros = $data[0][0];
+        $resultados1 = $data[1];
+        $niveles1 = $data[2];
+        $resultados2 = $data[3];
+        $niveles2 = $data[4];
+
+        foreach ( $resultados1 as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
+        foreach ( $resultados2 as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
+
+        $total1 = array_reduce($niveles1, function($sum, $item) {
+            return $sum += $item->cantidad;
+        });
+        $total2 = array_reduce($niveles2, function($sum, $item) {
+            return $sum += $item->cantidad;
+        });
+
+        $niveles = null;
+        foreach( $niveles1 as $key => $nivel) {
+            $niveles[] = [
+                'nivel' => $nivel->nivel_logro,
+                'cantidad1' => $nivel->cantidad,
+                'porcentaje1' => round($nivel->cantidad / $total1 * 100, 2),
+                'cantidad2' => $niveles2[$key]->cantidad,
+                'porcentaje2' => round($niveles2[$key]->cantidad / $total2 * 100, 2),
+            ];
+        }
+
+        gc_collect_cycles();
+
+        $pdf = App::make('dompdf.wrapper');
+
+        $pdf->loadView('ere.ere_comparacion_pdf', compact('resultados1', 'resultados2', 'niveles', 'filtros', 'pdf', 'total1', 'total2'))->setPaper('a4', 'landscape');
+        return $pdf->stream('COMPARACION-ERE-'.date('Ymdhis').'.pdf');
+
+        // return view('ere.pdf.resultados', compact('resultados1', 'resultados2', 'niveles', 'filtros', 'pdf', 'total1', 'total2'));
+    }
+
+    public function obtenerInformeComparacionExcel(Request $request)
+    {
+        $parametros = [
+            $request->iYAcadId,
+            $request->iEvaluacion1,
+            $request->iEvaluacion2,
+            $request->iCursoId,
+            $request->iNivelTipoId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iDsttId,
+            $request->cPersSexo,
+            $request->iUgelId,
+            $request->iIieeId,
+            $request->iSedeId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
+            $request->iCredEntPerfId,
+            1, // No mostrar detalle en vista
+        ];
+
+        try {
+            $data = DB::selectResultSets('EXEC ere.SP_SEL_evaluacionInformeComparacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
+            $codeResponse = 500;
+            return response()->json($response, $codeResponse);
+        }
+
+        $filtros = $data[0][0];
+        $resultados1 = $data[1];
+        $niveles1 = $data[2];
+        $resultados2 = $data[3];
+        $niveles2 = $data[4];
+
+        foreach ( $resultados1 as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
+        foreach ( $resultados2 as $resultado) {
+            $resultado->respuestas = json_decode($resultado->respuestas);
+        }
+
+        $total1 = array_reduce($niveles1, function($sum, $item) {
+            return $sum += $item->cantidad;
+        });
+        $total2 = array_reduce($niveles2, function($sum, $item) {
+            return $sum += $item->cantidad;
+        });
+
+        $niveles = null;
+        foreach( $niveles1 as $key => $nivel) {
+            $niveles[] = [
+                'nivel' => $nivel->nivel_logro,
+                'cantidad1' => $nivel->cantidad,
+                'porcentaje1' => round($nivel->cantidad / $total1 * 100, 2),
+                'cantidad2' => $niveles2[$key]->cantidad,
+                'porcentaje2' => round($niveles2[$key]->cantidad / $total2 * 100, 2),
+            ];
+        }
+
+        return view('ere.ere_comparacion_excel', compact('resultados1', 'resultados2', 'niveles', 'filtros', 'total1', 'total2'));
+    }
+
     private function convertDataToChartForm($data)
     {
         $newData = array();
