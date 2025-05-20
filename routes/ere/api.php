@@ -99,6 +99,9 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('generarPdf', [ReporteEvaluacionesController::class, 'generarPdf']);
         Route::post('generarExcel', [ReporteEvaluacionesController::class, 'generarExcel']);
         Route::post('importarResultados', [ImportarResultadosController::class, 'importar']);
+        Route::post('obtenerInformeComparacion', [ReporteEvaluacionesController::class, 'obtenerInformeComparacion']);
+        Route::post('generarPdfComparacion', [ReporteEvaluacionesController::class, 'obtenerInformeComparacionPdf']);
+        Route::post('generarExcelComparacion', [ReporteEvaluacionesController::class, 'obtenerInformeComparacionExcel']);
     });
 
     Route::group(['prefix' => 'ie'], function () {

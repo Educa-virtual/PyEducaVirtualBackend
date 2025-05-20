@@ -53,23 +53,23 @@
     <thead>
         <tr>
             <th class="align-middle bg-light text-left" width="8%">EVALUACIÓN:</th>
-            <td class="align-middle text-left">{{ $filtros->evaluacion }}</td>
+            <td class="align-middle text-left">{{ $filtros->evaluacion ?? '' }}</td>
             @isset( $filtros->cod_ie )
                 <th class="align-middle bg-light text-left" width="8%">I.E.:</th>
                 <td class="align-middle text-left">{{ $filtros->cod_ie }}</td>
             @endisset
             @isset( $filtros->sector )
-                <th class="align-middle bg-light text-left" width="8%">SECTOR:</th>
+                <th class="align-middle bg-light text-left" width="8%">GESTIÓN:</th>
                 <td class="align-middle text-left">{{ $filtros->sector }}</td>
             @endisset
         </tr>
         <tr>
             <th class="align-middle bg-light text-left" width="8%">ÁREA:</th>
-            <td class="align-middle text-left">{{ $filtros->curso }}</td>
-            @isset( $filtros->distrito )
-                <th class="align-middle bg-light text-left" width="8%">DISTRITO:</th>
-                <td class="align-middle text-left">{{ $filtros->distrito }}</td>
-            @endisset
+            <td class="align-middle text-left">{{ $filtros->curso ?? '' }}</td>
+            @if( isset($filtros->ugel) || isset($filtros->distrito) )
+                <th class="align-middle bg-light text-left" width="8%">UGEL/DISTRITO:</th>
+                <td class="align-middle text-left">{{ $filtros->ugel ?? '' }} - {{ $filtros->distrito ?? '' }}</td>
+            @endif
             @isset( $filtros->zona )
                 <th class="align-middle bg-light text-left" width="8%">ZONA:</th>
                 <td class="align-middle text-left">{{ $filtros->zona }}</td>
@@ -77,7 +77,7 @@
         </tr>
         <tr>
             <th class="align-middle bg-light text-left" width="8%">NIVEL/GRADO:</th>
-            <td class="align-middle text-left">{{ $filtros->nivel }} - {{ $filtros->grado }}</td>
+            <td class="align-middle text-left">{{ $filtros->nivel ?? '' }} - {{ $filtros->grado ?? '' }}</td>
             @isset( $filtros->seccion )
                 <th class="align-middle bg-light text-left" width="8%">SECCION:</th>
                 <td class="align-middle text-left">{{ $filtros->seccion }}</td>
@@ -144,10 +144,8 @@
                 @endif
                 <td class="align-middle text-center">{{ $resultado->seccion }}</td>
                 <td class="align-middle text-left">{{ $resultado->estudiante }}</td>
-                @foreach (json_decode($resultado->respuestas) as $value)
-                    <td class="align-middle text-center {{ $value->correcta == true ? 'text-success bg-light' : 'text-danger' }}">
-                        {{ $value->respuesta }}
-                    </td>
+                @foreach ($resultado->respuestas as $value)
+                    <td class="align-middle text-center {{ $value->c == 1 ? 'text-success bg-light' : 'text-danger' }}">{{ $value->r }}</td>
                 @endforeach
                 <td class="align-middle text-center">{{ (int) $resultado->aciertos }}</td>
                 <td class="align-middle text-center">{{ (int) $resultado->desaciertos }}</td>
@@ -185,6 +183,43 @@
 </table>
 
 <div class="page-break"></div>
+
+@if( $filtros->tipo_reporte == 'IE' )
+    <table class="table table-bordered table-condensed table-sm py-4">
+        <thead>
+            <tr>
+                @php( $otras_columnas = 5 );
+                <th class="font-lg bg-light text-center" colspan="{{ count($niveles) + $otras_columnas }}">RESULTADOS AGRUPADOS POR IE</th>
+            </tr>
+            <tr>
+                <th class="align-middle bg-light text-center" width="3%">#</th>
+                    <th class="align-middle bg-light text-center" width="20%">IE</th>
+                    <th class="align-middle bg-light text-center" width="15%">UGEL</th>
+                    <th class="align-middle bg-light text-center" width="15%">DISTRITO</th>
+                    <th class="align-middle bg-light text-center" width="8%">TOTAL</th>
+                @foreach ($niveles as $nivel)
+                    <th class="align-middle bg-light text-center">% {{ $nivel->nivel_logro }}</th>
+                @endforeach
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ( $ies as $ie )
+                <tr>
+                    <td class="align-middle text-center">{{ $loop->iteration }}</td>
+                    <td class="align-middle text-left">{{ $ie->agrupado }}</td>
+                    <td class="align-middle text-left">{{ $ie->ugel }}</td>
+                    <td class="align-middle text-left">{{ $ie->distrito }}</td>
+                    <td class="align-middle text-center">{{ $ie->total }}</td>
+                    @foreach ($niveles as $nivel)
+                        @php( $nivel_logro_id = $nivel->nivel_logro_id . '' )
+                        <td class="align-middle text-center">{{ number_format($ie->$nivel_logro_id, 2) }}</td>
+                    @endforeach
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <div class="page-break"></div>
+@endif
 
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
