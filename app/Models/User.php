@@ -86,7 +86,7 @@ class User extends Authenticatable implements JWTSubject
         $hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
         //$hashids->encode($usuario->iCredId);
         $usuario->iDocenteId =$hashids->encode($usuario->iDocenteId);//VerifyHash::encode($usuario->iDocenteId);
-        $usuario->iPersId = $hashids->encode($usuario->iDocenteId);//$hashids->encode($usuario->iPersId)[0];//VerifyHash::encode($usuario->iPersId);
+        $usuario->iPersId = $hashids->encode($usuario->iPersId);//$hashids->encode($usuario->iPersId)[0];//VerifyHash::encode($usuario->iPersId);
     }
 
     private static function obtenerOtrosDatos($usuario)
