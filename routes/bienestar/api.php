@@ -35,9 +35,9 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarFichaFamiliar', [FichaFamiliarController::class, 'update']);
     Route::post('borrarFichaFamiliar', [FichaFamiliarController::class, 'delete']);
 
-    Route::post('searchFichaVivienda', [FichaViviendaController::class, 'show']);
-    Route::post('guardarFichaVivienda', [FichaViviendaController::class, 'save']);
-    Route::post('actualizarFichaVivienda', [FichaViviendaController::class, 'update']);
+    Route::post('searchFichaVivienda', [FichaViviendaController::class, 'verFichaVivienda']);
+    Route::post('guardarFichaVivienda', [FichaViviendaController::class, 'guardarFichaVivienda']);
+    Route::post('actualizarFichaVivienda', [FichaViviendaController::class, 'actualizarFichaVivienda']);
 
     Route::post('searchFichaRecreacion', [FichaRecreacionController::class, 'show']);
     Route::post('guardarFichaRecreacion', [FichaRecreacionController::class, 'save']);

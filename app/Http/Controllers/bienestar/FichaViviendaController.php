@@ -11,10 +11,9 @@ use Illuminate\Support\Facades\DB;
 
 class FichaViviendaController extends Controller
 {
-    public function save(FichaViviendaSaveRequest $request)
+    public function guardarFichaVivienda(FichaViviendaSaveRequest $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iTipoOcupaVivId,
             $request->iMatPreId,
@@ -32,7 +31,7 @@ class FichaViviendaController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -44,10 +43,9 @@ class FichaViviendaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaVivienda(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iViendaCarId,
             $request->iFichaDGId,
             $request->iTipoOcupaVivId,
@@ -66,7 +64,7 @@ class FichaViviendaController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaVivienda ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -78,7 +76,7 @@ class FichaViviendaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaVivienda(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
