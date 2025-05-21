@@ -222,8 +222,8 @@ class EvaluacionesController extends ApiController
             'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
             'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
             'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
-            'dtEvaluacionFechaInicio' => Carbon::parse($request->input('dtEvaluacionFechaInicio'))->toDateTimeString(),
-            'dtEvaluacionFechaFin' => Carbon::parse($request->input('dtEvaluacionFechaFin'))->toDateTimeString()//$request->input('dtEvaluacionFechaFin', null),
+            'dtEvaluacionFechaInicio' => Carbon::parse($request->input('dtEvaluacionFechaInicio'))->format('Ymd H:i:s'),
+            'dtEvaluacionFechaFin' => Carbon::parse($request->input('dtEvaluacionFechaFin'))->format('Ymd H:i:s')
         ];
 
         // return $params;
