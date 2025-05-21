@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
 use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\ApiController;
@@ -1022,18 +1023,14 @@ class EvaluacionesController extends ApiController
         try {
             $data = DB::select('exec ere.Sp_UPD_examenCursosxdtExamenFechaInicioxiExamenCantidadPreguntas ?,?,?,?', $parametros);
             if ($data[0]->iEvaluacionId > 0) {
-
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
+                return FormatearMensajeHelper::ok('Se guardó la información exitosamente');
             } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
+                throw new Exception('Error al guardar la información.');
             }
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+            /*$response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
+            $codeResponse = 500;*/
         }
-
-        return response()->json($response, $codeResponse);
     }
 }
