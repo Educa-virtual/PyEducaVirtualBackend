@@ -64,6 +64,7 @@ class EvaluacionPreguntasController extends Controller
             'iEncabPregId' => $request->iEncabPregId ?? null,
             'iCursosNivelGradId' => $request->iCursosNivelGradId ?? null,
             'iCredId' => $iCredId, 
+            'iPreguntaOrden' -> $request->iPreguntaOrden ?? null,
         ];
     }
 
@@ -94,6 +95,7 @@ class EvaluacionPreguntasController extends Controller
                         @_iEncabPregId = :iEncabPregId,
                         @_iCursosNivelGradId = :iCursosNivelGradId,
                         @_iCredId = :iCredId;
+                        @_iPreguntaOrden = :iPreguntaOrden;
                     SELECT @result AS result;
                     ";
 
@@ -111,6 +113,7 @@ class EvaluacionPreguntasController extends Controller
                         'data'      => []
                     ], 500);
                 }
+                break;
 
             default:
                 return new JsonResponse([
