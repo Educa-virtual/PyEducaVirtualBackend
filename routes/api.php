@@ -50,9 +50,9 @@ use Illuminate\Support\Facades\Storage;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 Route::group(['prefix' => 'administrador'], function () {
-    Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']); 
+    Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']);
     Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
-    Route::post('addNiveles', [AdministradorController::class, 'addNiveles']); 
+    Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
     Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);
 });
@@ -62,7 +62,6 @@ Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
         Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
-        
     });
     Route::group(['prefix' => 'nivelTipo'], function () {
         Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);
@@ -152,8 +151,9 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
         //Eliminar una pregunta de una evaluación.
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
-         //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
-         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+        Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        Route::post('insertarCuestionarioNotas', [EvaluacionesController::class, 'insertarCuestionarioNotas']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -191,7 +191,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         Route::post('obtenerEstudiantesMatriculados', [GestionInstitucionalController::class, 'obtenerEstudiantesMatriculados']);
     });
- Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
+    Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
@@ -404,37 +404,35 @@ Route::group(['prefix' => 'grl'], function () {
 Route::group(['prefix' => 'enlaces-ayuda'], function () {
     Route::get('obtenerEnlaces', function () {
         $path = 'enlaces-ayuda.json'; // Nombre del archivo dentro de storage/app/public/
-    
+
         if (Storage::disk('public')->exists($path)) {
             return Response::json(json_decode(Storage::disk('public')->get($path)), 200);
         }
-    
+
         return response()->json(['error' => 'Archivo no encontrado'], 404);
     });
-    
+
     Route::post('actualizarEnlaces', function (Request $request, $index) {
         $path = 'data/miarchivo.json';
-    
+
         if (!Storage::exists($path)) {
             return response()->json(['error' => 'Archivo no encontrado'], 404);
         }
-    
+
         // Obtener el contenido del JSON
         $data = json_decode(Storage::get($path), true);
-    
+
         // Verificar si el índice existe
         if (!isset($data[$index])) {
             return response()->json(['error' => 'Elemento no encontrado'], 404);
         }
-    
+
         // Actualizar los datos
         $data[$index] = array_merge($data[$index], $request->all());
-    
+
         // Guardar el JSON actualizado
         Storage::put($path, json_encode($data, JSON_PRETTY_PRINT));
-    
+
         return response()->json(['message' => 'Datos actualizados correctamente', 'data' => $data[$index]], 200);
     });
-
 });
-
