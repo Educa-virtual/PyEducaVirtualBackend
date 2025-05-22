@@ -294,8 +294,8 @@ if( $filtros->tipo_reporte == 'IE' ) {
 
         foreach ($niveles as $key_nivel => $nivel) {
             $columnaLetra = Coordinate::stringFromColumnIndex(6 + $key_nivel);
-            $nivel_logro_id = $nivel->nivel_logro_id . '';
-            $hoja5->setCellValueExplicit($columnaLetra . ($key + 2), $value->$nivel_logro_id / 100, DataType::TYPE_NUMERIC);
+            $nivel_logro_id = strval($nivel->nivel_logro_id);
+            $hoja5->setCellValueExplicit($columnaLetra . ($key + 2), intval($value?->$nivel_logro_id ?? 0) / 100, DataType::TYPE_NUMERIC);
             $hoja5->getStyle($columnaLetra . ($key + 2))->getNumberFormat()->setFormatCode('0.00%');
         }
     }

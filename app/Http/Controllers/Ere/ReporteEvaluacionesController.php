@@ -110,23 +110,20 @@ class ReporteEvaluacionesController extends Controller
         $niveles = $data[2];
         $resumen = $data[3];
         $matriz = $data[4];
-        $ies = null;
+        $ies = [];
 
         foreach ( $resultados as $resultado) {
             $resultado->respuestas = json_decode($resultado->respuestas);
         }
-        if( $filtros->tipo_reporte == 'IE' ) {
+        if( $filtros->tipo_reporte == 'IE' && key_exists(5, $data) ) {
             $ies = $data[5];
             foreach ( $ies as $ie) {
                 $sumatoria = 0;
                 foreach( $niveles as $nivel) {
-                    $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $sumatoria += (int) $ie->$nivel_logro_id;
+                    $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
+                    $sumatoria += intval($ie?->$nivel_logro_id ?? 0);
                 }
-                foreach( $niveles as $nivel) {
-                    $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $ie->$nivel_logro_id = round((int) $ie->$nivel_logro_id / $sumatoria * 100, 2);
-                }
+                $ie->$nivel_logro_id = round(intval($ie?->$nivel_logro_id ?? 0) / $sumatoria * 100, 2);
                 $ie->total = $sumatoria;
             }
         }
@@ -135,12 +132,31 @@ class ReporteEvaluacionesController extends Controller
 
         gc_collect_cycles();
 
-        $pdf = App::make('dompdf.wrapper');
+        $pdf = App::make('snappy.pdf.wrapper');
 
-        $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies'))->setPaper('a4', 'landscape');
+        $htmlcontent = view('ere.ere_resultados_pdf', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies'))->render();
+        // $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies'))->setPaper('a4', 'landscape');
+
+        $headerHtml = view('ere.ere_resultados_pdf_header', compact('filtros'))->render();
+        $footerHtml = view('ere.ere_resultados_pdf_footer', compact('filtros'))->render();
+        // $footerHtml = view()->make('pdf.footer')->render();
+
+        $pdf->loadHtml($htmlcontent)
+            ->setPaper('a4', 'landscape')
+            ->setOption('disable-external-links', true)
+            ->setOption('enable-local-file-access', true)
+            ->setOption('disable-smart-shrinking', true)
+            ->setOption('margin-top', '3cm')
+            ->setOption('margin-bottom', '2cm')
+            ->setOption('footer-left', "PAGINA [page] DE [toPage]")
+            ->setOption('footer-font-size', 8)
+            ->setOption('header-html', $headerHtml)
+            ->setOption('footer-html', $footerHtml)
+            ->setOption('dpi', 300);
+
         return $pdf->stream('RESULTADOS-ERE-'.date('Ymdhis').'.pdf');
 
-        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies));
+        // return view('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies'));
 
     }
 
@@ -191,20 +207,17 @@ class ReporteEvaluacionesController extends Controller
             foreach ( $ies as $ie) {
                 $sumatoria = 0;
                 foreach( $niveles as $nivel) {
-                    $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $sumatoria += (int) $ie->$nivel_logro_id;
+                    $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
+                    $sumatoria += intval($ie?->$nivel_logro_id ?? 0);
                 }
-                foreach( $niveles as $nivel) {
-                    $nivel_logro_id = $nivel->nivel_logro_id . '';
-                    $ie->$nivel_logro_id = round((int) $ie->$nivel_logro_id / $sumatoria * 100, 2);
-                }
+                $ie->$nivel_logro_id = round(intval($ie?->$nivel_logro_id ?? 0) / $sumatoria * 100, 2);
                 $ie->total = $sumatoria;
             }
         }
 
         $nro_preguntas = count($matriz);
 
-        return view('ere.excel.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'ies'));
+        return view('ere.ere_resultados_excel', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'ies'));
     }
 
     public function obtenerInformeComparacion(Request $request)
@@ -286,29 +299,47 @@ class ReporteEvaluacionesController extends Controller
         }
 
         $total1 = array_reduce($niveles1, function($sum, $item) {
-            return $sum += (int) $item->cantidad;
+            return $sum += intval($item->cantidad);
         });
         $total2 = array_reduce($niveles2, function($sum, $item) {
-            return $sum += (int) $item->cantidad;
+            return $sum += intval($item->cantidad);
         });
 
         $niveles = null;
         foreach( $niveles1 as $key => $nivel) {
             $niveles[] = [
                 'nivel' => $nivel->nivel_logro,
-                'cantidad1' => (int) $nivel->cantidad,
-                'porcentaje1' => round( (int) $nivel->cantidad / $total1 * 100, 2),
-                'cantidad2' => (int) $niveles2[$key]->cantidad,
-                'porcentaje2' => round( (int) $niveles2[$key]->cantidad / $total2 * 100, 2),
+                'cantidad1' => intval($nivel->cantidad),
+                'porcentaje1' => $total1 == 0 ? 0 : round(intval($nivel->cantidad) / $total1 * 100, 2),
+                'cantidad2' => intval($niveles2[$key]->cantidad),
+                'porcentaje2' => $total2 == 0 ? 0 : round(intval($niveles2[$key]->cantidad) / $total2 * 100, 2),
             ];
         }
 
         gc_collect_cycles();
 
-        $pdf = App::make('dompdf.wrapper');
+        $pdf = App::make('snappy.pdf.wrapper');
 
-        $pdf->loadView('ere.ere_comparacion_pdf', compact('resultados1', 'resultados2', 'niveles', 'filtros', 'pdf', 'total1', 'total2'))->setPaper('a4', 'landscape');
-        return $pdf->stream('COMPARACION-ERE-'.date('Ymdhis').'.pdf');
+        $htmlcontent = view('ere.ere_comparacion_pdf', compact('resultados1', 'resultados2', 'niveles', 'filtros', 'pdf', 'total1', 'total2'))->render();
+        // $pdf->loadView('ere.pdf.resultados', compact('resultados', 'resumen', 'matriz', 'nro_preguntas', 'filtros', 'niveles', 'pdf', 'ies'))->setPaper('a4', 'landscape');
+
+        $headerHtml = view('ere.ere_comparacion_pdf_header', compact('filtros'))->render();
+        $footerHtml = view('ere.ere_resultados_pdf_footer', compact('filtros'))->render();
+
+        $pdf->loadHtml($htmlcontent)
+            ->setPaper('a4', 'landscape')
+            ->setOption('disable-external-links', true)
+            ->setOption('enable-local-file-access', true)
+            ->setOption('disable-smart-shrinking', true)
+            ->setOption('margin-top', '3cm')
+            ->setOption('margin-bottom', '2cm')
+            ->setOption('footer-left', "PAGINA [page] DE [toPage]")
+            ->setOption('footer-font-size', 8)
+            ->setOption('header-html', $headerHtml)
+            ->setOption('footer-html', $footerHtml)
+            ->setOption('dpi', 300);
+
+        return $pdf->stream('CONPARACION-ERE-'.date('Ymdhis').'.pdf');
 
         // return view('ere.pdf.resultados', compact('resultados1', 'resultados2', 'niveles', 'filtros', 'pdf', 'total1', 'total2'));
     }
@@ -359,20 +390,20 @@ class ReporteEvaluacionesController extends Controller
         }
 
         $total1 = array_reduce($niveles1, function($sum, $item) {
-            return $sum += (int) $item->cantidad;
+            return $sum += intval($item->cantidad);
         });
         $total2 = array_reduce($niveles2, function($sum, $item) {
-            return $sum += (int) $item->cantidad;
+            return $sum += intval($item->cantidad);
         });
 
         $niveles = null;
         foreach( $niveles1 as $key => $nivel) {
             $niveles[] = [
                 'nivel' => $nivel->nivel_logro,
-                'cantidad1' => (int) $nivel->cantidad,
-                'porcentaje1' => round( (int) $nivel->cantidad / $total1 * 100, 2),
-                'cantidad2' => (int) $niveles2[$key]->cantidad,
-                'porcentaje2' => round( (int) $niveles2[$key]->cantidad / $total2 * 100, 2),
+                'cantidad1' => intval($nivel->cantidad),
+                'porcentaje1' => $total1 == 0 ? 0 : round( intval($nivel->cantidad) / $total1 * 100, 2),
+                'cantidad2' => intval($niveles2[$key]->cantidad),
+                'porcentaje2' => $total2 == 0 ? 0 : round(intval($niveles2[$key]->cantidad) / $total2 * 100, 2),
             ];
         }
 

@@ -11,41 +11,8 @@
         margin-left: 1.5cm;
         margin-right: 2cm;
     }
-
-    header {
-        position: fixed;
-        top: -2.5cm;
-        left: 0cm;
-        right: 0cm;
-        height: 2cm;
-    }
 </style>
 
-<header>
-    <main class="container-fluid">
-        <table class="table table-condensed text-center table-sm py-2 border-bottom">
-            <tr>
-                <td width="15%" class="text-left align-middle" rowspan="2"><img src="{{ public_path('images/logo-dremo.png') }}" width="100%"></td>
-                <td width="70%" class="text-center align-middle">{{ $filtros->year_oficial }}</td>
-                <td width="10%" rowspan="2"></td>
-                <td width="5%" class="text-right align-middle" rowspan="2"><img src="{{ public_path('images/logo-plataforma-virtual.png') }}" width="100%"></td>
-            </tr>
-            <tr>
-                <td width="80%" class="text-center align-middle font-xl">RESULTADOS DE EVALUACIÓN ERE</td>
-            </tr>
-        </table>
-    </main>
-</header>
-
-<footer class="container-fluid">
-    <table class="table table-borderless table-condensed table-sm py-2">
-        <tr>
-            <td width="20%" class="text-left"></td>
-            <td width="60%" class="text-center">IMPRESO POR {{ $filtros->autor }}</td>
-            <td width="20%" class="text-right">IMPRESO EL {{ date('d/m/Y') }} A LAS {{ date('h:i') }}</td>
-        </tr>
-    </table>
-</footer>
 
 <main class="container-fluid">
 
@@ -182,9 +149,8 @@
     </tfoot>
 </table>
 
-<div class="page-break"></div>
-
 @if( $filtros->tipo_reporte == 'IE' )
+    <div class="page-break"></div>
     <table class="table table-bordered table-condensed table-sm py-4">
         <thead>
             <tr>
@@ -212,14 +178,15 @@
                     <td class="align-middle text-center">{{ $ie->total }}</td>
                     @foreach ($niveles as $nivel)
                         @php( $nivel_logro_id = $nivel->nivel_logro_id . '' )
-                        <td class="align-middle text-center">{{ number_format($ie->$nivel_logro_id, 2) }}</td>
+                        <td class="align-middle text-center">{{ number_format( intval($ie?->$nivel_logro_id ?? 0), 2) }}</td>
                     @endforeach
                 </tr>
             @endforeach
         </tbody>
     </table>
-    <div class="page-break"></div>
 @endif
+
+<div class="page-break"></div>
 
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
@@ -286,14 +253,5 @@
 </table>
 
 </main>
-
-<script type="text/php">
-    if ( isset($pdf) ) {
-        $pdf->page_script('
-            $font = $fontMetrics->get_font("Arial, Helvetica, sans-serif", "bold");
-            $pdf->text(57, 560, "PÁGINA $PAGE_NUM DE $PAGE_COUNT", $font, 7);
-        ');
-    }
-</script>
 
 @endsection
