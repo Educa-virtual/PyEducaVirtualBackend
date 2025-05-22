@@ -1015,7 +1015,7 @@ class EvaluacionesController extends ApiController
         $parametros = [
             $request->iEvaluacionId,
             $request->iCursoNivelGradId,
-            $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->setTimezone(env('APP_TIMEZONE'))->format('Y-m-d'),
+            $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->format('Ymd H:i:s'),
             //$request->dtExamenFechaInicio          ??  NULL,
             $request->iExamenCantidadPreguntas     ??  NULL
         ];
