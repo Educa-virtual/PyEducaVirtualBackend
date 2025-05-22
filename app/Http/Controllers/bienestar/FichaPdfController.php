@@ -51,7 +51,7 @@ class FichaPdfController extends Controller
             INNER JOIN acad.estudiantes std ON fdg.iPersId = std.iPersId
             INNER JOIN grl.ubigeos ubg ON std.cEstUbigeoNacimiento = ubg.cUbigeoReniec
             INNER JOIN grl.tipos_estados_civiles ec ON p.iTipoEstCivId = ec.iTipoEstCivId
-            WHERE fdg.iPersId = ? AND YEAR(fdg.dtFichaDG) = 2025
+            WHERE fdg.iPersId = ? AND YEAR(fdg.dtFichaDG) = '2025';
             ", [$id]);
 
         // Consulta 2: Familiares
@@ -271,7 +271,7 @@ class FichaPdfController extends Controller
                         AND YEAR(fdtsgrl.dtFichaDG) = '2025';
                 ", [$id]);
 
-//-------PASATIEMPOS-------------------------------
+//---------------PASATIEMPOS-------------------------------
 
                 $pasatiempos = DB::select("
                     SELECT 
@@ -286,40 +286,41 @@ class FichaPdfController extends Controller
                 ", [$id]);
 
 // ---------PSICOPEDAGOGICO-----------------------------
-$emocionales = DB::select("
-    SELECT 
-        fdgrales.cFichaDGAsistioConsultaPsicologica,
-        fproblem.iTipoFamiliarId,
-        tipfamles.cTipoFamiliarDescripcion
-    FROM
-        obe.ficha_datos_grales AS fdgrales
-        INNER JOIN obe.problemas_emocionales_ficha fproblem ON fdgrales.iFichaDGId = fproblem.iFichaDGId
-        INNER JOIN obe.tipo_familiares tipfamles ON fproblem.iTipoFamiliarId = tipfamles.iTipoFamiliarId
-    WHERE fdgrales.iPersId = ?
-        AND YEAR(fdgrales.dtFichaDG) = '2025';
-", [$id]);
+                $emociones = DB::select("
+                    SELECT 
+                        fdgrales.cFichaDGAsistioConsultaPsicologica,
+                        fproblem.iTipoFamiliarId,
+                        tipfamles.cTipoFamiliarDescripcion
+                    FROM
+                        obe.ficha_datos_grales AS fdgrales
+                        INNER JOIN obe.problemas_emocionales_ficha fproblem ON fdgrales.iFichaDGId = fproblem.iFichaDGId
+                        INNER JOIN obe.tipo_familiares tipfamles ON fproblem.iTipoFamiliarId = tipfamles.iTipoFamiliarId
+                    WHERE fdgrales.iPersId = ?
+                        AND YEAR(fdgrales.dtFichaDG) = ?;
+                ", [$id, 2025]);
+
 
      
 //-----------------TRANSPORTE------------------  
-$transporte = DB::select("
-    SELECT
-        fichtransport.iTransporteId,
-        trasnprt.cTransporteNombre,
-        dolencs.cDolenciaNombre
-    FROM
-        obe.ficha_datos_grales AS ficdtosgrals
-        INNER JOIN obe.transportes_fichas fichtransport 
-            ON ficdtosgrals.iFichaDGId = fichtransport.iFichaDGId
-        INNER JOIN obe.transportes trasnprt 
-            ON fichtransport.iTransporteId = trasnprt.iTransporteId
-        LEFT JOIN obe.dolencias_fichas fdolencs 
-            ON ficdtosgrals.iFichaDGId = fdolencs.iFichaDGId
-        LEFT JOIN obe.dolencias dolencs 
-            ON fdolencs.iDolenciaId = dolencs.iDolenciaId
-    WHERE 
-        ficdtosgrals.iPersId = ?
-        AND YEAR(ficdtosgrals.dtFichaDG) = ?;
-", [$id, $anio]);
+                $transporte = DB::select("
+                    SELECT
+                        fichtransport.iTransporteId,
+                        trasnprt.cTransporteNombre,
+                        dolencs.cDolenciaNombre
+                    FROM
+                        obe.ficha_datos_grales AS ficdtosgrals
+                        INNER JOIN obe.transportes_fichas fichtransport 
+                            ON ficdtosgrals.iFichaDGId = fichtransport.iFichaDGId
+                        INNER JOIN obe.transportes trasnprt 
+                            ON fichtransport.iTransporteId = trasnprt.iTransporteId
+                        LEFT JOIN obe.dolencias_fichas fdolencs 
+                            ON ficdtosgrals.iFichaDGId = fdolencs.iFichaDGId
+                        LEFT JOIN obe.dolencias dolencs 
+                            ON fdolencs.iDolenciaId = dolencs.iDolenciaId
+                    WHERE 
+                        ficdtosgrals.iPersId = ?
+                        AND YEAR(ficdtosgrals.dtFichaDG) = ?;
+                ", [$id, $anio]);
 
 
 
@@ -515,29 +516,70 @@ $transporte = DB::select("
                 ];
             }
         }
-             
-        $datos['pers_psicopedagogico'] = [];
+ 
+//  -----------22/05/-------------------------------------------------------------
+      
+        // $datos['pers_deportes'] = [];
+        // $datos['liga_deportiva'] = null;
+        
+        // foreach ($deportes as $index => $deporte) {
+        //     // Guardar deportes
+        //     if (!empty($deporte->cDeporteNombre)) {
+        //         $datos['pers_deportes'][] = [
+        //             'deporte_nombre' => $deporte->cDeporteNombre,
+        //         ];
+        //     }
+        
+        //     // Solo una vez guardar si pertenece a liga (ya que se repite por cada deporte)
+        //     if ($index === 0) {
+        //         $datos['liga_deportiva'] = $deporte->PerteneceLigaDeportiva ?? 'NO';
+        //     }
+        // }
 
-        $asistio = null;
-        $familiares = [];
-        
-        foreach ($emocionales as $item) {
-            if (!empty($item->cFichaDGAsistioConsultaPsicologica)) {
-                $asistio = $item->cFichaDGAsistioConsultaPsicologica;
+        $datos['fam_acompañantes'] = []; 
+        $datos['asist_consulta'] = [];
+
+        foreach ($emociones as $index => $emocion) {
+            if (!empty($emocion->cTipoFamiliarDescripcion)) {
+                $datos['fam_acompañantes'][] = [
+                    'nomb_acompañantes' => $emocion->cTipoFamiliarDescripcion,
+                ];
             }
-        
-            if (!empty($item->cTipoFamiliarDescripcion)) {
-                $familiares[] = $item->cTipoFamiliarDescripcion;
+
+            if ($index === 0) {
+                $datos['asist_consulta'][] = [
+                    'consulta_psicolo' => $emocion->cFichaDGAsistioConsultaPsicologica ?? 'NO',
+                ];
             }
         }
-        
-        $datos['pers_psicopedagogico'][] = [
-            'asistio_consulta' => $asistio ?? 'No hay información',
-            'familiares' => $familiares
-        ];
+////dd($datos); // Verifica que contiene lo esperado
         
 
-        $datos['medio_transporte'] = [];
+
+        // $datos['pers_psicopedagogico'] = [];
+
+        // $asistio = null;
+        // $familiares = [];
+        
+        // foreach ($psiopedagogico as $item) {
+        //     if (!empty($item->cFichaDGAsistioConsultaPsicologica)) {
+        //         $asistio = $item->cFichaDGAsistioConsultaPsicologica;
+        //     }
+        
+        //     if (!empty($item->cTipoFamiliarDescripcion)) {
+        //         $familiares[] = $item->cTipoFamiliarDescripcion;
+        //     }
+        // }
+        
+        // $datos['pers_psicopedagogico'][] = [
+        //     'asistio_consulta' => $asistio ?? 'No hay información',
+        //     'familiares' => $familiares
+        // ];
+        
+// ------------fin 22/05-----------------------------------------
+       
+
+$datos['medio_transporte'] = [];
 
         foreach ($transporte as $mtransporte){
         $datos['medio_transporte'][] = [

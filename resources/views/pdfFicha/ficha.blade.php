@@ -496,101 +496,99 @@
 
 <br>
 
-<table>
-    <tr>
-        <th>¿Pertenece a un centro artístico?</th>
-    </tr>
-    <tr>
-        <td>{{ $centro_artistico ?? 'NO' }}</td>
-    </tr>
-</table>
+        <table>
+            <tr>
+                <th>¿Pertenece a un centro artístico?</th>
+            </tr>
+            <tr>
+                <td>{{ $centro_artistico ?? 'NO' }}</td>
+            </tr>
+        </table>
 
-<table>
+            <table>
                     <tr>
                         <th style="width: 512px;">8.5 ¿Qué religión profesas?</th>
                         <td>Católica</td>
                     </tr>
 
 
-                    <table>
-    <tr>
-        <th>8.6 ¿Qué actividades realizas como pasatiempo?</th>
-    </tr>
-</table>
-
-<table border="1" cellpadding="5" cellspacing="0" width="100%">
-     <tbody>
-        @forelse($pers_pasatiempos as $item)
+            <table>
             <tr>
-                <td>{{ $item['pasatiempo_nombre'] }}</td>
+                <th>8.6 ¿Qué actividades realizas como pasatiempo?</th>
             </tr>
-        @empty
+        </table>
+
+        <table border="1" cellpadding="5" cellspacing="0" width="100%">
+            <tbody>
+                @forelse($pers_pasatiempos as $item)
+                    <tr>
+                        <td>{{ $item['pasatiempo_nombre'] }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td>No se registran pasatiempos.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        <table>
             <tr>
-                <td>No se registran pasatiempos.</td>
+                <th>PSICOPEDAGÓGICO</th>
             </tr>
-        @endforelse
-    </tbody>
-</table>
+        </table>    
 
-<table>
-    <tr>
-        <th>PSICOPEDAGÓGICO</th>
-    </tr>
-</table>    
-
-<table>
+ <table>
     <tr>
         <th>8.7 ¿Has asistido alguna vez a una consulta Psicológica?</th>
         <td>
-            {{ $datos['pers_psicopedagogico'][0]['asistio_consulta'] ?? 'No hay información' }}
+            {{ $datos['asist_consulta'][0] ?? 'No hay información' }}
         </td>
     </tr>
 </table>
 
-<table>
-    <tr>
-        <th>8.8 ¿A quién acudes cuando tienes un problema emocional?</th>
-        <td>
-            @if(!empty($datos['pers_psicopedagogico'][0]['familiares']))
-                {{ implode(', ', $datos['pers_psicopedagogico'][0]['familiares']) }}
-            @else
-                No hay información
-            @endif
-        </td>
-    </tr>
-</table>
-
-
-<table>
-    <tr>
-        <th>TRANSPORTE</th>
-    </tr>
-    <tr>
-        <th>8.10 ¿Qué temas te gustaría abordar para mejorar tu desarrollo personal?</th>
-    </tr>
-
-    @if (!empty($datos['medio_transporte']))
-        @foreach ($datos['medio_transporte'] as $mtransporte)
-            <tr>
+        <!-- <table>
+            <thead>
+                <tr>
+                    <th>8.8 ¿A quién acudes cuando tienes un problema emocional? </th>
+                </tr>
+            </thead>
                 <td>
-                    <strong>Transporte:</strong> {{ $mtransporte['transporte_nombre'] }} <br>
-                    <strong>Dolencia:</strong> {{ $mtransporte['dolencia_nombre'] }}
+                    @if(!empty($datos['pers_psicopedagogico'][0]['familiares']))
+                        {{ implode(', ', $datos['pers_psicopedagogico'][0]['familiares']) }}
+                    @else
+                        No hay información
+                    @endif
                 </td>
+        </table> -->
+
+
+
+        <table>
+            <tr>
+                <th>TRANSPORTE</th>
             </tr>
-        @endforeach
-    @else
-        <tr>
-            <td>No se encontraron registros de transporte asociados.</td>
-        </tr>
-    @endif
-</table>
+            <tr>
+                <th>8.10 ¿Qué temas te gustaría abordar para mejorar tu desarrollo personal?</th>
+            </tr>
 
+            @if (!empty($datos['medio_transporte']))
+                @foreach ($datos['medio_transporte'] as $mtransporte)
+                    <tr>
+                        <td>
+                            <strong>Transporte:</strong> {{ $mtransporte['transporte_nombre'] }} <br>
+                            <strong>Dolencia:</strong> {{ $mtransporte['dolencia_nombre'] }}
+                        </td>
+                    </tr>
+                @endforeach
+            @else
+                <tr>
+                    <td>No se encontraron registros de transporte asociados.</td>
+                </tr>
+            @endif
+        </table>
 
-
-
-
-
-</body>
+    </body>
 </html>
 
 
