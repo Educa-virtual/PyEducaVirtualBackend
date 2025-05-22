@@ -302,7 +302,7 @@ class AsistenciaController extends Controller
     public function report(Request $request)
     {
     
-        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $iDocenteId = VerifyHash::decodesxId($request->iDocenteId);
         $inicio = $request['id'];    
         $fecha_inicial = str_pad($inicio, 2, "0", STR_PAD_LEFT);
         $year_actual = date('Y');
@@ -427,7 +427,7 @@ class AsistenciaController extends Controller
     public function reporte_diario(Request $request)
     {
     
-        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $iDocenteId = VerifyHash::decodesxId($request->iDocenteId);
 
         $inicio = $request['id'];
         $fin = $request['id'];
@@ -528,7 +528,7 @@ class AsistenciaController extends Controller
     public function reporte_personalizado(Request $request)
     {
     
-        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $iDocenteId = VerifyHash::decodesxId($request->iDocenteId);
 
         $inicio = $request['id'][0];
         $fin = $request['id'][1];

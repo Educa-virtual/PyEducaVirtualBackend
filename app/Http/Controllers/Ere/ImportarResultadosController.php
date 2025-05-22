@@ -35,6 +35,35 @@ class ImportarResultadosController extends Controller
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
+    public function importarOffLine(Request $request)
+    {
+    
+        $parametros = [
+            $request->iSedeId,
+            $request->iSemAcadId,
+            $request->iYAcadId,
+            $request->iCredId,
+            $this->decodeValue($request->iEvaluacionIdHashed),
+            $this->decodeValue($curso_nivel_grado),
+            $request->codigo_modular,
+            $request->curso,
+            $request->nivel,
+            $request->grado,
+            $request->json_resultados
+        ];
+        try {
+            // $query_string = "EXEC acad.Sp_INS_importarResultados ".str_repeat("?,", (count($parametros)-1)).'?';
+            $data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
     public function importar(Request $request)
     {
         // Subir archivo para revisión, desactivar eventualmente
