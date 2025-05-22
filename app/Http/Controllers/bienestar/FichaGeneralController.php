@@ -91,13 +91,11 @@ class FichaGeneralController extends Controller
     public function show(Request $request)
     {
         $parametros = [
-            $request->iFichaDGId,
-            $request->iPersId,
-            $request->iYAcadId,
+            $request->iFichaDGId
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaGeneral ?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_SEL_fichaGeneral ?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }

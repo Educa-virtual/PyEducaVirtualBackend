@@ -6,6 +6,7 @@ use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaBienestarController;
 use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
+use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
 //Se agrego codigo el 22 Abril--------
 use app\Http\Controllers\bienestar\EstudianteController;
@@ -16,10 +17,16 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('searchFichas', [FichaBienestarController::class, 'index']);
     Route::get('createFicha', [FichaBienestarController::class, 'create']);
     Route::delete('deleteFicha', [FichaBienestarController::class, 'delete']);
+    Route::post('searchFicha', [FichaBienestarController::class, 'show']);
 
     Route::post('searchFichaGeneral', [FichaGeneralController::class, 'show']);
     Route::post('guardarFichaGeneral', [FichaGeneralController::class, 'save']);
     Route::post('actualizarFichaGeneral', [FichaGeneralController::class, 'update']);
+
+    /* Rutas para gestion seccion economica */
+    Route::post('searchFichaEconomico', [FichaEconomicoController::class, 'show']);
+    Route::post('guardarFichaEconomico', [FichaEconomicoController::class, 'save']);
+    Route::post('actualizarFichaEconomico', [FichaEconomicoController::class, 'update']);
 
     /* Rutas para gestionar familiares */
     Route::post('searchFichaFamiliares', [FichaFamiliarController::class, 'index']);
