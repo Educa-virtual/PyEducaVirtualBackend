@@ -96,7 +96,7 @@ class AreasService
             throw new Exception('No hay preguntas para generar la matriz.');
         }
         //Validar si es docente o director y si puede descargar el archivo
-        //DB::statement("EXEC [ere].Sp_SEL_validarDescargaArchivoFinEvaluacionPdf ?, ?", [request()->header('icredentperfid'), $evaluacionIdDescifrado]);
+        DB::statement("EXEC [ere].Sp_SEL_validarDescargaArchivoFinEvaluacionPdf ?, ?", [request()->header('icredentperfid'), $evaluacionIdDescifrado]);
         $data = [
             'year' => $year,
             'dataMatriz' => $dataMatriz,
