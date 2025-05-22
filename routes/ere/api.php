@@ -200,6 +200,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
+        Route::post('importarOffLine', [ImportarResultadosController::class, 'importarOffLine']);
     });
 
     /*Route::group(['prefix' => 'nivel-logros'], function () {
