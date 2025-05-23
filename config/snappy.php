@@ -35,7 +35,7 @@ return [
     
     'pdf' => [
         'enabled' => true,
-        'binary'  => env('WKHTML_PDF_BINARY', '"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf"'),
+        'binary'  => env('WKHTML_PDF_BINARY', '"C:\wkhtmltopdf\bin"'),
         'timeout' => false,
         'options' => [],
         'env'     => [],
@@ -44,7 +44,7 @@ return [
     
     'image' => [
         'enabled' => true,
-        'binary'  => env('WKHTML_IMG_BINARY', '"C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage"'),
+        'binary'  => env('WKHTML_IMG_BINARY', '"C:\wkhtmltopdf\bin"'),
         'timeout' => false,
         'options' => [],
         'env'     => [],
