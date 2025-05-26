@@ -13,7 +13,6 @@ class FichaDiscapacidadController extends Controller
     public function save(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->bFichaDGEstaEnCONADIS,
             $request->cCodigoCONADIS,
@@ -46,7 +45,6 @@ class FichaDiscapacidadController extends Controller
     public function update(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iLugarAlimIdDesayuno,
             $request->cLugarAlimDesayuno,

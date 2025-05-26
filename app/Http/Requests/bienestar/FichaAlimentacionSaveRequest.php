@@ -14,7 +14,6 @@ class FichaAlimentacionSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'iSesionId' => 'required|integer',
             'iFichaDGId' => 'nullable|integer',
             'iLugarAlimIdDesayuno' => 'nullable|integer',
             'cLugarAlimDesayuno' => 'nullable|string',
@@ -43,7 +42,6 @@ class FichaAlimentacionSaveRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'iSesionId' => 'id de sesión',
             'iFichaDGId' => 'id de ficha',
             'iLugarAlimIdDesayuno' => 'lugar de desayuno',
             'cLugarAlimDesayuno' => 'otro lugar de desayuno',

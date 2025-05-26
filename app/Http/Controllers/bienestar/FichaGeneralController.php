@@ -14,7 +14,6 @@ class FichaGeneralController extends Controller
     public function save(FichaGeneralSaveRequest $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iPersId,
             $request->iTipoViaId,
             $request->cFichaDGDireccionNombreVia,
@@ -52,7 +51,6 @@ class FichaGeneralController extends Controller
     public function update(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iPersId,
             $request->iTipoViaId,

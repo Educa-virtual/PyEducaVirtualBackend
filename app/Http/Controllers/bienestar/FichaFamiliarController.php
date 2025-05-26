@@ -78,7 +78,6 @@ class FichaFamiliarController extends Controller
 
         // luego guardar como estudiante
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iPersId,
             $request->iTipoFamiliarId,

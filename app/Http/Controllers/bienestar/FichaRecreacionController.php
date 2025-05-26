@@ -14,7 +14,6 @@ class FichaRecreacionController extends Controller
     public function save(FichaRecreacionSaveRequest $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->cFichaDGPerteneceLigaDeportiva,
             $request->iDeporteId,
@@ -45,7 +44,6 @@ class FichaRecreacionController extends Controller
     public function update(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->cFichaDGPerteneceLigaDeportiva,
             $request->iDeporteId,

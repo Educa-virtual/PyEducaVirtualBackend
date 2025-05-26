@@ -14,7 +14,6 @@ class FichaAlimentacionController extends Controller
     public function save(FichaAlimentacionSaveRequest $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iLugarAlimIdDesayuno,
             $request->cLugarAlimDesayuno,
@@ -55,7 +54,6 @@ class FichaAlimentacionController extends Controller
     public function update(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iLugarAlimIdDesayuno,
             $request->cLugarAlimDesayuno,
