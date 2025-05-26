@@ -37,7 +37,8 @@ class ImportarResultadosController extends Controller
 
     public function importarOffLine(Request $request)
     {
-    
+        $curso_nivel_grado = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
+
         $parametros = [
             $request->iSedeId,
             $request->iSemAcadId,
