@@ -89,6 +89,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('generarPdf', [ReporteEvaluacionesController::class, 'generarPdf']);
         Route::post('generarExcel', [ReporteEvaluacionesController::class, 'generarExcel']);
         Route::post('importarResultados', [ImportarResultadosController::class, 'importar']);
+        Route::post('importarOffLine', [ImportarResultadosController::class, 'importarOffLine']);
     });
 
     /*Route::group(['prefix' => 'nivel-logros'], function () {
