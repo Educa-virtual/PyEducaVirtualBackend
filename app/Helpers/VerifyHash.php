@@ -88,8 +88,7 @@ class VerifyHash
         return $hashing;
         // return array_map([self::class, 'encodeFields'], $value);
     }
-    
-    // decodificar los id de los registros a enviar al backend
+
     public static function decodesxId($hash){
        
         $hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);

@@ -35,6 +35,10 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::prefix('api')
                 ->group(base_path('routes/com/api.php'));
             Route::prefix('api')
+                ->group(base_path('routes/enc/api.php'));
+            Route::prefix('api')
+                ->group(base_path('routes/cap/api.php'));
+            Route::prefix('api')
                 ->group(base_path('routes/seg/api.php'));
         },
         commands: __DIR__ . '/../routes/console.php',

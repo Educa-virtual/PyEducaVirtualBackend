@@ -4,7 +4,8 @@ use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\AcademicoController;
-use App\Http\Controllers\aula\AnuncioController;
+use App\Http\Controllers\aula\AnunciosController;
+use App\Http\Controllers\aula\CuestionariosController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
 use App\Http\Controllers\aula\NotificacionEstudianteController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\aula\ReunionVirtualesController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -40,8 +42,6 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::get('obtenerEstudiantesMatricula', [AulaVirtualController::class, 'obtenerEstudiantesMatricula']);
             Route::delete('eliminarRptEstudiante', [AulaVirtualController::class, 'eliminarRptEstudiante']);
             Route::get('obtenerReptdocente', [AulaVirtualController::class, 'obtenerReptdocente']);
-
-
         });
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
     });
@@ -85,13 +85,14 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('habilitarCalificacion', [ResultadoController::class, 'habilitarCalificacion']);
         Route::get('obtenerReporteFinalNotas', [ResultadoController::class, 'obtenerReporteFinalNotas']);
         Route::get('reporteDeLogros', [ResultadoController::class, 'reporteDeLogros']);
-        Route::get('reporteDeLogroFinalXYear', [ResultadoController::class, 'reporteDeLogroFinalXYear']); 
+        Route::get('reporteDeLogroFinalXYear', [ResultadoController::class, 'reporteDeLogroFinalXYear']);
         Route::get('generarReporteDeLogrosAlcanzadosXYear', [ResultadoController::class, 'generarReporteDeLogrosAlcanzadosXYear']);
-        
     });
-    Route::group(['prefix' => 'Anuncio'], function (){
-        Route::post('guardarAnuncio', [AnuncioController::class, 'guardarAnuncio']);
-        Route::get('obtenerAnunciosXDocente', [AnuncioController::class, 'obtenerAnunciosXDocente']);
+    Route::group(['prefix' => 'anuncios'], function () {
+        Route::post('guardarAnuncios', [AnunciosController::class, 'guardarAnuncios']);
+        Route::post('listarAnuncios', [AnunciosController::class, 'listarAnuncios']);
+        Route::post('eliminarAnuncios', [AnunciosController::class, 'eliminarAnuncios']);
+        Route::post('fijarAnuncios', [AnunciosController::class, 'fijarAnuncios']);
     });
 
     Route::group(['prefix' => 'foros'], function () {
@@ -119,5 +120,14 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
         Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
     });
-
+    Route::group(['prefix' => 'reunion-virtuales'], function () {
+        Route::post('guardarReunionVirtuales', [ReunionVirtualesController::class, 'guardarReunionVirtuales']);
+        Route::post('actualizarReunionVirtuales', [ReunionVirtualesController::class, 'actualizarReunionVirtuales']);
+        Route::post('eliminarReunionVirtuales', [ReunionVirtualesController::class, 'eliminarReunionVirtuales']);
+    });
+    Route::prefix('cuestionarios')->group(function () {
+        Route::post('/', [CuestionariosController::class, 'guardarCuestionario']); // Para crear
+        Route::put('/{iCuestionarioId}', [CuestionariosController::class, 'actualizarCuestionario']); // Para actualizar
+        Route::delete('/{iCuestionarioId}', [CuestionariosController::class, 'eliminarCuestionario']); // Para eliminar
+    });
 });

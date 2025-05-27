@@ -215,6 +215,15 @@ class ProgramacionActividadesController extends Controller
                     }
                     return $resp->handleCrudOperation($request);
                     break;
+                case 'GUARDARxProgActxiCuestionarioId':
+                    $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iProgActId > 0) {
+                        $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
+                        $resp = new CuestionariosController();
+                    }
+                    return $resp->guardarCuestionario($request);
+                    break;
                 default:
                     $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
