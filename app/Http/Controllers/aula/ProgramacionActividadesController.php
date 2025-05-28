@@ -224,6 +224,15 @@ class ProgramacionActividadesController extends Controller
                     }
                     return $resp->guardarCuestionario($request);
                     break;
+                case 'GUARDARxProgActxiRVirtualId':
+                    $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iProgActId > 0) {
+                        $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
+                        $resp = new ReunionVirtualesController();
+                    }
+                    return $resp->guardarReunionVirtuales($request);
+                    break;
                 default:
                     $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);

@@ -8,11 +8,38 @@ use App\Helpers\VerifyHash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class ReunionVirtualesController extends Controller
 {
     public function guardarReunionVirtuales(Request $request)
-    {
+    {   
+        $validator = Validator::make($request->all(), [
+            'cRVirtualTema' => ['required'],
+            'dtRVirtualInicio' => ['required','date'],
+            'dtRVirtualFin' => ['required', 'date', 'after:dtRVirtualInicio'],
+            'cRVirtualUrlJoin' => ['required','url'],
+            'iProgActId' => ['required']
+        ], [
+            'cRVirtualTema.required' => 'No ingresó tema de la reunión virtual',
+            'dtRVirtualInicio.required' => 'La fecha y hora de inicio es obligatoria',
+            'dtRVirtualInicio.date' => 'La fecha de inicio no es válida.',
+            'dtRVirtualFin.required' => 'La fecha y hora de fin es obligatoria',
+            'dtRVirtualFin.date' => 'La fecha de fin no es válida.',
+            'dtRVirtualFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio.',
+            'cRVirtualUrlJoin.required' => 'No ingresó la URL de la reunión virtual',
+            'cRVirtualUrlJoin.url' => 'La URL de la reunión virtual no es válida.',
+            'iProgActId.required' => 'No se encontro el identificador iProgActId',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
             $fieldsToDecode = [
                 'iProgActId',
