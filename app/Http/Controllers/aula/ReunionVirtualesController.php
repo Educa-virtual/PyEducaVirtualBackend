@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Validator;
 class ReunionVirtualesController extends Controller
 {
     public function guardarReunionVirtuales(Request $request)
-    {   
+    {
         $validator = Validator::make($request->all(), [
             'cRVirtualTema' => ['required'],
-            'dtRVirtualInicio' => ['required','date'],
+            'dtRVirtualInicio' => ['required', 'date'],
             'dtRVirtualFin' => ['required', 'date', 'after:dtRVirtualInicio'],
-            'cRVirtualUrlJoin' => ['required','url'],
+            'cRVirtualUrlJoin' => ['required', 'url'],
             'iProgActId' => ['required']
         ], [
             'cRVirtualTema.required' => 'No ingresó tema de la reunión virtual',
@@ -84,8 +84,36 @@ class ReunionVirtualesController extends Controller
         }
     }
 
-    public function actualizarReunionVirtuales(Request $request)
+    public function actualizarReunionVirtuales(Request $request, $iRVirtualId)
     {
+        $request->merge(['iRVirtualId' => $iRVirtualId]);
+
+        $validator = Validator::make($request->all(), [
+            'iRVirtualId' => ['required'],
+            'cRVirtualTema' => ['required'],
+            'dtRVirtualInicio' => ['required', 'date'],
+            'dtRVirtualFin' => ['required', 'date', 'after:dtRVirtualInicio'],
+            'cRVirtualUrlJoin' => ['required', 'url'],
+        ], [
+            'iRVirtualId.required' => 'No se encontro el identificador iRVirtualId',
+            'cRVirtualTema.required' => 'No ingresó tema de la reunión virtual',
+            'dtRVirtualInicio.required' => 'La fecha y hora de inicio es obligatoria',
+            'dtRVirtualInicio.date' => 'La fecha de inicio no es válida.',
+            'dtRVirtualFin.required' => 'La fecha y hora de fin es obligatoria',
+            'dtRVirtualFin.date' => 'La fecha de fin no es válida.',
+            'dtRVirtualFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio.',
+            'cRVirtualUrlJoin.required' => 'No ingresó la URL de la reunión virtual',
+            'cRVirtualUrlJoin.url' => 'La URL de la reunión virtual no es válida.',
+
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
             $fieldsToDecode = [
                 'iRVirtualId',
@@ -129,8 +157,23 @@ class ReunionVirtualesController extends Controller
             );
         }
     }
-    public function eliminarReunionVirtuales(Request $request)
+    public function eliminarReunionVirtuales(Request $request, $iRVirtualId)
     {
+        $request->merge(['iRVirtualId' => $iRVirtualId]);
+
+        $validator = Validator::make($request->all(), [
+            'iRVirtualId' => ['required']
+        ], [
+            'iRVirtualId.required' => 'No se encontro el identificador iRVirtualId'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
             $fieldsToDecode = [
                 'iRVirtualId',
