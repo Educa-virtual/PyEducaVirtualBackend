@@ -149,42 +149,45 @@
     </tfoot>
 </table>
 
-@if( $filtros->tipo_reporte == 'IE' )
-    <div class="page-break"></div>
-    <table class="table table-bordered table-condensed table-sm py-4">
-        <thead>
+<div class="page-break"></div>
+<table class="table table-bordered table-condensed table-sm py-4">
+    <thead>
+        <tr>
+            @php( $otras_columnas = $filtros->tipo_reporte == 'IE' ? 5 : 3 );
+            <th class="font-lg bg-light text-center" colspan="{{ count($niveles) + $otras_columnas }}">RESULTADOS AGRUPADOS POR {{ $filtros->tipo_reporte }}</th>
+        </tr>
+        <tr>
+            <th class="align-middle bg-light text-center" width="3%">#</th>
+            <th class="align-middle bg-light text-center" width="20%">{{ $filtros->tipo_reporte }}</th>
+            @if( $filtros->tipo_reporte == 'IE' )
+                <th class="align-middle bg-light text-center" width="15%">UGEL</th>
+                <th class="align-middle bg-light text-center" width="15%">DISTRITO</th>
+            @endif
+            <th class="align-middle bg-light text-center" width="8%">TOTAL</th>
+            @foreach ($niveles as $nivel)
+                <th class="align-middle bg-light text-center">% {{ $nivel->nivel_logro }}</th>
+            @endforeach
+        </tr>
+    </thead>
+    <tbody>
+        @foreach ( $ies as $ie )
             <tr>
-                @php( $otras_columnas = 5 );
-                <th class="font-lg bg-light text-center" colspan="{{ count($niveles) + $otras_columnas }}">RESULTADOS AGRUPADOS POR IE</th>
-            </tr>
-            <tr>
-                <th class="align-middle bg-light text-center" width="3%">#</th>
-                    <th class="align-middle bg-light text-center" width="20%">IE</th>
-                    <th class="align-middle bg-light text-center" width="15%">UGEL</th>
-                    <th class="align-middle bg-light text-center" width="15%">DISTRITO</th>
-                    <th class="align-middle bg-light text-center" width="8%">TOTAL</th>
-                @foreach ($niveles as $nivel)
-                    <th class="align-middle bg-light text-center">% {{ $nivel->nivel_logro }}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ( $ies as $ie )
-                <tr>
-                    <td class="align-middle text-center">{{ $loop->iteration }}</td>
-                    <td class="align-middle text-left">{{ $ie->agrupado }}</td>
+                <td class="align-middle text-center">{{ $loop->iteration }}</td>
+                <td class="align-middle text-left">{{ $ie->agrupado }}</td>
+                @if( $filtros->tipo_reporte == 'IE' )
                     <td class="align-middle text-left">{{ $ie->ugel }}</td>
                     <td class="align-middle text-left">{{ $ie->distrito }}</td>
-                    <td class="align-middle text-center">{{ $ie->total }}</td>
-                    @foreach ($niveles as $nivel)
-                        @php( $nivel_logro_id = $nivel->nivel_logro_id . '' )
-                        <td class="align-middle text-center">{{ number_format( intval($ie?->$nivel_logro_id ?? 0), 2) }}</td>
-                    @endforeach
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-@endif
+                @
+                @endif
+                <td class="align-middle text-center">{{ $ie->total }}</td>
+                @foreach ($niveles as $nivel)
+                    @php( $nivel_logro_id = $nivel->nivel_logro_id . '' )
+                    <td class="align-middle text-center">{{ number_format( intval($ie?->$nivel_logro_id ?? 0), 2) }}</td>
+                @endforeach
+            </tr>
+        @endforeach
+    </tbody>
+</table>
 
 <div class="page-break"></div>
 

@@ -115,17 +115,15 @@ class ReporteEvaluacionesController extends Controller
         foreach ( $resultados as $resultado) {
             $resultado->respuestas = json_decode($resultado->respuestas);
         }
-        if( $filtros->tipo_reporte == 'IE' && key_exists(5, $data) ) {
-            $ies = $data[5];
-            foreach ( $ies as $ie) {
-                $sumatoria = 0;
-                foreach( $niveles as $nivel) {
-                    $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
-                    $sumatoria += intval($ie?->$nivel_logro_id ?? 0);
-                }
-                $ie->$nivel_logro_id = round(intval($ie?->$nivel_logro_id ?? 0) / $sumatoria * 100, 2);
-                $ie->total = $sumatoria;
+        $ies = $data[5];
+        foreach ( $ies as $ie) {
+            $sumatoria = 0;
+            foreach( $niveles as $nivel) {
+                $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
+                $sumatoria += intval($ie?->$nivel_logro_id ?? 0);
             }
+            $ie->$nivel_logro_id = round(intval($ie?->$nivel_logro_id ?? 0) / $sumatoria * 100, 2);
+            $ie->total = $sumatoria;
         }
 
         $nro_preguntas = count($matriz);
