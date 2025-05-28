@@ -121,13 +121,15 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
     });
     Route::group(['prefix' => 'reunion-virtuales'], function () {
-        Route::post('guardarReunionVirtuales', [ReunionVirtualesController::class, 'guardarReunionVirtuales']);
-        Route::post('actualizarReunionVirtuales', [ReunionVirtualesController::class, 'actualizarReunionVirtuales']);
-        Route::post('eliminarReunionVirtuales', [ReunionVirtualesController::class, 'eliminarReunionVirtuales']);
+        Route::post('/', [ReunionVirtualesController::class, 'guardarReunionVirtuales']);
+        Route::put('/{iRVirtualId}', [ReunionVirtualesController::class, 'actualizarReunionVirtuales']);
+        Route::delete('/{iRVirtualId}', [ReunionVirtualesController::class, 'eliminarReunionVirtuales']);
+        Route::get('/{iRVirtualId}', [ReunionVirtualesController::class, 'obtenerReunionVirtualesxiRVirtualId']);
     });
     Route::prefix('cuestionarios')->group(function () {
         Route::post('/', [CuestionariosController::class, 'guardarCuestionario']); // Para crear
         Route::put('/{iCuestionarioId}', [CuestionariosController::class, 'actualizarCuestionario']); // Para actualizar
         Route::delete('/{iCuestionarioId}', [CuestionariosController::class, 'eliminarCuestionario']); // Para eliminar
+        Route::get('/{iCuestionarioId}', [CuestionariosController::class, 'obtenerCuestionarioxiCuestionarioId']); // Para obtener un cuestionario específico
     });
 });

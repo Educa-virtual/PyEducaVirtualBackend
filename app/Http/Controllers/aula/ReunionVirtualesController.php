@@ -209,4 +209,54 @@ class ReunionVirtualesController extends Controller
             );
         }
     }
+
+    public function obtenerReunionVirtualesxiRVirtualId(Request $request, $iRVirtualId)
+    {
+        $request->merge(['iRVirtualId' => $iRVirtualId]);
+        // Validación de los parámetros de entrada
+        $validator = Validator::make($request->all(), [
+            'iRVirtualId' => ['required'],
+        ], [
+            'iRVirtualId.required' => 'No se encontro el identificador iRVirtualId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        
+        try {
+            $fieldsToDecode = [
+                'iRVirtualId',
+                'iCredId',
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iRVirtualId      ??  NULL,
+                $request->iCredId              ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec aula.SP_SEL_reunionVirtualesxiRVirtualId
+                    @_iRVirtualId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+            
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

@@ -100,7 +100,7 @@ class CuestionariosController extends Controller
     }
 
     public function actualizarCuestionario(Request $request, $iCuestionarioId)
-    {    
+    {
         $request->merge(['iCuestionarioId' => $iCuestionarioId]);
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
@@ -133,8 +133,8 @@ class CuestionariosController extends Controller
                 'errors' => $validator->errors()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
-       try {
+
+        try {
             $fieldsToDecode = [
                 'iProgActId',
                 'iDocenteId',
@@ -189,7 +189,7 @@ class CuestionariosController extends Controller
             );
         }
     }
-    public function eliminarCuestionario(Request $request,$iCuestionarioId)
+    public function eliminarCuestionario(Request $request, $iCuestionarioId)
     {
         $request->merge(['iCuestionarioId' => $iCuestionarioId]);
         // Validación de los parámetros de entrada
@@ -211,7 +211,7 @@ class CuestionariosController extends Controller
                 'iCuestionarioId',
                 'iCredId',
             ];
-            
+
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
@@ -237,6 +237,56 @@ class CuestionariosController extends Controller
                     Response::HTTP_OK
                 );
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerCuestionarioxiCuestionarioId(Request $request, $iCuestionarioId)
+    {
+        $request->merge(['iCuestionarioId' => $iCuestionarioId]);
+        // Validación de los parámetros de entrada
+        $validator = Validator::make($request->all(), [
+            'iCuestionarioId' => ['required'],
+        ], [
+            'iCuestionarioId.required' => 'No se encontro el identificador iCuestionarioId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iCuestionarioId',
+                'iCredId',
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iCuestionarioId      ??  NULL,
+                $request->iCredId              ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec aula.SP_SEL_cuestionariosxiCuestionarioId
+                    @_iCuestionarioId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+            
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
