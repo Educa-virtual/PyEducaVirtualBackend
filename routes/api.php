@@ -157,6 +157,7 @@ Route::group(['prefix' => 'ere'], function () {
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
+        Route::get('{iUgelId}/areas', [UgelesController::class, 'obtenerUgeles']);
     });
 });
 Route::group(['prefix' => 'acad'], function () {

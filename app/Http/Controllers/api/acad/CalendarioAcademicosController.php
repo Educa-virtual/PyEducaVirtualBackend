@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\api\acad;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Exception;
+use FontLib\Font;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class CalendarioAcademicosController extends Controller
@@ -304,9 +307,9 @@ class CalendarioAcademicosController extends Controller
             ]
         );
 
-        return $this->response($periodosQuery); 
+        return $this->response($periodosQuery);
     }
-    
+
     public function deleteCalFormasAtencion(Request $request)
     {
         $deleteCalFormaAtencionQuery = DB::statement("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
@@ -391,31 +394,12 @@ class CalendarioAcademicosController extends Controller
             $request->json,
             $request->_opcion
         ];
-
-        $query = DB::select(
-            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-            
-            $solicitud
-        );
-
         try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
-
-            $estado = 201;
+            $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?", $solicitud);
+            return FormatearMensajeHelper::ok($query[0]->resultado,null ,Response::HTTP_CREATED);
         } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-            $estado = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $estado);
     }
 
     public function searchAcademico(Request $request)
@@ -427,7 +411,7 @@ class CalendarioAcademicosController extends Controller
 
         $query = DB::select(
             "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-            
+
             $solicitud
         );
 
@@ -606,7 +590,7 @@ class CalendarioAcademicosController extends Controller
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select(
             "EXEC grl.SP_UPD_TablaYearXopcion ?,?",
-          
+
             $solicitud
         );
         //  [$json, $opcion ]);
@@ -710,7 +694,7 @@ class CalendarioAcademicosController extends Controller
             'message' => $e->getMessage(),
             'data' => [],
         ];
-        
+
         $estado = 500;
         }
         return $response;
@@ -726,7 +710,7 @@ class CalendarioAcademicosController extends Controller
             $request->tabla, // NVARCHAR(128),   -- Nombre de la tabla principal
             $request->campo, //NVARCHAR(128),       -- Nombre del campo ID de la tabla principal
             $request->valorId, // BIGINT,              -- Valor del ID a eliminar
-            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)        
+            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
@@ -764,9 +748,9 @@ class CalendarioAcademicosController extends Controller
     //    $opcion = $request->_opcion;
 
         $solicitud = [
-            $request-> iNivelTipoId, //NVARCHAR(128),       -- Nombre del esquema        
+            $request-> iNivelTipoId, //NVARCHAR(128),       -- Nombre del esquema
         ];
-        
+
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select("EXEC acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?", $solicitud);
     //  [$json, $opcion ]);
@@ -785,7 +769,7 @@ class CalendarioAcademicosController extends Controller
             'message' => $e->getMessage(),
             'data' => [],
         ];
-        
+
         $estado = 500;
         }
 
@@ -810,7 +794,7 @@ class CalendarioAcademicosController extends Controller
             'message' => $e->getMessage(),
             'data' => [],
         ];
-        
+
         $estado = 500;
         }
         return new JsonResponse($response, $estado);

@@ -16,7 +16,7 @@ class Usuario extends Model
     public static function selUsuariosPerfiles($parametros)
     {
         return DB::select("EXEC [seg].[SP_SEL_usuariosPerfiles] @soloTotal=?, @offset=?, @limit=?,
-        @documentoFiltro=?, @apellidosFiltro=?, @nombresFiltro=?", $parametros); //,@institucionFiltro=?,@rolFiltro=?
+        @documentoFiltro=?, @apellidosFiltro=?, @nombresFiltro=?, @iPersId=NULL", $parametros); //,@institucionFiltro=?,@rolFiltro=?
     }
 
     public static function updiCredEstadoCredencialesXiCredId($parametros)

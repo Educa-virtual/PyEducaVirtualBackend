@@ -10,8 +10,8 @@ class ConsultarDocumentoIdentidadService
 
     private $token;
     private $divirApellidoNombresService;
-        
-    
+
+
     public function __construct()
     {
         $this->token = env('FACTILIZA_TOKEN');
@@ -63,11 +63,11 @@ class ConsultarDocumentoIdentidadService
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => [
-              "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODI5NCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.copUQgWw48hZQHavntG2s0r9phlR4M8UZc0nhSUOhXg"
+              "Authorization: Bearer ".$this->token
             ],
           ]);
 
-      
+
 
 
         // curl_setopt_array($curl, [
@@ -220,8 +220,8 @@ class ConsultarDocumentoIdentidadService
     private function formatearRespuestaDni($respuesta)
     {
         try {
-            $ubigeo = DB::select('SELECT p.iDptoId, p.iPrvnId, d.iDsttId 
-                FROM grl.distritos d 
+            $ubigeo = DB::select('SELECT p.iDptoId, p.iPrvnId, d.iDsttId
+                FROM grl.distritos d
                     INNER JOIN grl.provincias p ON p.iPrvnId = d.iPrvnId
                 WHERE cDsttCodigoINEI = ?', [trim($respuesta->ubigeo_sunat)]);
         } catch (\Exception $e) {
@@ -284,8 +284,8 @@ class ConsultarDocumentoIdentidadService
     private function formatearRespuestaRuc($respuesta)
     {
         try {
-            $ubigeo = DB::select('SELECT p.iDptoId, p.iPrvnId, d.iDsttId 
-                FROM grl.distritos d 
+            $ubigeo = DB::select('SELECT p.iDptoId, p.iPrvnId, d.iDsttId
+                FROM grl.distritos d
                     INNER JOIN grl.provincias p ON p.iPrvnId = d.iPrvnId
                 WHERE cDsttCodigoINEI = ?', [trim($respuesta->ubigeo_sunat)]);
         } catch (\Exception $e) {
