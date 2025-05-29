@@ -4,6 +4,8 @@ namespace App\Http\Controllers\api\acad;
 
 use DateTime;
 use Exception;
+use App\Helpers\ResponseHandler;
+use App\Helpers\VerifyHash;
 use Dompdf\Options;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -926,7 +928,33 @@ class GestionInstitucionalController extends Controller
         DB::select('EXEC seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
         $procesados[] = ['validated' => true, 'message' => 'Credencial generada.'];
     }
-    
+
+    public function obtenerEstudiantesMatriculados(Request $request)
+    {  
+      // \Log::info($request->all());
+      $solicitud = [
+        //30902,//
+        (int) $request->iCredEntPerfId,
+        (int)$request->iYAcadId,
+        VerifyHash::decodesxId($request->iCursosNivelGradId),
+        (int)$request->iSedeId,
+        
+       // 5 //(int)
+    ];
+
+        try {
+            $data = DB::select('EXEC ere.Sp_SEL_obtenerEstudiantesMatriculados ?,?,?,?', $solicitud);
+            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
+            $codeResponse = 500;
+        }
+
+   // return response()->json($solicitud);
+      return response()->json($response, $codeResponse);
+    }
 }
 
 

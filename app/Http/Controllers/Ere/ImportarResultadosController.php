@@ -35,6 +35,59 @@ class ImportarResultadosController extends Controller
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
+    public function importarOffLine(Request $request)
+    {
+
+        // $parametros = [
+        //     $request->iCursosNivelGradId,
+        //     $request->datos_hojas,
+        //     $request->iSedeId,
+        //     $request->iCredId,
+        //     $request->iEvaluacionIdHashed,
+        //     $request->cCursoNombre,
+        //     $request->cGradoAbreviacion,
+        //     $request->iCursosNivelGradId,
+        //     $request->tipo,
+        //     $request->json_resultados,
+        //     $request->iYAcadId,
+        // ];
+        // $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $parametros];
+        // $codeResponse = 200;
+        // return new JsonResponse($response, $codeResponse);
+
+
+        //ID traer datos desde iCursoNivelGradId
+        $iCursosNivelGradId = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
+
+        $parametros = [
+            $request->iSedeId,
+            $request->iSemAcadId,
+            $request->iYAcadId,
+            $request->iCredId,
+            $this->decodeValue($request->iEvaluacionIdHashed),
+            $this->decodeValue($iCursosNivelGradId),
+            $request->codigo_modular,
+            $request->cCursoNombre,
+            $request->tipo,
+            $request->cGradoAbreviacion,
+            $request->json_resultados
+        ];
+        try {
+            $query_string = "EXEC acad.Sp_INS_importarResultados " . str_repeat("?,", (count($parametros) - 1)) . '?';
+            // $data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            //$data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $query_string];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+
     public function importar(Request $request)
     {
         // Subir archivo para revisión, desactivar eventualmente
@@ -62,7 +115,7 @@ class ImportarResultadosController extends Controller
             $json_resultados,
         ];
 
-        if( count($datos_hoja['resultados']) === 0 ) {
+        if (count($datos_hoja['resultados']) === 0) {
             return new JsonResponse(['message' => 'No se encontraron resultados', 'data' => []], 500);
         }
 
@@ -82,7 +135,7 @@ class ImportarResultadosController extends Controller
 
     private function formatearDatos($hojas)
     {
-        if( count($hojas) == 0 ) {
+        if (count($hojas) == 0) {
             return [];
         }
 
@@ -105,14 +158,12 @@ class ImportarResultadosController extends Controller
             'HOMBRE' => 'M',
         ];
 
-        foreach($filas as $index_fila => $fila)
-        {
+        foreach ($filas as $index_fila => $fila) {
             // Extraer datos a partir de la fila 2
-            if($index_fila > 1)
-            {
+            if ($index_fila > 1) {
                 // Limpiar datos de la fila
                 $fila = array_map('strtoupper', $fila);
-                $fila = array_map(function($string) {
+                $fila = array_map(function ($string) {
                     $simbolos_invalidos = ['.', ',', '+', '(', ')', ':', ';', '=', '_'];
                     return str_replace($simbolos_invalidos, '', $string);
                 }, $fila);
@@ -126,7 +177,7 @@ class ImportarResultadosController extends Controller
                 // }
 
                 // Ignorar filas sin apellido y nombres
-                if( (!isset($fila['D'])) || (!isset($fila['F'])) ) {
+                if ((!isset($fila['D'])) || (!isset($fila['F']))) {
                     continue;
                 } else {
                     if (($fila['D'] == '') && ($fila['F'] == '')) {
@@ -136,7 +187,7 @@ class ImportarResultadosController extends Controller
 
                 // Formatear resultados de estudiantes en nuevo array
                 $fecha = isset($fila['B']) ? Date::excelToDateTimeObject($fila['B']) : null;
-                $sexo = isset($fila['I']) ? ( $sexos[$fila['I']] ?? null ) : null;
+                $sexo = isset($fila['I']) ? ($sexos[$fila['I']] ?? null) : null;
                 $resultados[] = array(
                     // 'fecha' => Carbon::createFromFormat('d/m/Y', $fila['B'])->format('Y-m-d'),
                     'fecha' => isset($fecha) ? $fecha->format('Y-m-d') : null,
@@ -174,28 +225,28 @@ class ImportarResultadosController extends Controller
         }
 
         $data['resultados'] = $resultados;
-        
+
         return $data;
     }
 
     private function subirArchivo($request)
     {
-        if( $request->has('archivo') ) {
+        if ($request->has('archivo')) {
             try {
                 $archivo = $request->file('archivo');
                 $nombreArchivo = str_replace('.', '', $request->cCursoNombre . '-' . $request->cGradoAbreviacion);
-                $rutaDestino = 'resultados/'. $request->iSedeId . '/';
+                $rutaDestino = 'resultados/' . $request->iSedeId . '/';
 
                 // if (!Storage::disk('public')->exists($rutaDestino)) {
                 //     Storage::disk('public')->makeDirectory($rutaDestino);
                 // }
-                Storage::disk('public')->put($rutaDestino.$nombreArchivo, $archivo);
+                Storage::disk('public')->put($rutaDestino . $nombreArchivo, $archivo);
             } catch (Exception $e) {
                 return false;
             }
         }
 
-        if( Storage::disk('public')->exists($rutaDestino.$nombreArchivo) ) {
+        if (Storage::disk('public')->exists($rutaDestino . $nombreArchivo)) {
             return true;
         } else {
             return false;
