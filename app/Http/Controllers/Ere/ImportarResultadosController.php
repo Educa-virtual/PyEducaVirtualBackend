@@ -39,18 +39,19 @@ class ImportarResultadosController extends Controller
     {
         $curso_nivel_grado = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
 
+        
         $parametros = [
-            $request->iSedeId,
-            $request->iSemAcadId,
-            $request->iYAcadId,
-            $request->iCredId,
-            $this->decodeValue($request->iEvaluacionIdHashed),
-            $this->decodeValue($curso_nivel_grado),
-            $request->codigo_modular,
-            $request->curso,
-            $request->nivel,
-            $request->grado,
-            $request->json_resultados
+            $iSedeId = !empty($request->iSedeId) ? $request->iSedeId : null,
+            $iSemAcadId=!empty($request->iSemAcadId) ? $request->iSemAcadId : null, 
+            $iYAcadId = !empty($request->iYAcadId) ? $request->iYAcadId : null,
+            $iCredId = !empty($request->iCredId) ? $request->iCredId : null,
+            $iEvaluacionId = !empty($request->iEvaluacionIdHashed) ? $this->decodeValue($request->iEvaluacionIdHashed) : null,
+            $iCursoNivel = !empty($curso_nivel_grado) ? $this->decodeValue($curso_nivel_grado) : null,
+            $codigo_modular = !empty($request->codigo_modular) ? $request->codigo_modular : null,
+            $curso = !empty($request->curso) ? $request->curso : null,
+            $nivel = !empty($request->nivel) ? $request->nivel : null,
+            $grado = !empty($request->grado) ? $request->grado : null,
+            $json_resultados = !empty($request->json_resultados) ? $request->json_resultados : null,
         ];
         try {
             // $query_string = "EXEC acad.Sp_INS_importarResultados ".str_repeat("?,", (count($parametros)-1)).'?';
@@ -62,7 +63,7 @@ class ImportarResultadosController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-
+       // return   $parametros;
         return new JsonResponse($response, $codeResponse);
     }
     public function importar(Request $request)
