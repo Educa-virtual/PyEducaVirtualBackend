@@ -101,6 +101,7 @@ class CuestionariosController extends Controller
 
     public function actualizarCuestionario(Request $request, $iCuestionarioId)
     {
+        // return $request -> all();
         $request->merge(['iCuestionarioId' => $iCuestionarioId]);
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
@@ -136,12 +137,13 @@ class CuestionariosController extends Controller
 
         try {
             $fieldsToDecode = [
+                'iCuestionarioId',
                 'iProgActId',
                 'iDocenteId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
+            
             $parametros = [
                 $request->iCuestionarioId   ?? NULL,
                 $request->iProgActId        ?? NULL,
@@ -155,7 +157,6 @@ class CuestionariosController extends Controller
 
                 $request->iCredId           ?? NULL
             ];
-
             $data = DB::select(
                 'exec aula.SP_UPD_cuestionarios 
                     @_iCuestionarioId=?,
@@ -244,6 +245,7 @@ class CuestionariosController extends Controller
             );
         }
     }
+
 
     public function obtenerCuestionarioxiCuestionarioId(Request $request, $iCuestionarioId)
     {
