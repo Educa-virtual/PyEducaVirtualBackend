@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class FichaGeneralController extends Controller
 {
-    public function save(FichaGeneralSaveRequest $request)
+    public function guardarFichaGeneral(FichaGeneralSaveRequest $request)
     {
         $parametros = [
             $request->iPersId,
@@ -48,7 +48,7 @@ class FichaGeneralController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaGeneral(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
@@ -86,7 +86,7 @@ class FichaGeneralController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaGeneral(Request $request)
     {
         $parametros = [
             $request->iFichaDGId

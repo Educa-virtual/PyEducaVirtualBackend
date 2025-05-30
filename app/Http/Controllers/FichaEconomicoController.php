@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class FichaEconomicoController extends Controller
 {
-    public function save(Request $request)
+    public function guardarFichaEconomico(Request $request)
     {
         $parametros = [
             $request->iCredId,
@@ -40,7 +40,7 @@ class FichaEconomicoController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaEconomico(Request $request)
     {
         $parametros = [
             $request->iCredId,
@@ -72,7 +72,7 @@ class FichaEconomicoController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaEconomico(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,

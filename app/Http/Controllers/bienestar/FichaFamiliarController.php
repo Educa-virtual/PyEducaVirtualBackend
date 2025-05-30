@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class FichaFamiliarController extends Controller
 {
-    public function index(Request $request)
+    public function listarFichaFamiliares(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
@@ -33,7 +33,7 @@ class FichaFamiliarController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function save(FichaFamiliarSaveRequest $request)
+    public function guardarFichaFamiliar(FichaFamiliarSaveRequest $request)
     {
         // primero guardar como persona
         $request->merge([
@@ -111,7 +111,7 @@ class FichaFamiliarController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaFamiliar(Request $request)
     {
         $parametros = [
             $request->iFamiliarId,
@@ -129,7 +129,7 @@ class FichaFamiliarController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function delete(Request $request)
+    public function borrarFichaFamiliar(Request $request)
     {
         $parametros = [
             $request->iFamiliarId,

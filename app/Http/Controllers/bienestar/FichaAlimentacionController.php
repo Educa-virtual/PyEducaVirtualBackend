@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class FichaAlimentacionController extends Controller
 {
-    public function save(FichaAlimentacionSaveRequest $request)
+    public function guardarFichaAlimentacion(FichaAlimentacionSaveRequest $request)
     {
         $parametros = [
             $request->iFichaDGId,
@@ -51,7 +51,7 @@ class FichaAlimentacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaAlimentacion(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
@@ -91,7 +91,7 @@ class FichaAlimentacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaAlimentacion(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class FichaRecreacionController extends Controller
 {
-    public function save(FichaRecreacionSaveRequest $request)
+    public function guardarFichaRecreacion(FichaRecreacionSaveRequest $request)
     {
         $parametros = [
             $request->iFichaDGId,
@@ -41,7 +41,7 @@ class FichaRecreacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaRecreacion(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
@@ -71,7 +71,7 @@ class FichaRecreacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaRecreacion(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,

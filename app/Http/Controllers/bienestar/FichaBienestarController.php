@@ -43,7 +43,7 @@ class FichaBienestarController extends Controller
         return response()->json($estudiantes);
     }
 
-    public function index(Request $request)
+    public function listarFichas(Request $request)
     {
         $parametros = [
             $request->iCredSesionId,
@@ -66,7 +66,7 @@ class FichaBienestarController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function create(Request $request)
+    public function crearFicha(Request $request)
     {
         try {
             $data = DB::select('EXEC obe.Sp_SEL_fichaParametros');
@@ -81,7 +81,7 @@ class FichaBienestarController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function delete(Request $request)
+    public function borrarFicha(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
@@ -100,7 +100,7 @@ class FichaBienestarController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFicha(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
