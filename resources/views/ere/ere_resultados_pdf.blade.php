@@ -153,7 +153,7 @@
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
-            @php( $otras_columnas = $filtros->tipo_reporte == 'IE' ? 5 : 3 );
+            @php( $otras_columnas = $filtros->tipo_reporte == 'IE' ? 5 : 3 )
             <th class="font-lg bg-light text-center" colspan="{{ count($niveles) + $otras_columnas }}">RESULTADOS AGRUPADOS POR {{ $filtros->tipo_reporte }}</th>
         </tr>
         <tr>
