@@ -38,25 +38,6 @@ class ImportarResultadosController extends Controller
     public function importarOffLine(Request $request)
     {
 
-        // $parametros = [
-        //     $request->iCursosNivelGradId,
-        //     $request->datos_hojas,
-        //     $request->iSedeId,
-        //     $request->iCredId,
-        //     $request->iEvaluacionIdHashed,
-        //     $request->cCursoNombre,
-        //     $request->cGradoAbreviacion,
-        //     $request->iCursosNivelGradId,
-        //     $request->tipo,
-        //     $request->json_resultados,
-        //     $request->iYAcadId,
-        // ];
-        // $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $parametros];
-        // $codeResponse = 200;
-        // return new JsonResponse($response, $codeResponse);
-
-
-        //ID traer datos desde iCursoNivelGradId
         $iCursosNivelGradId = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
 
         
