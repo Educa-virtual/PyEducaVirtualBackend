@@ -122,7 +122,10 @@ class ReporteEvaluacionesController extends Controller
                 $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
                 $sumatoria += intval($ie?->$nivel_logro_id ?? 0);
             }
-            $ie->$nivel_logro_id = round(intval($ie?->$nivel_logro_id ?? 0) / $sumatoria * 100, 2);
+            foreach( $niveles as $nivel) {
+                $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
+                $ie->$nivel_logro_id = round(intval($ie?->$nivel_logro_id ?? 0) / $sumatoria * 100, 2);
+            }
             $ie->total = $sumatoria;
         }
 

@@ -177,11 +177,10 @@
                 @if( $filtros->tipo_reporte == 'IE' )
                     <td class="align-middle text-left">{{ $ie->ugel }}</td>
                     <td class="align-middle text-left">{{ $ie->distrito }}</td>
-                @
                 @endif
                 <td class="align-middle text-center">{{ $ie->total }}</td>
                 @foreach ($niveles as $nivel)
-                    @php( $nivel_logro_id = $nivel->nivel_logro_id . '' )
+                    @php( $nivel_logro_id = strval($nivel->nivel_logro_id) )
                     <td class="align-middle text-center">{{ number_format( intval($ie?->$nivel_logro_id ?? 0), 2) }}</td>
                 @endforeach
             </tr>
