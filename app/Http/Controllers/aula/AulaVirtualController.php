@@ -150,10 +150,10 @@ class AulaVirtualController extends ApiController
 
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
-       
+
         $iSilaboId =  VerifyHash::decodes($request->iSilaboId);
         $params = [$iSilaboId, $request->perfil];
-        
+
         $contenidos = [];
         try {
             $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?, @_perfil = ?', $params);
@@ -247,21 +247,20 @@ class AulaVirtualController extends ApiController
         // Verifica si el tipo de actividad es una evaluación (tipo 3)
         if ($iActTipoId === 3) {
             // Obtiene el ID de la evaluación desde el parámetro de solicitud y lo decodifica usando Hashids
-            $iEvaluacionId = $request->ixActivadadId;
-            $iEvaluacionId = $this->hashids->decode($iEvaluacionId);
-            $iEvaluacionId = count($iEvaluacionId) > 0 ? $iEvaluacionId[0] : $iEvaluacionId;
-
+            $fieldsToDecode = [
+                'ixActivadadId'
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
             // Inicializa la variable de evaluación como null
+            $iEvaluacionId = $request->ixActivadadId;
             $evaluacion = null;
 
             // Intenta obtener los datos de la evaluación
             try {
-                $params = [
-                    'iEvaluacionId' => $iEvaluacionId
-                ];
+                
                 // Llama al repositorio para obtener la evaluación con los parámetros proporcionados
-                $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($params);
-
+                $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($iEvaluacionId);
+               
                 // Si no hay resultados, retorna una respuesta de error
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
@@ -513,15 +512,14 @@ class AulaVirtualController extends ApiController
                 $iForoId
             ];
             try {
-                
+
                 $data =  DB::select('exec aula.SP_SEL_Foro ?', $params);
 
                 $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
                 $estado = 200;
 
-            return $response;
-            }
-            catch (\Exception $e) {
+                return $response;
+            } catch (\Exception $e) {
                 $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
                 $estado = 500;
             }
@@ -580,22 +578,22 @@ class AulaVirtualController extends ApiController
         //     'iEstudianteId' =>'required|integer',
         // ]);
         $iEstudianteId = $request->iEstudianteId;
-        $iForoId = $request ->iForoId;
-        $cForoRptDocente = $request ->cForoRptDocente;
+        $iForoId = $request->iForoId;
+        $cForoRptDocente = $request->cForoRptDocente;
 
         $params = [
             $iEstudianteId,
             $iForoId,
             $cForoRptDocente,
         ];
-        
+
         //return $params;
         // $iDocenteId = $request->iDocenteId;
         // if ($request->iDocenteId) {
         //     $iDocenteId = $this->hashids->decode($iDocenteId);
         //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
         // }
-        
+
         // $parametros = [
         //     $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
         //     $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
@@ -638,7 +636,7 @@ class AulaVirtualController extends ApiController
             'iEstudianteId' => 'required|string',
             'iForoId' => 'required|string'
         ]);
-        
+
         $iEstudianteId = $request->iEstudianteId;
         $iForoId = $request->iForoId;
         $params = [
@@ -647,22 +645,20 @@ class AulaVirtualController extends ApiController
         ];
 
         // return $params;
-         //return $params;
-         try {
-            $data = DB ::select('EXEC aula.SP_SEL_obtenerForoRespuestasXidEstudiante ?,?', $params);
+        //return $params;
+        try {
+            $data = DB::select('EXEC aula.SP_SEL_obtenerForoRespuestasXidEstudiante ?,?', $params);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;
 
             return $response;
-        } 
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
-
+        return new JsonResponse($response, $estado);
     }
     public function guardarComentarioRespuesta(Request $request)
     {
