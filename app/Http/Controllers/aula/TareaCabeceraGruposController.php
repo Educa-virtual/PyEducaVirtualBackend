@@ -6,24 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
+use App\Helpers\VerifyHash;
 
 class TareaCabeceraGruposController extends Controller
 {
-    protected $hashids;
-    protected $iTareaCabGrupoId;
-    protected $iTareaId;
-
-    // Constructor de la clase
-    public function __construct()
-    {
-        // Inicializa el objeto Hashids usando los parámetros de configuración.
-        // 'salt' es una cadena secreta utilizada para personalizar los hash generados,
-        // 'min_length' define la longitud mínima del hash generado.
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
-
-
     public function list(Request $request)
     {
         // Validación de los datos de entrada
@@ -36,20 +22,19 @@ class TareaCabeceraGruposController extends Controller
             ]
         );
 
-        // Si se recibe un parámetro 'iTareaId', se decodifica utilizando hashids
-        if ($request->iTareaId) {
-            // Decodificar el valor de 'iTareaId' utilizando hashids
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            // Si hay un valor válido, asignarlo al parámetro, de lo contrario mantener el valor original
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
+        $fieldsToDecode = [
+            'iTareaId',
+            'iTareaCabGrupoId',
+            'iEscalaCalifId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         // Se definen los parámetros a pasar a la consulta almacenada (SP)
         $parametros = [
             $request->opcion,                     // Opción recibida desde la solicitud
             $request->valorBusqueda ?? '-',        // Valor de búsqueda, si no se recibe se asigna un guion
-            $iTareaCabGrupoId ?? NULL,             // ID de grupo de tarea cabecera, si no existe se asigna NULL
-            $iTareaId ?? NULL,                     // ID de tarea, si no existe se asigna NULL
+            $request->iTareaCabGrupoId ?? NULL,             // ID de grupo de tarea cabecera, si no existe se asigna NULL
+            $request->iTareaId ?? NULL,                     // ID de tarea, si no existe se asigna NULL
             $request->cTareaGrupoNombre ?? NULL,   // Nombre de grupo de tarea, si no existe se asigna NULL
             $request->nTareaGrupoNota ?? NULL,     // Nota de grupo de tarea, si no existe se asigna NULL
             $request->cTareaGrupoComentarioDocente ?? NULL, // Comentario del docente, si no existe se asigna NULL
@@ -66,12 +51,8 @@ class TareaCabeceraGruposController extends Controller
             ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             // Si se obtiene la información, se recorre y se realiza el proceso de codificación de los IDs
-            foreach ($data as $key => $value) {
-                // Codificar los valores de 'iEscalaCalifId' y 'iTareaId' usando hashids
-                $value->iEscalaCalifId = $this->hashids->encode($value->iEscalaCalifId);
-                $value->iTareaId = $this->hashids->encode($value->iTareaId);
-            }
-
+             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+    
             // Si la consulta fue exitosa, se prepara la respuesta con código 200 (OK)
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
@@ -97,19 +78,19 @@ class TareaCabeceraGruposController extends Controller
             ]
         );
 
-        // Si existe el parámetro 'iTareaId', se decodifica usando 'hashids'
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            // Si la decodificación es exitosa (al menos un valor), se asigna el primer valor decodificado
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
-
+        $fieldsToDecode = [
+            'iTareaId',
+            'iTareaCabGrupoId',
+            'iEscalaCalifId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        
         // Preparación de los parámetros que se enviarán al procedimiento almacenado
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
             $request->iTareaCabGrupoId ?? NULL,
-            $iTareaId ?? NULL,
+            $request->iTareaId ?? NULL,
             $request->cTareaGrupoNombre,
             $request->nTareaGrupoNota ?? NULL,
             $request->cTareaGrupoComentarioDocente ?? NULL,
@@ -156,6 +137,11 @@ class TareaCabeceraGruposController extends Controller
     {
         // Definir los parámetros para la consulta.
         // Se espera que 'iTareaCabGrupoId' sea el identificador de la tarea a eliminar.
+        $fieldsToDecode = [
+            'iTareaCabGrupoId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
         $parametros = [
             $request->iTareaCabGrupoId, // Parámetro enviado por el cliente a través del request
         ];
@@ -191,17 +177,15 @@ class TareaCabeceraGruposController extends Controller
     public function guardarCalificacionTareaCabeceraGruposDocente(Request $request)
     {
         // Comprobamos si se ha recibido un valor para 'iEscalaCalifId' en la solicitud
-        if ($request->iEscalaCalifId) {
-            // Decodificamos el valor 'iEscalaCalifId' usando Hashids
-            $iEscalaCalifId = $this->hashids->decode($request->iEscalaCalifId);
-            // Si se ha decodificado correctamente, tomamos el primer valor, sino asignamos el valor original
-            $iEscalaCalifId = count($iEscalaCalifId) > 0 ? $iEscalaCalifId[0] : $iEscalaCalifId;
-        }
+        $fieldsToDecode = [
+            'iEscalaCalifId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         // Preparamos los parámetros que se pasarán al procedimiento almacenado
         $parametros = [
             $request->iTareaCabGrupoId,  // ID del grupo de la tarea
-            $iEscalaCalifId,              // ID de la escala de calificación
+            $request->iEscalaCalifId,              // ID de la escala de calificación
             $request->cTareaGrupoComentarioDocente,  // Comentario del docente sobre la tarea
         ];
 
@@ -232,7 +216,13 @@ class TareaCabeceraGruposController extends Controller
 
     // Definición de la función que recibe una solicitud HTTP
     public function transferenciaTareaCabeceraGrupos(Request $request)
-    {
+    {   
+        $fieldsToDecode = [
+            'iTareaCabGrupoId',
+            'iTareaEstudianteId',
+            'iEstudianteId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
         // Se define un arreglo con los parámetros necesarios que se obtienen de la solicitud
         $parametros = [
             $request->iTareaCabGrupoId,       // ID del grupo de tarea
@@ -265,13 +255,15 @@ class TareaCabeceraGruposController extends Controller
     }
 
     public function entregarEstudianteTareaGrupal(Request $request)
-    {
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
+    {   
+        $fieldsToDecode = [
+            'iTareaId',
+            'iEstudianteId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
         $parametros = [
-            $iTareaId,
+            $request->iTareaId,
             $request->iEstudianteId,
             $request->cTareaGrupoUrl,
         ];
