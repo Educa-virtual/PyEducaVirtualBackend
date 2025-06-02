@@ -128,6 +128,16 @@ class UsuarioController
         }
     }
 
+    public function actualizarFechaVigenciaUsuario($iCredId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Usuario::updFechaVigenciaCuenta($iCredId, $request->dtCredCaduca);
+            return FormatearMensajeHelper::ok('Se ha actualizado la fecha de vigencia de la cuenta', null, Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
 
     public function registrarUsuario(Request $request)
     {

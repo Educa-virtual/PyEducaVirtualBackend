@@ -19,6 +19,11 @@ class Usuario extends Model
         @documentoFiltro=?, @apellidosFiltro=?, @nombresFiltro=?, @iPersId=NULL", $parametros); //,@institucionFiltro=?,@rolFiltro=?
     }
 
+    public static function updFechaVigenciaCuenta($iCredId, $dtCredCaduca)
+    {
+        return DB::statement("UPDATE seg.credenciales SET dtCredCaduca=? WHERE iCredId=?", [$dtCredCaduca, $iCredId]);
+    }
+
     public static function updiCredEstadoCredencialesXiCredId($parametros)
     {
         return DB::select("EXEC [seg].[Sp_UPD_iCredEstado_credencialesXiCredId] @_iCredId=?, @_iCredEstado=?, @_iCredSesionId=?", $parametros);

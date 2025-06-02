@@ -13,6 +13,7 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
         Route::delete('{iCredId}/perfiles/{iCredEntPerfId}', [UsuarioController::class, 'eliminarPerfilUsuario']);
         Route::patch('{iCredId}/estado', [UsuarioController::class, 'cambiarEstadoUsuario']);
         Route::patch('{iCredId}/password', [UsuarioController::class, 'restablecerClaveUsuario']);
+        Route::patch('{iCredId}/fecha-vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
         Route::get('perfiles', [UsuarioController::class, 'obtenerListaUsuariosPerfiles']);
         Route::post('', [UsuarioController::class, 'registrarUsuario']);
     });
