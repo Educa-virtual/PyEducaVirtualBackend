@@ -62,7 +62,7 @@ Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
         Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
-
+        
     });
     Route::group(['prefix' => 'nivelTipo'], function () {
         Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);
@@ -92,6 +92,8 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
+
+
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
@@ -152,8 +154,9 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
         //Eliminar una pregunta de una evaluación.
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
-         //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
-         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+        Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        Route::post('insertarCuestionarioNotas', [EvaluacionesController::class, 'insertarCuestionarioNotas']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -191,7 +194,7 @@ Route::group(['prefix' => 'acad'], function () {
 
         Route::post('obtenerEstudiantesMatriculados', [GestionInstitucionalController::class, 'obtenerEstudiantesMatriculados']);
     });
- Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
+    Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
@@ -332,6 +335,9 @@ Route::group(['prefix' => 'acad'], function () {
 
         //* DELETE: Periodos académicos de un calendario
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
+
+        Route::post('obtenerCursosDiasHorarios', [CalendarioAcademicosController::class, 'obtenerCursosDiasHorarios']);
+        Route::post('CursosDiasHorarios', [CalendarioAcademicosController::class, 'guardarRemoverCursosDiasHorarios']);
     });
 
     Route::group(['prefix' => 'estudiante'], function () {
@@ -435,6 +441,4 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
 
         return response()->json(['message' => 'Datos actualizados correctamente', 'data' => $data[$index]], 200);
     });
-
 });
-
