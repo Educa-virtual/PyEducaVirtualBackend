@@ -21,6 +21,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\ValidatedData;
 use Illuminate\Http\Response;
+use PhpParser\Node\Stmt\TryCatch;
 
 class EvaluacionesController extends ApiController
 {
@@ -1031,6 +1032,30 @@ class EvaluacionesController extends ApiController
             return FormatearMensajeHelper::error($e);
             /*$response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;*/
+        }
+    }
+
+    public function insertarCuestionarioNotas(Request $request)
+    {
+        $data = $request->all();
+        info(json_encode($data));
+        info('JSON recibido completo:');
+        info($data);
+
+        try {
+            // Aquí llamarías tu SP, por ejemplo:
+            // $result = DB::select('exec ere.SP_INS_cuestionarioNotas ?,?,?,?,?', array_values($data));
+
+            return response()->json([
+                'message' => 'JSON recibido correctamente',
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 500);
         }
     }
 }
