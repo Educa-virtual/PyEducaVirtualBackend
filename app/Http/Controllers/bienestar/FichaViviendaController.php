@@ -26,8 +26,8 @@ class FichaViviendaController extends Controller
             $request->iMatTecVivId,
             $request->iTiposSsHhId,
             $request->iTipoSumAId,
-            $request->iTipoAlumId,
-            $request->iEleParaVivId,
+            $request->jsonAlumbnrados,
+            $request->jsonElementos,
         ];
 
         try {
@@ -59,8 +59,8 @@ class FichaViviendaController extends Controller
             $request->iMatTecVivId,
             $request->iTiposSsHhId,
             $request->iTipoSumAId,
-            $request->iTipoAlumId,
-            $request->iEleParaVivId,
+            $request->jsonAlumbnrados,
+            $request->jsonElementos,
         ];
 
         try {

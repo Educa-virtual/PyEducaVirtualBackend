@@ -16,20 +16,16 @@ class FichaRecreacionController extends Controller
         $parametros = [
             $request->iFichaDGId,
             $request->cFichaDGPerteneceLigaDeportiva,
-            $request->iDeporteId,
-            $request->cDepFichaObs,
             $request->cFichaDGPerteneceCentroArtistico,
-            $request->iPasaTiempoId,
-            $request->cPasaTFichaHoras,
             $request->cFichaDGAsistioConsultaPsicologica,
-            $request->cProbEFichaPresentePara,
-            $request->iTipoFamiliarId,
-            $request->iTransporteId,
-            $request->nTransFichaGastoSoles,
+            $request->jsonDeportes,
+            $request->jsonTransportes,
+            $request->jsonPasatiempos,
+            $request->jsonProblemas,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaRecreacion ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaRecreacion ?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -46,20 +42,16 @@ class FichaRecreacionController extends Controller
         $parametros = [
             $request->iFichaDGId,
             $request->cFichaDGPerteneceLigaDeportiva,
-            $request->iDeporteId,
-            $request->cDepFichaObs,
             $request->cFichaDGPerteneceCentroArtistico,
-            $request->iPasaTiempoId,
-            $request->cPasaTFichaHoras,
             $request->cFichaDGAsistioConsultaPsicologica,
-            $request->cProbEFichaPresentePara,
-            $request->iTipoFamiliarId,
-            $request->iTransporteId,
-            $request->nTransFichaGastoSoles,
+            $request->jsonDeportes,
+            $request->jsonTransportes,
+            $request->jsonPasatiempos,
+            $request->jsonProblemas,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaRecreacion ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaRecreacion ?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }

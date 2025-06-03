@@ -18,11 +18,12 @@ class FichaDiscapacidadController extends Controller
             $request->cCodigoCONADIS,
             $request->bFichaDGEstaEnOMAPED,
             $request->cCodigoOMAPED,
+            $request->cOtroProgramaDiscapacidad,
             $request->jsonDiscapacidades,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -42,11 +43,12 @@ class FichaDiscapacidadController extends Controller
             $request->cCodigoCONADIS,
             $request->bFichaDGEstaEnOMAPED,
             $request->cCodigoOMAPED,
+            $request->cOtroProgramaDiscapacidad,
             $request->jsonDiscapacidades,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }

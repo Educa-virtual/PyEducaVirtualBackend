@@ -14,15 +14,16 @@ class FichaSaludController extends Controller
     {
         $parametros = [
             $request->iFichaDGId,
-            $request->bFichaDGEstaEnCONADIS,
-            $request->cCodigoCONADIS,
-            $request->bFichaDGEstaEnOMAPED,
-            $request->cCodigoOMAPED,
-            $request->jsonDiscapacidades,
+            $request->bFichaDGAlergiaMedicamentos,
+            $request->cFichaDGAlergiaMedicamentos,
+            $request->bFichaDGAlergiaOtros,
+            $request->cFichaDGAlergiaOtros,
+            $request->jsonSeguros,
+            $request->jsonDolencias,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaSalud ?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaSalud ?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -38,15 +39,16 @@ class FichaSaludController extends Controller
     {
         $parametros = [
             $request->iFichaDGId,
-            $request->bFichaDGEstaEnCONADIS,
-            $request->cCodigoCONADIS,
-            $request->bFichaDGEstaEnOMAPED,
-            $request->cCodigoOMAPED,
-            $request->jsonDiscapacidades,
+            $request->bFichaDGAlergiaMedicamentos,
+            $request->cFichaDGAlergiaMedicamentos,
+            $request->bFichaDGAlergiaOtros,
+            $request->cFichaDGAlergiaOtros,
+            $request->jsonSeguros,
+            $request->jsonDolencias,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaSalud ?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaSalud ?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
