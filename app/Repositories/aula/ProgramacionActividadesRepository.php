@@ -86,10 +86,8 @@ class ProgramacionActividadesRepository
         $res = DB::select('exec aula.SP_SEL_Foro @iForoid = ?', [$iForoId]);
         return $res;
     }
-    public static function obtenerRespuestaActividadForo($params)
+    public static function obtenerRespuestaActividadForo($iForoId)
     {
-        $iForoId = $params['iForoId'];
-
         $res = DB::select('exec aula.SP_SEL_respuestaXiDForo @iForoid = ?', [$iForoId]);
         return $res;
     }

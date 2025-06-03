@@ -153,7 +153,7 @@ class AulaVirtualController extends ApiController
 
         $iSilaboId =  VerifyHash::decodes($request->iSilaboId);
         $iContenidoSemId =  VerifyHash::decodes($request->iContenidoSemId);
-        $params = [$iSilaboId, $request->perfil,$iContenidoSemId];
+        $params = [$iSilaboId, $request->perfil, $iContenidoSemId];
 
         $contenidos = [];
         try {
@@ -258,10 +258,10 @@ class AulaVirtualController extends ApiController
 
             // Intenta obtener los datos de la evaluación
             try {
-                
+
                 // Llama al repositorio para obtener la evaluación con los parámetros proporcionados
                 $resp = ProgramacionActividadesRepository::obtenerActividadEvaluacion($iEvaluacionId);
-               
+
                 // Si no hay resultados, retorna una respuesta de error
                 if (count($resp) === 0) {
                     return $this->errorResponse(null, 'La evaluación no existe');
@@ -499,18 +499,17 @@ class AulaVirtualController extends ApiController
     public function obtenerForo(Request $request)
     {
 
-        // return $request -> all();
-        $iProgActId = (int) $request->iProgActId;
-        $iActTipoId = (int) $request->iActTipoId;
+        $fieldsToDecode = [
+            'ixActivadadId',
+            'iActTipoId'
+        ];
 
-        if ($iActTipoId === 2) {
-            $iForoId = $request->ixActivadadId;
-            $iForoId = $this->hashids->decode($iForoId);
-            $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
-            // return $iForoId;
+        if ($request->iActTipoId === '2') {
+
             $params = [
-                $iForoId
+                $request->ixActivadadId
             ];
             try {
 
@@ -530,28 +529,22 @@ class AulaVirtualController extends ApiController
     }
     public function obtenerRespuestaForo(Request $request)
     {
-        // Convertir el valor de 'iActTipoId' recibido en la solicitud en un entero
-        $iActTipoId = (int) $request->iActTipoId;
+        $fieldsToDecode = [
+            'ixActivadadId',
+            'iActTipoId'
+        ];
+
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         // Verificar si el tipo de actividad es 2 (específico para foros)
-        if ($iActTipoId === 2) {
-            // Obtener y decodificar el ID del foro a partir del identificador codificado recibido en la solicitud
-            $iForoId = $request->ixActivadadId;
-            $iForoId = $this->hashids->decode($iForoId);
-            // Verificar si la decodificación es exitosa y obtener el primer valor del array
-            $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
+        if ($request->iActTipoId === '2') {
 
             // Inicializar la variable donde se almacenarán los datos del foro
             $foro = null;
 
             try {
-                // Crear un array con el ID del foro para pasarlo como parámetro
-                $params = [
-                    'iForoId' => $iForoId
-                ];
-
                 // Llamar al repositorio para obtener las respuestas del foro según el ID
-                $resp = ProgramacionActividadesRepository::obtenerRespuestaActividadForo($params);
+                $resp = ProgramacionActividadesRepository::obtenerRespuestaActividadForo($request->ixActivadadId);
 
                 // Verificar si se encontraron respuestas en el foro; si no, devolver un mensaje de error
                 if (count($resp) === 0) {
