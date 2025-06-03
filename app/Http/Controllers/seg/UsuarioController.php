@@ -4,50 +4,69 @@ namespace App\Http\Controllers\seg;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
+use App\Http\Requests\seg\LoginUsuarioRequest;
 use App\Models\seg\Usuario;
 use App\Models\User;
 use App\Services\seg\UsuariosService;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 
 class UsuarioController
 {
     /**
-     * @OA\Post(
-     *     path="/api/seg/usuarios/perfiles",
+     * @OA\Get(
+     *     path="/api/seg/usuarios",
      *     tags={"Gestión de usuarios"},
-     *     summary="Obtiene la lista de usuarios y sus perfiles.",
+     *     summary="Obtiene la lista de usuarios. Se requiere rol de administrador.",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
      *     @OA\Parameter(
-     *         name="iSugerenciaId",
-     *         in="path",
+     *         name="opcionBusquedaSeleccionada",
+     *         in="query",
+     *         required=false,
+     *         description="Opción de búsqueda seleccionada",
+     *         @OA\Schema(type="string", enum={"documento", "apellidos", "nombres"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="criterioBusqueda",
+     *         in="query",
+     *         required=false,
+     *         description="Criterio de búsqueda de acuerdo a la opción seleccionada",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="offset",
+     *         in="query",
      *         required=true,
-     *         description="Id de la sugerencia",
-     *         @OA\Schema(type="integer")
+     *         description="Cantidad de registros a omitir para la paginación",
+     *         @OA\Schema(type="integer", example=0)
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         required=true,
+     *         description="Cantidad de registros a obtener",
+     *         @OA\Schema(type="integer", example=20)
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Sugerencia registrada exitosamente",
+     *         description="Datos obtenidos",
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="string", example="Success"),
-     *             @OA\Property(property="message", type="string", example="Se ha registrado su sugerencia"),
-     *             @OA\Property(property="data", type="int", example="ID de la sugerencia registrada")
+     *             @OA\Property(property="message", type="string", example="Datos obtenidos"),
+     *             @OA\Property(property="data", type="object", example="Data de los usuarios"),
      *         )
      *     ),
      *     @OA\Response(response=400, ref="#/components/responses/400"),
      *     @OA\Response(response=403, ref="#/components/responses/403"),
-     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
-    function obtenerListaUsuariosPerfiles(Request $request)
+    function obtenerListaUsuarios(Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
@@ -66,6 +85,33 @@ class UsuarioController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/seg/usuarios/{iCredId}/perfiles",
+     *     tags={"Gestión de usuarios"},
+     *     summary="Obtiene los perfiles asignados del usuario especificado. Se requiere rol de administrador.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Parameter(
+     *         name="iCredId",
+     *         in="path",
+     *         required=true,
+     *         description="Id de la credencial del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Datos obtenidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="Datos obtenidos"),
+     *             @OA\Property(property="data", type="object", example="Data de los perfiles del usuario"),
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     * )
+     */
     public function obtenerPerfilesUsuario($iCredId)
     {
         try {
@@ -82,6 +128,39 @@ class UsuarioController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/seg/usuarios/{iCredId}/estado",
+     *     tags={"Gestión de usuarios"},
+     *     summary="Cambia el estado del usuario especificado. Se requiere rol de administrador.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Parameter(
+     *         name="iCredId",
+     *         in="path",
+     *         required=true,
+     *         description="Id de la credencial del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="iCredEstado",
+     *         in="query",
+     *         required=true,
+     *         description="Nuevo estado del usuario (1: activo, 0: inactivo)",
+     *         @OA\Schema(type="integer", enum={1, 0})
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="El usuario ha sido activado/desactivado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="El usuario ha sido activado/desactivado"),
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     * )
+     */
     public function cambiarEstadoUsuario($iCredId, Request $request)
     {
         try {
@@ -99,6 +178,32 @@ class UsuarioController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/seg/usuarios/{iCredId}/password",
+     *     tags={"Gestión de usuarios"},
+     *     summary="Establece la contraseña del usuario especificado a su nombre de usuario. Se requiere rol de administrador.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Parameter(
+     *         name="iCredId",
+     *         in="path",
+     *         required=true,
+     *         description="Id de la credencial del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Contraseña cambiada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="La contraseña del usuario ha sido restablecida a su nombre de usuario"),
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     * )
+     */
     public function restablecerClaveUsuario($iCredId)
     {
         try {
@@ -108,12 +213,45 @@ class UsuarioController
                 Auth::user()->iCredId
             ];
             Usuario::updReseteoClaveCredencialesXiCredId($parametros);
-            return FormatearMensajeHelper::ok('La contraseña del usuario ha sido restablecida. Ahora es su usuario.', null, Response::HTTP_OK);
+            return FormatearMensajeHelper::ok('La contraseña del usuario ha sido restablecida a su nombre de usuario.', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/seg/usuarios/{iCredId}/perfiles/{iCredEntPerfId}",
+     *     tags={"Gestión de usuarios"},
+     *     summary="Elimina un perfil del usuario especificado. Se requiere rol de administrador.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Parameter(
+     *         name="iCredId",
+     *         in="path",
+     *         required=true,
+     *         description="Id de la credencial del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="iCredEntPerfId",
+     *         in="path",
+     *         required=true,
+     *         description="Id del perfil a eliminar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Perfil eliminado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="El perfil del usuario ha sido eliminado"),
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     * )
+     */
     public function eliminarPerfilUsuario($iCredId, $iCredEntPerfId)
     {
         try {
@@ -128,6 +266,39 @@ class UsuarioController
         }
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/api/seg/usuarios/{iCredId}/fecha-vigencia",
+     *     tags={"Gestión de usuarios"},
+     *     summary="Actualiza la fecha de vigencia del usuario especificado. Se requiere rol de administrador.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Parameter(
+     *         name="iCredId",
+     *         in="path",
+     *         required=true,
+     *         description="Id de la credencial del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="dtCredCaduca",
+     *         in="query",
+     *         required=true,
+     *         description="Fecha de caducidad de la credencial",
+     *         @OA\Schema(type="string", format="date-time", example="2026-05-15 03:10")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Se ha actualizado la fecha de vigencia de la cuenta",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="Se ha actualizado la fecha de vigencia de la cuenta"),
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     * )
+     */
     public function actualizarFechaVigenciaUsuario($iCredId, Request $request)
     {
         try {
@@ -139,141 +310,150 @@ class UsuarioController
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/seg/usuarios",
+     *     tags={"Gestión de usuarios"},
+     *     summary="Registra un usuario. Se requiere rol de administrador.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del usuario a registrar",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             required={"iTipoIdentId", "cPersDocumento","cPersPaterno","cPersNombre","cPersSexo"},
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="iTipoIdentId", type="string", example="1"),
+     *                 @OA\Property(property="cPersDocumento", type="string", example="12345678"),
+     *                 @OA\Property(property="cPersPaterno", type="string", example="Apellido de prueba"),
+     *                 @OA\Property(property="cPersMaterno", type="string", example="Apellido de prueba"),
+     *                 @OA\Property(property="cPersNombre", type="string", example="Nombre de prueba"),
+     *                 @OA\Property(property="cPersSexo", type="string", example="M"),
+     *                 @OA\Property(property="dPersNacimiento", type="string", format="date", example="1988-04-12"),
+     *                 @OA\Property(property="iTipoEstCivId", type="string", example="SOLTERO"),
+     *                 @OA\Property(property="iNacionId", type="string", example="193"),
+     *                 @OA\Property(property="cPersDomicilio", type="string", example="COSTA AZUL MZ.D LOTE.23"),
+     *                 @OA\Property(property="iPaisId", type="integer", example=589),
+     *                 @OA\Property(property="iDptoId", type="integer", example=17),
+     *                 @OA\Property(property="iPrvnId", type="integer", example=149),
+     *                 @OA\Property(property="iDsttId", type="integer", example=1494),
+     *                 @OA\Property(property="cEstUbigeo", type="string", example="180301")
+     *             ),
+     *             @OA\Property(property="iSedeId", type="integer", example=0),
+     *             @OA\Property(property="iYAcadId", type="integer", example=0),
+     *             @OA\Property(property="iPerfilId", type="integer", example=0)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Se ha registrado el usuario",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="Se ha registrado el usuario / El usuario ya se encuentra registrado"),
+     *         )
+     *     ),
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     * )
+     */
     public function registrarUsuario(Request $request)
     {
         try {
-            // Validar los datos de entrada
-            $request->validate([
-                'data' => 'required|array',
-                'iSedeId' => 'required|integer',
-                'iYAcadId' => 'required|integer',
-                //'iCredId' => 'required|integer',
-                //'condicion' => 'required|string',
-            ]);
-
-            $item = $request->data;
-            //$iSedeId = $request->iSedeId;
-            //$iYAcadId = $request->iYAcadId;
-            $iCredId = Auth::user()->iCredId;
-            //$condicion = $request->condicion;
-            $iPersId = null;
-            $mensaje = '';
-            //$procesados = [];
-            //$observados = [];
-
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            // Registrar nuevo personal si no existe
-            if (empty($item["iPersId"])) {
-                $iTipoPersId = ((int)$item['iTipoIdentId'] == 2) ? 2 : 1;
-                $parametros = [
-                    $iTipoPersId,
-                    $item['iTipoIdentId'],
-                    $item['cPersDocumento'],
-                    $item['cPersPaterno'],
-                    $item['cPersMaterno'],
-                    $item['cPersNombre'],
-                    trim($item['cPersSexo']) ?: 'M',
-                    null,
-                    NULL,
-                    trim($item['cPersFotografia']) ?: NULL,
-                    NULL,
-                    NULL,
-                    NULL,
-                    trim($item['cPersDomicilio']) ?: NULL,
-                    $iCredId,
-                    $item['iNacionId'],
-                    trim($item['iPaisId']) ?: NULL,
-                    trim($item['iDptoId']) ?: NULL,
-                    trim($item['iPrvnId']) ?: NULL,
-                    trim($item['iDsttId']) ?: NULL,
-                ];
-
-                $data = DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                $iPersId = !empty($data) ? $data[0]->iPersId : null;
-
-                if ($iPersId) {
-                    DB::select('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
-                    $mensaje = 'Se ha registrado el personal';
-                    //return FormatearMensajeHelper::ok('Se ha registrado el personal.', ['iPersId' => $iPersId], Response::HTTP_OK);
-                    //$procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado y credencial generada.', 'data' => $data, 'item' => $item];
-                } else {
-                    throw new Exception('Error al registrar el personal');
-                    //$observados[] = ['validated' => false, 'message' => 'Error al registrar el personal.', 'item' => $item];
-                }
-            } else {
-                $iPersId = $item["iPersId"];
-                $mensaje = 'El personal ya se encuentra registrado';
-                //$usuario = null; //User::find($iCredId);
-                //return FormatearMensajeHelper::ok('El personal ya se encuentra registrado.', ['iPersId' => $iPersId], Response::HTTP_OK);
-            }
-            $persona = DB::select('EXEC [seg].[SP_SEL_usuariosPerfiles] @iPersId=?', [$iPersId]);
-            return FormatearMensajeHelper::ok($mensaje, $persona[0]);
-            // Procesar según la condición
-            /*if ($condicion === 'add_personal_ie') {
-                if (is_null($iPersId) || is_null($item["iPersCargoId"]) || is_null($item["iYAcadId"]) || is_null($item["iSedeId"])) {
-                    $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
-                } else {
-                    $iPersCargoId = $item["iPersCargoId"];
-                    $iHorasLabora = $item["iHorasLabora"] ?? 0;
-                    $iPerfilId = $perfilMapping[$iPersCargoId] ?? 0;
-
-                    $id = DB::table('acad.personal_ies')
-                        ->where('iPersId', $iPersId)
-                        ->where('iSedeId', $iSedeId)
-                        ->where('iYAcadId', $iYAcadId)
-                        ->value('id');
-
-                    if ($id) {
-                        $procesados[] = ['validated' => false, 'message' => 'Ya existe registro en Personal IE.', 'item' => $item];
-                    } else {
-                        $id = DB::table('acad.personal_ies')->insertGetId([
-                            'iPersId' => $iPersId,
-                            'iPersCargoId' => $iPersCargoId,
-                            'iHorasLabora' => $iHorasLabora,
-                            'iYAcadId' => $iYAcadId,
-                            'iSedeId' => $iSedeId,
-                        ]);
-                        $procesados[] = ['validated' => true, 'message' => 'Se generó registro en Personal IE.', 'item' => $item];
-                    }
-
-                    $data = DB::select('execute seg.Sp_INS_credenciales_IE ?,?,?,?,?', [10, $iPersId, $iCredId, $iSedeId, $iPerfilId]);
-                    $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
-                }
-            }*/
-
-            /*if ($condicion === 'add_credencial_ie') {
-                $iPerfilId = $request->iPerfilId;
-
-                if (is_null($iPersId) || is_null($iCredId) || is_null($iPerfilId)) {
-                    $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
-                } else {
-
-                    $data = DB::select('execute seg.Sp_INS_credenciales_IE ?,?,?,?,?', [10, $iPersId, $iCredId, $iSedeId, $iPerfilId]);
-                    $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
-                }
-            }*/
-            //if ($condicion === 'add_credencial') {
-
-            /*if (is_null($iPersId) || is_null($iCredId)) {
-                $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
-            } else {
-
-                $data = DB::select('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
-                $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
-            }*/
-            //}
+            $resultado = Usuario::registrarUsuario($request, Auth::user()->iCredId);
+            return FormatearMensajeHelper::ok($resultado['mensaje'], $resultado['data']);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
-            //$observados[] = ['validated' => false, 'message' => 'Error en base de datos: ' . $e->getMessage(), 'item' => $item];
         }
+    }
 
-        // Construir la respuesta
-        /*$response = [
-            'procesados' => $procesados,
-            'observados' => $observados,
-        ];
-
-        $estado = (count($observados) > 0) ? 500 : 201;
-        return new JsonResponse($response, $estado);*/
+    /**
+     * @OA\Post(
+     *     path="/api/seg/usuarios/{iCredId}/perfiles",
+     *     tags={"Gestión de usuarios"},
+     *     summary="Agrega un perfil al usuario especificado. Los parámetros dependen de la opción seleccionada. Se requiere rol de administrador.",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(ref="#/components/parameters/iCredEntPerfId"),
+     *     @OA\Parameter(
+     *         name="opcionBusquedaSeleccionada",
+     *         in="query",
+     *         required=true,
+     *         description="Opción de perfil a agregar",
+     *         @OA\Schema(type="string", enum={"addPerfilDremo", "addPerfilUgel", "addPerfilSede"})
+     *     ),
+     *     @OA\Parameter(
+     *         name="iCredId",
+     *         in="path",
+     *         required=true,
+     *         description="Id de la credencial del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="iEntId",
+     *         in="query",
+     *         required=true,
+     *         description="Id de la entidad donde labora el usuario",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="iPerfilId",
+     *         in="query",
+     *         required=true,
+     *         description="Id del perfil a asignar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="iCursosNivelGradId",
+     *         in="query",
+     *         required=false,
+     *         description="Id del curso del usuario (para opción DREMO, UGEL)",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="cTipo",
+     *         in="query",
+     *         required=false,
+     *         description="Tipo del perfil del usuario (para opción DREMO)",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="iUgelId",
+     *         in="query",
+     *         required=false,
+     *         description="Id de la UGEL donde labora el usuario (para opción UGEL)",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="iSedeId",
+     *         in="query",
+     *         required=false,
+     *         description="Id de la sede de la institución educativa (para opción Sede)",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Registro generado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="Success"),
+     *             @OA\Property(property="message", type="string", example="Registro generado exitosamente"),
+     *         )
+     *     ),
+     *
+     *     @OA\Response(response=400, ref="#/components/responses/400"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     * )
+     */
+    public function agregarPerfilUsuario($iCredId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $resultado = Usuario::agregarPerfil($iCredId, $request);
+            return FormatearMensajeHelper::ok($resultado, null, Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
     }
 }

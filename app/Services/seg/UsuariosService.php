@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class UsuariosService
 {
-    public static function generarParametrosParaObtenerUsuarios($tipo,Request $request)
+    public static function generarParametrosParaObtenerUsuarios($tipo, Request $request)
     {
         switch ($request->get('opcionBusquedaSeleccionada')) {
             case 'documento':
@@ -31,14 +31,12 @@ class UsuariosService
                 break;
         }
         $parametros = [
-            $tipo=='data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
+            $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
             $request->get('offset', 0),
             $request->get('limit', 20),
             $documento,
             $apellidos,
-            $nombres//,
-            //$request->get('filtroInstitucionSeleccionada', NULL),
-            //$request->get('filtroPerfilSeleccionado', NULL)
+            $nombres
         ];
         return $parametros;
     }

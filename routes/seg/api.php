@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Controllers\seg\AuthController;
 use App\Http\Controllers\seg\ModuloAdministrativoController;
 use App\Http\Controllers\seg\PerfilController;
 use App\Http\Controllers\seg\UsuarioController;
@@ -9,12 +10,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::group(['prefix' => 'usuarios'], function () {
-        Route::get('{iCredId}/perfiles', [UsuarioController::class, 'obtenerPerfilesUsuario']);
-        Route::delete('{iCredId}/perfiles/{iCredEntPerfId}', [UsuarioController::class, 'eliminarPerfilUsuario']);
-        Route::patch('{iCredId}/estado', [UsuarioController::class, 'cambiarEstadoUsuario']);
-        Route::patch('{iCredId}/password', [UsuarioController::class, 'restablecerClaveUsuario']);
-        Route::patch('{iCredId}/fecha-vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
-        Route::get('perfiles', [UsuarioController::class, 'obtenerListaUsuariosPerfiles']);
+        Route::group(['prefix' => '{iCredId}'], function () {
+            Route::get('perfiles', [UsuarioController::class, 'obtenerPerfilesUsuario']);
+            Route::post('perfiles', [UsuarioController::class, 'agregarPerfilUsuario']);
+            Route::delete('perfiles/{iCredEntPerfId}', [UsuarioController::class, 'eliminarPerfilUsuario']);
+            Route::patch('estado', [UsuarioController::class, 'cambiarEstadoUsuario']);
+            Route::patch('password', [UsuarioController::class, 'restablecerClaveUsuario']);
+            Route::patch('fecha-vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
+        });
+        Route::get('', [UsuarioController::class, 'obtenerListaUsuarios']);
         Route::post('', [UsuarioController::class, 'registrarUsuario']);
     });
     Route::group(['prefix' => 'personas'], function () {
