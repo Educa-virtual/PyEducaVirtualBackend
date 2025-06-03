@@ -39,7 +39,7 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarFichaEconomico', [FichaEconomicoController::class, 'actualizarFichaEconomico']);
 
     /* Rutas para gestion seccion vivienda */
-    Route::post('searchFichaVivienda', [FichaViviendaController::class, 'verFichaVivienda']);
+    Route::post('verFichaVivienda', [FichaViviendaController::class, 'verFichaVivienda']);
     Route::post('guardarFichaVivienda', [FichaViviendaController::class, 'guardarFichaVivienda']);
     Route::post('actualizarFichaVivienda', [FichaViviendaController::class, 'actualizarFichaVivienda']);
 
