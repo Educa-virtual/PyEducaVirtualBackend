@@ -152,11 +152,12 @@ class AulaVirtualController extends ApiController
     {
 
         $iSilaboId =  VerifyHash::decodes($request->iSilaboId);
-        $params = [$iSilaboId, $request->perfil];
+        $iContenidoSemId =  VerifyHash::decodes($request->iContenidoSemId);
+        $params = [$iSilaboId, $request->perfil,$iContenidoSemId];
 
         $contenidos = [];
         try {
-            $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?, @_perfil = ?', $params);
+            $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?, @_perfil = ?, @_iContenidoSemId = ?', $params);
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
             return $this->errorResponse(null, $message);
