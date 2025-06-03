@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\acad\CursosController;
+use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
@@ -50,5 +51,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('docente_curso', [DocenteCursosController::class, 'buscarDocenteCurso']);
         Route::post('importar_silabos', [DocenteCursosController::class, 'importarSilabos']);
         Route::post('detalle_curricular', [AsistenciaController::class, 'obtenerDetallesCurricular']);
+    });
+
+    Route::prefix('detalle-matriculas')->group(function () {
+        Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
     });
 });
