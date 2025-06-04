@@ -29,9 +29,9 @@ class FichaPdfController extends Controller
                 fdg.cFichaDGDireccionReferencia,
                 std.cEstCodigo,
                 std.cEstTelefono,
-                std.cEstPaterno,
-                std.cEstMaterno,
-                std.cEstNombres,
+                p.cPersPaterno AS cEstPaterno,
+                p.cPersMaterno AS cEstMaterno,
+                p.cPersNombre AS cEstNombres,
                 p.cPersDocumento,
                 p.dPersNacimiento,
                 p.cPersSexo,
@@ -45,14 +45,14 @@ class FichaPdfController extends Controller
 		        IIF(fdg.bFamiliarMadreVive = 1, 'SI', 'NO') AS bFamiliarMadreVive
             FROM obe.ficha_datos_grales AS fdg
                 INNER JOIN grl.personas p ON fdg.iPersId = p.iPersId
-                INNER JOIN obe.tipo_vias tpv ON fdg.iTipoViaId = tpv.iTipoViaId
-                INNER JOIN grl.departamentos dep ON p.iDptoId = dep.iDptoId
-                INNER JOIN grl.provincias prv ON p.iPrvnId = prv.iPrvnId
-                INNER JOIN grl.distritos dstr ON p.iDsttId = dstr.iDsttId
-                INNER JOIN grl.paises ps ON p.iPaisId = ps.iPaisId
-                INNER JOIN acad.estudiantes std ON fdg.iPersId = std.iPersId
-                INNER JOIN grl.ubigeos ubg ON std.cEstUbigeoNacimiento = ubg.cUbigeoReniec
-                INNER JOIN grl.tipos_estados_civiles ec ON p.iTipoEstCivId = ec.iTipoEstCivId
+                LEFT JOIN obe.tipo_vias tpv ON fdg.iTipoViaId = tpv.iTipoViaId
+                LEFT JOIN grl.departamentos dep ON p.iDptoId = dep.iDptoId
+                LEFT JOIN grl.provincias prv ON p.iPrvnId = prv.iPrvnId
+                LEFT JOIN grl.distritos dstr ON p.iDsttId = dstr.iDsttId
+                LEFT JOIN grl.paises ps ON p.iPaisId = ps.iPaisId
+                LEFT JOIN acad.estudiantes std ON fdg.iPersId = std.iPersId
+                LEFT JOIN grl.ubigeos ubg ON std.cEstUbigeoNacimiento = ubg.cUbigeoReniec
+                LEFT JOIN grl.tipos_estados_civiles ec ON p.iTipoEstCivId = ec.iTipoEstCivId
                 WHERE fdg.iPersId = ? AND YEAR(fdg.dtFichaDG) = ?;
             ", [$id, $anio]);
 
@@ -143,15 +143,15 @@ class FichaPdfController extends Controller
                         jorndtrab.cJorTrabDescripcion
                     FROM
                         obe.ficha_datos_grales AS fdgen
-                    INNER JOIN 
+                    LEFT JOIN 
                         obe.ficha_ingresos_economicos fiecon ON fdgen.iFichaDGId = fiecon.iFichaDGId
-                    INNER JOIN
+                    LEFT JOIN
                         obe.rango_sueldos rangsueld ON fiecon.iRangoSueldoId = rangsueld.iRangoSueldoId
-                    INNER JOIN
+                    LEFT JOIN
                         obe.depende_economicos dpecon ON fiecon.iDepEcoId = dpecon.iDepEcoId
-                    INNER JOIN
+                    LEFT JOIN
                         obe.tipos_apoyo_economicos tipapoyecon ON fiecon.iTipoAEcoId = tipapoyecon.iTipoAEcoId
-                    INNER JOIN
+                    LEFT JOIN
                         obe.jornada_trabajos jorndtrab ON fiecon.iJorTrabId = jorndtrab.iJorTrabId
                     WHERE fdgen.iPersId = ? AND YEAR(fdgen.dtFichaDG) = ?
                     ", [$id, $anio]);
@@ -204,25 +204,25 @@ class FichaPdfController extends Controller
                                 obe.ficha_datos_grales AS fichdg
                             INNER JOIN 
                                 obe.vienda_caracteristicas_fichas vndacar ON fichdg.iFichaDGId = vndacar.iFichaDGId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.tipo_ocupacion_viviendas tipocup ON vndacar.iTipoOcupaVivId = tipocup.iTipoOcupaVivId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.estado_viviendas estdviv ON vndacar.iEstadoVivId = estdviv.iEstadoVivId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.material_predominantes matpred ON  vndacar.iMatPreId = matpred.iMatPreId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.material_piso_viviendas matpiso ON vndacar.iMatPisoVivId = matpiso.iMatPisoVivId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.material_techo_viviendas mattech ON vndacar.iMatTecVivId = mattech.iMatTecVivId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.tipo_viviendas tipviv ON vndacar.iTipoVivId = tipviv.iTipoVivId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.tipos_suministro_agua tipsuminA ON vndacar.iTipoSumAId = tipsuminA.iTipoSumAId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.tipos_sshh_viviendas tipsshh ON vndacar.iTiposSsHhId = tipsshh.iTiposSsHhId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.tipos_alumbrado_viviendas tipalumbviv ON vndacar.iViendaCarId = tipalumbviv.iViendaCarId
-                            INNER JOIN 
+                            LEFT JOIN 
                                 obe.tipos_alumbrado tipalumb ON tipalumbviv.iTipoAlumId = tipalumb.iTipoAlumId
                             WHERE fichdg.iPersId = ? AND YEAR(fichdg.dtFichaDG) = ?
                              ", [$id, $anio]);
@@ -235,11 +235,11 @@ class FichaPdfController extends Controller
                              elmpviv.cEleParaVivDescripcion
                     FROM
                              obe.ficha_datos_grales AS fdtsg
-                             INNER JOIN 
+                             LEFT JOIN 
                              obe.vienda_caracteristicas_fichas vndacarac ON fdtsg.iFichaDGId = vndacarac.iFichaDGId
-                             INNER JOIN 
+                             LEFT JOIN 
                              obe.elementos_viviendas elemviv ON vndacarac.iViendaCarId = elemviv.iViendaCarId
-                             INNER JOIN 
+                             LEFT JOIN 
                              obe.elementos_para_vivienda elmpviv ON elemviv.iEleParaVivId = elmpviv.iEleParaVivId
                              WHERE fdtsg.iPersId = ? AND YEAR(fdtsg.dtFichaDG) = ?
                             ", [$id, $anio]);
@@ -269,8 +269,8 @@ class FichaPdfController extends Controller
                             IIF(fdatgnrls.bFichaDGEstaEnCONADIS = 1, 'SI', 'NO') AS EstaEnCONADIS
                     FROM
                         obe.ficha_datos_grales AS fdatgnrls 
-                        INNER JOIN obe.discapcidades_fichas fchdiscap ON fdatgnrls.iFichaDGId = fchdiscap.iFichaDGId
-                        INNER JOIN obe.discapacidades discap ON fchdiscap.iDiscId =  discap.iDiscId
+                        LEFT JOIN obe.discapcidades_fichas fchdiscap ON fdatgnrls.iFichaDGId = fchdiscap.iFichaDGId
+                        LEFT JOIN obe.discapacidades discap ON fchdiscap.iDiscId =  discap.iDiscId
                         WHERE fdatgnrls.iPersId = ? AND YEAR(fdatgnrls.dtFichaDG) = ?
                     ", [$id, $anio]);
 
@@ -284,8 +284,8 @@ class FichaPdfController extends Controller
                         IIF(fdatsgnral.cFichaDGAlergiaOtros = 1, 'SI','NO') AS AlergiaOtros
                     FROM
                         obe.ficha_datos_grales AS fdatsgnral
-                        INNER JOIN obe.dolencias_fichas fdolenc ON fdatsgnral.iFichaDGId = fdolenc.iFichaDGId
-                        INNER JOIN obe.dolencias dolenc ON fdolenc.iDolenciaId = dolenc.iDolenciaId
+                        LEFT JOIN obe.dolencias_fichas fdolenc ON fdatsgnral.iFichaDGId = fdolenc.iFichaDGId
+                        LEFT JOIN obe.dolencias dolenc ON fdolenc.iDolenciaId = dolenc.iDolenciaId
                     WHERE fdatsgnral.iPersId = ? AND dolenc.bDolenciaEsCronica = 1
                         AND YEAR(fdatsgnral.dtFichaDG) = ?;
                     ", [$id, $anio]);
@@ -299,9 +299,9 @@ class FichaPdfController extends Controller
             
                     FROM
                         obe.ficha_datos_grales AS fdtsgnls
-                        INNER JOIN obe.seguros_aportacion segaport ON fdtsgnls.iFichaDGId = segaport.iFichaDGId
-                        INNER JOIN obe.seguros_salud segsalud ON segaport.iSegSaludId = segsalud.iSegSaludId
-                        INNER JOIN obe.tipo_seguro_aportacion tipsegaport ON segaport.iSegAportaId = tipsegaport.iTipSegAportaId
+                        LEFT JOIN obe.seguros_aportacion segaport ON fdtsgnls.iFichaDGId = segaport.iFichaDGId
+                        LEFT JOIN obe.seguros_salud segsalud ON segaport.iSegSaludId = segsalud.iSegSaludId
+                        LEFT JOIN obe.tipo_seguro_aportacion tipsegaport ON segaport.iSegAportaId = tipsegaport.iTipSegAportaId
                         WHERE fdtsgnls.iPersId = ?
                                     AND YEAR(fdtsgnls.dtFichaDG) = ?;
                     ", [$id, $anio]);
@@ -315,8 +315,8 @@ class FichaPdfController extends Controller
                        IIF(fdtsgral.cFichaDGPerteneceLigaDeportiva = 1,'SI','NO') AS PerteneceLigaDeportiva
                    FROM
                        obe.ficha_datos_grales AS fdtsgral
-                       INNER JOIN obe.deportes_fichas fdeports ON fdtsgral.iFichaDGId = fdeports.iFichaDGId
-                       INNER JOIN obe.deportes deports ON fdeports.iDeporteId = deports.iDeporteId
+                       LEFT JOIN obe.deportes_fichas fdeports ON fdtsgral.iFichaDGId = fdeports.iFichaDGId
+                       LEFT JOIN obe.deportes deports ON fdeports.iDeporteId = deports.iDeporteId
                    WHERE fdtsgral.iPersId = ?
                        AND YEAR(fdtsgral.dtFichaDG) = ?;
                     ", [$id, $anio]);

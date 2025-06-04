@@ -22,6 +22,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
         Route::get('{iIieeId}/sedes', [InstitucionEducativaController::class, 'obtenerSedesIe']);
     });
+});
 
 Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'vacantes'], function () {

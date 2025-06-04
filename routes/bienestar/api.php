@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 //Se agrego codigo el 22 Abril--------
 use app\Http\Controllers\bienestar\EstudianteController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
+use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
 
 Route::group(['prefix' => 'bienestar'], function () {
@@ -66,8 +67,8 @@ Route::group(['prefix' => 'bienestar'], function () {
     
 
     Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
- 
 
+    Route::get('/ficha-pdf/{id}/{anio}', [FichaPdfController::class, 'mostrarFichaPdf'])->name('ficha.pdf');
 
 });
 

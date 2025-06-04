@@ -150,11 +150,11 @@
         <table class="header-info">
             <tr>
                 <th>Código del Estudiante:</th>
-                <td>{{ $estudiante['codigo_alumno'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                <td>{{ $estudiante['codigo_alumno'] ?? 'N/A' }}</td>
             </tr>
             <tr>
                 <th>Número de Celular:</th>
-                <td>{{ $estudiante['num_telefono'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                <td>{{ $estudiante['num_telefono'] ?? 'N/A' }}</td>
             </tr>
         </table>
 
@@ -168,7 +168,7 @@
             <table>
                 <tr>
                     <th>Dirección actual</th>
-                    <td>{{ $direccion_domiciliaria['tipo_via'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $direccion_domiciliaria['tipo_via'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -184,14 +184,14 @@
                     <th>Km</th>
                 </tr>
                 <tr>
-                    <td>{{ $direccion_domiciliaria['nombre_via'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['numero_puerta'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['block'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['interior'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['piso'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['mz'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['lote'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['km'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $direccion_domiciliaria['nombre_via'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['numero_puerta'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['block'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['interior'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['piso'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['mz'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['lote'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['km'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -202,15 +202,15 @@
                     <th>Distrito:</th>
                 </tr>
                 <tr>
-                    <td>{{ $direccion_domiciliaria['departamento'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['provincia'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_domiciliaria['distrito'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $direccion_domiciliaria['departamento'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['provincia'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_domiciliaria['distrito'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th colspan="3">Referencia:</th>
                 </tr>
                 <tr>
-                    <td colspan="3">{{ $direccion_domiciliaria['referencia'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td colspan="3">{{ $direccion_domiciliaria['referencia'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -225,9 +225,9 @@
                     <th>Nombres</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['apellido_paterno'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $estudiante['apellido_materno'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $estudiante['nombres'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $estudiante['apellido_paterno'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['apellido_materno'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['nombres'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -238,9 +238,9 @@
                     <th>Sexo</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['dni'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $estudiante['fecha_nacimiento'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $estudiante['sexo'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $estudiante['dni'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['fecha_nacimiento'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['sexo'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -250,8 +250,8 @@
                     <th>N° de Hijos</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['estado_civil'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $estudiante['num_hijos'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $estudiante['estado_civil'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['num_hijos'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -264,10 +264,10 @@
                     <th>Distrito</th>
                 </tr>
                 <tr>
-                    <td>{{ $nacimiento['pais'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $nacimiento['departamento'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $nacimiento['provincia'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $nacimiento['distrito'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $nacimiento['pais'] ?? 'N/A' }}</td>
+                    <td>{{ $nacimiento['departamento'] ?? 'N/A' }}</td>
+                    <td>{{ $nacimiento['provincia'] ?? 'N/A' }}</td>
+                    <td>{{ $nacimiento['distrito'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -280,8 +280,8 @@
                 @if(isset($ieducativas) && count($ieducativas) > 0)
                     @foreach ($ieducativas as $ie)
                     <tr>
-                        <td>{{ $ie['nombre_iedu'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                        <td>{{ $ie['tipo_sector'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $ie['nombre_iedu'] ?? 'N/A' }}</td>
+                        <td>{{ $ie['tipo_sector'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -298,9 +298,9 @@
             <table>
                 <tr>
                     <th>¿Vive su padre?</th>
-                    <td>{{ $direccion_domiciliaria['vive_padre'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $direccion_domiciliaria['vive_padre'] ?? 'N/A' }}</td>
                     <th>¿Vive su madre?</th>
-                    <td>{{ $direccion_domiciliaria['vive_madre'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $direccion_domiciliaria['vive_madre'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -313,7 +313,7 @@
             <table>
                 <tr>
                     <th>Tipo de vía</th>
-                    <td colspan="7">{{ $direccion_padre['tipo_via'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td colspan="7">{{ $direccion_padre['tipo_via'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>Nombre de Vía</th>
@@ -326,18 +326,18 @@
                     <th>Km</th>
                 </tr>
                 <tr>
-                    <td>{{ $direccion_padre['Nombre_via'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_padre['DireccionNroPuerta'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_padre['DireccionBlock'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_padre['DirecionInterior'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_padre['DirecionPiso'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_padre['DireccionManzana'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_padre['DireccionLote'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_padre['DireccionKm'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $direccion_padre['Nombre_via'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DireccionNroPuerta'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DireccionBlock'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DirecionInterior'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DirecionPiso'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DireccionManzana'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DireccionLote'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DireccionKm'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th colspan="2">Referencia de ubicación domiciliaria</th>
-                    <td colspan="6">{{ $direccion_padre['DireccionReferencia'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td colspan="6">{{ $direccion_padre['DireccionReferencia'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -345,7 +345,7 @@
             <table>
                 <tr>
                     <th>Tipo de vía</th>
-                    <td colspan="7">{{ $direccion_madre['tipo_via'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td colspan="7">{{ $direccion_madre['tipo_via'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>Nombre de Vía</th>
@@ -358,18 +358,18 @@
                     <th>Km</th>
                 </tr>
                 <tr>
-                    <td>{{ $direccion_madre['Nombre_via'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_madre['DireccionNroPuerta'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_madre['DireccionBlock'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_madre['DirecionInterior'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_madre['DirecionPiso'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_madre['DireccionManzana'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_madre['DireccionLote'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $direccion_madre['DireccionKm'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $direccion_madre['Nombre_via'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DireccionNroPuerta'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DireccionBlock'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DirecionInterior'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DirecionPiso'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DireccionManzana'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DireccionLote'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DireccionKm'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th colspan="2">Referencia de ubicación domiciliaria</th>
-                    <td colspan="6">{{ $direccion_madre['DireccionReferencia'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td colspan="6">{{ $direccion_madre['DireccionReferencia'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -388,11 +388,11 @@
                     @foreach ($familiares as $familiar)
                     <tr>
                         <td>{{ $familiar['apellido_paterno'] ?? '' }} {{ $familiar['apellido_materno'] ?? '' }} {{ $familiar['nombres'] ?? '' }}</td>
-                        <td>{{ $familiar['edad'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                        <td>{{ $familiar['tipo_familiar'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                        <td>{{ $familiar['estado_civil'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                        <td>{{ $familiar['grado_instruccion'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                        <td>{{ $familiar['ocupacion'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $familiar['edad'] ?? 'N/A' }}</td>
+                        <td>{{ $familiar['tipo_familiar'] ?? 'N/A' }}</td>
+                        <td>{{ $familiar['estado_civil'] ?? 'N/A' }}</td>
+                        <td>{{ $familiar['grado_instruccion'] ?? 'N/A' }}</td>
+                        <td>{{ $familiar['ocupacion'] ?? 'N/A' }}</td>
                         <td>{{ $familiar['departamento'] ?? '' }} / {{ $familiar['provincia'] ?? '' }} / {{ $familiar['distrito'] ?? '' }}</td>
                     </tr>
                     @endforeach
@@ -410,31 +410,31 @@
             <table>
                 <tr>
                     <th>3.1. Ingreso Familiar</th>
-                    <td>{{ $aspecto_economico['rango_sueldo'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_economico['rango_sueldo'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>3.2. Depende Económicamente de:</th>
-                    <td>{{ $aspecto_economico['depende_economicamente_de'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_economico['depende_economicamente_de'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>3.3. Apoyo que recibe es:</th>
-                    <td>{{ $aspecto_economico['tipo_apoyo_economico'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_economico['tipo_apoyo_economico'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>3.4. ¿Desempeña alguna actividad económica?</th>
-                    <td>{{ $aspecto_economico['actividad_ingreso'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_economico['actividad_ingreso'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>3.5. Ingreso mensual del estudiante:</th>
-                    <td>{{ $aspecto_economico['aporte_estudiante'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_economico['aporte_estudiante'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>3.6. Su labor es:</th>
-                    <td>{{ $aspecto_economico['horas_trabajo'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_economico['horas_trabajo'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>3.7. Horas destinadas al trabajo:</th>
-                    <td>{{ $aspecto_economico['jornada_trabajo'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_economico['jornada_trabajo'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -450,9 +450,9 @@
                     <th>4.3. Estado de la vivienda:</th>
                 </tr>
                 <tr>
-                    <td>{{ $aspecto_vivienda['vivienda_es'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['npisos'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['estado'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_vivienda['vivienda_es'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['npisos'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['estado'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -464,9 +464,9 @@
                     <th>4.6. Techos</th>
                 </tr>
                 <tr>
-                    <td>{{ $aspecto_vivienda['mat_pred_pared'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['mat_piso'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['mat_techo'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_vivienda['mat_pred_pared'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['mat_piso'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['mat_techo'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -477,9 +477,9 @@
                     <th>4.9. Habitaciones para dormir:</th>
                 </tr>
                 <tr>
-                    <td>{{ $aspecto_vivienda['tipo_vivienda'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['nro_ambientes'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['nro_habitaciones'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_vivienda['tipo_vivienda'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['nro_ambientes'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['nro_habitaciones'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -490,9 +490,9 @@
                     <th>4.12. Tipo de alumbrado:</th>
                 </tr>
                 <tr>
-                    <td>{{ $aspecto_vivienda['tipo_servicio'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['tipo_sshh'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                    <td>{{ $aspecto_vivienda['tipo_alumbrado'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $aspecto_vivienda['tipo_servicio'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['tipo_sshh'] ?? 'N/A' }}</td>
+                    <td>{{ $aspecto_vivienda['tipo_alumbrado'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
@@ -506,7 +506,7 @@
                     @foreach ($equipamiento as $equipos)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $equipos['electrodm_hogar'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $equipos['electrodm_hogar'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -525,22 +525,22 @@
             <table>
                 <tr>
                     <th>Desayuno</th>
-                    <td>{{ $alimentos_std['lugar_desayuno'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $alimentos_std['lugar_desayuno'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>Almuerzo</th>
-                    <td>{{ $alimentos_std['lugar_almuerzo'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $alimentos_std['lugar_almuerzo'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>Cena</th>
-                    <td>{{ $alimentos_std['lugar_ceba'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $alimentos_std['lugar_ceba'] ?? 'N/A' }}</td>
                 </tr>
             </table>
             
             <table>
                 <tr>
                     <th>5.2. ¿Tuvo acceso al comedor universitario?</th>
-                    <td>{{ $acceso_comedor ?? '<span class="empty-data">N/A</span>' }}</td>
+                    <td>{{ $acceso_comedor ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -559,7 +559,7 @@
                     @foreach($pers_discapacidad as $index => $discapacidad)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $discapacidad['nomb_discapacidad'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $discapacidad['nomb_discapacidad'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -593,7 +593,7 @@
                     @foreach($pers_salud as $index => $item)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $item['enfermedad_nomb'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $item['enfermedad_nomb'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -632,8 +632,8 @@
                 @if(isset($seg_salud) && count($seg_salud) > 0)
                     @foreach($seg_salud as $item)
                     <tr>
-                        <td>{{ $item['seguro_salud'] ?? '<span class="empty-data">N/A</span>' }}</td>
-                        <td>{{ $item['tip_aporte'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $item['seguro_salud'] ?? 'N/A' }}</td>
+                        <td>{{ $item['tip_aporte'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -656,7 +656,7 @@
                 @if(isset($pers_deportes) && count($pers_deportes) > 0)
                     @foreach($pers_deportes as $item)
                     <tr>
-                        <td>{{ $item['deporte_nombre'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $item['deporte_nombre'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -681,7 +681,7 @@
                 @if(isset($pers_artes) && count($pers_artes) > 0)
                     @foreach($pers_artes as $item)
                     <tr>
-                        <td>{{ $item['pasatiempo_artistico'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $item['pasatiempo_artistico'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -720,7 +720,7 @@
                 @if(isset($pers_pasatiempos) && count($pers_pasatiempos) > 0)
                     @foreach($pers_pasatiempos as $item)
                     <tr>
-                        <td>{{ $item['pasatiempo_nombre'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $item['pasatiempo_nombre'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -753,7 +753,7 @@
                 @if(isset($fam_acompañantes) && count($fam_acompañantes) > 0)
                     @foreach($fam_acompañantes as $item)
                     <tr>
-                        <td>{{ $item['nomb_acompañantes'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $item['nomb_acompañantes'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
@@ -795,7 +795,7 @@
                 @if(isset($enfermdad_cronic) && count($enfermdad_cronic) > 0)
                     @foreach($enfermdad_cronic as $item)
                     <tr>
-                        <td>{{ $item['enfermedad'] ?? '<span class="empty-data">N/A</span>' }}</td>
+                        <td>{{ $item['enfermedad'] ?? 'N/A' }}</td>
                     </tr>
                     @endforeach
                 @else
