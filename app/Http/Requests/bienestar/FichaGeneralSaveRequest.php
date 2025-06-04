@@ -14,7 +14,6 @@ class FichaGeneralSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'iSesionId' => 'required|integer',
             'iPersId' => 'required|integer',
             'iTipoViaId' => 'nullable|integer',
             'cFichaDGDireccionNombreVia' => 'nullable|string|max:150',
@@ -40,7 +39,6 @@ class FichaGeneralSaveRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'iSesionId' => 'id de sesión',
             'iPersId' => 'id de persona',
             'iTipoViaId' => 'tipo de vía',
             'cFichaDGDireccionNombreVia' => 'nombre de vía',

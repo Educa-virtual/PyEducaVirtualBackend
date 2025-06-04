@@ -14,7 +14,6 @@ class FichaViviendaSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'iSesionId' => 'required|integer',
             'iViendaCarId' => 'nullable|integer',
             'iFichaDGId' => 'nullable|integer',
             'iTipoOcupaVivId' => 'nullable|integer',
@@ -36,7 +35,6 @@ class FichaViviendaSaveRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'iSesionId' => 'id de sesión',
             'iViendaCarId' => 'ficha de vivienda',
             'iFichaDGId' => 'id de ficha',
             'iTipoOcupaVivId' => 'tipo de ocupación',

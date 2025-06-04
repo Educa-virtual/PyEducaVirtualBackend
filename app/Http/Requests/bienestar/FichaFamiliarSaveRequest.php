@@ -14,7 +14,6 @@ class FichaFamiliarSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'iSesionId' => 'required|integer',
             'iFichaDGId' => 'required|integer',
             'iPersId' => 'nullable|integer',
             'iTipoFamiliarId' => 'required|integer',
@@ -51,7 +50,6 @@ class FichaFamiliarSaveRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'iSesionId' => 'sesión',
             'iFichaDGId' => 'id de ficha',
             'iPersId' => 'id de persona',
             'iTipoFamiliarId' => 'tipo de familiar',

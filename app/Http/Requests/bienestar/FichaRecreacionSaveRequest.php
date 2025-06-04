@@ -14,7 +14,6 @@ class FichaRecreacionSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'iSesionId' => 'required|integer',
             'iFichaDGId' => 'nullable|integer',
             'cFichaDGPerteneceLigaDeportiva' => 'nullable|string',
             'iDeporteId' => 'nullable|integer',
@@ -33,7 +32,6 @@ class FichaRecreacionSaveRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'iSesionId' => 'id de sesión',
             'iFichaDGId' => 'id de ficha',
             'cFichaDGPerteneceLigaDeportiva' => 'pertenece a liga deportiva',
             'iDeporteId' => 'derporte',

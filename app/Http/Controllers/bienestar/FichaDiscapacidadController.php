@@ -10,28 +10,20 @@ use Illuminate\Support\Facades\DB;
 
 class FichaDiscapacidadController extends Controller
 {
-    public function save(Request $request)
+    public function guardarFichaDiscapacidad(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->bFichaDGEstaEnCONADIS,
             $request->cCodigoCONADIS,
             $request->bFichaDGEstaEnOMAPED,
             $request->cCodigoOMAPED,
             $request->cOtroProgramaDiscapacidad,
-            $request->bLimFisica,
-            $request->cLimFisicaObs,
-            $request->bLimSensorial,
-            $request->cLimSensorialObs,
-            $request->bLimIntelectual,
-            $request->cLimIntelectualObs,
-            $request->bLimMental,
-            $request->cLimMentalObs,
+            $request->jsonDiscapacidades,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -43,36 +35,20 @@ class FichaDiscapacidadController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaDiscapacidad(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
-            $request->iLugarAlimIdDesayuno,
-            $request->cLugarAlimDesayuno,
-            $request->iLugarAlimIdAlmuerzo,
-            $request->cLugarAlimAlmuerzo,
-            $request->iLugarAlimIdCena,
-            $request->cLugarAlimCena,
-            $request->iProAlimId,
-            $request->cProAlimNombre,
-            $request->bDietaVegetariana,
-            $request->cDietaVegetarianaObs,
-            $request->bDietaVegana,
-            $request->cDietaVeganaObs,
-            $request->bAlergiasAlim,
-            $request->cAlergiasAlimObs,
-            $request->bIntoleranciaAlim,
-            $request->cIntoleranciaAlimObs,
-            $request->bSumplementosAlim,
-            $request->cSumplementosAlimObs,
-            $request->bDificultadAlim,
-            $request->cDificultadAlimObs,
-            $request->cInfoAdicionalAlimObs,
+            $request->bFichaDGEstaEnCONADIS,
+            $request->cCodigoCONADIS,
+            $request->bFichaDGEstaEnOMAPED,
+            $request->cCodigoOMAPED,
+            $request->cOtroProgramaDiscapacidad,
+            $request->jsonDiscapacidades,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -84,14 +60,14 @@ class FichaDiscapacidadController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaDiscapacidad(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaAlimentacion ?', $parametros);
+            $data = DB::select('EXEC obe.Sp_SEL_fichaDiscapacidad ?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         }

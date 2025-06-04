@@ -11,10 +11,9 @@ use Illuminate\Support\Facades\DB;
 
 class FichaAlimentacionController extends Controller
 {
-    public function save(FichaAlimentacionSaveRequest $request)
+    public function guardarFichaAlimentacion(FichaAlimentacionSaveRequest $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->iLugarAlimIdDesayuno,
             $request->cLugarAlimDesayuno,
@@ -22,8 +21,6 @@ class FichaAlimentacionController extends Controller
             $request->cLugarAlimAlmuerzo,
             $request->iLugarAlimIdCena,
             $request->cLugarAlimCena,
-            $request->iProAlimId,
-            $request->cProAlimNombre,
             $request->bDietaVegetariana,
             $request->cDietaVegetarianaObs,
             $request->bDietaVegana,
@@ -37,10 +34,11 @@ class FichaAlimentacionController extends Controller
             $request->bDificultadAlim,
             $request->cDificultadAlimObs,
             $request->cInfoAdicionalAlimObs,
+            $request->jsonProgramas,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -52,10 +50,10 @@ class FichaAlimentacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaAlimentacion(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
+            $request->iAlimId,
             $request->iFichaDGId,
             $request->iLugarAlimIdDesayuno,
             $request->cLugarAlimDesayuno,
@@ -63,8 +61,6 @@ class FichaAlimentacionController extends Controller
             $request->cLugarAlimAlmuerzo,
             $request->iLugarAlimIdCena,
             $request->cLugarAlimCena,
-            $request->iProAlimId,
-            $request->cProAlimNombre,
             $request->bDietaVegetariana,
             $request->cDietaVegetarianaObs,
             $request->bDietaVegana,
@@ -78,10 +74,11 @@ class FichaAlimentacionController extends Controller
             $request->bDificultadAlim,
             $request->cDificultadAlimObs,
             $request->cInfoAdicionalAlimObs,
+            $request->jsonProgramas,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -93,7 +90,7 @@ class FichaAlimentacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaAlimentacion(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,

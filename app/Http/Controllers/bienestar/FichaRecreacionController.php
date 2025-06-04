@@ -11,26 +11,21 @@ use Illuminate\Support\Facades\DB;
 
 class FichaRecreacionController extends Controller
 {
-    public function save(FichaRecreacionSaveRequest $request)
+    public function guardarFichaRecreacion(FichaRecreacionSaveRequest $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->cFichaDGPerteneceLigaDeportiva,
-            $request->iDeporteId,
-            $request->cDepFichaObs,
             $request->cFichaDGPerteneceCentroArtistico,
-            $request->iPasaTiempoId,
-            $request->cPasaTFichaHoras,
             $request->cFichaDGAsistioConsultaPsicologica,
-            $request->cProbEFichaPresentePara,
-            $request->iTipoFamiliarId,
-            $request->iTransporteId,
-            $request->nTransFichaGastoSoles,
+            $request->jsonDeportes,
+            $request->jsonTransportes,
+            $request->jsonPasatiempos,
+            $request->jsonProblemas,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaRecreacion ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaRecreacion ?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -42,26 +37,21 @@ class FichaRecreacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarFichaRecreacion(Request $request)
     {
         $parametros = [
-            $request->iSesionId,
             $request->iFichaDGId,
             $request->cFichaDGPerteneceLigaDeportiva,
-            $request->iDeporteId,
-            $request->cDepFichaObs,
             $request->cFichaDGPerteneceCentroArtistico,
-            $request->iPasaTiempoId,
-            $request->cPasaTFichaHoras,
             $request->cFichaDGAsistioConsultaPsicologica,
-            $request->cProbEFichaPresentePara,
-            $request->iTipoFamiliarId,
-            $request->iTransporteId,
-            $request->nTransFichaGastoSoles,
+            $request->jsonDeportes,
+            $request->jsonTransportes,
+            $request->jsonPasatiempos,
+            $request->jsonProblemas,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaRecreacion ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaRecreacion ?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }
@@ -73,7 +63,7 @@ class FichaRecreacionController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function verFichaRecreacion(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
