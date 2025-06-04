@@ -66,10 +66,10 @@ class AnuncioController extends Controller
         ]);
         $iForoCatId = $request->iForoCatId;
         $iDocenteId = $request->iDocenteId;
-        if($request->iDocenteId){
-            $iDocenteId = $this->hashids->decode($iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
+        // if($request->iDocenteId){
+        //     $iDocenteId = $this->hashids->decode($iDocenteId);
+        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
+        // }
         $params = [
             $iForoCatId,
             $iDocenteId

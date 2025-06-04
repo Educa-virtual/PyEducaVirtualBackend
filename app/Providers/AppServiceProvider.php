@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\acad\BuzonSugerencia;
+use App\Models\User;
+use App\Policies\BuzonSugerenciaPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('tiene-perfil', function (User $user, array $perfiles) {
+            return $user->validarPersonaCredencialPerfil(request()->header('icredentperfid'), $perfiles);
+        });
     }
 }

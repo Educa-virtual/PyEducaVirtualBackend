@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\Controller;
+use App\Services\Ere\ExtraerBase64;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -104,6 +105,7 @@ class EncabezadoPreguntasController extends Controller
                     }
                     break;
                 case 'ACTUALIZARxiEncabPregId':
+                    $parametros[5] = ExtraerBase64::extraer($parametros[5], $parametros[2], 'multiple');
                     $data = DB::select('exec ere.Sp_UPD_encabezadoPreguntas ?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEncabPregId > 0) {
                         $request['opcion'] = 'ACTUALIZARxiDesempenoId';

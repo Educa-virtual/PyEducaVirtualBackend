@@ -54,6 +54,7 @@ class EspecialistasUgelController extends Controller
         if (empty($ugelIdDescifrado) || empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
+        //return $docenteIdDescifrado[0].' - '. $ugelIdDescifrado[0].' - '.$request->iCursosNivelGradId;
         DB::statement(
             "EXEC acad.SP_INS_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?",
             [$docenteIdDescifrado[0], $ugelIdDescifrado[0], $request->iCursosNivelGradId]

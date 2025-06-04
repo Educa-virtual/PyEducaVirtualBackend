@@ -4,6 +4,7 @@ use App\Http\Controllers\acad\ApoderadoController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\MatriculaController;
+
 use App\Http\Controllers\ere\InstitucionesEducativasController;
 use App\Http\Controllers\ere\CapacidadesController;
 use App\Http\Controllers\ere\CompetenciasController;
@@ -15,6 +16,7 @@ use App\http\Controllers\api\acad\CalendarioAcademicosController;
 use App\http\Controllers\api\acad\GestionInstitucionalController;
 use App\http\Controllers\api\acad\HorarioController;
 use App\http\Controllers\api\acad\PeriodoAcademicosController;
+use App\Http\Controllers\api\acad\AdministradorController;
 use App\Http\Controllers\CredencialController;
 
 use App\Http\Controllers\api\seg\ListarCursosController;
@@ -39,6 +41,11 @@ use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\FileController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
+
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\EstudianteController;
 
@@ -52,11 +59,20 @@ use App\Http\Controllers\bienestar\EstudianteController;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+Route::group(['prefix' => 'administrador'], function () {
+    Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']);
+    Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
+    Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
+    Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
+    Route::post('mensaje', [AdministradorController::class, 'mensaje']);
+});
+
 
 Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
         Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
+        
     });
     Route::group(['prefix' => 'nivelTipo'], function () {
         Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);
@@ -86,6 +102,8 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'curso'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
+
+
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
@@ -146,8 +164,9 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
         //Eliminar una pregunta de una evaluación.
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
-         //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
-         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+        Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        Route::post('insertarCuestionarioNotas', [EvaluacionesController::class, 'insertarCuestionarioNotas']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
@@ -179,13 +198,16 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']);
         Route::post('obtenerInformacionEstudianteDNI', [GestionInstitucionalController::class, 'obtenerInformacionEstudianteDNI']);
         Route::post('obtenerCredencialesSede', [GestionInstitucionalController::class, 'obtenerCredencialesSede']);
-       
-    });
+        Route::post('importarDocente_IE', [GestionInstitucionalController::class, 'importarDocente_IE']);
+        Route::post('importarAmbiente_IE', [GestionInstitucionalController::class, 'importarAmbiente_IE']);
+        Route::post('generarCredencialesIE', [GestionInstitucionalController::class, 'generarCredencialesIE']);
 
+        Route::post('obtenerEstudiantesMatriculados', [GestionInstitucionalController::class, 'obtenerEstudiantesMatriculados']);
+    });
+    Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
         //procendimiento generales
-
     });
 
     Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
@@ -208,6 +230,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); // procedimiento especifico acad.SP_SEL_stepAmbienteAcademicoDesdeJsonOpcion ?,?
         Route::post('searchGradoCiclo', [CalendarioAcademicosController::class, 'searchGradoCiclo']); // procedimiento especifico acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?
 
+        Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
 
         /*
          * * Peticiones de información de varios calendarios
@@ -322,6 +345,9 @@ Route::group(['prefix' => 'acad'], function () {
 
         //* DELETE: Periodos académicos de un calendario
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
+
+        Route::post('obtenerCursosDiasHorarios', [CalendarioAcademicosController::class, 'obtenerCursosDiasHorarios']);
+        Route::post('CursosDiasHorarios', [CalendarioAcademicosController::class, 'guardarRemoverCursosDiasHorarios']);
     });
 
     Route::group(['prefix' => 'estudiante'], function () {
@@ -337,6 +363,8 @@ Route::group(['prefix' => 'acad'], function () {
 
         Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
         Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
+
+        Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);
     });
 
     Route::group(['prefix' => 'matricula'], function () {
@@ -388,6 +416,43 @@ Route::group(['prefix' => 'grl'], function () {
     Route::post('searchPersona', [PersonaController::class, 'show']);
     Route::post('validarPersona', [PersonaController::class, 'validate']);
 });
+
+Route::group(['prefix' => 'enlaces-ayuda'], function () {
+    Route::get('obtenerEnlaces', function () {
+        $path = 'enlaces-ayuda.json'; // Nombre del archivo dentro de storage/app/public/
+
+        if (Storage::disk('public')->exists($path)) {
+            return Response::json(json_decode(Storage::disk('public')->get($path)), 200);
+        }
+
+        return response()->json(['error' => 'Archivo no encontrado'], 404);
+    });
+
+    Route::post('actualizarEnlaces', function (Request $request, $index) {
+        $path = 'data/miarchivo.json';
+
+        if (!Storage::exists($path)) {
+            return response()->json(['error' => 'Archivo no encontrado'], 404);
+        }
+
+        // Obtener el contenido del JSON
+        $data = json_decode(Storage::get($path), true);
+
+        // Verificar si el índice existe
+        if (!isset($data[$index])) {
+            return response()->json(['error' => 'Elemento no encontrado'], 404);
+        }
+
+        // Actualizar los datos
+        $data[$index] = array_merge($data[$index], $request->all());
+
+        // Guardar el JSON actualizado
+        Storage::put($path, json_encode($data, JSON_PRETTY_PRINT));
+
+        return response()->json(['message' => 'Datos actualizados correctamente', 'data' => $data[$index]], 200);
+    });
+});
+
 
 Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
 

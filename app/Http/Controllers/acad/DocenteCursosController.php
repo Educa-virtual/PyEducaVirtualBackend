@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Helpers\ResponseHandler;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -96,6 +99,51 @@ class DocenteCursosController extends Controller
                 ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
                 500
             );
+        }
+    }
+    public function buscarDocenteCurso(Request $request){
+
+        $opcion=$request->opcion;
+        $iDocenteId=$request->iDocenteId;
+        $iYearId=$request->iYearId;
+        $iSedeId=$request->iSedeId;
+        $iIieeId=$request->iIieeId;
+        
+        $docente = VerifyHash::decodesxId($iDocenteId);
+
+        $solicitud = [
+            $opcion
+            ,$docente
+            ,$iYearId
+            ,$iSedeId
+            ,$iIieeId
+        ];
+        
+        $query = 'EXEC acad.Sp_SEL_docentexcursoxgradoxseccion '.str_repeat('?,',count($solicitud)-1).'?';
+        try {
+            $data = DB::select($query, $solicitud);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
+    }
+    public function importarSilabos(Request $request){
+
+        $iSilaboId=$request->iSilaboId;
+        $idDocCursoId=$request->idDocCursoId;
+
+        $solicitud = [
+            VerifyHash::decodesxId($iSilaboId),
+            VerifyHash::decodesxId($idDocCursoId),
+        ];
+        
+        $query = 'EXEC acad.Sp_INS_importarSilabos '.str_repeat('?,',count($solicitud)-1).'?';
+    
+        try {
+            $data = DB::select($query, $solicitud);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
         }
     }
 }

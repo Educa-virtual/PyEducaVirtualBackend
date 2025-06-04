@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
 use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\ApiController;
@@ -20,43 +21,27 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\ValidatedData;
 use Illuminate\Http\Response;
+use PhpParser\Node\Stmt\TryCatch;
 
 class EvaluacionesController extends ApiController
 {
     public function __construct()
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length')); //new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
 
-    /*public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
-
-        if (!is_numeric($iEvaluacionId) && !is_numeric($iCursosNivelGradId)) {
-            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
-            $iCursosNivelGradId= $this->hashids->decode($iCursosNivelGradId)[0];
-        } else {
-            return response()->json(['error' => 'Los ID deben estar cifrados'], 400);
-        }
-        $params = [
-            'iEvaluacionId' => $iEvaluacionId,  // ID de la evaluación
-            'iCursosNivelGradId' => $iCursosNivelGradId,  // ID del área (curso o nivel de grado)
-            'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
-            'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
-            'bPreguntaEstado' => 1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
-            'ids' => NULL // ID de las preguntas (si lo necesitas)
-        ];
-
-        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($iEvaluacionId);
-        $area = AreasRepository::obtenerAreaPorId($iCursosNivelGradId);
-        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-
-        if (count($preguntasDB) == 0) {
-            return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 400);
-        }
-
-        $exportador = new ExportarPreguntasPorAreaWordService($evaluacion, $area, $preguntasDB);
-        return $exportador->exportar();
-
-    }*/
+    public function obtenerAniosEvaluaciones()
+    {
+        $anios = DB::select('SELECT DISTINCT(YEAR(dtEvaluacionFechaInicio)) AS anio
+        FROM ere.evaluacion
+        WHERE dtEvaluacionFechaInicio IS NOT NULL
+        ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
+        return response()->json([
+            'status' => 'Error',
+            'message' => 'Datos obtenidos',
+            'data' => $anios
+        ]);
+    }
 
     public function obtenerEvaluaciones()
     {
@@ -187,10 +172,16 @@ class EvaluacionesController extends ApiController
         $items = $request->items;
         try {
             foreach ($items as $item) {
-                DB::table('ere.iiee_participa_evaluaciones')->insert([
-                    'iIieeId' => $item['iIieeId'],
-                    'iEvaluacionId' => $item['iEvaluacionId'],
-                ]);
+                DB::table('ere.iiee_participa_evaluaciones')->updateOrInsert(
+                    [
+                        'iIieeId' => $item['iIieeId'],
+                        'iEvaluacionId' => $item['iEvaluacionId'],
+                    ],
+                    [
+                        'iIieeId' => $item['iIieeId'],
+                        'iEvaluacionId' => $item['iEvaluacionId'],
+                    ]
+                );
             }
             return response()->json(['status' => 'success', 'message' => 'Datos guardados correctamente']);
         } catch (Exception $e) {
@@ -211,7 +202,56 @@ class EvaluacionesController extends ApiController
 
         return response()->json(['message' => 'Participaciones eliminadas exitosamente']);
     }
+
     public function actualizarEvaluacion(Request $request, $iEvaluacionId)
+    {
+        $request->validate([
+            'idTipoEvalId' => 'nullable|integer',
+            'iNivelEvalId' => 'nullable|integer',
+            'dtEvaluacionCreacion' => 'nullable|string',
+            'cEvaluacionNombre' => 'nullable|string|max:255',
+            'cEvaluacionDescripcion' => 'nullable|string|max:255',
+            'cEvaluacionUrlDrive' => 'nullable|string|max:255',
+            'dtEvaluacionFechaInicio' => 'nullable|string',
+            'dtEvaluacionFechaFin' => 'nullable|string',
+
+        ]);
+
+        $params = [
+            'iEvaluacionId' => $iEvaluacionId,
+            'idTipoEvalId' => $request->input('idTipoEvalId', null),
+            'iNivelEvalId' => $request->input('iNivelEvalId', null),
+            'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
+            'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
+            'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
+            'dtEvaluacionFechaInicio' => Carbon::parse($request->input('dtEvaluacionFechaInicio'))->format('Ymd H:i:s'),
+            'dtEvaluacionFechaFin' => Carbon::parse($request->input('dtEvaluacionFechaFin'))->format('Ymd H:i:s')
+        ];
+
+        // return $params;
+        // Construir la llamada dinámica al procedimiento
+        //Se cambio el nombre sp_UPD_Evaluaciones
+        /*if ($params['dtEvaluacionFechaInicio'] != null) {
+            $params['dtEvaluacionFechaInicio'] =$params['dtEvaluacionFechaInicio'].''; //Carbon::createFromFormat('Y-m-d', $request->input('dtEvaluacionFechaInicio'))->format('Y-m-d');
+        }*/
+        /*if ($params['dtEvaluacionFechaFin'] != null) {
+            $params['dtEvaluacionFechaFin'] = Carbon::createFromFormat('d/m/Y', $request->input('dtEvaluacionFechaFin'))->format('Y-m-d');
+        }*/
+
+        DB::statement('EXEC ere.SP_UPD_evaluaciones
+            @iEvaluacionId = :iEvaluacionId,
+            @idTipoEvalId = :idTipoEvalId,
+            @iNivelEvalId = :iNivelEvalId,
+
+            @cEvaluacionNombre = :cEvaluacionNombre,
+            @cEvaluacionDescripcion = :cEvaluacionDescripcion,
+            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive,
+            @dtEvaluacionFechaInicio = :dtEvaluacionFechaInicio,
+            @dtEvaluacionFechaFin = :dtEvaluacionFechaFin', $params);
+        return response()->json(['message' => 'Evaluación actualizada exitosamente']);
+    }
+
+    /*public function actualizarEvaluacion(Request $request, $iEvaluacionId)
     {
         // $iSesionId = $this->hashids->decode($request->iSesionId);
         // if (!empty($iSesionId) && is_array($iSesionId)) {
@@ -226,37 +266,35 @@ class EvaluacionesController extends ApiController
             'cEvaluacionNombre' => 'nullable|string|max:255',
             'cEvaluacionDescripcion' => 'nullable|string|max:255',
             'cEvaluacionUrlDrive' => 'nullable|string|max:255',
-            'dtEvaluacionFechaInicio' => 'nullable|string',
-            'dtEvaluacionFechaFin' => 'nullable|string',
+            'dtEvaluacionFechaInicio' => 'string',
+            'dtEvaluacionFechaFin' => 'string',
 
         ]);
+        $fechaInicio = Carbon::createFromFormat('d/m/Y',$request->input('dtEvaluacionFechaInicio'));
+        $fechaFin = Carbon::createFromFormat('d/m/Y',$request->input('dtEvaluacionFechaFin'));
+        //Procedimiento ere.SP_UPD_evaluaciones no en uso porque esta con errores
+        DB::statement("UPDATE ere.evaluacion
+        SET
+        idTipoEvalId = COALESCE(?, idTipoEvalId),
+        iNivelEvalId = COALESCE(?, iNivelEvalId),
+        cEvaluacionNombre = COALESCE(?, cEvaluacionNombre),
+        cEvaluacionDescripcion = COALESCE(?, cEvaluacionDescripcion),
+        cEvaluacionUrlDrive = COALESCE(?, cEvaluacionUrlDrive),
+				dtEvaluacionFechaInicio = ?,dtEvaluacionFechaFin = ?,
 
-        // Preparar los valores para la llamada al procedimiento
-        $params = [
-            'iEvaluacionId' => $iEvaluacionId,
-            'idTipoEvalId' => $request->input('idTipoEvalId', null),
-            'iNivelEvalId' => $request->input('iNivelEvalId', null),
-            'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
-            'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
-            'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
-            'dtEvaluacionFechaInicio' => $request->input('dtEvaluacionFechaInicio', null),
-            'dtEvaluacionFechaFin' => $request->input('dtEvaluacionFechaFin', null),
-        ];
-        // return $params;
-        // Construir la llamada dinámica al procedimiento
-        //Se cambio el nombre sp_UPD_Evaluaciones
-        DB::statement('EXEC ere.SP_UPD_evaluaciones
-            @iEvaluacionId = :iEvaluacionId,
-            @idTipoEvalId = :idTipoEvalId,
-            @iNivelEvalId = :iNivelEvalId,
-
-            @cEvaluacionNombre = :cEvaluacionNombre,
-            @cEvaluacionDescripcion = :cEvaluacionDescripcion,
-            @cEvaluacionUrlDrive = :cEvaluacionUrlDrive,
-            @dtEvaluacionFechaInicio = :dtEvaluacionFechaInicio,
-            @dtEvaluacionFechaFin = :dtEvaluacionFechaFin', $params);
+        dtActualizado = GETDATE()
+    WHERE iEvaluacionId = ?;", [
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+            $request->cEvaluacionNombre,
+            $request->cEvaluacionDescripcion,
+            $request->cEvaluacionUrlDrive,
+            $fechaInicio->format('Y-m-d'),
+            $fechaFin->format('Y-m-d'),
+            $iEvaluacionId
+        ]);
         return response()->json(['message' => 'Evaluación actualizada exitosamente']);
-    }
+    }*/
 
     public function obtenerParticipaciones($iEvaluacionId)
     {
@@ -978,25 +1016,46 @@ class EvaluacionesController extends ApiController
         $parametros = [
             $request->iEvaluacionId,
             $request->iCursoNivelGradId,
-            $request->dtExamenFechaInicio          ??  NULL,
+            $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->format('Ymd H:i:s'),
+            //$request->dtExamenFechaInicio          ??  NULL,
             $request->iExamenCantidadPreguntas     ??  NULL
         ];
 
         try {
             $data = DB::select('exec ere.Sp_UPD_examenCursosxdtExamenFechaInicioxiExamenCantidadPreguntas ?,?,?,?', $parametros);
             if ($data[0]->iEvaluacionId > 0) {
-
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
+                return FormatearMensajeHelper::ok('Se guardó la información exitosamente');
             } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
+                throw new Exception('Error al guardar la información.');
             }
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+            /*$response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
+            $codeResponse = 500;*/
         }
+    }
 
-        return response()->json($response, $codeResponse);
+    public function insertarCuestionarioNotas(Request $request)
+    {
+        $data = $request->all();
+        info(json_encode($data));
+        info('JSON recibido completo:');
+        info($data);
+
+        try {
+            // Aquí llamarías tu SP, por ejemplo:
+            // $result = DB::select('exec ere.SP_INS_cuestionarioNotas ?,?,?,?,?', array_values($data));
+
+            return response()->json([
+                'message' => 'JSON recibido correctamente',
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
     }
 }

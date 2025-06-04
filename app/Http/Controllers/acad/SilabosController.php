@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Helpers\VerifyHash;
+use Exception;
 
 class SilabosController extends Controller
 {
@@ -48,7 +50,6 @@ class SilabosController extends Controller
         return  [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $request->iSilaboId                 ?? NULL,
             $request->iSemAcadId                ?? NULL,
             $request->iYAcadId                  ?? NULL,
@@ -89,7 +90,7 @@ class SilabosController extends Controller
     public function list(Request $request)
     {
         $parametros = $this->validateRequest($request);
-
+      
         try {
             $data = DB::select('exec acad.Sp_SEL_silabos
                 ?,?,?,?,?,?,?,?,?,?', $parametros);
@@ -100,7 +101,7 @@ class SilabosController extends Controller
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
                 500
@@ -108,9 +109,31 @@ class SilabosController extends Controller
         }
 
     }
+    public function actualizar(Request $request){
+        $iSilaboId = $this->decodeValue($request->iSilaboId);
+        $parametros = [
+            $iSilaboId,
+            $request->columna,
+            $request->valor,
+        ];
+        
+        try {
+            $data = DB::select('exec acad.Sp_UPD_silabos ?,?,?', $parametros);
+            
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
+                200
+            );
+        } catch (Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                500
+            );
+        }
+    }
     public function report(Request $request)
     {
-        $request['opcion'] = 'CONSULTAR_SILABO';
+        $request['opcion'] = 2;
         $parametros = $this->validateRequest($request);
         
         $query = DB::select(
@@ -119,7 +142,7 @@ class SilabosController extends Controller
         );
         
         $formato = $query[0];
-        
+
         $respuesta = [
             "query" => $formato,
         ];

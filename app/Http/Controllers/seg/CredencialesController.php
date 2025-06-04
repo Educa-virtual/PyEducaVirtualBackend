@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CodigoMail;
+use App\Helpers\VerifyHash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Response;
 
 class CredencialesController extends Controller
 {
@@ -21,7 +24,7 @@ class CredencialesController extends Controller
                     INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
                     WHERE c.cCredUsuario = '" . $request->cUsuario . "' AND pc.cPersConNombre = '" . $request->cCorreo . "' AND pc.iTipoConId = 1
             ");
-            
+
             if ($data[0]->iCredId > 0) {
                 $cCredTokenPassword = mt_rand(100000, 999999);
 
@@ -57,9 +60,9 @@ class CredencialesController extends Controller
                     MAX(c.iCredId) AS iCredId
                     FROM seg.credenciales AS c
                     INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
-                    WHERE c.cCredUsuario = '" . $request->cUsuario . "' AND pc.cPersConNombre = '" . $request->cCorreo . "' AND c.cCredTokenPassword ='".$request->cCredTokenPassword."'  AND pc.iTipoConId = 1
+                    WHERE c.cCredUsuario = '" . $request->cUsuario . "' AND pc.cPersConNombre = '" . $request->cCorreo . "' AND c.cCredTokenPassword ='" . $request->cCredTokenPassword . "'  AND pc.iTipoConId = 1
             ");
-            
+
             if ($data[0]->iCredId > 0) {
                 $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => null];
                 $codeResponse = 200;
@@ -85,7 +88,7 @@ class CredencialesController extends Controller
                     INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
                     WHERE c.cCredUsuario = '" . $request->cUsuario . "' AND pc.cPersConNombre = '" . $request->cCorreo . "' AND pc.iTipoConId = 1
             ");
-            
+
             if ($data[0]->iCredId > 0) {
                 DB::update('update seg.credenciales set password = ? where iCredId = ?', [sha1($request->cPassword), $data[0]->iCredId]);
 
@@ -98,6 +101,64 @@ class CredencialesController extends Controller
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'contraseniaNueva' => [
+                'nullable',
+                'min:8',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
+            ]
+        ], [
+            'contraseniaNueva.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'contraseniaNueva.regex' => 'La contraseña debe contener una mayúscula, una minúscula y un número.'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors() // Devuelve MessageBag
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $fieldsToDecode = [
+            'iPersId',
+            'iCredId',
+        ];
+
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+        $parametros = [
+            $request->iCredId,
+            $request->iPersId,
+            $request->contraseniaActual,
+            $request->contraseniaNueva
+        ];
+
+        try {
+            $data = DB::select("execute seg.Sp_UPD_credenciasxUpdatePassword ?,?,?,?", $parametros);
+
+            if ($data[0]->iPersId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se actualizó la contraseña exitosamente '],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se pudo actualizar la contraseña'],
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54)],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return new JsonResponse($response, $codeResponse);

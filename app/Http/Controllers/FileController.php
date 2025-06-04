@@ -2,22 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\CollectionStrategy;
-use App\Helpers\ResponseHandler;
 use Exception;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseHandler;
+use App\Helpers\CollectionStrategy;
+use App\Http\Controllers\ApiController;
 
-class FileController extends AbstractDatabaseOperation
+class FileController extends Controller
 {
-  protected function getProcedureName(): string
-  {
-    return 'acad.SP_SEL_ObtenerDocenteSedeMasivo';
-  }
-
-  protected function getParams(): array
-  {
-    return ['iYAcadId', 'json', 'iSedeId'];
-  }
 
   public function uploadFile(Request $request)
   {
@@ -28,23 +20,37 @@ class FileController extends AbstractDatabaseOperation
 
   public function downloadFile(Request $request)
   {
-    $path = $request->input('fileName');
+    $path = $request->input('template');
 
-
-
-    return response()->download(storage_path("templates/import/bulk-data/$path"), basename($path), [
+    return response()->download(storage_path("templates/import/bulk-data/$path.xlsx"), basename($path), [
       'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ]);
   }
 
-  public function validatedFile(Request $request)
+  public function importarEstudiantesMatriculasExcelPlatform(Request $request)
   {
-    try {
-      $query = self::handleRequest($request, new CollectionStrategy());
 
-      return ResponseHandler::success($query, 'Archivo validado correctamente.');
-    } catch (Exception $e) {
-      return ResponseHandler::error('Error al validar el archivo.', 500, $e->getMessage());
+    try {
+      $query = (new ApiController(new CollectionStrategy()))->execProcedure(
+        $request,
+        "sp_importar_estudiantes_matriculas_excel",
+        [
+          'iSedeId' => $request->iSedeId,
+          'iSemAcadId' => null,
+          'iYAcadId' => $request->iYAcadId,
+          'iCredId' => $request->iCredId,
+          'tipo' => $request->tipo,
+          'json' => $request->json
+        ],
+        [
+          'd'
+        ]
+      );
+
+      return ResponseHandler::success($query, 'Auditoría de accesos obtenida correctamente.');
+    } catch (\Exception $e) {
+      return ResponseHandler::error('Error al obtener la auditoría de accesos.', 500, $e->getMessage());
+      //throw $th;
     }
   }
 }
