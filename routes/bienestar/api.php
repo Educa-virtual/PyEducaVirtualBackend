@@ -8,11 +8,11 @@ use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
 use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
-//Se agrego codigo el 22 Abril--------
 use app\Http\Controllers\bienestar\EstudianteController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
+use App\Http\Controllers\bienestar\RecordarioFechasController;
 
 Route::group(['prefix' => 'bienestar'], function () {
 
@@ -69,6 +69,10 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
 
     Route::get('/ficha-pdf/{id}/{anio}', [FichaPdfController::class, 'mostrarFichaPdf'])->name('ficha.pdf');
+    
+    Route::post('verFechasEspeciales', [RecordarioFechasController::class, 'verFechasEspeciales']);
+    Route::post('verConfRecordatorio', [RecordarioFechasController::class, 'verConfRecordatorio']);
+    Route::post('actualizarConfRecordatorio', [RecordarioFechasController::class, 'actualizarConfRecordatorio']);
 
 });
 
