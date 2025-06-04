@@ -24,11 +24,13 @@ use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 //$this->middleware('auth:api');
-Route::group(['prefix' => 'ere'], function () {
+Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
-        Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
+        //Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
+        Route::get('areas', [AreasController::class, 'obtenerAreasPorEvaluacion']);
+        Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
         Route::group(['prefix' => 'areas/{areaId}'], function () {
             Route::get('preguntas-reutilizables', [PreguntasController::class, 'obtenerPreguntasReutilizables']);
             Route::post('preguntas-reutilizables', [PreguntasController::class, 'asignarPreguntaAEvaluacion']);
@@ -38,12 +40,12 @@ Route::group(['prefix' => 'ere'], function () {
             Route::get('cartilla-respuestas', [AreasController::class, 'descargarCartillaRespuestas']);
             Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
             Route::post('nivel-logros', [NivelLogrosController::class, 'registrarNivelLogroPorCurso']);
+            Route::get('cantidad-maxima-preguntas', [EvaluacionController::class, 'obtenerCantidadMaximaPreguntas']);
         });
         Route::group(['prefix' => 'instituciones-educativas/{iieeId}/directores/{iPersId}'], function () {
             Route::get('areas/horas', [AreasController::class, 'obtenerHorasAreasPorEvaluacionDirectorIe']);
             Route::post('areas/horas', [AreasController::class, 'registrarHorasAreasPorEvaluacionDirectorIe']);
         });
-        Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
     });
 
     Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogros']);

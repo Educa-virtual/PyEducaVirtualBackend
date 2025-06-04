@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 //use App\Models\ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\ere\EreEvaluacion;
+use App\Models\ere\Evaluacion;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\PreguntasRepository;
@@ -135,7 +136,7 @@ class EvaluacionesController extends ApiController
         // ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
-            $evaluaciones = EreEvaluacion::guardarEvaluaciones($params);
+            $evaluaciones = Evaluacion::guardarEvaluaciones($params);
             // Suponiendo que guardarEvaluaciones() retorna el ID generado
             $iEvaluacionId = $evaluacion->iEvaluacionId ?? null;
             return response()->json([
