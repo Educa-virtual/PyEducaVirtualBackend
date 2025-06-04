@@ -1,17 +1,17 @@
 <?php
 namespace App\Http\Controllers\bienestar;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Para usar consultas SQL crudas
 
 class FichaPdfController extends Controller
 {
-    public function mostrarFichaPdf()
+    public function mostrarFichaPdf($id, $anio)
     {
-        $id = 474; // o el ID que recibas dinámicamente
-        $anio = 2025;
-
-        // Consulta 1: Datos generales y de dirección
+        //---------------- Datos generales y de dirección------------
         $datosGenerales = DB::selectOne("
             SELECT
                 tpv.cTipoViaNombre,
@@ -27,6 +27,8 @@ class FichaPdfController extends Controller
                 prv.cPrvnNombre,
                 dstr.cDsttNombre,
                 fdg.cFichaDGDireccionReferencia,
+                std.cEstCodigo,
+                std.cEstTelefono,
                 std.cEstPaterno,
                 std.cEstMaterno,
                 std.cEstNombres,
@@ -42,54 +44,94 @@ class FichaPdfController extends Controller
                 IIF(fdg.bFamiliarPadreVive = 1, 'SI', 'NO') AS bFamiliarPadreVive,
 		        IIF(fdg.bFamiliarMadreVive = 1, 'SI', 'NO') AS bFamiliarMadreVive
             FROM obe.ficha_datos_grales AS fdg
-            INNER JOIN grl.personas p ON fdg.iPersId = p.iPersId
-            INNER JOIN obe.tipo_vias tpv ON fdg.iTipoViaId = tpv.iTipoViaId
-            INNER JOIN grl.departamentos dep ON p.iDptoId = dep.iDptoId
-            INNER JOIN grl.provincias prv ON p.iPrvnId = prv.iPrvnId
-            INNER JOIN grl.distritos dstr ON p.iDsttId = dstr.iDsttId
-            INNER JOIN grl.paises ps ON p.iPaisId = ps.iPaisId
-            INNER JOIN acad.estudiantes std ON fdg.iPersId = std.iPersId
-            INNER JOIN grl.ubigeos ubg ON std.cEstUbigeoNacimiento = ubg.cUbigeoReniec
-            INNER JOIN grl.tipos_estados_civiles ec ON p.iTipoEstCivId = ec.iTipoEstCivId
-            WHERE fdg.iPersId = ? AND YEAR(fdg.dtFichaDG) = '2025';
-            ", [$id]);
+                INNER JOIN grl.personas p ON fdg.iPersId = p.iPersId
+                INNER JOIN obe.tipo_vias tpv ON fdg.iTipoViaId = tpv.iTipoViaId
+                INNER JOIN grl.departamentos dep ON p.iDptoId = dep.iDptoId
+                INNER JOIN grl.provincias prv ON p.iPrvnId = prv.iPrvnId
+                INNER JOIN grl.distritos dstr ON p.iDsttId = dstr.iDsttId
+                INNER JOIN grl.paises ps ON p.iPaisId = ps.iPaisId
+                INNER JOIN acad.estudiantes std ON fdg.iPersId = std.iPersId
+                INNER JOIN grl.ubigeos ubg ON std.cEstUbigeoNacimiento = ubg.cUbigeoReniec
+                INNER JOIN grl.tipos_estados_civiles ec ON p.iTipoEstCivId = ec.iTipoEstCivId
+                WHERE fdg.iPersId = ? AND YEAR(fdg.dtFichaDG) = ?;
+            ", [$id, $anio]);
 
-        // Consulta 2: Familiares
+        //--------------IE Procedencia------------------------------------------------------
+        $ie_procedencia = DB::select("     
+            SELECT 
+                dtgnrales.iPersId,
+                ie.iIieeId,
+                ie.cIieeNombre,
+                tipsect.cTipoSectorNombre
+                FROM obe.ficha_datos_grales AS dtgnrales
+                INNER JOIN obe.historial_ies hist_ie ON dtgnrales.iFichaDGId = hist_ie.iFichaDGId
+                INNER JOIN acad.institucion_educativas ie ON hist_ie.iIieeId = ie.iIieeId
+                INNER JOIN grl.tipos_sectores tipsect ON ie.iTipoSectorId = tipsect.iTipoSectorId
+                INNER JOIN grl.personas persnas ON dtgnrales.iPersId = persnas.iPersId
+            WHERE dtgnrales.iPersId = ? AND YEAR(dtgnrales.dtFichaDG) = ?;
+                ", [$id, $anio]);
+
         $familiares = DB::select("
-                SELECT 
-                    fam.iPersId,
-                    gper.cPersPaterno,
-                    gper.cPersMaterno,
-                    gper.cPersNombre,
-                    gper.dPersNacimiento,
-                    --DATEDIFF(YEAR, gper.dPersNacimiento, GETDATE()) AS EdadFam,
-                    FLOOR(DATEDIFF(DAY, gper.dPersNacimiento, GETDATE()) / 365.25) AS EdadFam,
-                    tfam.cTipoFamiliarDescripcion,
-                    stcv.cTipoEstCivilNombre,
-                    gdi.cGradoInstNombre,
-                    ocup.cOcupacionNombre,
-                    fam.cFamiliarResidenciaActual
-                FROM
-                        obe.ficha_datos_grales AS fichdat
-                    INNER JOIN 
-                        obe.familiares fam ON fichdat.iFichaDGId = fam.iFichaDGId
-                    LEFT JOIN
-                        grl.personas gper ON fam.iPersId = gper.iPersId
-                    LEFT JOIN
-                            obe.tipo_vias tpvias ON fam.iTipoViaId = tpvias.iTipoViaId
-                    LEFT JOIN 
-                            obe.tipo_familiares tfam ON fam.iTipoFamiliarId = tfam.iTipoFamiliarId
-                    LEFT JOIN 
-                            grl.tipos_estados_civiles stcv ON gper.iTipoEstCivId = stcv.iTipoEstCivId
-                    LEFT JOIN
-                            obe.grado_instrucciones gdi ON fam.iGradoInstId = gdi.iGradoInstId
-                    LEFT JOIN
-                            obe.ocupaciones ocup ON fam.iOcupacionId = ocup.iOcupacionId
-                    WHERE 
-                        fichdat.iPersId = 474
-                        AND YEAR(fichdat.dtFichaDG) = '2025';
-                        ", [$id]);
- 
+            SELECT 
+                fam.iPersId,
+                gper.cPersPaterno,
+                gper.cPersMaterno,
+                gper.cPersNombre,
+                gper.dPersNacimiento,
+                FLOOR(DATEDIFF(DAY, gper.dPersNacimiento, GETDATE()) / 365.25) AS EdadFam,
+                tfam.cTipoFamiliarDescripcion,
+                stcv.cTipoEstCivilNombre,
+                gdi.cGradoInstNombre,
+                ocup.cOcupacionNombre,
+                deprto.cDptoNombre,
+                provincs.cPrvnNombre,
+                dstrit.cDsttNombre
+            FROM
+                obe.ficha_datos_grales AS fichdat
+                INNER JOIN obe.familiares fam ON fichdat.iFichaDGId = fam.iFichaDGId
+                LEFT JOIN grl.personas gper ON fam.iPersId = gper.iPersId
+                LEFT JOIN obe.tipo_vias tpvias ON fam.iTipoViaId = tpvias.iTipoViaId
+                LEFT JOIN obe.tipo_familiares tfam ON fam.iTipoFamiliarId = tfam.iTipoFamiliarId
+                LEFT JOIN grl.tipos_estados_civiles stcv ON gper.iTipoEstCivId = stcv.iTipoEstCivId
+                LEFT JOIN obe.grado_instrucciones gdi ON fam.iGradoInstId = gdi.iGradoInstId
+                LEFT JOIN obe.ocupaciones ocup ON fam.iOcupacionId = ocup.iOcupacionId
+                LEFT JOIN grl.departamentos deprto ON gper.iDptoId = deprto.iDptoId
+                LEFT JOIN grl.provincias provincs ON gper.iPrvnId = provincs.iPrvnId
+                LEFT JOIN grl.distritos dstrit ON gper.iDsttId = dstrit.iDsttId
+            WHERE 
+                fichdat.iPersId = ?
+                AND YEAR(fichdat.dtFichaDG) = ?
+
+            UNION ALL
+
+            SELECT 
+                std.iPersId,
+                gper.cPersPaterno,
+                gper.cPersMaterno,
+                gper.cPersNombre,
+                gper.dPersNacimiento,
+                FLOOR(DATEDIFF(DAY, gper.dPersNacimiento, GETDATE()) / 365.25) AS EdadFam,
+                'Hijo' AS cTipoFamiliarDescripcion,
+                stcv.cTipoEstCivilNombre,
+                'Estudiante' AS cGradoInstNombre,
+                NULL AS cOcupacionNombre,
+                deprto.cDptoNombre,
+                provincs.cPrvnNombre,
+                dstrit.cDsttNombre
+            FROM
+                obe.ficha_datos_grales AS fichdat
+                LEFT JOIN acad.estudiantes std ON fichdat.iPersId = std.iPersId
+                LEFT JOIN grl.personas gper ON std.iPersId = gper.iPersId
+                LEFT JOIN grl.tipos_estados_civiles stcv ON gper.iTipoEstCivId = stcv.iTipoEstCivId
+                LEFT JOIN grl.departamentos deprto ON gper.iDptoId = deprto.iDptoId
+                LEFT JOIN grl.provincias provincs ON gper.iPrvnId = provincs.iPrvnId
+                LEFT JOIN grl.distritos dstrit ON gper.iDsttId = dstrit.iDsttId
+            WHERE 
+                fichdat.iPersId = ?
+                AND YEAR(fichdat.dtFichaDG) = ?
+            ", [$id, $anio, $id, $anio]);
+
+
         $aspeconimico = DB::selectOne("
                  SELECT 
                         rangsueld.cRangoSueldoDescripcion,
@@ -111,12 +153,41 @@ class FichaPdfController extends Controller
                         obe.tipos_apoyo_economicos tipapoyecon ON fiecon.iTipoAEcoId = tipapoyecon.iTipoAEcoId
                     INNER JOIN
                         obe.jornada_trabajos jorndtrab ON fiecon.iJorTrabId = jorndtrab.iJorTrabId
-                    WHERE fdgen.iPersId = ? AND YEAR(fdgen.dtFichaDG) = 2025
-                    ", [$id]);
+                    WHERE fdgen.iPersId = ? AND YEAR(fdgen.dtFichaDG) = ?
+                    ", [$id, $anio]);
 
-    // ---------IV ASPECTO DE LA VIVIENDA (DODE VIVE EL ESTUDIANTE----------------------------	
-                $aspvivienda = DB::selectOne("
+        //-----------------Direccion Actual de los Familiares de los Estudiantes----26 May-------------
+        $direcc_familiares = DB::select("      
                     SELECT 
+                        fam.iPersId,
+                        fam.cFamiliarResidenciaActual,
+                            fam.cFamiliarDireccionNombreVia,
+                            fam.cFamiliarDireccionNroPuerta,
+                            fam.cFamiliarDireccionBlock,
+                            fam.cFamiliarDirecionInterior,
+                            fam.cFamiliarDirecionPiso,
+                            fam.cFamiliarDireccionManzana,
+                            fam.cFamiliarDireccionLote,
+                            fam.cFamiliarDireccionKm,
+                            fam.cFamiliarDireccionReferencia,
+                            tpvias.cTipoViaNombre 
+                    FROM
+                        obe.ficha_datos_grales AS fichdat
+                        INNER JOIN obe.familiares fam ON fichdat.iFichaDGId = fam.iFichaDGId
+                        LEFT JOIN grl.personas gper ON fam.iPersId = gper.iPersId
+                        LEFT JOIN obe.tipo_vias tpvias ON fam.iTipoViaId = tpvias.iTipoViaId
+                        LEFT JOIN obe.tipo_familiares tfam ON fam.iTipoFamiliarId = tfam.iTipoFamiliarId
+                        LEFT JOIN grl.tipos_estados_civiles stcv ON gper.iTipoEstCivId = stcv.iTipoEstCivId
+                        LEFT JOIN obe.grado_instrucciones gdi ON fam.iGradoInstId = gdi.iGradoInstId
+                        LEFT JOIN obe.ocupaciones ocup ON fam.iOcupacionId = ocup.iOcupacionId
+                        WHERE 
+                            fichdat.iPersId = ?
+                            AND YEAR(fichdat.dtFichaDG) = ?
+                              ", [$id, $anio]);
+
+        // ---------IV ASPECTO DE LA VIVIENDA (DODE VIVE EL ESTUDIANTE----------------------------	
+        $aspvivienda = DB::selectOne("
+                        SELECT 
                             tipocup.cTipoOcupaVivDescripcion,
                             vndacar.iViviendaCarNroPisos,
                             estdviv.cEstadoVivDescripcion,
@@ -129,7 +200,7 @@ class FichaPdfController extends Controller
                             tipsuminA.cTipoSumADescripcion,
                             tipsshh.cTipoSsHhDescripcion,
                             tipalumb.cTipoAlumDescripcion
-                    FROM
+                        FROM
                                 obe.ficha_datos_grales AS fichdg
                             INNER JOIN 
                                 obe.vienda_caracteristicas_fichas vndacar ON fichdg.iFichaDGId = vndacar.iFichaDGId
@@ -153,11 +224,11 @@ class FichaPdfController extends Controller
                                 obe.tipos_alumbrado_viviendas tipalumbviv ON vndacar.iViendaCarId = tipalumbviv.iViendaCarId
                             INNER JOIN 
                                 obe.tipos_alumbrado tipalumb ON tipalumbviv.iTipoAlumId = tipalumb.iTipoAlumId
-                            WHERE fichdg.iPersId = ? AND YEAR(fichdg.dtFichaDG) = '2025'
-                             ", [$id]);
+                            WHERE fichdg.iPersId = ? AND YEAR(fichdg.dtFichaDG) = ?
+                             ", [$id, $anio]);
 
-                            // ----------EQUIPAMIENTO EN EL HOGAR--------------------------
-                $equipamiento = DB::select("
+        // ----------EQUIPAMIENTO EN EL HOGAR--------------------------
+        $equipamiento = DB::select("
                     SELECT 
                              vndacarac.iFichaDGId,
                              elemviv.iViendaCarId,
@@ -170,12 +241,10 @@ class FichaPdfController extends Controller
                              obe.elementos_viviendas elemviv ON vndacarac.iViendaCarId = elemviv.iViendaCarId
                              INNER JOIN 
                              obe.elementos_para_vivienda elmpviv ON elemviv.iEleParaVivId = elmpviv.iEleParaVivId
-                             WHERE fdtsg.iPersId = ? AND YEAR(fdtsg.dtFichaDG) = '2025'
-                            ", [$id]);
+                             WHERE fdtsg.iPersId = ? AND YEAR(fdtsg.dtFichaDG) = ?
+                            ", [$id, $anio]);
 
-   
-
-                $alimentacionstd = DB::selectOne("
+        $alimentacionstd = DB::selectOne("
                     SELECT
                         af.iFichaDGId,
                         des.cLugAlimDescripcion AS lugarDesayuno,
@@ -188,11 +257,11 @@ class FichaPdfController extends Controller
                         INNER JOIN obe.lugar_alimentacion AS alm ON af.iLugarAlimIdAlmuerzo = alm.iLugAlimId
                         INNER JOIN obe.lugar_alimentacion AS cen ON af.iLugarAlimIdCena = cen.iLugAlimId
                     WHERE
-                        fdg.iPersId =? AND YEAR(fdg.dtFichaDG) = '2025'
-                    ", [$id]);
+                        fdg.iPersId =? AND YEAR(fdg.dtFichaDG) = ?
+                    ", [$id, $anio]);
 
-//--------------VI. DISCAPACIDAD-------------------------------------
-                   $dispacidad  =  DB::select("
+        //--------------VI. DISCAPACIDAD-------------------------------------
+        $dispacidad  =  DB::select("
                     SELECT
                             fchdiscap.iFichaDGId,
                             discap.cDiscNombre,
@@ -202,11 +271,11 @@ class FichaPdfController extends Controller
                         obe.ficha_datos_grales AS fdatgnrls 
                         INNER JOIN obe.discapcidades_fichas fchdiscap ON fdatgnrls.iFichaDGId = fchdiscap.iFichaDGId
                         INNER JOIN obe.discapacidades discap ON fchdiscap.iDiscId =  discap.iDiscId
-                        WHERE fdatgnrls.iPersId = ? AND YEAR(fdatgnrls.dtFichaDG) = '2025'
-                    ", [$id]);
-                   
- // ---------------VII SALUD----------------------------------------
-                    $salud = DB::select("
+                        WHERE fdatgnrls.iPersId = ? AND YEAR(fdatgnrls.dtFichaDG) = ?
+                    ", [$id, $anio]);
+
+        // ---------------VII SALUD----------------------------------------
+        $salud = DB::select("
                     SELECT
                         fdolenc.iFichaDGId,
                         dolenc.cDolenciaNombre,
@@ -217,31 +286,29 @@ class FichaPdfController extends Controller
                         obe.ficha_datos_grales AS fdatsgnral
                         INNER JOIN obe.dolencias_fichas fdolenc ON fdatsgnral.iFichaDGId = fdolenc.iFichaDGId
                         INNER JOIN obe.dolencias dolenc ON fdolenc.iDolenciaId = dolenc.iDolenciaId
-                    WHERE fdatsgnral.iPersId = ?
-                        AND YEAR(fdatsgnral.dtFichaDG) = '2025';
-                    ", [$id]); // $id puede ser 474 u otro valor dinámico
+                    WHERE fdatsgnral.iPersId = ? AND dolenc.bDolenciaEsCronica = 1
+                        AND YEAR(fdatsgnral.dtFichaDG) = ?;
+                    ", [$id, $anio]);
+
+        //--------------------------SEGURO DE SALUD------------------------------
+        $sis_salud = DB::select("
+                    SELECT
+                        segaport.iFichaDGId,
+                        segsalud.cSegSaludNombre,
+                        tipsegaport.cTipSegAportaNombre
+            
+                    FROM
+                        obe.ficha_datos_grales AS fdtsgnls
+                        INNER JOIN obe.seguros_aportacion segaport ON fdtsgnls.iFichaDGId = segaport.iFichaDGId
+                        INNER JOIN obe.seguros_salud segsalud ON segaport.iSegSaludId = segsalud.iSegSaludId
+                        INNER JOIN obe.tipo_seguro_aportacion tipsegaport ON segaport.iSegAportaId = tipsegaport.iTipSegAportaId
+                        WHERE fdtsgnls.iPersId = ?
+                                    AND YEAR(fdtsgnls.dtFichaDG) = ?;
+                    ", [$id, $anio]);
 
 
-//--------------------------SEGURO DE SALUD------------------------------
-                $seguros = DB::select("
-                SELECT
-                    segaport.iFichaDGId,
-                    segsalud.cSegSaludNombre,
-                    tipsegaport.cTipSegAportaNombre
-        
-                FROM
-                    obe.ficha_datos_grales AS fdtsgnls
-                    INNER JOIN obe.seguros_aportacion segaport ON fdtsgnls.iFichaDGId = segaport.iFichaDGId
-                    INNER JOIN obe.seguros_salud segsalud ON segaport.iSegSaludId = segsalud.iSegSaludId
-                    INNER JOIN obe.tipo_seguro_aportacion tipsegaport ON segaport.iSegAportaId = tipsegaport.iTipSegAportaId
-                    WHERE fdtsgnls.iPersId = 474
-                                AND YEAR(fdtsgnls.dtFichaDG) = '2025';
-                   ", [$id]);
-
- 
-// ------------VIII-INFORMACION COMPLEMENTARIA---(DEPORTE)------------------
-
-                   $deportes = DB::select("
+        // ------------VIII-INFORMACION COMPLEMENTARIA---(DEPORTE)------------------
+        $deportes = DB::select("
                    SELECT 
                        fdeports.iFichaDGId,
                        deports.cDeporteNombre,
@@ -251,12 +318,12 @@ class FichaPdfController extends Controller
                        INNER JOIN obe.deportes_fichas fdeports ON fdtsgral.iFichaDGId = fdeports.iFichaDGId
                        INNER JOIN obe.deportes deports ON fdeports.iDeporteId = deports.iDeporteId
                    WHERE fdtsgral.iPersId = ?
-                       AND YEAR(fdtsgral.dtFichaDG) = '2025';
-               ", [$id]);
-               
-// -------------INFORMACION COMPLEMENTARIA---CULTURA Y RECREACION----------------
+                       AND YEAR(fdtsgral.dtFichaDG) = ?;
+                    ", [$id, $anio]);
 
-                $cultura = DB::select("
+        // -------------INFORMACION COMPLEMENTARIA---CULTURA Y RECREACION----------------
+
+        $cultura = DB::select("
                     SELECT 
                         fchpasatiemp.iFichaDGId,
                         pastiempo.cPasaTiempoNombre,
@@ -268,12 +335,23 @@ class FichaPdfController extends Controller
                             AND pastiempo.bPasaTiempoEsActividadArtistica = 1
                         INNER JOIN obe.religiones relig ON fdtsgrl.iReligionId = relig.iReligionId
                     WHERE fdtsgrl.iPersId = ?
-                        AND YEAR(fdtsgrl.dtFichaDG) = '2025';
-                ", [$id]);
+                        AND YEAR(fdtsgrl.dtFichaDG) = ?;
+                ", [$id, $anio]);
 
-//---------------PASATIEMPOS-------------------------------
+        //----------------RELIGION-----------------------------------------------
+        $religiones = DB::select("
+                    SELECT 
+                    relig.cReligionNombre
+                    FROM
+                    obe.ficha_datos_grales as fdgrals
+                    INNER JOIN obe.religiones relig ON fdgrals.iReligionId = relig.iReligionId
+                    WHERE fdgrals.iPersId = ?
+                            AND YEAR(fdgrals.dtFichaDG) = ?;
+                    ", [$id, $anio]);
 
-                $pasatiempos = DB::select("
+        //---------------PASATIEMPOS--------------------------------------------
+
+        $pasatiempos = DB::select("
                     SELECT 
                         psatmpos.cPasaTiempoNombre
                     FROM
@@ -282,11 +360,11 @@ class FichaPdfController extends Controller
                         INNER JOIN obe.pasatiempos psatmpos ON fpasatmpo.iPasaTiempoId = psatmpos.iPasaTiempoId 
                             AND psatmpos.bPasaTiempoEsActividadArtistica = 0
                     WHERE fdatsgen.iPersId = ?
-                        AND YEAR(fdatsgen.dtFichaDG) = '2025';
-                ", [$id]);
+                        AND YEAR(fdatsgen.dtFichaDG) = ?;
+                ", [$id, $anio]);
 
-// ---------PSICOPEDAGOGICO-----------------------------
-                $emociones = DB::select("
+        // -----------------------PSICOPEDAGOGICO-----------------------------
+        $emociones = DB::select("
                     SELECT 
                         fdgrales.cFichaDGAsistioConsultaPsicologica,
                         fproblem.iTipoFamiliarId,
@@ -297,79 +375,126 @@ class FichaPdfController extends Controller
                         INNER JOIN obe.tipo_familiares tipfamles ON fproblem.iTipoFamiliarId = tipfamles.iTipoFamiliarId
                     WHERE fdgrales.iPersId = ?
                         AND YEAR(fdgrales.dtFichaDG) = ?;
-                ", [$id, 2025]);
+                ", [$id, $anio]);
 
-
-     
-//-----------------TRANSPORTE------------------  
-                $transporte = DB::select("
-                    SELECT
+        //-----------------TRANSPORTE------------------  
+        $med_transporte = DB::select("
+                   SELECT
                         fichtransport.iTransporteId,
-                        trasnprt.cTransporteNombre,
-                        dolencs.cDolenciaNombre
+                        trasnprt.cTransporteNombre
                     FROM
                         obe.ficha_datos_grales AS ficdtosgrals
                         INNER JOIN obe.transportes_fichas fichtransport 
                             ON ficdtosgrals.iFichaDGId = fichtransport.iFichaDGId
                         INNER JOIN obe.transportes trasnprt 
                             ON fichtransport.iTransporteId = trasnprt.iTransporteId
-                        LEFT JOIN obe.dolencias_fichas fdolencs 
-                            ON ficdtosgrals.iFichaDGId = fdolencs.iFichaDGId
-                        LEFT JOIN obe.dolencias dolencs 
-                            ON fdolencs.iDolenciaId = dolencs.iDolenciaId
-                    WHERE 
+                   WHERE 
                         ficdtosgrals.iPersId = ?
-                        AND YEAR(ficdtosgrals.dtFichaDG) = ?;
+                        AND YEAR(ficdtosgrals.dtFichaDG) = ?;;
                 ", [$id, $anio]);
 
+        //------------------------27 Mayo-----------------------------------------
 
+        $enfermedad_cronic = DB::select("
+                    SELECT
+                        fdolenc.iFichaDGId,
+                        dolenc.cDolenciaNombre
+                    FROM
+                        obe.ficha_datos_grales AS fdatsgnral
+                        INNER JOIN obe.dolencias_fichas fdolenc ON fdatsgnral.iFichaDGId = fdolenc.iFichaDGId
+                        INNER JOIN obe.dolencias dolenc ON fdolenc.iDolenciaId = dolenc.iDolenciaId
+                        WHERE fdatsgnral.iPersId = ? AND dolenc.bDolenciaEsTransmisible = 1
+                                    AND YEAR(fdatsgnral.dtFichaDG) = ?;
+                    ", [$id, $anio]);
 
+        $dosis_vacunaCovid = DB::select("
+                    SELECT
+                            fpandedosis.iPanDFichaNroDosis
+                    FROM
+                            obe.ficha_datos_grales AS fdtsgrals 
+                            INNER JOIN obe.pandemia_dosis_fichas fpandedosis ON fdtsgrals.iFichaDGId = fpandedosis.iFichaDGId
+                            INNER JOIN obe.pandemia_murieron_fichas fpandmur ON  fpandedosis.iPanDFichaId = fpandmur.iPandemiaId
+                            WHERE fdtsgrals.iPersId = ?
+                                        AND YEAR(fdtsgrals.dtFichaDG) = ?;
+                    ", [$id, $anio]);
 
-//-------------------------------------------------------------------
-  
-        // Ahora, mapear esos datos a tu estructura:
-            // Paso 1: Mapeo principal sin familiares
-            $datos = [
-                'direccion_domiciliaria' => [
-                    'tipo_via' => $datosGenerales->cTipoViaNombre ?? 'N/A',
-                    'nombre_via' => $datosGenerales->cFichaDGDireccionNombreVia ?? 'N/A',
-                    'numero_puerta' => $datosGenerales->cFichaDGDireccionNroPuerta ?? 'N/A',
-                    'block' => $datosGenerales->cFichaDGDireccionBlock ?? 'N/A',
-                    'interior' => $datosGenerales->cFichaDGDirecionInterior ?? 'N/A',
-                    'piso' => $datosGenerales->cFichaDGDirecionPiso ?? 'N/A',
-                    'mz' => $datosGenerales->cFichaDGDireccionManzana ?? 'N/A',
-                    'lote' => $datosGenerales->cFichaDGDireccionLote ?? 'N/A',
-                    'km' => $datosGenerales->cFichaDGDireccionKm ?? 'N/A',
-                    'departamento' => $datosGenerales->cDptoNombre ?? 'N/A',
-                    'provincia' => $datosGenerales->cPrvnNombre ?? 'N/A',
-                    'distrito' => $datosGenerales->cDsttNombre ?? 'N/A',
-                    'vive_padre' => $datosGenerales->bFamiliarPadreVive ?? 'N/A',
-                    'vive_madre' => $datosGenerales->bFamiliarMadreVive ?? 'N/A',
-                    'referencia' => $datosGenerales->cFichaDGDireccionReferencia ?? 'N/A'
-                ],
-                
-                'estudiante' => [
-                    'apellido_paterno' => $datosGenerales->cEstPaterno ?? '',
-                    'apellido_materno' => $datosGenerales->cEstMaterno ?? '',
-                    'nombres' => $datosGenerales->cEstNombres ?? '',
-                    'dni' => $datosGenerales->cPersDocumento ?? '',
-                    'fecha_nacimiento' => date('d-m-Y', strtotime($datosGenerales->dPersNacimiento ?? '')),
-                    'sexo' => $datosGenerales->cPersSexo == 'M' ? 'Masculino' : 'Femenino',
-                    'estado_civil' => $datosGenerales->cTipoEstCivilNombre ?? '',
-                    'num_hijos' => $datosGenerales->iFichaDGNroHijos ?? '',
-                ],
-            
-                'nacimiento' => [
-                    'pais' => $datosGenerales->cPaisNombre ?? '',
-                    'departamento' => $datosGenerales->cUbigeoDpto ?? '',
-                    'provincia' => $datosGenerales->cUbigeoProvincia ?? '',
-                    'distrito' => $datosGenerales->cUbigeoDistrito ?? '',
-                ],
+        //-------------------------------------------------------------------
+        $datos = [
+            'direccion_domiciliaria' => [
+                'tipo_via' => $datosGenerales->cTipoViaNombre ?? '',
+                'nombre_via' => $datosGenerales->cFichaDGDireccionNombreVia ?? '',
+                'numero_puerta' => $datosGenerales->cFichaDGDireccionNroPuerta ?? '',
+                'block' => $datosGenerales->cFichaDGDireccionBlock ?? '',
+                'interior' => $datosGenerales->cFichaDGDirecionInterior ?? '',
+                'piso' => $datosGenerales->cFichaDGDirecionPiso ?? '',
+                'mz' => $datosGenerales->cFichaDGDireccionManzana ?? '',
+                'lote' => $datosGenerales->cFichaDGDireccionLote ?? '',
+                'km' => $datosGenerales->cFichaDGDireccionKm ?? '',
+                'departamento' => $datosGenerales->cDptoNombre ?? '',
+                'provincia' => $datosGenerales->cPrvnNombre ?? '',
+                'distrito' => $datosGenerales->cDsttNombre ?? '',
+                'vive_padre' => $datosGenerales->bFamiliarPadreVive ?? '',
+                'vive_madre' => $datosGenerales->bFamiliarMadreVive ?? '',
+                'referencia' => $datosGenerales->cFichaDGDireccionReferencia ?? ''
+            ],
 
-              ];
+            'estudiante' => [
+                'codigo_alumno' => $datosGenerales->cEstCodigo ?? '',
+                'apellido_paterno' => $datosGenerales->cEstPaterno ?? '',
+                'apellido_materno' => $datosGenerales->cEstMaterno ?? '',
+                'nombres' => $datosGenerales->cEstNombres ?? '',
+                'dni' => $datosGenerales->cPersDocumento ?? '',
+                'fecha_nacimiento' => date('d-m-Y', strtotime($datosGenerales->dPersNacimiento ?? '')),
+                // 'sexo' => $datosGenerales->cPersSexo == 'M' ? 'Masculino' : 'Femenino',
+                'sexo' => isset($datosGenerales) && isset($datosGenerales->cPersSexo)
+                    ? ($datosGenerales->cPersSexo == 'M' ? 'Masculino' : 'Femenino')
+                    : 'No especificado',
+                'estado_civil' => $datosGenerales->cTipoEstCivilNombre ?? '',
+                'num_hijos' => $datosGenerales->iFichaDGNroHijos ?? '',
+                'num_telefono' => $datosGenerales->cEstTelefono ?? '',
+            ],
 
-        //Agregar familiares fuera del array original
+            'nacimiento' => [
+                'pais' => $datosGenerales->cPaisNombre ?? '',
+                'departamento' => $datosGenerales->cUbigeoDpto ?? '',
+                'provincia' => $datosGenerales->cUbigeoProvincia ?? '',
+                'distrito' => $datosGenerales->cUbigeoDistrito ?? '',
+            ],
+
+        ];
+
+        //---------------------------Direccion de Familiares------------------------------------------------
+
+        $datos['direc_familiares'] = [];
+
+        foreach ($direcc_familiares as $dir_familiar) {
+            $datos['direc_familiares'][] = [
+                'tipo_via' => $dir_familiar->cTipoViaNombre ?? '',
+                'Nombre_via' => $dir_familiar->cFamiliarDireccionNombreVia ?? '',
+                'DireccionNroPuerta' => $dir_familiar->cFamiliarDireccionNroPuerta ?? '',
+                'DireccionBlock' => $dir_familiar->cFamiliarDireccionBlock ?? '',
+                'DirecionInterior' => $dir_familiar->cFamiliarDirecionInterior ?? '',
+                'DirecionPiso' => $dir_familiar->cFamiliarDirecionPiso ?? '',
+                'DireccionManzana' => $dir_familiar->cFamiliarDireccionManzana ?? '',
+                'DireccionLote' => $dir_familiar->cFamiliarDireccionLote ?? '',
+                'DireccionKm' => $dir_familiar->cFamiliarDireccionKm ?? '',
+                'DireccionReferencia' => $dir_familiar->cFamiliarDireccionReferencia ?? '',
+
+            ];
+        }
+        //--------------------------------------------------------------------------------------
+        $datos['ieducativas'] = [];
+
+        foreach ($ie_procedencia as $ieducativas) {
+            $datos['ieducativas'][] = [
+                'nombre_iedu' => $ieducativas->cIieeNombre ?? '',
+                'tipo_sector' => $ieducativas->cTipoSectorNombre ?? '',
+
+            ];
+        }
+
         $datos['familiares'] = [];
+
         foreach ($familiares as $familiar) {
             $datos['familiares'][] = [
                 'id' => $familiar->iPersId ?? null,
@@ -382,9 +507,12 @@ class FichaPdfController extends Controller
                 'estado_civil' => $familiar->cTipoEstCivilNombre ?? '',
                 'grado_instruccion' => $familiar->cGradoInstNombre ?? '',
                 'ocupacion' => $familiar->cOcupacionNombre ?? '',
-                'residencia_actual' => $familiar->cFamiliarResidenciaActual ?? '',
+                'departamento' => $familiar->cDptoNombre ?? '',
+                'provincia' => $familiar->cPrvnNombre ?? '',
+                'distrito' => $familiar->cDsttNombre ?? '',
             ];
         }
+        // dd($datos); // Verifica que contiene lo esperado
 
         $datos['aspecto_economico'] = [
             'rango_sueldo' => $aspeconimico->cRangoSueldoDescripcion ?? '',
@@ -395,7 +523,7 @@ class FichaPdfController extends Controller
             'horas_trabajo' => $aspeconimico->iIngresoEcoTrabajoHoras ?? '',
             'jornada_trabajo' => $aspeconimico->cJorTrabDescripcion ?? '',
         ];
-        
+
         $datos['aspecto_vivienda'] = [
             'vivienda_es' => $aspvivienda->cTipoOcupaVivDescripcion ?? '',
             'npisos' => $aspvivienda->iViviendaCarNroPisos ?? '',
@@ -417,32 +545,31 @@ class FichaPdfController extends Controller
                 'electrodm_hogar' => $equipos->cEleParaVivDescripcion ?? '',
             ];
         };
-        
+
         $datos['alimentos_std'] = [
-            'lugar_desayuno' =>$alimentacionstd ->lugarDesayuno ?? '',
-            'lugar_almuerzo' =>$alimentacionstd ->lugarAlmuerzo ?? '',           
-            'lugar_ceba' =>$alimentacionstd ->lugarCena ?? '',           
+            'lugar_desayuno' => $alimentacionstd->lugarDesayuno ?? '',
+            'lugar_almuerzo' => $alimentacionstd->lugarAlmuerzo ?? '',
+            'lugar_ceba' => $alimentacionstd->lugarCena ?? '',
 
         ];
 
         $datos['pers_discapacidad'] = [];
-
         foreach ($dispacidad as $discapacidad) {
             $datos['pers_discapacidad'][] = [
-                'id_ficha'          => $discapacidad->iFichaDGId ?? null,
+                // 'id_ficha'          => $discapacidad->iFichaDGId ?? '',
                 'nomb_discapacidad' => $discapacidad->cDiscNombre ?? '',
                 'esta_en_omaped'    => $discapacidad->EstaEnOMAPED02 ?? 'NO',
                 'esta_en_conadis'   => $discapacidad->EstaEnCONADIS ?? 'NO',
             ];
         }
-   
+
         $datos['pers_salud'] = [];
         $datos['alergias'] = [
             'AlergiaMedicamentos' => null,
             'AlergiaAlimentos' => null,
             'AlergiaOtros' => null,
         ];
-        
+
         foreach ($salud as $index => $psalud) {
             // Guardar enfermedades
             if (!empty($psalud->cDolenciaNombre)) {
@@ -450,7 +577,7 @@ class FichaPdfController extends Controller
                     'enfermedad_nomb' => $psalud->cDolenciaNombre,
                 ];
             }
-        
+
             // Solo una vez cargar las alergias (vienen repetidas si hay varias enfermedades)
             if ($index === 0) {
                 $datos['alergias'] = [
@@ -460,21 +587,18 @@ class FichaPdfController extends Controller
                 ];
             }
         }
-        
-  
-        $datos['pers_seguros'] = [];
 
-        foreach ($seguros as $seguro) {
-            $datos['pers_seguros'][] = [
-                'seguro_salud'       => $seguro->cSegSaludNombre ?? null,
-                'seguro_aportacion'  => $seguro->cTipSegAportaNombre ?? null,
+
+        $datos['seg_salud'] = [];
+        foreach ($sis_salud as $index => $seguro_salud) {
+            $datos['seg_salud'][] = [
+                'seguro_salud' => $seguro_salud->cSegSaludNombre,
+                'tip_aporte'  => $seguro_salud->cTipSegAportaNombre,
             ];
         }
-          
-        
+
         $datos['pers_deportes'] = [];
         $datos['liga_deportiva'] = null;
-        
         foreach ($deportes as $index => $deporte) {
             // Guardar deportes
             if (!empty($deporte->cDeporteNombre)) {
@@ -482,17 +606,15 @@ class FichaPdfController extends Controller
                     'deporte_nombre' => $deporte->cDeporteNombre,
                 ];
             }
-        
+
             // Solo una vez guardar si pertenece a liga (ya que se repite por cada deporte)
             if ($index === 0) {
                 $datos['liga_deportiva'] = $deporte->PerteneceLigaDeportiva ?? 'NO';
             }
         }
-        
-    
+
         $datos['pers_artes'] = [];
         $datos['centro_artistico'] = null;
-        
         foreach ($cultura as $index => $item) {
             // Agregar pasatiempos artísticos
             if (!empty($item->cPasaTiempoNombre)) {
@@ -500,15 +622,23 @@ class FichaPdfController extends Controller
                     'pasatiempo_artistico' => $item->cPasaTiempoNombre,
                 ];
             }
-        
+
             // Guardar si pertenece a un centro artístico (una sola vez)
             if ($index === 0) {
                 $datos['centro_artistico'] = $item->PerteCentroArtistico ?? 'NO';
             }
         }
-   
-        $datos['pers_pasatiempos'] = [];
 
+        $datos['religiones'] = [];
+        foreach ($religiones as $religion) {
+            if (!empty($religion->cReligionNombre)) {
+                $datos['religiones'][] = [
+                    'religion_nombre' => $religion->cReligionNombre,
+                ];
+            }
+        }
+
+        $datos['pers_pasatiempos'] = [];
         foreach ($pasatiempos as $item) {
             if (!empty($item->cPasaTiempoNombre)) {
                 $datos['pers_pasatiempos'][] = [
@@ -516,29 +646,10 @@ class FichaPdfController extends Controller
                 ];
             }
         }
- 
-//  -----------22/05/-------------------------------------------------------------
-      
-        // $datos['pers_deportes'] = [];
-        // $datos['liga_deportiva'] = null;
-        
-        // foreach ($deportes as $index => $deporte) {
-        //     // Guardar deportes
-        //     if (!empty($deporte->cDeporteNombre)) {
-        //         $datos['pers_deportes'][] = [
-        //             'deporte_nombre' => $deporte->cDeporteNombre,
-        //         ];
-        //     }
-        
-        //     // Solo una vez guardar si pertenece a liga (ya que se repite por cada deporte)
-        //     if ($index === 0) {
-        //         $datos['liga_deportiva'] = $deporte->PerteneceLigaDeportiva ?? 'NO';
-        //     }
-        // }
 
-        $datos['fam_acompañantes'] = []; 
-        $datos['asist_consulta'] = [];
-
+        $datos['fam_acompañantes'] = [];
+        // $datos['asist_consulta'] = null;
+        $datos['asist_consulta'] = $asist_consulta ?? [];
         foreach ($emociones as $index => $emocion) {
             if (!empty($emocion->cTipoFamiliarDescripcion)) {
                 $datos['fam_acompañantes'][] = [
@@ -552,55 +663,31 @@ class FichaPdfController extends Controller
                 ];
             }
         }
-////dd($datos); // Verifica que contiene lo esperado
-        
 
+        $datos['medio_transporte'] = [];
+        foreach ($med_transporte as $mtransporte) {
+            $datos['medio_transporte'][] = [
+                'transporte_nombre' => $mtransporte->cTransporteNombre,
 
-        // $datos['pers_psicopedagogico'] = [];
-
-        // $asistio = null;
-        // $familiares = [];
-        
-        // foreach ($psiopedagogico as $item) {
-        //     if (!empty($item->cFichaDGAsistioConsultaPsicologica)) {
-        //         $asistio = $item->cFichaDGAsistioConsultaPsicologica;
-        //     }
-        
-        //     if (!empty($item->cTipoFamiliarDescripcion)) {
-        //         $familiares[] = $item->cTipoFamiliarDescripcion;
-        //     }
-        // }
-        
-        // $datos['pers_psicopedagogico'][] = [
-        //     'asistio_consulta' => $asistio ?? 'No hay información',
-        //     'familiares' => $familiares
-        // ];
-        
-// ------------fin 22/05-----------------------------------------
-       
-
-$datos['medio_transporte'] = [];
-
-        foreach ($transporte as $mtransporte){
-        $datos['medio_transporte'][] = [
-            'transporte_nombre' => $mtransporte->cTransporteNombre,
-            'dolencia_nombre' => $mtransporte->cDolenciaNombre ?? 'Sin información',
-    
-        ];
-        }
-   
-        $datos['pers_seguros'] = [];
-
-        foreach ($seguros as $seguro) {
-            $datos['pers_seguros'][] = [
-                'seguro_salud'       => $seguro->cSegSaludNombre ?? null,
-                'seguro_aportacion'  => $seguro->cTipSegAportaNombre ?? null,
             ];
         }
 
+        $datos['enfermdad_cronic'] = [];
+        foreach ($enfermedad_cronic as $enf_cronica) {
+            $datos['enfermdad_cronic'][] = [
+                'enfermedad' => $enf_cronica->cDolenciaNombre ?? 'Sin información',
+            ];
+        }
 
-return view('pdfFicha.ficha', $datos);
-
+        $datos['dosis_vacuna'] = [];
+        foreach ($dosis_vacunaCovid as $dosis_vacunaCov) {
+            $datos['dosis_vacuna'][] = [
+                'dosis_vacun' => $dosis_vacunaCov->iPanDFichaNroDosis ?? 'Sin información',
+            ];
+        }
+        //  dd($datos); // Verifica que contiene lo esperado
+        $pdf = Pdf::loadView('pdfFicha.ficha', $datos)->setPaper('A4');
+        return $pdf->stream("ficha_socioeconomica_{$id}_{$anio}.pdf");
+        // return view('pdfFicha.ficha', $datos);
     }
 }
-

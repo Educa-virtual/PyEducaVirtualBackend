@@ -19,3 +19,4 @@ Route::get('generarWordEvaluacionByIds', [PreguntasController::class, 'generarWo
 
 //ok
 Route::get('mostrarPdf', [FichaPdfController::class, 'mostrarFichaPdf']);
+Route::get('/ficha-pdf/{id}/{anio}', [FichaPdfController::class, 'mostrarFichaPdf'])->name('ficha.pdf');

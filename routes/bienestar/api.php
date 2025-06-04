@@ -10,6 +10,8 @@ use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
 //Se agrego codigo el 22 Abril--------
 use app\Http\Controllers\bienestar\EstudianteController;
+use app\Http\Controllers\bienestar\FichaPdfController;
+
 
 Route::group(['prefix' => 'bienestar'], function () {
 
@@ -48,6 +50,8 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarFichaAlimentacion', [FichaAlimentacionController::class, 'update']);
 
     Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+ 
+
 
 });
 
