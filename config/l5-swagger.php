@@ -48,7 +48,7 @@ return [
                     base_path('app/Http/docs/BaseDoc.php'),
                     base_path('app/Http/Controllers/acad'),
                     base_path('app/Http/Controllers/api/seg'),
-
+                    base_path('app/Http/Controllers/seg'),
                 ],
             ],
         ],

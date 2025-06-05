@@ -1,33 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\api\seg;
+namespace App\Http\Controllers\seg;
 
 use App\Helpers\FormatearMensajeHelper;
-use App\Http\Controllers\Controller;
-use App\Http\Middleware\AuditoriaAccesos;
 use App\Http\Requests\seg\LoginUsuarioRequest;
-use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Facades\JWTException;
 use App\Models\User;
-use Hashids\Hashids;
+use Exception;
 
-class CredencialescCredUsuariocClaveController extends Controller
-{
-    protected $hashids;
-
-    public function __construct()
-    {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-
-        $this->middleware(AuditoriaAccesos::class)->only(['login']);
-    }
-
-
+class AuthController {
 
     /**
      * @OA\Post(
@@ -52,13 +32,12 @@ class CredencialescCredUsuariocClaveController extends Controller
      *     @OA\Response(
      *         response=401,
      *         description="Errores de autenticación posibles:
-     *                      - Ya alcanzó el límite de intentos
-     *                      - Usuario y contraseña incorrectos
-     *                      - Debe actualizar su contraseña
-     *                      - Usuario no existe",
+     *                      - Usuario o contraseña incorrectos
+     *                      - Su usuario está desactivado, contacte con el área de soporte
+     *                      - Su cuenta ha expirado, contacte con el área de soporte)",
      *         @OA\JsonContent(
      *             @OA\Property(property="validated", type="boolean", example=false),
-     *             @OA\Property(property="message", type="string", example="Verifica tu usuario y contraseña")
+     *             @OA\Property(property="message", type="string", example="Usuario o contraseña incorrectos")
      *         )
      *     ),
      *     @OA\Response(
@@ -81,8 +60,5 @@ class CredencialescCredUsuariocClaveController extends Controller
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
-
     }
-
-
 }

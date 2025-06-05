@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\seg;
+namespace App\Http\Controllers\seg;
 
 use App\Http\Controllers\Controller;
 use Exception;
@@ -8,29 +8,24 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CredSecurityCodeController extends Controller
+class CredencialModuloController extends Controller
 {
-    public function index(Request $request){
-
-        $id = $request->id;
-        $codigo = mt_rand(100000,999999);
-        $session = 1;
-
-        $upd_query = DB::select('Sp_UPD_cCredSecurityCode_credencialesXiCredId ?,?,?',[$id, $codigo, $session]);
-        //$sel_query = DB::select('EXECUTE seg.Sp_SEL_credencialesXiCredId ?,?',[$id]);
+    public function list(Request $request){
+        $iCredEntId = $request->iCredEntId;
+        $query = DB::select('seg.Sp_SEL_accesos_modulos_padresXiCredEntId ?',[$iCredEntId]);
 
         try{
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'se obtuvo la información',
-                'data' => $upd_query,
+                'data' => $query,
             ];
 
             $estado = 200;
 
         }catch(Exception $e){
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];

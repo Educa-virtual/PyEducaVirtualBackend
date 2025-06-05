@@ -72,7 +72,19 @@ class CursosController extends Controller
 
     public function listarCursosPorNivel(Request $request)
     {
-        $data = DB::select('[acad].SP_SEL_CursosXiNivelTipoId @iNivelTipoId=?', [$request->query('nivel')]);
+        if ($request->query('nivel') == '0') {
+            $solicitud = [
+                '{"id":"1289"}', //Número cualquiera
+                'getCursoNivelGrado'
+            ];
+            $data = DB::select(
+                "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+                $solicitud
+            );
+        } else {
+            $data = DB::select('[acad].SP_SEL_CursosXiNivelTipoId @iNivelTipoId=?', [$request->query('nivel')]);
+        }
+
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos', 'data' => $data], Response::HTTP_OK);
     }
 }
