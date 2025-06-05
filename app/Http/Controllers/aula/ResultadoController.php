@@ -151,11 +151,11 @@ class ResultadoController extends Controller
             'iSeccionId' => ['required'],
             'iNivelGradoId' => ['required']
         ], [
-            'iIeCursoId.required' => 'No se encontro el identificador iIeCursoId',
-            'iYAcadId.required' => 'No se encontro el identificador iYAcadId',
-            'iSedeId.required' => 'No se encontro el identificador iSedeId',
-            'iSeccionId.required' => 'No se encontro el identificador iSeccionId',
-            'iNivelGradoId.required' => 'No se encontro el identificador iNivelGradoId'
+            'iIeCursoId.required' => 'No se encontró el identificador iIeCursoId',
+            'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
+            'iSedeId.required' => 'No se encontró el identificador iSedeId',
+            'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
+            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId'
         ]);
 
         if ($validator->fails()) {

@@ -27,14 +27,14 @@ class DetalleMatriculasController extends Controller
             'idDocCursoId' => ['required'],
             'iCredId' => ['required'],
         ], [
-            'iEscalaCalifIdPromedio.required' => 'No se encontro el identificador iEscalaCalifIdPromedio',
+            'iEscalaCalifIdPromedio.required' => 'No se encontró el identificador iEscalaCalifIdPromedio',
             'cDetMatConclusionDescPromedio.required' => 'No ingresó una conclusión descriptiva para el promedio',
-            'iEstudianteId.required' => 'No se encontro el identificador iEstudianteId',
-            'iMatrId.required' => 'No se encontro el identificador iMatrId',
-            'iIeCursoId.required' => 'No se encontro el identificador iIeCursoId',
-            'iSeccionId.required' => 'No se encontro el identificador iSeccionId',
-            'idDocCursoId.required' => 'No se encontro el identificador idDocCursoId',
-            'iCredId.required' => 'No se encontro el identificador iCredId',
+            'iEstudianteId.required' => 'No se encontró el identificador iEstudianteId',
+            'iMatrId.required' => 'No se encontró el identificador iMatrId',
+            'iIeCursoId.required' => 'No se encontró el identificador iIeCursoId',
+            'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
+            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+            'iCredId.required' => 'No se encontró el identificador iCredId',
         ]);
 
         if ($validator->fails()) {

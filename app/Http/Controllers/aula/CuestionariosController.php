@@ -25,12 +25,12 @@ class CuestionariosController extends Controller
             'dtInicio'     => ['required', 'date'],
             'dtFin'        => ['required', 'date', 'after:dtInicio'],
         ], [
-            'iProgActId.required' => 'No se encontro el identificador iProgActId',
-            'iDocenteId.required' => 'No se encontro el identificador iDocenteId',
-            'cTitulo.required' => 'No se encontro el identificador cTitulo',
+            'iProgActId.required' => 'No se encontró el identificador iProgActId',
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+            'cTitulo.required' => 'No se encontró el identificador cTitulo',
             'cTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cSubtitulo.max' => 'El subtítulo no debe exceder los 250 caracteres.',
-            'cDescripcion.required' => 'No se encontro el identificador cDescripcion',
+            'cDescripcion.required' => 'No se encontró el identificador cDescripcion',
             'dtInicio.required'     => 'La fecha y hora de inicio es obligatoria',
             'dtInicio.date'         => 'La fecha de inicio no es válida.',
             'dtFin.required'        => 'La fecha y hora de fin es obligatoria',
@@ -114,13 +114,13 @@ class CuestionariosController extends Controller
             'dtInicio'     => ['required', 'date'],
             'dtFin'        => ['required', 'date', 'after:dtInicio'],
         ], [
-            'iCuestionarioId.required' => 'No se encontro el identificador iCuestionarioId',
-            'iProgActId.required' => 'No se encontro el identificador iProgActId',
-            'iDocenteId.required' => 'No se encontro el identificador iDocenteId',
-            'cTitulo.required' => 'No se encontro el identificador cTitulo',
+            'iCuestionarioId.required' => 'No se encontró el identificador iCuestionarioId',
+            'iProgActId.required' => 'No se encontró el identificador iProgActId',
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+            'cTitulo.required' => 'No se encontró el identificador cTitulo',
             'cTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cSubtitulo.max' => 'El subtítulo no debe exceder los 250 caracteres.',
-            'cDescripcion.required' => 'No se encontro el identificador cDescripcion',
+            'cDescripcion.required' => 'No se encontró el identificador cDescripcion',
             'dtInicio.required'     => 'La fecha y hora de inicio es obligatoria',
             'dtInicio.date'         => 'La fecha de inicio no es válida.',
             'dtFin.required'        => 'La fecha y hora de fin es obligatoria',
@@ -197,7 +197,7 @@ class CuestionariosController extends Controller
         $validator = Validator::make($request->all(), [
             'iCuestionarioId' => ['required'],
         ], [
-            'iCuestionarioId.required' => 'No se encontro el identificador iCuestionarioId',
+            'iCuestionarioId.required' => 'No se encontró el identificador iCuestionarioId',
         ]);
 
         if ($validator->fails()) {
@@ -254,7 +254,7 @@ class CuestionariosController extends Controller
         $validator = Validator::make($request->all(), [
             'iCuestionarioId' => ['required'],
         ], [
-            'iCuestionarioId.required' => 'No se encontro el identificador iCuestionarioId',
+            'iCuestionarioId.required' => 'No se encontró el identificador iCuestionarioId',
         ]);
 
         if ($validator->fails()) {

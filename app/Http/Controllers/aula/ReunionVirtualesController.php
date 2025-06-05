@@ -29,7 +29,7 @@ class ReunionVirtualesController extends Controller
             'dtRVirtualFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio.',
             'cRVirtualUrlJoin.required' => 'No ingresó la URL de la reunión virtual',
             'cRVirtualUrlJoin.url' => 'La URL de la reunión virtual no es válida.',
-            'iProgActId.required' => 'No se encontro el identificador iProgActId',
+            'iProgActId.required' => 'No se encontró el identificador iProgActId',
 
         ]);
 
@@ -95,7 +95,7 @@ class ReunionVirtualesController extends Controller
             'dtRVirtualFin' => ['required', 'date', 'after:dtRVirtualInicio'],
             'cRVirtualUrlJoin' => ['required', 'url'],
         ], [
-            'iRVirtualId.required' => 'No se encontro el identificador iRVirtualId',
+            'iRVirtualId.required' => 'No se encontró el identificador iRVirtualId',
             'cRVirtualTema.required' => 'No ingresó tema de la reunión virtual',
             'dtRVirtualInicio.required' => 'La fecha y hora de inicio es obligatoria',
             'dtRVirtualInicio.date' => 'La fecha de inicio no es válida.',
@@ -164,7 +164,7 @@ class ReunionVirtualesController extends Controller
         $validator = Validator::make($request->all(), [
             'iRVirtualId' => ['required']
         ], [
-            'iRVirtualId.required' => 'No se encontro el identificador iRVirtualId'
+            'iRVirtualId.required' => 'No se encontró el identificador iRVirtualId'
         ]);
 
         if ($validator->fails()) {
@@ -217,7 +217,7 @@ class ReunionVirtualesController extends Controller
         $validator = Validator::make($request->all(), [
             'iRVirtualId' => ['required'],
         ], [
-            'iRVirtualId.required' => 'No se encontro el identificador iRVirtualId',
+            'iRVirtualId.required' => 'No se encontró el identificador iRVirtualId',
         ]);
 
         if ($validator->fails()) {

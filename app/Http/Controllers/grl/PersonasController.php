@@ -144,45 +144,63 @@ class PersonasController extends Controller
     }
 
     public function buscarPersonaxiTipoIdentIdxcPersDocumento(Request $request)
-    {   
+    {
         try {
-            $fieldsToDecode = ['iTipoIdentId','iCredId'];
+            $fieldsToDecode = ['iTipoIdentId', 'iCredId'];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
             $data = new PersonaController();
             $data = ($data->validate($request))->getContent();
-            
-            $data = json_decode($data, true); 
-            
-          return $data;
-            if (isset($data['iPersId'])) {
-                $request->merge(['iPersId' => $data['iPersId']]);
+
+            $data = json_decode($data, true);
+
+            if (isset($data['data']['iPersId'])) {
+
+                $request->merge(['iPersId' => $data['data']['iPersId']]);
                 $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-                
+
                 $contacto = new PersonasContactosController();
-                
+
                 $contacto = $contacto->obtenerxiPersId($request)->getData(true);
                 $contacto = $contacto['data'];
-                $data['cPersDireccion'] = $contacto['cPersDireccion'];
-                $data['cPersCel'] = $contacto['cPersCel'];
-                $data['cPersCorreo'] = $contacto['cPersCorreo'];
-                $data['cPersTel'] = $contacto['cPersTel'];
-                $data['cPersRedSoc'] = $contacto['cPersRedSoc'];
-                
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
-                    Response::HTTP_OK
-                );
-            } else {
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'No se ha encontrado información ', 'data' => []],
-                    Response::HTTP_OK
-                );
+                $data['data']['cPersDireccion'] = $contacto['cPersDireccion'];
+                $data['data']['cPersCel'] = $contacto['cPersCel'];
+                $data['data']['cPersCorreo'] = $contacto['cPersCorreo'];
+                $data['data']['cPersTel'] = $contacto['cPersTel'];
+                $data['data']['cPersRedSoc'] = $contacto['cPersRedSoc'];
             }
+            return $data;
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    public function guardarPersonas(Request $request)
+    {
+        $fieldsToDecode = [
+            'iPersId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+        $parametros = [
+            $request->iTipoIdentId          ??  NULL,
+            $request->cPersDocumento        ??  NULL,
+            $request->cPersNombre           ??  NULL,
+            $request->cPersPaterno          ??  NULL,
+            $request->cPersMaterno          ??  NULL
+        ];
+
+        try {
+            $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?", $parametros);
+            return $data;
+            
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
     }
 }
