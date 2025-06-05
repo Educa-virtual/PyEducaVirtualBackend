@@ -346,15 +346,25 @@ class EvaluacionesController extends ApiController
                 return response()->json(['message' => 'Datos incompletos.'], 400);
             }
 
+
             // Inserta los cursos
             foreach ($selectedCursos as $curso) {
+                if (isset($curso['dtExamenFechaInicio']) && $curso['dtExamenFechaInicio'] != null) {
+                    $fecha = Carbon::parse($curso['dtExamenFechaInicio']);
+                    $fecha = $fecha->format('Y-m-d');
+                } else {
+                    $fecha = null;
+                }
                 DB::table('ere.examen_cursos')->insert([
                     'iEvaluacionId' => $iEvaluacionId,
                     'iCursoNivelGradId' => $curso['iCursoNivelGradId'],
+                    'dtExamenFechaInicio' => $fecha,
+                    'dtExamenFechaFin' => $fecha,
+                    'iExamenCantidadPreguntas' => $curso['iExamenCantidadPreguntas'],
                 ]);
             }
 
-            return response()->json(['message' => 'Cursos insertados correctamente'], 200);
+            return response()->json(['message' => 'Cursos insertados correctamentex'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al insertar cursos', 'error' => $e->getMessage()], 500);
         }
