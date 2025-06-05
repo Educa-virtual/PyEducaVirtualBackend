@@ -351,7 +351,7 @@ class EvaluacionesController extends ApiController
             foreach ($selectedCursos as $curso) {
                 if (isset($curso['dtExamenFechaInicio']) && $curso['dtExamenFechaInicio'] != null) {
                     $fecha = Carbon::parse($curso['dtExamenFechaInicio']);
-                    $fecha = $fecha->format('Y-m-d');
+                    $fecha = $fecha->format('Ymd H:i:s');
                 } else {
                     $fecha = null;
                 }
