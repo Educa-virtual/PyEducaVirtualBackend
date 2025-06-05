@@ -1,0 +1,476 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Proyecto Educativo Virtual - API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/acad/estudiantes/buzon-sugerencias": {
+            "get": {
+                "tags": [
+                    "Buzón de sugerencias"
+                ],
+                "summary": "Lista las sugerencias registradas por el alumno, que no estén marcadas como eliminadas.",
+                "operationId": "e2f5b162600e28e212f71b87c0a8e69c",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Datos obtenidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Datos obtenidos"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "Lista de sugerencias"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Buzón de sugerencias"
+                ],
+                "summary": "Permite a un estudiante registrar una sugerencia en el buzón de sugerencias.",
+                "operationId": "e47bae1b367d762713673d82372241b4",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "cAsunto",
+                        "in": "query",
+                        "description": "Asunto de la sugerencia",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 255
+                        }
+                    },
+                    {
+                        "name": "cSugerencia",
+                        "in": "query",
+                        "description": "Contenido de la sugerencia",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "iPrioridadId",
+                        "in": "query",
+                        "description": "ID de la prioridad de la sugerencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Sugerencia registrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Se ha registrado su sugerencia"
+                                        },
+                                        "data": {
+                                            "type": "integer",
+                                            "example": "ID de la sugerencia registrada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/acad/estudiantes/buzon-sugerencias/{iSugerenciaId}/archivos": {
+            "post": {
+                "tags": [
+                    "Buzón de sugerencias"
+                ],
+                "summary": "Obtiene la lista de archivos subidos para una sugerencia.",
+                "operationId": "fc809a9f0c939a299a078c6b5a31249b",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iSugerenciaId",
+                        "in": "path",
+                        "description": "Id de la sugerencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sugerencia registrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Se ha registrado su sugerencia"
+                                        },
+                                        "data": {
+                                            "type": "integer",
+                                            "example": "ID de la sugerencia registrada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/acad/estudiantes/buzon-sugerencias/{iCredEntPerfId}": {
+            "delete": {
+                "tags": [
+                    "Buzón de sugerencias"
+                ],
+                "summary": "Marca la sugerencia de un alumno como eliminada.",
+                "operationId": "d69dcb847c634b6c41d2e41bf34819bb",
+                "parameters": [
+                    {
+                        "name": "iSugerenciaId",
+                        "in": "path",
+                        "description": "Id de la sugerencia",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sugerencia eliminada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Autenticación"
+                ],
+                "summary": "Login de usuario",
+                "description": "Autentica un usuario y retorna un token JWT junto con la data del usuario.",
+                "operationId": "d0fabbdd66ee2d9f03f4ab51b6928b21",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "query",
+                        "description": "Usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "pass",
+                        "in": "query",
+                        "description": "Contraseña del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 6
+                        }
+                    }
+                ],
+                "responses": {
+                    "401": {
+                        "description": "Errores de autenticación posibles:\n     *                      - Ya alcanzó el límite de intentos\n     *                      - Usuario y contraseña incorrectos\n     *                      - Debe actualizar su contraseña\n     *                      - Usuario no existe",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "validated": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Verifica tu usuario y contraseña"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Inicio de sesión correcto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "accessToken": {
+                                            "description": "JWT token",
+                                            "type": "string"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "bearer"
+                                        },
+                                        "expires_in": {
+                                            "description": "Tiempo de duración del token",
+                                            "type": "integer"
+                                        },
+                                        "user": {
+                                            "description": "Data del usuario",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "204": {
+                "description": "Registro eliminado",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Success"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "400": {
+                "description": "Error en la solicitud",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Error"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Mensaje de error de la solicitud"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "403": {
+                "description": "Sin autorización",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Error"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "No tiene permiso para realizar esta acción"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "422": {
+                "description": "Error de validación",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "Error"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "Mensaje de error de validación"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "iCredEntPerfId": {
+                "name": "iCredEntPerfId",
+                "in": "header",
+                "description": "Id de la credencial a nivel entidad y perfil",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "Accept": {
+                "name": "Accept",
+                "in": "header",
+                "description": "Tipo de respuesta esperada",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "default": "application/json"
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Buzón de sugerencias",
+            "description": "Operaciones relacionadas con el registro de sugerencias por parte de estudiantes"
+        },
+        {
+            "name": "Autenticación",
+            "description": "Inicio de sesión de usuarios"
+        }
+    ],
+    "security": {
+        "passport": {
+            "type": "oauth2",
+            "description": "Laravel passport oauth2 security.",
+            "in": "header",
+            "scheme": "https",
+            "flows": {
+                "password": {
+                    "authorizationUrl": "http://localhost/oauth/authorize",
+                    "tokenUrl": "http://localhost/oauth/token",
+                    "refreshUrl": "http://localhost/token/refresh",
+                    "scopes": []
+                }
+            }
+        }
+    }
+}

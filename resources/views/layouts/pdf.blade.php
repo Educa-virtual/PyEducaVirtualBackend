@@ -21,7 +21,7 @@
 
         .table-bordered td,
         .table-bordered th  {
-            border: 1 solid black !important;
+            border: 1px solid black !important;
             white-space: pre-line;
         }
 
@@ -103,11 +103,10 @@
         }
         .table {
             width: 100%;
-            table-layout: fixed;
             margin-bottom: 0;
         }
         .table-aside {
-            width: 25%;
+            width: 30%;
             table-layout: fixed;
             margin-bottom: 0;
             float: right;
@@ -169,6 +168,7 @@
         }
         div.page-break {
             page-break-after: always;
+            clear: both;
         }
         .text-danger {
             color: darkred;

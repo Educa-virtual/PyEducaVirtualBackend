@@ -36,7 +36,7 @@ class VerifyHash
     }
 
     public static function encodeField($hash)
-    {   
+    {
         VerifyHash::VerifyHashInitialize();
 
         $decoded = self::$hashids->encode($hash);
@@ -44,7 +44,7 @@ class VerifyHash
     }
 
     public static function validateRequest(Request $request, $fieldsToDecode)
-    {   
+    {
         VerifyHash::VerifyHashInitialize();
 
         foreach ($fieldsToDecode as $field) {
@@ -54,7 +54,7 @@ class VerifyHash
     }
 
     public static function encodeFields($item, $fieldsToEncode)
-    {   
+    {
         VerifyHash::VerifyHashInitialize();
 
         foreach ($fieldsToEncode as $field) {
@@ -66,7 +66,7 @@ class VerifyHash
     }
 
     public static function encodeRequest($data, $fieldsToDecode)
-    {   
+    {
         VerifyHash::VerifyHashInitialize();
 
         return array_map(function ($item) use ($fieldsToDecode) {
@@ -88,10 +88,10 @@ class VerifyHash
         return $hashing;
         // return array_map([self::class, 'encodeFields'], $value);
     }
-    
+
     // decodificar los id de los registros a enviar al backend
     public static function decodesxId($hash){
-       
+
         $hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
         $decoded = $hashids->decode($hash);
         return $decoded ? $decoded[0] : null;

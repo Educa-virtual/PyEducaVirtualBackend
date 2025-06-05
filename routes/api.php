@@ -58,20 +58,11 @@ Route::group(['prefix' => 'administrador'], function () {
 });
 
 
-Route::group(['prefix' => 'administrador'], function () {
-    Route::post('addCurriculas', [administradorController::class, 'addCurriculas']);
-    Route::post('mensaje', [administradorController::class, 'mensaje']);
-    Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
-    Route::post('addNiveles', [AdministradorController::class, 'addNiveles']); 
-    Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
-
-});
-
-
 Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
         Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
+        
     });
     Route::group(['prefix' => 'nivelTipo'], function () {
         Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);

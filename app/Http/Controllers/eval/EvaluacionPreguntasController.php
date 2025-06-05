@@ -14,7 +14,10 @@ class EvaluacionPreguntasController extends Controller
 
     public function __construct()
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+        $this->hashids = new Hashids(
+            config('hashids.salt'),
+            config('hashids.min_length')
+        );
     }
 
     private function decodeValue($value)
@@ -22,125 +25,102 @@ class EvaluacionPreguntasController extends Controller
         if (is_null($value)) {
             return null;
         }
-        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
+        return is_numeric($value)
+            ? $value
+            : ($this->hashids->decode($value)[0] ?? null);
     }
 
-    public function validateRequest(Request $request)
+    private function validateRequest(Request $request)
     {
         $request->validate(
             ['opcion' => 'required'],
             ['opcion.required' => 'Hubo un problema al obtener la acción']
         );
 
-        $fieldsToDecode = [
-            'valorBusqueda',
-            'iEvalPregId',
-            'iEvaluacionId',
-            'iBancoId'
-        ];
+        foreach (['valorBusqueda', 'iEvalPregId', 'iEvaluacionId', 'iBancoId'] as $f) {
+            $request[$f] = $this->decodeValue($request->$f);
+        }
 
-        foreach ($fieldsToDecode as $field) {
-            $request[$field] = $this->decodeValue($request->$field);
+        $iCredId = $request->iCredId ?? 0; 
+        if ($iCredId === null) {
+            $iCredId = 0; 
         }
 
         return [
-            $request->opcion,
-            $request->valorBusqueda ?? '-',
-
-            $request->iEvalPregId           ??  NULL,
-            $request->iEvaluacionId         ??  NULL,
-            $request->iBancoId              ??  NULL,
-            $request->cEvalPregPregunta     ??  NULL,
-            $request->dtEvalPregTiempo      ??  NULL,
-            $request->cEvalPregTextoAyuda   ??  NULL,
-            $request->nEvalPregPuntaje      ??  NULL,
-            $request->iEstado               ??  NULL,
-            $request->iSesionId             ??  NULL,
-            $request->dtCreado              ??  NULL,
-            $request->dtActualizado         ??  NULL,
-
-            $request->iCredId               ??  NULL
+            'opcion' => $request->opcion,
+            'valorBusqueda' => $request->valorBusqueda ?? '-',
+            'iPreguntaId' => $request->iPreguntaId ?? null,
+            'iDesempenoId' => $request->iDesempenoId ?? null,
+            'iTipoPregId' => $request->iTipoPregId ?? null,
+            'cPregunta' => $request->cPregunta ?? null,
+            'cPreguntaTextoAyuda' => $request->cPreguntaTextoAyuda ?? null,
+            'iPreguntaNivel' => $request->iPreguntaNivel ?? null,
+            'iPreguntaPeso' => $request->iPreguntaPeso ?? null,
+            'dtPreguntaTiempo' => $request->dtPreguntaTiempo ?? null,
+            'bPreguntaEstado' => $request->bPreguntaEstado ?? 1,
+            'cPreguntaClave' => $request->cPreguntaClave ?? null,
+            'iEspecialistaId' => $request->iEspecialistaId ?? null,
+            'iNivelGradoId' => $request->iNivelGradoId ?? null,
+            'iEncabPregId' => $request->iEncabPregId ?? null,
+            'iCursosNivelGradId' => $request->iCursosNivelGradId ?? null,
+            'iCredId' => $iCredId, 
+            'iPreguntaOrden' -> $request->iPreguntaOrden ?? null,
         ];
-    }
-
-    private function encodeFields($item)
-    {
-        $fieldsToEncode = [
-            'idEncabPregId',
-            'iEvalPregId',
-            'iEvaluacionId',
-            'iBancoId'
-        ];
-
-        foreach ($fieldsToEncode as $field) {
-            if (isset($item->$field)) {
-                $item->$field = $this->hashids->encode($item->$field);
-            }
-        }
-
-        return $item;
-    }
-
-    public function encodeId($data)
-    {
-        return array_map([$this, 'encodeFields'], $data);
     }
 
     public function handleCrudOperation(Request $request)
     {
-        $parametros = $this->validateRequest($request);
+        $params = $this->validateRequest($request);
 
-        try {
-            switch ($request->opcion) {
-                case 'CONSULTAR':
-                    $data = DB::select('exec eval.Sp_SEL_evaluacionPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    $data = $this->encodeId($data);
-                    return new JsonResponse(
-                        ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
-                        200
-                    );
-                    break;
-                case 'GUARDARxBancoPreguntas':
-                    $data = DB::select('exec eval.Sp_INS_evaluacionPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iEvalPregId > 0) {
-                        $resp = new BancoAlternativasController();
-                        return $resp->handleCrudOperation($request);
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
-                            500
-                        );
-                    }
-                case 'EliminarxiEvalPregId':
-                    $data = DB::select('exec eval.Sp_DEL_evaluacionPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iEvalPregId > 0) {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se eliminó la información', 'data' => null],
-                            200
-                        );
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido eliminar la información', 'data' => null],
-                            500
-                        );
-                    }
-                case 'ACTUALIZARxBancoPreguntas':
-                    $data = DB::select('exec eval.Sp_UPD_evaluacionPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iEvalPregId > 0) {
-                        $resp = new BancoAlternativasController();
-                        return $resp->handleCrudOperation($request);
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
-                            500
-                        );
-                    }
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
-                500
-            );
+        switch ($request->opcion) {
+            case 'GUARDAR-PREGUNTAS':
+                try {
+                    $sql = "
+                    DECLARE @result INT
+                    EXEC @result = ere.Sp_INS_preguntas 
+                        @_opcion = :opcion, 
+                        @_valorBusqueda = :valorBusqueda,
+                        @_iPreguntaId = :iPreguntaId,
+                        @_iDesempenoId = :iDesempenoId,
+                        @_iTipoPregId = :iTipoPregId,
+                        @_cPregunta = :cPregunta,
+                        @_cPreguntaTextoAyuda = :cPreguntaTextoAyuda,
+                        @_iPreguntaNivel = :iPreguntaNivel,
+                        @_iPreguntaPeso = :iPreguntaPeso,
+                        @_dtPreguntaTiempo = :dtPreguntaTiempo,
+                        @_bPreguntaEstado = :bPreguntaEstado,
+                        @_cPreguntaClave = :cPreguntaClave,
+                        @_iEspecialistaId = :iEspecialistaId,
+                        @_iNivelGradoId = :iNivelGradoId,
+                        @_iEncabPregId = :iEncabPregId,
+                        @_iCursosNivelGradId = :iCursosNivelGradId,
+                        @_iCredId = :iCredId;
+                        @_iPreguntaOrden = :iPreguntaOrden;
+                    SELECT @result AS result;
+                    ";
+
+                    $data = DB::select($sql, $params);
+
+                    return new JsonResponse([
+                        'validated' => true,
+                        'message'   => 'Pregunta guardada',
+                        'data'      => $data
+                    ], 200);
+                } catch (\Exception $e) {
+                    return new JsonResponse([
+                        'validated' => false,
+                        'message'   => $e->getMessage(),
+                        'data'      => []
+                    ], 500);
+                }
+                break;
+
+            default:
+                return new JsonResponse([
+                    'validated' => false,
+                    'message'   => 'Opción no válida',
+                    'data'      => []
+                ], 400);
         }
     }
 }
