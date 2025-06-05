@@ -11,6 +11,7 @@
 /public/tareas
 /public/tareas-estudiantes
 /public/users
+/public/web.config
 /storage/*.key
 /vendor
 .env
