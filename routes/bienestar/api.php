@@ -45,7 +45,7 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarFichaVivienda', [FichaViviendaController::class, 'actualizarFichaVivienda']);
 
     /* Rutas para gestion seccion alimentacion */
-    Route::post('searchFichaAlimentacion', [FichaAlimentacionController::class, 'verFichaAlimentacion']);
+    Route::post('verFichaAlimentacion', [FichaAlimentacionController::class, 'verFichaAlimentacion']);
     Route::post('guardarFichaAlimentacion', [FichaAlimentacionController::class, 'guardarFichaAlimentacion']);
     Route::post('actualizarFichaAlimentacion', [FichaAlimentacionController::class, 'actualizarFichaAlimentacion']);
 

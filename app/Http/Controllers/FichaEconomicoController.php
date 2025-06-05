@@ -12,7 +12,6 @@ class FichaEconomicoController extends Controller
     public function guardarFichaEconomico(Request $request)
     {
         $parametros = [
-            $request->iCredId,
             $request->iFichaDGId,
             $request->iIngresoEcoFamiliar,
             $request->cIngresoEcoActividad,
@@ -43,7 +42,6 @@ class FichaEconomicoController extends Controller
     public function actualizarFichaEconomico(Request $request)
     {
         $parametros = [
-            $request->iCredId,
             $request->iIngresoEcoId,
             $request->iFichaDGId,
             $request->iIngresoEcoFamiliar,

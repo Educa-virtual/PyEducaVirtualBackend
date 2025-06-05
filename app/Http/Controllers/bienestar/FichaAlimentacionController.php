@@ -14,6 +14,7 @@ class FichaAlimentacionController extends Controller
     public function guardarFichaAlimentacion(FichaAlimentacionSaveRequest $request)
     {
         $parametros = [
+            $request->iAlimId,
             $request->iFichaDGId,
             $request->iLugarAlimIdDesayuno,
             $request->cLugarAlimDesayuno,
@@ -25,8 +26,8 @@ class FichaAlimentacionController extends Controller
             $request->cDietaVegetarianaObs,
             $request->bDietaVegana,
             $request->cDietaVeganaObs,
-            $request->bAlergiasAlim,
-            $request->cAlergiasAlimObs,
+            $request->bFichaDGAlergiaAlimentos,
+            $request->cFichaDGAlergiaAlimentos,
             $request->bIntoleranciaAlim,
             $request->cIntoleranciaAlimObs,
             $request->bSumplementosAlim,
@@ -65,8 +66,8 @@ class FichaAlimentacionController extends Controller
             $request->cDietaVegetarianaObs,
             $request->bDietaVegana,
             $request->cDietaVeganaObs,
-            $request->bAlergiasAlim,
-            $request->cAlergiasAlimObs,
+            $request->bFichaDGAlergiaAlimentos,
+            $request->cFichaDGAlergiaAlimentos,
             $request->bIntoleranciaAlim,
             $request->cIntoleranciaAlimObs,
             $request->bSumplementosAlim,
