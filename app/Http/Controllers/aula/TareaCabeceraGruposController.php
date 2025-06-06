@@ -179,6 +179,7 @@ class TareaCabeceraGruposController extends Controller
         // Comprobamos si se ha recibido un valor para 'iEscalaCalifId' en la solicitud
         $fieldsToDecode = [
             'iEscalaCalifId',
+            'iTareaCabGrupoId',
         ];
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
