@@ -60,8 +60,7 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarFichaSalud', [FichaSaludController::class, 'actualizarFichaSalud']);
 
     /* Rutas para gestion seccion recreación */
-    Route::post('searchFichaRecreacion', [FichaRecreacionController::class, 'verFicharRecreacion']);
-    Route::post('guardarFichaRecreacion', [FichaRecreacionController::class, 'guardarFichaRecreacion']);
+    Route::post('verFichaRecreacion', [FichaRecreacionController::class, 'verFichaRecreacion']);
     Route::post('actualizarFichaRecreacion', [FichaRecreacionController::class, 'actualizarFichaRecreacion']);
 
     

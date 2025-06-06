@@ -11,32 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class FichaRecreacionController extends Controller
 {
-    public function guardarFichaRecreacion(FichaRecreacionSaveRequest $request)
-    {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->cFichaDGPerteneceLigaDeportiva,
-            $request->cFichaDGPerteneceCentroArtistico,
-            $request->cFichaDGAsistioConsultaPsicologica,
-            $request->jsonDeportes,
-            $request->jsonTransportes,
-            $request->jsonPasatiempos,
-            $request->jsonProblemas,
-        ];
-
-        try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaRecreacion ?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
-        }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-        return new JsonResponse($response, $codeResponse);
-    }
-
     public function actualizarFichaRecreacion(Request $request)
     {
         $parametros = [
