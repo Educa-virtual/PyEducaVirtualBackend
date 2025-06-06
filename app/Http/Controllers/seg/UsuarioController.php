@@ -116,12 +116,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $iPersId = Usuario::obtenerIdPersonaPorIdCred($iCredId);
-            $parametros = [
-                '{"id":' . $iPersId . '}',
-                'getPerfilesUsuario'
-            ];
-            $data = Usuario::selPerfilesUsuario($parametros);
+            $data = Usuario::selPerfilesUsuario($iCredId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -259,7 +254,7 @@ class UsuarioController
             $parametros = [
                 $iCredEntPerfId
             ];
-            Usuario::delCredencialesEentidadesPperfiles($parametros);
+            Usuario::delCredencialesEntidadesPerfiles($parametros);
             return FormatearMensajeHelper::ok('El perfil del usuario ha sido eliminado', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -382,7 +377,7 @@ class UsuarioController
      *         in="query",
      *         required=true,
      *         description="Opción de perfil a agregar",
-     *         @OA\Schema(type="string", enum={"addPerfilDremo", "addPerfilUgel", "addPerfilSede"})
+     *         @OA\Schema(type="string", enum={"dremo", "ugel", "iiee"})
      *     ),
      *     @OA\Parameter(
      *         name="iCredId",
@@ -413,13 +408,6 @@ class UsuarioController
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
-     *         name="cTipo",
-     *         in="query",
-     *         required=false,
-     *         description="Tipo del perfil del usuario (para opción DREMO)",
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
      *         name="iUgelId",
      *         in="query",
      *         required=false,
@@ -435,10 +423,10 @@ class UsuarioController
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Registro generado exitosamente",
+     *         description="Se ha asignado el perfil",
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="string", example="Success"),
-     *             @OA\Property(property="message", type="string", example="Registro generado exitosamente"),
+     *             @OA\Property(property="message", type="string", example="Se ha asignado el perfil"),
      *         )
      *     ),
      *
@@ -450,8 +438,8 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $resultado = Usuario::agregarPerfil($iCredId, $request);
-            return FormatearMensajeHelper::ok($resultado, null, Response::HTTP_CREATED);
+            Usuario::agregarPerfil($iCredId, $request);
+            return FormatearMensajeHelper::ok('Se ha asignado el perfil', null, Response::HTTP_CREATED);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
