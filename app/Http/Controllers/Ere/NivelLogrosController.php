@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Ere;
 
+use App\Enums\Perfil;
 use App\Http\Controllers\Controller;
 use App\Repositories\ere\NivelLogrosRepository;
 use Exception;
@@ -9,6 +10,7 @@ use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class NivelLogrosController extends Controller
 {
@@ -38,6 +40,7 @@ class NivelLogrosController extends Controller
 
     public function registrarNivelLogroPorCurso($evaluacionId, $cursoId, Request $request)
     {
+        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $iCursosNivelGradIdDescifrado = $this->hashids->decode($cursoId);
         if (empty($evaluacionIdDescifrado) || empty($iCursosNivelGradIdDescifrado)) {

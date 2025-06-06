@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Response;
 
 class CalendarioAcademicosController extends Controller
 {
@@ -281,7 +282,8 @@ class CalendarioAcademicosController extends Controller
         return $this->response($deleteCalFasesPromQuery);
     }
 
-    public function selDias(Request $request){
+    public function selDias(Request $request)
+    {
         $diasQuery = DB::select(
             "EXEC grl.SP_SEL_DesdeTabla ?,?,?",
             [
@@ -294,7 +296,8 @@ class CalendarioAcademicosController extends Controller
         return $this->response($diasQuery);
     }
 
-    public function selPeriodosFormativos(){
+    public function selPeriodosFormativos()
+    {
         $periodosQuery = DB::select(
             "EXEC grl.SP_SEL_DesdeTabla ?,?,?",
             [
@@ -304,9 +307,9 @@ class CalendarioAcademicosController extends Controller
             ]
         );
 
-        return $this->response($periodosQuery); 
+        return $this->response($periodosQuery);
     }
-    
+
     public function deleteCalFormasAtencion(Request $request)
     {
         $deleteCalFormaAtencionQuery = DB::statement("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
@@ -394,7 +397,7 @@ class CalendarioAcademicosController extends Controller
 
         $query = DB::select(
             "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-            
+
             $solicitud
         );
 
@@ -427,7 +430,7 @@ class CalendarioAcademicosController extends Controller
 
         $query = DB::select(
             "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-            
+
             $solicitud
         );
 
@@ -451,7 +454,8 @@ class CalendarioAcademicosController extends Controller
         return new JsonResponse($response, $estado);
     }
 
-    public function deleteCalPeriodosFormativos(Request $request){
+    public function deleteCalPeriodosFormativos(Request $request)
+    {
         $deleteCalPeriodosAcademicos = DB::statement("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", [
             $request->json,
             'deleteCalPeriodo',
@@ -606,7 +610,7 @@ class CalendarioAcademicosController extends Controller
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select(
             "EXEC grl.SP_UPD_TablaYearXopcion ?,?",
-          
+
             $solicitud
         );
         //  [$json, $opcion ]);
@@ -705,13 +709,13 @@ class CalendarioAcademicosController extends Controller
 
             $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
         }
         return $response;
     }
@@ -760,62 +764,123 @@ class CalendarioAcademicosController extends Controller
 
     public function searchGradoCiclo(Request $request)
     {
-    //    $json = json_encode($request->json);
-    //    $opcion = $request->_opcion;
+        //    $json = json_encode($request->json);
+        //    $opcion = $request->_opcion;
 
         $solicitud = [
-            $request-> iNivelTipoId, //NVARCHAR(128),       -- Nombre del esquema        
+            $request->iNivelTipoId, //NVARCHAR(128),       -- Nombre del esquema        
         ];
-        
+
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
         $query = DB::select("EXEC acad.SP_SEL_generarGradosSeccionesCiclosXiNivelTipoId ?", $solicitud);
-    //  [$json, $opcion ]);
+        //  [$json, $opcion ]);
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 200;
+            $estado = 200;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
     }
     public function generarConfiguracionMasivaInicio(Request $request)
     {
-        $query = DB::select("EXEC acad.Sp_INS_ConfiguracionXiYAcadId ?", $request-> iYAcadId);
+        $query = DB::select("EXEC acad.Sp_INS_ConfiguracionXiYAcadId ?", $request->iYAcadId);
         //  [$json, $opcion ]);
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 200;
+            $estado = 200;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+
+            $estado = 500;
         }
         return new JsonResponse($response, $estado);
     }
+
+    public function obtenerCursosDiasHorarios(Request $request)
+    {
+        try {
+            $parametros = [
+                $request->iSedeId               ??  NULL,
+                $request->iYAcadId              ??  NULL,
+                $request->iGradoId              ??  NULL,
+                $request->iSeccionId            ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec hor.SP_SEL_horarioIExiSedeIdxiYAcadIdxiGradoIdxiSeccionId
+                @_iSedeId=?, 
+                @_iYAcadId=?,
+                @_iGradoId=?,
+                @_iSeccionId=?',
+                $parametros
+            );
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function guardarRemoverCursosDiasHorarios(Request $request)
+    {
+        try {
+            $parametros = [
+                $request->iHorarioIeDetalleId       ??  NULL,
+                $request->idDocCursoId              ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec hor.SP_UPD_horarioIEDetallexiHorarioIeDetalleIdxidDocCursoId
+                @_iHorarioIeDetalleId=?, 
+                @_idDocCursoId=?',
+                $parametros
+            );
+            if ($data[0]->iHorarioIeDetalleId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha guardado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
-
-
-

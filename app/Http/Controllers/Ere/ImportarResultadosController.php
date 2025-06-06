@@ -38,52 +38,34 @@ class ImportarResultadosController extends Controller
     public function importarOffLine(Request $request)
     {
 
-        // $parametros = [
-        //     $request->iCursosNivelGradId,
-        //     $request->datos_hojas,
-        //     $request->iSedeId,
-        //     $request->iCredId,
-        //     $request->iEvaluacionIdHashed,
-        //     $request->cCursoNombre,
-        //     $request->cGradoAbreviacion,
-        //     $request->iCursosNivelGradId,
-        //     $request->tipo,
-        //     $request->json_resultados,
-        //     $request->iYAcadId,
-        // ];
-        // $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $parametros];
-        // $codeResponse = 200;
-        // return new JsonResponse($response, $codeResponse);
-
-
-        //ID traer datos desde iCursoNivelGradId
         $iCursosNivelGradId = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
-
+       
+        
         $parametros = [
-            $request->iSedeId,
-            $request->iSemAcadId,
-            $request->iYAcadId,
-            $request->iCredId,
+            !empty($request->iSedeId) ? $request->iSedeId : null,
+            !empty($request->iSemAcadId) ? $request->iSemAcadId : null,
+            !empty($request->iYAcadId) ? $request->iYAcadId : null,
+            !empty($request->iCredId) ? $request->iCredId : null,
             $this->decodeValue($request->iEvaluacionIdHashed),
             $this->decodeValue($iCursosNivelGradId),
-            $request->codigo_modular,
-            $request->cCursoNombre,
-            $request->tipo,
-            $request->cGradoAbreviacion,
-            $request->json_resultados
+            !empty($request->codigo_modular) ? $request->codigo_modular : null,
+            !empty($request->curso) ? $request->curso : null,
+            !empty($request->nivel) ? $request->nivel : null,
+            !empty($request->grado) ? $request->grado : null,
+            !empty($request->json_resultados) ? $request->json_resultados : null,
         ];
         try {
-            $query_string = "EXEC acad.Sp_INS_importarResultados " . str_repeat("?,", (count($parametros) - 1)) . '?';
-            // $data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            //$data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $query_string];
+     
+            $data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?,?,?', $parametros);
+    
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
             $error_message = ParseSqlErrorService::parse($e->getMessage());
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-
+       // return   $parametros;
         return new JsonResponse($response, $codeResponse);
     }
 

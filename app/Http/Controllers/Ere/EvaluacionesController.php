@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
 use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\ApiController;
@@ -26,50 +27,21 @@ class EvaluacionesController extends ApiController
 {
     public function __construct()
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length')); //new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
 
     public function obtenerAniosEvaluaciones()
     {
         $anios = DB::select('SELECT DISTINCT(YEAR(dtEvaluacionFechaInicio)) AS anio
-FROM ere.evaluacion
-WHERE dtEvaluacionFechaInicio IS NOT NULL
-ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
+        FROM ere.evaluacion
+        WHERE dtEvaluacionFechaInicio IS NOT NULL
+        ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         return response()->json([
             'status' => 'Error',
             'message' => 'Datos obtenidos',
             'data' => $anios
         ]);
     }
-    /*public function exportarPreguntasPorArea($iEvaluacionId, $iCursosNivelGradId) {
-
-        if (!is_numeric($iEvaluacionId) && !is_numeric($iCursosNivelGradId)) {
-            $iEvaluacionId = $this->hashids->decode($iEvaluacionId)[0];
-            $iCursosNivelGradId= $this->hashids->decode($iCursosNivelGradId)[0];
-        } else {
-            return response()->json(['error' => 'Los ID deben estar cifrados'], 400);
-        }
-        $params = [
-            'iEvaluacionId' => $iEvaluacionId,  // ID de la evaluación
-            'iCursosNivelGradId' => $iCursosNivelGradId,  // ID del área (curso o nivel de grado)
-            'busqueda' => '',  // No hay búsqueda definida (si la necesitas, se puede ajustar)
-            'iTipoPregId' => 0,  // Suponiendo que es un filtro de tipo de pregunta (cero significa sin filtro)
-            'bPreguntaEstado' => 1,  // Sin filtro de estado (puedes ajustarlo si necesitas un valor específico)
-            'ids' => NULL // ID de las preguntas (si lo necesitas)
-        ];
-
-        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($iEvaluacionId);
-        $area = AreasRepository::obtenerAreaPorId($iCursosNivelGradId);
-        $preguntasDB = PreguntasRepository::obtenerBancoPreguntasByParams($params);
-
-        if (count($preguntasDB) == 0) {
-            return response()->json(['error' => 'No se encontraron preguntas para los parámetros especificados'], 400);
-        }
-
-        $exportador = new ExportarPreguntasPorAreaWordService($evaluacion, $area, $preguntasDB);
-        return $exportador->exportar();
-
-    }*/
 
     public function obtenerEvaluaciones()
     {
@@ -252,12 +224,20 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
             'cEvaluacionNombre' => $request->input('cEvaluacionNombre', null),
             'cEvaluacionDescripcion' => $request->input('cEvaluacionDescripcion', null),
             'cEvaluacionUrlDrive' => $request->input('cEvaluacionUrlDrive', null),
-            'dtEvaluacionFechaInicio' => $request->input('dtEvaluacionFechaInicio', null),
-            'dtEvaluacionFechaFin' => $request->input('dtEvaluacionFechaFin', null),
+            'dtEvaluacionFechaInicio' => Carbon::parse($request->input('dtEvaluacionFechaInicio'))->format('Ymd H:i:s'),
+            'dtEvaluacionFechaFin' => Carbon::parse($request->input('dtEvaluacionFechaFin'))->format('Ymd H:i:s')
         ];
+
         // return $params;
         // Construir la llamada dinámica al procedimiento
         //Se cambio el nombre sp_UPD_Evaluaciones
+        /*if ($params['dtEvaluacionFechaInicio'] != null) {
+            $params['dtEvaluacionFechaInicio'] =$params['dtEvaluacionFechaInicio'].''; //Carbon::createFromFormat('Y-m-d', $request->input('dtEvaluacionFechaInicio'))->format('Y-m-d');
+        }*/
+        /*if ($params['dtEvaluacionFechaFin'] != null) {
+            $params['dtEvaluacionFechaFin'] = Carbon::createFromFormat('d/m/Y', $request->input('dtEvaluacionFechaFin'))->format('Y-m-d');
+        }*/
+
         DB::statement('EXEC ere.SP_UPD_evaluaciones
             @iEvaluacionId = :iEvaluacionId,
             @idTipoEvalId = :idTipoEvalId,
@@ -1036,7 +1016,7 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         $parametros = [
             $request->iEvaluacionId,
             $request->iCursoNivelGradId,
-            $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->setTimezone(env('APP_TIMEZONE'))->format('Y-m-d'),
+            $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->format('Ymd H:i:s'),
             //$request->dtExamenFechaInicio          ??  NULL,
             $request->iExamenCantidadPreguntas     ??  NULL
         ];
@@ -1044,19 +1024,15 @@ ORDER BY YEAR(dtEvaluacionFechaInicio) DESC');
         try {
             $data = DB::select('exec ere.Sp_UPD_examenCursosxdtExamenFechaInicioxiExamenCantidadPreguntas ?,?,?,?', $parametros);
             if ($data[0]->iEvaluacionId > 0) {
-
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
+                return FormatearMensajeHelper::ok('Se guardó la información exitosamente');
             } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
+                throw new Exception('Error al guardar la información.');
             }
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+            /*$response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
+            $codeResponse = 500;*/
         }
-
-        return response()->json($response, $codeResponse);
     }
 
     public function insertarCuestionarioNotas(Request $request)

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Gate;
+use App\Enums\Perfil;
 
 class EvaluacionController extends Controller
 {
@@ -146,6 +148,7 @@ class EvaluacionController extends Controller
 
     public function obtenerEstudianteAreasEvaluacion(Request $request)
     {
+        Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
         try {
             $fieldsToDecode = [
                 'iEstudianteId',
