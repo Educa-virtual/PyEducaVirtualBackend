@@ -14,10 +14,15 @@ class Usuario extends Model
         return $data->iPersId ?? null;
     }
 
-    public static function selUsuariosPerfiles($parametros)
+    public static function selUsuarios($parametros)
     {
-        return DB::select("EXEC [seg].[SP_SEL_usuariosPerfiles] @soloTotal=?, @offset=?, @limit=?,
-        @documentoFiltro=?, @apellidosFiltro=?, @nombresFiltro=?, @iPersId=NULL", $parametros); //,@institucionFiltro=?,@rolFiltro=?
+        return DB::select("EXEC [seg].[SP_SEL_usuarios] @soloTotal=?, @offset=?, @limit=?,
+        @documentoFiltro=?, @apellidosFiltro=?, @nombresFiltro=?, @iPersId=NULL", $parametros);
+    }
+
+    public static function selUsuarioPorIdPersona($iPersId)
+    {
+         return DB::selectOne('EXEC [seg].[SP_SEL_usuarios] @iPersId=?', [$iPersId]);
     }
 
     public static function updFechaVigenciaCuenta($iCredId, $dtCredCaduca)
@@ -27,7 +32,7 @@ class Usuario extends Model
 
     public static function updiCredEstadoCredencialesXiCredId($parametros)
     {
-        return DB::select("EXEC [seg].[Sp_UPD_iCredEstado_credencialesXiCredId] @_iCredId=?, @_iCredEstado=?, @_iCredSesionId=?", $parametros);
+        return DB::statement("EXEC [seg].[Sp_UPD_iCredEstado_credencialesXiCredId] @_iCredId=?, @_iCredEstado=?, @_iCredSesionId=?", $parametros);
     }
 
     public static function selPerfilesUsuario($iCredId)
@@ -37,103 +42,54 @@ class Usuario extends Model
 
     public static function updReseteoClaveCredencialesXiCredId($parametros)
     {
-        return DB::select("EXEC [seg].[Sp_UPD_ReseteoClave_credencialesXiCredId] @_iCredId=?, @_iCredSesionId=?", $parametros);
+        return DB::statement("EXEC [seg].[Sp_UPD_ReseteoClave_credencialesXiCredId] @_iCredId=?, @_iCredSesionId=?", $parametros);
     }
 
-    public static function delCredencialesEntidadesPerfiles($parametros)
+    public static function delCredencialesEntidadesPerfiles($iCredId, $iCredEntPerfId)
     {
-        return DB::select("EXEC [seg].[Sp_DEL_credenciales_entidades_perfiles] @_iCredEntPerfId=? ", $parametros);
+        return DB::statement("EXEC [seg].[Sp_DEL_credenciales_entidades_perfiles] @_iCredEntPerfId=?", [$iCredEntPerfId]);
     }
 
-    public static function agregarPerfil($iCredId, $request)
+    public static function insPerfilDremo($iCredId, $request)
     {
-        switch ($request->opcion) {
-            case 'dremo':
-                $cTipo = $request->iPerfilId == 2 ? 'EspecialistaDremo' : 'PerfilModuloDremo';
-                DB::statement("EXEC [seg].[SP_INS_PerfilDremo] @iEntId=?, @iPerfilId=?, @iCursosNivelGradId=?, @iCredId=?, @cTipo=?", [
-                    $request->iEntId,
-                    $request->iPerfilId,
-                    $request->iCursosNivelGradId,
-                    $iCredId,
-                    $cTipo
-                ]);
-                break;
-            case 'ugel':
-                DB::statement("EXEC [seg].[SP_INS_PerfilUgel] @iUgelId=?, @iEntId=?, @iPerfilId=?, @iCredId=?, @iCursosNivelGradId=?", [
-                    $request->iUgelId,
-                    $request->iEntId,
-                    $request->iPerfilId,
-                    $iCredId,
-                    $request->iCursosNivelGradId
-                ]);
-                break;
-            case 'iiee':
-                DB::statement("EXEC [seg].[SP_INS_PerfilIiee] @iSedeId=?, @iEntId=?, @iPerfilId=?, @iCredId=?", [
-                    $request->iSedeId,
-                    $request->iEntId,
-                    $request->iPerfilId,
-                    $iCredId
-                ]);
-                break;
-            default:
-                throw new Exception('Opción no válida');
-        }
-    }
-
-    public static function registrarUsuario($request, $iCredId)
-    {
-        // Validar los datos de entrada
-        $request->validate([
-            'data' => 'required|array',
-            'data.cPersSexo' => 'required',
-            'data.cPersNombre' => 'required'
+        $cTipo = $request->iPerfilId == 2 ? 'EspecialistaDremo' : 'PerfilModuloDremo';
+        DB::statement("EXEC [seg].[SP_INS_PerfilDremo] @iEntId=?, @iPerfilId=?, @iCursosNivelGradId=?, @iCredId=?, @cTipo=?", [
+            $request->iEntId,
+            $request->iPerfilId,
+            $request->iCursosNivelGradId,
+            $iCredId,
+            $cTipo
         ]);
-        $item = $request->data;
-        $iPersId = null;
-        $mensaje = '';
+    }
 
-        if (empty($item["iPersId"])) {
-            $iTipoPersId = ((int)$item['iTipoIdentId'] == 2) ? 2 : 1;
-            $parametros = [
-                isset($iTipoPersId) ? $iTipoPersId : null,
-                $item['iTipoIdentId'],
-                $item['cPersDocumento'],
-                $item['cPersPaterno'],
-                isset($item['cPersMaterno']) ? $item['cPersMaterno'] : null,
-                $item['cPersNombre'],
-                $item['cPersSexo'],
-                isset($item['cPersCorreo']) ? $item['cPersCorreo'] : null,
-                isset($item['cPersCelular']) ? $item['cPersCelular'] : null,
-                isset($item['cPersFotografia']) ? (trim($item['cPersFotografia']) ?: null) : null,
-                isset($item['cPersTelefono']) ? $item['cPersTelefono'] : null,
-                isset($item['cPersDireccion']) ? $item['cPersDireccion'] : null,
-                isset($item['cPersReferencia']) ? $item['cPersReferencia'] : null,
-                isset($item['cPersDomicilio']) ? (trim($item['cPersDomicilio']) ?: null) : null,
-                isset($iCredId) ? $iCredId : null,
-                isset($item['iNacionId']) ? $item['iNacionId'] : null,
-                isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
-                isset($item['iDptoId']) ? (trim($item['iDptoId']) ?: null) : null,
-                isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
-                isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
-            ];
+    public static function insPerfilUgel($iCredId, $request)
+    {
+        DB::statement("EXEC [seg].[SP_INS_PerfilUgel] @iUgelId=?, @iEntId=?, @iPerfilId=?, @iCredId=?, @iCursosNivelGradId=?", [
+            $request->iUgelId,
+            $request->iEntId,
+            $request->iPerfilId,
+            $iCredId,
+            $request->iCursosNivelGradId
+        ]);
+    }
 
-            $data = DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $iPersId = !empty($data) ? $data[0]->iPersId : null;
+    public static function insPerfilIiee($iCredId, $request)
+    {
+        DB::statement("EXEC [seg].[SP_INS_PerfilIiee] @iSedeId=?, @iEntId=?, @iPerfilId=?, @iCredId=?", [
+            $request->iSedeId,
+            $request->iEntId,
+            $request->iPerfilId,
+            $iCredId
+        ]);
+    }
 
-            if ($iPersId) {
-                DB::select('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
-                $mensaje = 'Se ha registrado el usuario';
-            } else {
-                throw new Exception('Error al registrar el personal');
-            }
-        } else {
-            $iPersId = $item["iPersId"];
-            $mensaje = 'El usuario ya se encuentra registrado';
-        }
-        $persona = DB::select('EXEC [seg].[SP_SEL_usuariosPerfiles] @iPersId=?', [$iPersId]);
-        return [
-            'data' => $persona[0],
-            'mensaje' => $mensaje
-        ];
+    public static function insPersonas($parametros)
+    {
+        return DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+    }
+
+    public static function insCredenciales($iPersId, $iCredId)
+    {
+        DB::statement('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
     }
 }

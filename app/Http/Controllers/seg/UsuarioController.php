@@ -70,15 +70,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('data', $request);
-            $dataUsuarios = Usuario::selUsuariosPerfiles($parametros);
-            $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('cantidad', $request);
-            $dataCantidad = Usuario::selUsuariosPerfiles($parametros);
-            $resultado = [
-                'totalFilas' => $dataCantidad[0]->totalFilas,
-                'dataUsuarios' => $dataUsuarios,
-                'fechaServidor' => new Carbon()
-            ];
+           $resultado = UsuariosService::obtenerUsuarios($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $resultado, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -116,7 +108,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $data = Usuario::selPerfilesUsuario($iCredId);
+            $data=UsuariosService::obtenerPerfilesUsuario($iCredId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -165,9 +157,8 @@ class UsuarioController
                 $request->iCredEstado,
                 Auth::user()->iCredId
             ];
-            Usuario::updiCredEstadoCredencialesXiCredId($parametros);
-            $mensaje = $request->iCredEstado == 1 ? 'activado' : 'desactivado';
-            return FormatearMensajeHelper::ok('El usuario ha sido ' . $mensaje, null, Response::HTTP_OK);
+            $mensaje = UsuariosService::cambiarEstadoUsuario($parametros);
+            return FormatearMensajeHelper::ok($mensaje, null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -207,7 +198,7 @@ class UsuarioController
                 $iCredId,
                 Auth::user()->iCredId
             ];
-            Usuario::updReseteoClaveCredencialesXiCredId($parametros);
+            UsuariosService::restablecerClaveUsuario($parametros);
             return FormatearMensajeHelper::ok('La contraseña del usuario ha sido restablecida a su nombre de usuario.', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -251,10 +242,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $parametros = [
-                $iCredEntPerfId
-            ];
-            Usuario::delCredencialesEntidadesPerfiles($parametros);
+            UsuariosService::eliminarPerfilUsuario($iCredId, $iCredEntPerfId);
             return FormatearMensajeHelper::ok('El perfil del usuario ha sido eliminado', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -298,7 +286,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            Usuario::updFechaVigenciaCuenta($iCredId, $request->dtCredCaduca);
+            UsuariosService::actualizarFechaVigenciaUsuario($iCredId, $request);
             return FormatearMensajeHelper::ok('Se ha actualizado la fecha de vigencia de la cuenta', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -358,7 +346,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $resultado = Usuario::registrarUsuario($request, Auth::user()->iCredId);
+            $resultado = UsuariosService::registrarUsuario($request, Auth::user()->iCredId);
             return FormatearMensajeHelper::ok($resultado['mensaje'], $resultado['data']);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -438,7 +426,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            Usuario::agregarPerfil($iCredId, $request);
+            UsuariosService::asignarPerfilUsuario($iCredId, $request);
             return FormatearMensajeHelper::ok('Se ha asignado el perfil', null, Response::HTTP_CREATED);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
