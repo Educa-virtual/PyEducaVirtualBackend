@@ -7,6 +7,9 @@ use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class ForosController extends Controller
 {
@@ -79,7 +82,7 @@ class ForosController extends Controller
     }
 
     public function eliminarxiForoId(Request $request)
-    {   
+    {
         if (isset($request->iForoId)) {
             $request['iForoId'] = $this->decodeValue($request->iForoId);
         }
@@ -107,5 +110,76 @@ class ForosController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
+    }
+
+    public function obtenerListaEstudiantes(Request $request)
+    {
+        // Validación de los parámetros de entrada
+        $validator = Validator::make($request->all(), [
+            'iIeCursoId' => ['required'],
+            'iYAcadId' => ['required'],
+            'iSedeId' => ['required'],
+            'iSeccionId' => ['required'],
+            'iNivelGradoId' => ['required']
+        ], [
+            'iIeCursoId.required' => 'No se encontró el identificador iIeCursoId',
+            'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
+            'iSedeId.required' => 'No se encontró el identificador iSedeId',
+            'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
+            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $fieldsToDecode = [
+            'iIeCursoId',
+            'iYAcadId',
+            'iSedeId',
+            'iSeccionId',
+            'iNivelGradoId'
+        ];
+
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+        $parametros = [
+            $request->iIeCursoId            ??      NULL,
+            $request->iYAcadId              ??      NULL,
+            $request->iSedeId               ??      NULL,
+            $request->iSeccionId            ??      NULL,
+            $request->iNivelGradoId         ??      NULL
+        ];
+
+        try {
+            // Ejecutar el procedimiento almacenado
+
+            $data = DB::select(
+                'EXEC [acad].[Sp_SEL_reporteFinalDeNotas] 
+                    @_iIeCursoId=?,
+                    @_iYAcadId=?,
+                    @_iSedeId=?,
+                    @_iSeccionId=?,
+                    @_iNivelGradoId=?',
+                $parametros
+            );
+            // Preparar la respuesta
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = Response::HTTP_OK;
+
+            return $response;
+        } catch (\Exception $e) {
+            // Manejo de excepción y respuesta de error
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'data' => [],
+            ];
+            $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+            return new JsonResponse($response, $estado);
+        }
     }
 }

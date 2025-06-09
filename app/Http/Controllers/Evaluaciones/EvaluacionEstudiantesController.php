@@ -15,7 +15,7 @@ use Illuminate\Http\JsonResponse;
 class EvaluacionEstudiantesController extends ApiController
 {
     public function index(Request $request)
-    {
+    {   
         $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
         try {
             $data = DB::select('exec eval.SP_SEL_estudiantesEvaluacion @_iEvaluacionId = ? ', [$iEvaluacionId]);

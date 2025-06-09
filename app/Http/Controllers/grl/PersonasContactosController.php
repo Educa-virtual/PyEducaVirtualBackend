@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class PersonasContactosController extends Controller
 {
@@ -68,6 +69,38 @@ class PersonasContactosController extends Controller
                 $codeResponse = 200;
             } else {
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+
+    }
+
+    public function obtenerxiPersId(Request $request){
+
+        $parametros = [
+            $request->iPersId,
+            $request->iCredId
+        ];
+        try {
+            $data = DB::select(
+                'exec grl.SP_SEL_personasContactosxiPersId 
+                    @_iPersId=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+           
+            if (count($data) > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data[0]],
+                    Response::HTTP_OK
+                );
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido obtener la información.'];
                 $codeResponse = 500;
             }
         } catch (\Exception $e) {
