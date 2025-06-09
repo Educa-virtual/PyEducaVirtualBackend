@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\seg;
 
 use App\Helpers\FormatearMensajeHelper;
+use App\Http\Requests\seg\CambiarClaveRequest;
 use App\Http\Requests\seg\LoginUsuarioRequest;
 use App\Models\User;
+use App\Services\seg\UsuariosService;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class AuthController {
+class AuthController
+{
 
     /**
      * @OA\Post(
@@ -56,9 +61,43 @@ class AuthController {
     {
         try {
             $usuario = User::login($request);
-            return FormatearMensajeHelper::ok('Datos obtenidos',$usuario);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $usuario);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
+    }
+
+    public function actualizarClaveUsuario(CambiarClaveRequest $request)
+    {
+        try {
+            $usuario = Auth::user();
+            UsuariosService::actualizarClaveUsuario($usuario, $request);
+            return FormatearMensajeHelper::ok('Se ha actualizado la contraseña exitosamente');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+
+        /*try {
+            $data =
+
+            if ($data[0]->iPersId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se actualizó la contraseña exitosamente '],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se pudo actualizar la contraseña'],
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54)],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        return new JsonResponse($response, $codeResponse);*/
     }
 }

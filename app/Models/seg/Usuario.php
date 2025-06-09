@@ -92,4 +92,9 @@ class Usuario extends Model
     {
         DB::statement('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
     }
+
+    public static function updCredenciasUpdatePassword($parametros)
+    {
+        DB::statement("execute seg.Sp_UPD_credenciasxUpdatePassword @_iCredId=?, @_iPersId=?, @_contraseniaActual=?, @_contraseniaNueva=?", $parametros);
+    }
 }

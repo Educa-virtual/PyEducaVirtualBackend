@@ -47,7 +47,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\EstudianteController;
 
-//Linea 18 de febrero------------------------------------- 
+//Linea 18 de febrero-------------------------------------
 //use App\Http\Controllers\VacantesController;
 
 //Route::post('/guardar-vacantes', [VacantesController::class, 'guardarVacantes']);
@@ -59,6 +59,8 @@ use App\Http\Controllers\bienestar\EstudianteController;
 // })->middleware('auth:sanctum');
 
 Route::post('/login', [AuthController::class, 'login']);
+
+
 Route::post('/verificar', [MailController::class, 'index']);
 Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
@@ -76,7 +78,7 @@ Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
         Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
-        
+
     });
     Route::group(['prefix' => 'nivelTipo'], function () {
         Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);

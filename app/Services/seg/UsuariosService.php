@@ -2,10 +2,13 @@
 
 namespace App\Services\seg;
 
+use App\Helpers\VerifyHash;
+use App\Http\Requests\seg\CambiarClaveRequest;
 use App\Models\seg\Usuario;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UsuariosService
 {
@@ -157,5 +160,15 @@ class UsuariosService
     public static function restablecerClaveUsuario($parametros)
     {
         Usuario::updReseteoClaveCredencialesXiCredId($parametros);
+    }
+
+    public static function actualizarClaveUsuario($usuario, CambiarClaveRequest $request) {
+        $parametros = [
+            $usuario->iCredId,
+            $usuario->iPersId,
+            $request->contraseniaActual,
+            $request->contraseniaNueva
+        ];
+        Usuario::updCredenciasUpdatePassword($parametros);
     }
 }

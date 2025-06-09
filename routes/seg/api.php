@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::group(['prefix' => 'usuarios'], function () {
+        Route::patch('mi-contrasena', [AuthController::class, 'actualizarClaveUsuario']);
         Route::group(['prefix' => '{iCredId}'], function () {
             Route::get('perfiles', [UsuarioController::class, 'obtenerPerfilesUsuario']);
             Route::post('perfiles', [UsuarioController::class, 'agregarPerfilUsuario']);
