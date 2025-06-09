@@ -4,6 +4,7 @@ namespace App\Http\Controllers\seg;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Requests\seg\CambiarClaveRequest;
+use App\Http\Requests\seg\CambiarContrasenaRequest;
 use App\Http\Requests\seg\LoginUsuarioRequest;
 use App\Models\User;
 use App\Services\seg\UsuariosService;
@@ -67,11 +68,11 @@ class AuthController
         }
     }
 
-    public function actualizarClaveUsuario(CambiarClaveRequest $request)
+    public function actualizarContrasenaUsuario(CambiarContrasenaRequest $request)
     {
         try {
             $usuario = Auth::user();
-            UsuariosService::actualizarClaveUsuario($usuario, $request);
+            UsuariosService::actualizarContrasenaUsuario($usuario, $request);
             return FormatearMensajeHelper::ok('Se ha actualizado la contraseña exitosamente');
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

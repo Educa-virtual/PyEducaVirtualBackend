@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\EstudianteController;
+use App\Http\Middleware\RefreshToken;
 
 //Linea 18 de febrero-------------------------------------
 //use App\Http\Controllers\VacantesController;
@@ -59,6 +60,9 @@ use App\Http\Controllers\bienestar\EstudianteController;
 // })->middleware('auth:sanctum');
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::group(['middleware' => ['auth:api', RefreshToken::class]], function () {
+    Route::patch('usuarios/mi-contrasena', [AuthController::class, 'actualizarContrasenaUsuario']);
+});
 
 
 Route::post('/verificar', [MailController::class, 'index']);
