@@ -116,6 +116,7 @@ class AsistenciaController extends Controller
     }
     public function obtenerAsistencia(Request $request){
         // Se Decodifica los id hasheados que son enviados por el frontend
+        $idDocCursoId = $request["idDocCursoId"];
         $iGradoId = $request["iGradoId"];
         $iIieeId = $request["iIieeId"];
         $iSedeId = $request["iSedeId"];
@@ -134,6 +135,7 @@ class AsistenciaController extends Controller
             $iSeccionId ?? NULL,
             $iNivelGradoId ?? NULL,
             $iDocenteId ?? NULL,
+            $idDocCursoId ?? NULL,
         ];
 
         $query = "execute asi.Sp_SEL_fechas_asistencia ".str_repeat('?,',count($solicitud)-1)."?";
@@ -186,7 +188,6 @@ class AsistenciaController extends Controller
 
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
         $query = DB::select($consulta, $solicitud);
-  
         try{
             $response = [
                 'validated' => true, 
