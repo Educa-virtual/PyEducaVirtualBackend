@@ -15,6 +15,7 @@ use Throwable;
 use function PHPUnit\Framework\isNull;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
 
 class AulaVirtualController extends ApiController
 {
@@ -438,38 +439,60 @@ class AulaVirtualController extends ApiController
     {
         //return $request -> all();
         $request->validate([
-            'iEstudianteId' => 'required|integer',
+            //'iEstudianteId' => 'required|integer',
             'cForoRptaRespuesta' => 'required|string',
             'iForoId' => 'required|string'
         ]);
-        //$iProgActId = (int) $request->iProgActId ?? 0;
-        $iForoId = $request->iForoId;
-        if ($request->iForoId) {
-            $iForoId = $this->hashids->decode($iForoId);
-            $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
+        $fieldsToDecode = [
+            'iDocenteId',
+            'iEstudianteId',
+            'iForoId',
+            'iForoRptaId',
+            'iCredId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+        if (isset($request->iForoRptaId)) {
+            $request->merge(['iForoRptaPadre' => $request->iForoRptaId]);
         }
-
-        // $iDocenteId = $request->iDocenteId;
-        // if ($request->iDocenteId) {
-        //     $iDocenteId = $this->hashids->decode($iDocenteId);
-        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        // }
-
         $data = [
-            $request->iEstudianteId,
-            $iForoId,
-            $request->cForoRptaRespuesta
+            $request->iEstudianteId            ?? NULL,
+            $request->iForoId                  ?? NULL,
+            $request->iForoRptaPadre           ?? NULL,
+            $request->iDocenteId               ?? NULL,
+            $request->cForoRptaRespuesta       ?? NULL,
+            $request->nForoRptaNota            ?? NULL,
+            $request->cForoRptaDocente         ?? NULL,
+            $request->iEscalaCalifId           ?? NULL
 
         ];
-        //return $data;
+
         try {
 
-            $resp = DB::select('EXEC [aula].[SP_UPD_respuestaForoXEstudiante]
-                @iEstudianteId = ?,
-                @iForoId = ?,
-                @cForoRptaRespuesta = ?', $data);
+            $resp = DB::select('EXEC [aula].[SP_INS_RespuestaForo]
+                @_iEstudianteId = ?,
+                @_iForoId = ?,
+                @_iForoRptaPadre = ?,
+                @_iDocenteId = ?,
+                @_cForoRptaRespuesta = ?,
+                @_nForoRptaNota = ?,
+                @_cForoRptaDocente = ?,
+                @_iEscalaCalifId = ?', $data);
 
-            //return $resp;
+
+            if ($resp[0]->iForoRptaId > 0) {
+                $message = 'Se ha guardado correctamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => $data],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $resp];
             $estado = 200;
 
@@ -566,33 +589,20 @@ class AulaVirtualController extends ApiController
     }
     public function calificarForoDocente(Request $request)
     {
-        // Prepara los parámetros para la consulta. Se obtienen del objeto $request, el cual contiene los datos de la solicitud HTTP.
-        // Si los valores no existen, se asigna NULL en su lugar.
-        // $request ->validate([
-        //     'iEstudianteId' =>'required|integer',
-        // ]);
-        $iEstudianteId = $request->iEstudianteId;
-        $iForoId = $request->iForoId;
-        $cForoRptDocente = $request->cForoRptDocente;
+
+        $fieldsToDecode = [
+            'iEstudianteId',
+            'iForoId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request->merge(['cForoRptaDocente' => $request->cForoRptDocente]);
 
         $params = [
-            $iEstudianteId,
-            $iForoId,
-            $cForoRptDocente,
+            $request->iEstudianteId      ??  NULL,
+            $request->iForoId            ??  NULL,
+            $request->cForoRptaDocente    ??  NULL
         ];
 
-        //return $params;
-        // $iDocenteId = $request->iDocenteId;
-        // if ($request->iDocenteId) {
-        //     $iDocenteId = $this->hashids->decode($iDocenteId);
-        //     $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        // }
-
-        // $parametros = [
-        //     $request->iForoRptaId,             // ID de la respuesta del foro que se va a calificar
-        //     $request->cForoRptaDocente ?? NULL, // Comentario o respuesta del docente (si existe)
-        //     $request->iEscalaCalifId ?? NULL    // ID de la escala de calificación (si existe)
-        // ];
 
         try {
             // Llama al procedimiento almacenado 'Sp_UPD_calificarDocenteForoRespuestas' en la base de datos,

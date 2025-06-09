@@ -42,6 +42,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::get('obtenerEstudiantesMatricula', [AulaVirtualController::class, 'obtenerEstudiantesMatricula']);
             Route::delete('eliminarRptEstudiante', [AulaVirtualController::class, 'eliminarRptEstudiante']);
             Route::get('obtenerReptdocente', [AulaVirtualController::class, 'obtenerReptdocente']);
+            Route::get('listaEstudiantes', [ForosController::class, 'obtenerListaEstudiantes']);
         });
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
     });
