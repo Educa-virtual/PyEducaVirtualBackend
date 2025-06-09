@@ -22,6 +22,20 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
         Route::get('{iIieeId}/sedes', [InstitucionEducativaController::class, 'obtenerSedesIe']);
     });
+
+    Route::group(['prefix' => 'estudiantes'], function () {
+        Route::group(['prefix' => 'buzon-sugerencias'], function () {
+            Route::post('', [BuzonSugerenciaController::class, 'registrarSugerencia']);
+            Route::get('', [BuzonSugerenciaController::class, 'obtenerListaSugerenciasEstudiante']);
+            Route::group(['prefix' => '{iSugerenciaId}'], function () {
+                Route::delete('', [BuzonSugerenciaController::class, 'eliminarSugerencia']);
+                Route::get('archivos', [BuzonSugerenciaController::class, 'obtenerArchivosSugerencia']);
+                Route::get('archivos/{nombreArchivo}', [BuzonSugerenciaController::class, 'descargarArchivosSugerencia']);
+            });
+        });
+
+        Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
+    });
 });
 
 Route::group(['prefix' => 'acad'], function () {
@@ -29,14 +43,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('guardar', [VacantesController::class, 'guardarVacantes']);
         //vacantes convenciones de nombre para APIs
     });
-    Route::group(['prefix' => 'estudiantes'], function () {
-        Route::post('buzon-sugerencias', [BuzonSugerenciaController::class, 'registrarSugerencia']);
-        Route::get('buzon-sugerencias', [BuzonSugerenciaController::class, 'obtenerListaSugerencias']);
-        Route::delete('buzon-sugerencias/{iSugerenciaId}', [BuzonSugerenciaController::class, 'eliminarSugerencia']);
-        Route::get('buzon-sugerencias/{iSugerenciaId}/archivos', [BuzonSugerenciaController::class, 'obtenerArchivosSugerencia']);
-        Route::get('buzon-sugerencias/{iSugerenciaId}/archivos/{nombreArchivo}', [BuzonSugerenciaController::class, 'descargarArchivosSugerencia']);
-        Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
-    });
+
     Route::group(['prefix' => 'grados'], function () {
         Route::post('handleCrudOperation', [GradosController::class, 'handleCrudOperation']);
     });
