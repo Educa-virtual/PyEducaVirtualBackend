@@ -36,6 +36,10 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
 
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
     });
+
+    Route::group(['prefix' => 'directores'], function () {
+        Route::get('buzon-sugerencias', [BuzonSugerenciaController::class, 'obtenerListaSugerenciasDirector']);
+    });
 });
 
 Route::group(['prefix' => 'acad'], function () {

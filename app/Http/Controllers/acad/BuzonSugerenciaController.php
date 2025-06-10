@@ -148,6 +148,16 @@ class BuzonSugerenciaController extends Controller
         }
     }
 
+    public function obtenerListaSugerenciasDirector(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            $data = BuzonSugerenciasService::obtenerSugerenciasDirector($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
     /**
      * @OA\Delete(
      *     path="/api/acad/estudiantes/buzon-sugerencias/{iCredEntPerfId}",

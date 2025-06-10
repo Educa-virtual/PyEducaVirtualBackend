@@ -18,6 +18,10 @@ class BuzonSugerenciasService
         return BuzonSugerencia::selBuzonSugerenciasEstudiante($request);
     }
 
+    public static function obtenerSugerenciasDirector($request) {
+        return BuzonSugerencia::selBuzonSugerenciasDirector($request);
+    }
+
     public static function eliminarSugerencia($iSugerenciaId, $request) {
         return BuzonSugerencia::delBuzonSugerenciasEstudiante($iSugerenciaId, $request);
     }
