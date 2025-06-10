@@ -329,8 +329,8 @@
                     <td>{{ $direccion_padre['Nombre_via'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_padre['DireccionNroPuerta'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_padre['DireccionBlock'] ?? 'N/A' }}</td>
-                    <td>{{ $direccion_padre['DirecionInterior'] ?? 'N/A' }}</td>
-                    <td>{{ $direccion_padre['DirecionPiso'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DireccionInterior'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_padre['DireccionPiso'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_padre['DireccionManzana'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_padre['DireccionLote'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_padre['DireccionKm'] ?? 'N/A' }}</td>
@@ -361,8 +361,8 @@
                     <td>{{ $direccion_madre['Nombre_via'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_madre['DireccionNroPuerta'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_madre['DireccionBlock'] ?? 'N/A' }}</td>
-                    <td>{{ $direccion_madre['DirecionInterior'] ?? 'N/A' }}</td>
-                    <td>{{ $direccion_madre['DirecionPiso'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DireccionInterior'] ?? 'N/A' }}</td>
+                    <td>{{ $direccion_madre['DireccionPiso'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_madre['DireccionManzana'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_madre['DireccionLote'] ?? 'N/A' }}</td>
                     <td>{{ $direccion_madre['DireccionKm'] ?? 'N/A' }}</td>

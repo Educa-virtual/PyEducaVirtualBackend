@@ -11,54 +11,16 @@ use Illuminate\Http\Request;
 
 class FichaGeneralController extends Controller
 {
-    public function guardarFichaGeneral(FichaGeneralSaveRequest $request)
-    {
-        $parametros = [
-            $request->iPersId,
-            $request->iTipoViaId,
-            $request->cFichaDGDireccionNombreVia,
-            $request->cFichaDGDireccionNroPuerta,
-            $request->cFichaDGDireccionBlock,
-            $request->cFichaDGDirecionInterior,
-            $request->cFichaDGDirecionPiso,
-            $request->cFichaDGDireccionManzana,
-            $request->cFichaDGDireccionLote,
-            $request->cFichaDGDireccionKm,
-            $request->cFichaDGDireccionReferencia,
-            $request->iReligionId,
-            $request->bFamiliarPadreVive,
-            $request->bFamiliarMadreVive,
-            $request->bFamiliarPadresVivenJuntos,
-            $request->bFichaDGTieneHijos,
-            $request->iFichaDGNroHijos,
-            $request->cTipoViaOtro,
-            $request->cReligionOtro,
-        ];
-
-        try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
-        }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-        return new JsonResponse($response, $codeResponse);
-    }
-
     public function actualizarFichaGeneral(Request $request)
     {
         $parametros = [
             $request->iFichaDGId,
-            $request->iPersId,
             $request->iTipoViaId,
             $request->cFichaDGDireccionNombreVia,
             $request->cFichaDGDireccionNroPuerta,
             $request->cFichaDGDireccionBlock,
-            $request->cFichaDGDirecionInterior,
-            $request->cFichaDGDirecionPiso,
+            $request->cFichaDGDireccionInterior,
+            $request->cFichaDGDireccionPiso,
             $request->cFichaDGDireccionManzana,
             $request->cFichaDGDireccionLote,
             $request->cFichaDGDireccionKm,
@@ -74,7 +36,7 @@ class FichaGeneralController extends Controller
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_UPD_fichaGeneral ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
             $codeResponse = 200;
         }

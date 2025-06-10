@@ -16,15 +16,16 @@ use App\Http\Controllers\bienestar\FichaSaludController;
 
 Route::group(['prefix' => 'bienestar'], function () {
 
-    Route::get('searchFichasEstudiantes', [FichaGeneralController::class, 'indexEstudiantes']);
+    Route::post('listarEstudiantesApoderado', [FichaBienestarController::class, 'listarEstudiantesApoderado']);
+    Route::post('listarFichas', [FichaBienestarController::class, 'listarFichas']);
+    Route::post('crearFicha', [FichaBienestarController::class, 'crearFicha']);
+    Route::get('obtenerParametrosFicha', [FichaBienestarController::class, 'obtenerParametrosFicha']);
+    Route::delete('borrarFicha', [FichaBienestarController::class, 'borrarFicha']);
+    Route::post('verFicha', [FichaBienestarController::class, 'verFicha']);
 
-    Route::post('searchFichas', [FichaBienestarController::class, 'listarFichas']);
-    Route::get('createFicha', [FichaBienestarController::class, 'crearFicha']);
-    Route::delete('deleteFicha', [FichaBienestarController::class, 'borrarFicha']);
-    Route::post('searchFicha', [FichaBienestarController::class, 'verFicha']);
+    Route::post('descargarFicha', [FichaPdfController::class, 'descargarFicha']);
 
     Route::post('searchFichaGeneral', [FichaGeneralController::class, 'verFichaGeneral']);
-    Route::post('guardarFichaGeneral', [FichaGeneralController::class, 'guardarFichaGeneral']);
     Route::post('actualizarFichaGeneral', [FichaGeneralController::class, 'actualizarFichaGeneral']);
 
     /* Rutas para gestionar familiares */
@@ -62,12 +63,6 @@ Route::group(['prefix' => 'bienestar'], function () {
     /* Rutas para gestion seccion recreación */
     Route::post('verFichaRecreacion', [FichaRecreacionController::class, 'verFichaRecreacion']);
     Route::post('actualizarFichaRecreacion', [FichaRecreacionController::class, 'actualizarFichaRecreacion']);
-
-    
-
-    Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
-
-    Route::get('/ficha-pdf/{id}/{anio}', [FichaPdfController::class, 'mostrarFichaPdf'])->name('ficha.pdf');
 
 });
 

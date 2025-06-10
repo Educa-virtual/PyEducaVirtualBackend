@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\DB; // Para usar consultas SQL crudas
 
 class FichaPdfController extends Controller
 {
-    public function mostrarFichaPdf($id, $anio)
+    public function descargarFicha(Request $request)
     {
+        $id = $request->get('id');
+        $anio = $request->get('anio');
+
         //---------------- Datos generales y de dirección------------
         $datosGenerales = DB::selectOne("
             SELECT
@@ -18,8 +21,8 @@ class FichaPdfController extends Controller
                 fdg.cFichaDGDireccionNombreVia,
                 fdg.cFichaDGDireccionNroPuerta,
                 fdg.cFichaDGDireccionBlock,
-                fdg.cFichaDGDirecionInterior,
-                fdg.cFichaDGDirecionPiso,
+                fdg.cFichaDGDireccionInterior,
+                fdg.iFichaDGDireccionPiso,
                 fdg.cFichaDGDireccionManzana,
                 fdg.cFichaDGDireccionLote,
                 fdg.cFichaDGDireccionKm,
@@ -164,8 +167,8 @@ class FichaPdfController extends Controller
                             fam.cFamiliarDireccionNombreVia,
                             fam.cFamiliarDireccionNroPuerta,
                             fam.cFamiliarDireccionBlock,
-                            fam.cFamiliarDirecionInterior,
-                            fam.cFamiliarDirecionPiso,
+                            fam.cFamiliarDireccionInterior,
+                            fam.iFamiliarDireccionPiso,
                             fam.cFamiliarDireccionManzana,
                             fam.cFamiliarDireccionLote,
                             fam.cFamiliarDireccionKm,
@@ -425,8 +428,8 @@ class FichaPdfController extends Controller
                 'nombre_via' => $datosGenerales->cFichaDGDireccionNombreVia ?? '',
                 'numero_puerta' => $datosGenerales->cFichaDGDireccionNroPuerta ?? '',
                 'block' => $datosGenerales->cFichaDGDireccionBlock ?? '',
-                'interior' => $datosGenerales->cFichaDGDirecionInterior ?? '',
-                'piso' => $datosGenerales->cFichaDGDirecionPiso ?? '',
+                'interior' => $datosGenerales->cFichaDGDireccionInterior ?? '',
+                'piso' => $datosGenerales->iFichaDGDireccionPiso ?? '',
                 'mz' => $datosGenerales->cFichaDGDireccionManzana ?? '',
                 'lote' => $datosGenerales->cFichaDGDireccionLote ?? '',
                 'km' => $datosGenerales->cFichaDGDireccionKm ?? '',
@@ -473,8 +476,8 @@ class FichaPdfController extends Controller
                 'Nombre_via' => $dir_familiar->cFamiliarDireccionNombreVia ?? '',
                 'DireccionNroPuerta' => $dir_familiar->cFamiliarDireccionNroPuerta ?? '',
                 'DireccionBlock' => $dir_familiar->cFamiliarDireccionBlock ?? '',
-                'DirecionInterior' => $dir_familiar->cFamiliarDirecionInterior ?? '',
-                'DirecionPiso' => $dir_familiar->cFamiliarDirecionPiso ?? '',
+                'DireccionInterior' => $dir_familiar->cFamiliarDireccionInterior ?? '',
+                'DireccionPiso' => $dir_familiar->iFamiliarDireccionPiso ?? '',
                 'DireccionManzana' => $dir_familiar->cFamiliarDireccionManzana ?? '',
                 'DireccionLote' => $dir_familiar->cFamiliarDireccionLote ?? '',
                 'DireccionKm' => $dir_familiar->cFamiliarDireccionKm ?? '',
