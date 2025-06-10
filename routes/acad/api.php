@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\acad\BuzonSugerenciaController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\asi\AsistenciaController;
+use App\Http\Controllers\VacantesController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
@@ -20,7 +22,13 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
         Route::get('{iIieeId}/sedes', [InstitucionEducativaController::class, 'obtenerSedesIe']);
     });
+});
 
+Route::group(['prefix' => 'acad'], function () {
+    Route::group(['prefix' => 'vacantes'], function () {
+        Route::post('guardar', [VacantesController::class, 'guardarVacantes']);
+        //vacantes convenciones de nombre para APIs
+    });
     Route::group(['prefix' => 'estudiantes'], function () {
         Route::post('buzon-sugerencias', [BuzonSugerenciaController::class, 'registrarSugerencia']);
         Route::get('buzon-sugerencias', [BuzonSugerenciaController::class, 'obtenerListaSugerencias']);

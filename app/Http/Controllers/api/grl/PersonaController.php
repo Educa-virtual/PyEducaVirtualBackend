@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\api\grl;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Services\ConsultarDocumentoIdentidadService;
 use App\Services\ParseSqlErrorService;
@@ -10,16 +12,17 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Gate;
 
 class PersonaController extends Controller
 {
     private $parseSqlErrorService;
-    private $consultarDocumentoIdentidadService;
+    //private $consultarDocumentoIdentidadService;
 
     public function __construct()
     {
-        $this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
-        $this->parseSqlErrorService = new ParseSqlErrorService;
+        //$this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
+        //$this->parseSqlErrorService = new ParseSqlErrorService;
     }
 
     public function __invoke(Request $request)
@@ -28,6 +31,49 @@ class PersonaController extends Controller
             ->setPaper('a4', 'landscape')
             ->name('your-invoice.pdf');
     }
+
+
+/**
+     * Busca si la persona está registrada en la base de datos. Si no está, consulta en el servicio web.
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function buscarPersona(Request $request)
+    {
+        $parametros = [
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+        ];
+
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $resultado = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento ?,?', $parametros);
+            $cantidadResultados = count($resultado);
+            if ($cantidadResultados == 0) {
+                // No está registrado, consultar en servicio web
+                $consultarDocumentoService = new ConsultarDocumentoIdentidadService();
+                $dataServicio = $consultarDocumentoService->buscar($request->iTipoIdentId, $request->cPersDocumento);
+                $data = $dataServicio['data'];
+                $mensaje = $dataServicio['message'];
+                $status = $dataServicio['status'];
+            } elseif ($cantidadResultados > 1) {
+                $data = null;
+                $mensaje = 'El documento de identidad está duplicado';
+                $status = 500;
+            } else {
+                $data = $resultado[0];
+                $mensaje = 'El usuario ya está registrado';
+                $status = 200;
+            }
+            return FormatearMensajeHelper::ok($mensaje, $data, $status);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+
+
+
 
     /**
      * Guarda una persona
@@ -59,7 +105,8 @@ class PersonaController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function show(Request $request){
+    public function show(Request $request)
+    {
         $parametros = [
             $request->opcion,
             $request->iPersId,
@@ -90,7 +137,7 @@ class PersonaController extends Controller
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?",$parametros);
+            $data = DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -102,50 +149,15 @@ class PersonaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    /**
-     * Validar tipo de identificacion y documento en servicio web
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function validate(Request $request)
-    {
-        $parametros = [
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-        ];
 
-        try {
-            $data = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento
-                ?,?', $parametros);
-        } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-            return new JsonResponse($response, $codeResponse);
-        }
-
-        if( count($data) == 0){
-            // No está pre-registrado, consultar en servicio web
-            $servicio = $this->consultarDocumentoIdentidadService->buscar($request->iTipoIdentId, $request->cPersDocumento);
-            $response = ['validated' => true, 'message' => $servicio['message'], 'data' => $servicio['data']];
-            $codeResponse = $servicio['status'];
-        } elseif( count($data) > 1 ) {
-            // ERROR: mas de un registro con el mismo documento
-            $response = ['validated' => false, 'message' => 'Documento de identidad duplicado', 'data' => []];
-            $codeResponse = 500;
-        } else {
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data[0]];
-            $codeResponse = 200;
-        }
-        return new JsonResponse($response, $codeResponse);
-    }
 
     /**
      * Valida los parametros de guardar persona
      * @param Request $request
      * @return array
      */
-    private function validateGuardarPersona(Request $request){
+    private function validateGuardarPersona(Request $request)
+    {
         return $request->validate([
             'iTipoPersId' => 'required|integer',
             'iTipoIdentId' => 'required|integer',

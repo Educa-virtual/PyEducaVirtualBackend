@@ -19,14 +19,12 @@ use App\http\Controllers\api\acad\PeriodoAcademicosController;
 use App\Http\Controllers\api\acad\AdministradorController;
 use App\Http\Controllers\CredencialController;
 
-use App\Http\Controllers\api\seg\ListarCursosController;
+use App\Http\Controllers\seg\ListarCursosController;
 use App\Http\Controllers\api\acad\AutenticarUsurioController;
 use App\Http\Controllers\api\acad\InstitucionesEducativasController as AcadInstitucionesEducativasController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\api\grl\TipoIdentificacionController;
 use App\Http\Controllers\api\acad\SelectPerfilesController;
-use App\Http\Controllers\api\seg\CredencialescCredUsuariocClaveController;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\ere\cursoController;
 use App\Http\Controllers\ere\EvaluacionesController;
@@ -40,15 +38,31 @@ use App\Http\Controllers\seg\AuditoriaController;
 use App\Http\Controllers\seg\AuditoriaMiddlewareController;
 use App\Http\Controllers\seg\CredencialesController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\aula\EstadisticasController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\seg\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 
+use App\Http\Controllers\bienestar\FichaPdfController;
+use App\Http\Controllers\bienestar\EstudianteController;
+
+//Linea 18 de febrero------------------------------------- 
+//use App\Http\Controllers\VacantesController;
+
+//Route::post('/guardar-vacantes', [VacantesController::class, 'guardarVacantes']);
+//Route::post('store', [VacantesController::class, 'store']);
+
+//-------------------------------------------------------
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/verificar', [MailController::class, 'index']);
+Route::post('/verificar_codigo', [MailController::class, 'comparar']);
+Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
+
 Route::group(['prefix' => 'administrador'], function () {
     Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']);
     Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
@@ -160,6 +174,7 @@ Route::group(['prefix' => 'ere'], function () {
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
+        Route::get('{iUgelId}/areas', [UgelesController::class, 'obtenerUgeles']);
     });
 });
 Route::group(['prefix' => 'acad'], function () {
@@ -383,10 +398,7 @@ Route::group(['prefix' => 'seg'], function () {
 });
 
 
-Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
-Route::post('/verificar', [MailController::class, 'index']);
-Route::post('/verificar_codigo', [MailController::class, 'comparar']);
-Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
+
 
 // Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
 // Route::post('/verificar', [MailController::class, 'index']);
@@ -442,3 +454,8 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
         return response()->json(['message' => 'Datos actualizados correctamente', 'data' => $data[$index]], 200);
     });
 });
+
+
+Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+
+
