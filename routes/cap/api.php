@@ -33,7 +33,7 @@ Route::group(['prefix' => 'cap'], function () {
     Route::get('/{iTipoIdentId}/{cPersDocumento}', [InstructoresController::class, 'buscarInstructorxiTipoIdentIdxcPersDocumento']); // Para buscar
     Route::get('/', [InstructoresController::class, 'listarInstructores']); // Para listar
     Route::post('/', [InstructoresController::class, 'guardarInstructores']); // Para crear
-    Route::put('/{iConfEncId}', [InstructoresController::class, 'actualizarInstructores']); // Para actualizar
-    Route::delete('/{iConfEncId}', [InstructoresController::class, 'eliminarInstructores']); // Para eliminar
+    Route::put('/{iInstId}', [InstructoresController::class, 'actualizarInstructores']); // Para actualizar
+    Route::delete('/{iInstId}', [InstructoresController::class, 'eliminarInstructores']); // Para eliminar
   });
 });
