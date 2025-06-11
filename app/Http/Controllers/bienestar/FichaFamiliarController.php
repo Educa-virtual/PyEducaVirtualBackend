@@ -35,46 +35,47 @@ class FichaFamiliarController extends Controller
 
     public function guardarFichaFamiliar(FichaFamiliarSaveRequest $request)
     {
-        // primero guardar como persona
-        $request->merge([
-            'iTipoPersId' => 1, // Siempre persona natural
-        ]);
+        if( !$request->has('iPersId') || $request->iPersId == null ) {
+            $request->merge([
+                'iTipoPersId' => 1, // Siempre persona natural
+            ]);
 
-        $parametros = [
-            $request->iTipoPersId,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersRazonSocialNombre,
-            $request->cPersRazonSocialCorto,
-            $request->cPersRazonSocialSigla,
-            $request->cPersDomicilio,
-            $request->iSesionId,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-        ];
+            $parametros = [
+                $request->iTipoPersId,
+                $request->iTipoIdentId,
+                $request->cPersDocumento,
+                $request->cPersPaterno,
+                $request->cPersMaterno,
+                $request->cPersNombre,
+                $request->cPersSexo,
+                $request->dPersNacimiento,
+                $request->iTipoEstCivId,
+                $request->cPersFotografia,
+                $request->cPersRazonSocialNombre,
+                $request->cPersRazonSocialCorto,
+                $request->cPersRazonSocialSigla,
+                $request->cPersDomicilio,
+                $request->iSesionId,
+                $request->iNacionId,
+                $request->iPaisId,
+                $request->iDptoId,
+                $request->iPrvnId,
+                $request->iDsttId,
+            ];
 
-        try {
-            $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-            return new JsonResponse($response, $codeResponse);
+            try {
+                $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            } catch (\Exception $e) {
+                $error_message = ParseSqlErrorService::parse($e->getMessage());
+                $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+                $codeResponse = 500;
+                return new JsonResponse($response, $codeResponse);
+            }
+
+            $request->merge([
+                'iPersId' => $data[0]->iPersId,
+            ]);
         }
-
-        $request->merge([
-            'iPersId' => $data[0]->iPersId,
-        ]);
 
         // luego guardar como estudiante
         $parametros = [
@@ -97,10 +98,93 @@ class FichaFamiliarController extends Controller
             $request->iGradoInstId,
             $request->iTipoIeEstId,
             $request->cTipoViaOtro,
+            $request->cFamiliarResidenciaActual,
         ];
 
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('EXEC obe.Sp_INS_fichaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function actualizarFichaFamiliar(FichaFamiliarSaveRequest $request)
+    {
+        if( !$request->has('iPersId') || $request->iPersId == null ) {
+            $request->merge([
+                'iTipoPersId' => 1, // Siempre persona natural
+            ]);
+
+            $parametros = [
+                $request->iTipoPersId,
+                $request->iTipoIdentId,
+                $request->cPersDocumento,
+                $request->cPersPaterno,
+                $request->cPersMaterno,
+                $request->cPersNombre,
+                $request->cPersSexo,
+                $request->dPersNacimiento,
+                $request->iTipoEstCivId,
+                $request->cPersFotografia,
+                $request->cPersRazonSocialNombre,
+                $request->cPersRazonSocialCorto,
+                $request->cPersRazonSocialSigla,
+                $request->cPersDomicilio,
+                $request->iSesionId,
+                $request->iNacionId,
+                $request->iPaisId,
+                $request->iDptoId,
+                $request->iPrvnId,
+                $request->iDsttId,
+            ];
+
+            try {
+                $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            } catch (\Exception $e) {
+                $error_message = ParseSqlErrorService::parse($e->getMessage());
+                $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+                $codeResponse = 500;
+                return new JsonResponse($response, $codeResponse);
+            }
+
+            $request->merge([
+                'iPersId' => $data[0]->iPersId,
+            ]);
+        }
+
+        // luego guardar como estudiante
+        $parametros = [
+            $request->iFamiliarId,
+            $request->iFichaDGId,
+            $request->iPersId,
+            $request->iTipoFamiliarId,
+            $request->bFamiliarVivoConEl,
+            $request->iTipoEstCivId,
+            $request->iTipoViaId,
+            $request->cFamiliarDireccionNombreVia,
+            $request->cFamiliarDireccionNroPuerta,
+            $request->cFamiliarDireccionBlock,
+            $request->cFamiliarDireccionInterior,
+            $request->iFamiliarDireccionPiso,
+            $request->cFamiliarDireccionManzana,
+            $request->cFamiliarDireccionLote,
+            $request->cFamiliarDireccionKm,
+            $request->cFamiliarDireccionReferencia,
+            $request->iOcupacionId,
+            $request->iGradoInstId,
+            $request->iTipoIeEstId,
+            $request->cTipoViaOtro,
+            $request->cFamiliarResidenciaActual,
+        ];
+
+        try {
+            $data = DB::select('EXEC obe.Sp_UPD_fichaFamiliar ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
