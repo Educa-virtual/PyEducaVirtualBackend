@@ -26,20 +26,54 @@ class AsistenciaController extends Controller
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
     
+    public function guardarGrupo(Request $request){
+        $iSedeId = $request["iSedeId"];
+        $cGrupoNombre = $request["cGrupoNombre"];
+        $cGrupoDescripcion = $request["cGrupoDescripcion"];
+
+        if(empty($iSedeId) || empty($cGrupoNombre)){
+            $mensaje = "No se envio datos del Grupo";
+            return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
+        }
+
+        $enviar = [
+            $iSedeId,
+            $cGrupoNombre ?? NULL,  
+            $cGrupoDescripcion ?? NULL
+        ];
+
+        $query = 'EXEC asi.Sp_INS_grupos ?,?,?';
+        
+        try {
+            $data = DB::select($query, $enviar);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
+    }
+
     public function verificarGrupoAsistencia(Request $request){
   
         $iSedeId = $request["iSedeId"];
-      
+        $cGrupoNombre = $request["cGrupoNombre"];
+        $cGrupoDescripcion = $request["cGrupoDescripcion"];
+
         if(empty($iSedeId)){
             $mensaje = "No se envio datos de la institucion";
             return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
         }
-    
-        $query = 'EXEC asi.Sp_SEL_asistenciaGrupos ?';  
+
+        $enviar = [
+            $iSedeId,
+            $cGrupoNombre ?? NULL,  
+            $cGrupoDescripcion ?? NULL
+        ];
+
+        $query = 'EXEC asi.Sp_SEL_asistenciaGrupos ?,?,?';
+
         try {
-           
-            //$data = DB::select($query, [$iSedeId]);
-            return ResponseHandler::success([1]);
+            $data = DB::select($query, $enviar);
+            return ResponseHandler::success($data);
         } catch (Exception $e) {
             return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
         }
