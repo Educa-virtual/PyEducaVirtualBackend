@@ -17,8 +17,7 @@ class CapacitacionesController extends Controller
     // 0 => Eliminado
     // 1 => Activo
     // 2 => Publicado
-    // 3 => En proceso
-    // 4 => Finalizado
+    // 10 => Finalizado
     public function guardarCapacitaciones(Request $request)
     {
         // return $request->all();
