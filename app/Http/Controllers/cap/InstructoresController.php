@@ -145,6 +145,7 @@ class InstructoresController extends Controller
                 $request->merge(['iPersId' => $persona[0]->iPersId]);
                 $request->merge(['dPersNacimiento' => null]);
                 $request->merge(['cPersFotografia' => null]);
+                $request->merge(['cPersDomicilio' => $request->cPersDireccion]);
                 $datosPersonales = new PersonasController();
                 $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
                 $request->merge(['iPersId' => $persona[0]->iPersId]);
