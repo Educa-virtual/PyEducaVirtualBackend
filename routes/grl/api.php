@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\grl\DiasController;
+use App\Http\Controllers\grl\FeriadosNacionalesController;
 use App\Http\Controllers\grl\PersonasContactosController;
 use App\Http\Controllers\grl\PersonasController;
 
@@ -21,5 +22,13 @@ Route::group(['prefix' => 'grl'], function () {
   Route::group(['prefix' => 'personas-contactos'], function () {
     Route::post('enviarCodVerificarCorreo', [PersonasContactosController::class, 'enviarCodVerificarCorreo']);
     Route::post('verificarCodVerificarCorreo', [PersonasContactosController::class, 'verificarCodVerificarCorreo']);
+  });
+  Route::group(['prefix' => 'feriados-nacionales'], function () {
+    Route::get('getFeriadosNacionales/{iYearId?}', [FeriadosNacionalesController::class, 'getFeriadosNacionales']);
+    Route::post('insFeriadosNacionales', [FeriadosNacionalesController::class, 'insFeriadosNacionales']);
+    Route::post('insFeriadosNacionalesMasivo', [FeriadosNacionalesController::class, 'insFeriadosNacionalesMasivo']);
+    Route::put('updFeriadosNacionales', [FeriadosNacionalesController::class, 'updFeriadosNacionales']);
+    Route::put('syncFeriadosNacionales', [FeriadosNacionalesController::class, 'syncFeriadosNacionales']);
+    Route::delete('deleteFeriadosNacionales/{iFeriadoId}', [FeriadosNacionalesController::class, 'deleteFeriadosNacionales']);
   });
 });
