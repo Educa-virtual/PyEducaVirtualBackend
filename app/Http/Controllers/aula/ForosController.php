@@ -43,7 +43,7 @@ class ForosController extends Controller
                 'errors' => $validator->errors()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
+
         $fieldsToDecode = [
             'iForoId'
         ];
@@ -69,6 +69,27 @@ class ForosController extends Controller
 
     public function actualizarForo(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'iForoId' => ['required'],
+        ], [
+            'iForoId.required' => 'No se encontró el identificador iForoId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $fieldsToDecode = [
+            'iForoId',
+            'iForoCatId',
+            'iDocenteId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
         $parametros = [
             $request->iForoId,
             $request->iForoCatId,
@@ -82,24 +103,60 @@ class ForosController extends Controller
         ];
 
         try {
-            $data = DB::update('exec aula.SP_UPD_foro
-                ?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select(
+                'exec aula.SP_UPD_foro 
+                    @_iForoId=?, 
+                    @_iForoCatId=?, 
+                    @_iDocenteId=?, 
+                    @_cForoTitulo=?, 
+                    @_cForoDescripcion=?, 
+                    @_dtForoPublicacion=?, 
+                    @_dtForoInicio=?, 
+                    @_dtForoFin=?, 
+                    @_iEstado=?',
+                $parametros
+            );
 
-            $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data];
-            $codeResponse = 200;
+            return $data;
+            if ($data[0]->iForoId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido actualizar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            $codeResponse = 500;
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function eliminarxiForoId(Request $request)
     {
-        if (isset($request->iForoId)) {
-            $request['iForoId'] = $this->decodeValue($request->iForoId);
+        $validator = Validator::make($request->all(), [
+            'iForoId' => ['required'],
+        ], [
+            'iForoId.required' => 'No se encontró el identificador iForoId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
+        $fieldsToDecode = [
+            'iForoId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
         $parametros = [
             $request->opcion            ??      NULL,
             $request->valorBusqueda     ??      NULL,
