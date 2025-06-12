@@ -42,7 +42,6 @@ class FeriadosNacionalesController extends Controller
         $where = '1=1';
       }
 
-
       // Construimos el request modificado
       $request->replace([
         'esquema' => self::schema,
@@ -166,11 +165,8 @@ class FeriadosNacionalesController extends Controller
 
   public function syncFeriadosNacionales(Request $request)
   {
-    $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion", [
-      'json' => json_encode([
-        'iYearId' => $request->input('iYearId'),
-      ]),
-      'opcion' => 'syncFechasEspeciales ',
+    $query = DB::select("EXEC acad.Sp_INS_generarFechasImportantesXiYearId @iYearId = :iYearId", [
+      'iYearId' => $request->input('iYearId'),
     ]);
 
     return new JsonResponse(['validated' => true, 'message' => 'Feriados nacionales obtenidos exitosamente.', 'data' => $query], 200);

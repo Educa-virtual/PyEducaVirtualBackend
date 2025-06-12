@@ -5,6 +5,8 @@ use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\SilabosController;
+use App\Http\Controllers\api\acad\FeriadoImportanteController;
+use App\Http\Controllers\api\acad\TipoFechaController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
@@ -51,4 +53,14 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('importar_silabos', [DocenteCursosController::class, 'importarSilabos']);
         Route::post('detalle_curricular', [AsistenciaController::class, 'obtenerDetallesCurricular']);
     });
+    Route::group(['prefix' => 'tipos-fechas'], function () {
+        Route::get('getTiposFechas', [TipoFechaController::class, 'getTiposFechas']);
+    });
+
+    Route::group(['prefix' => 'feriados-importantes'], function () {
+    Route::get('getFechasImportantes/{iYAcadId?}/{iSedeId?}', [FeriadoImportanteController::class, 'getFechasImportantes']);
+    Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
+    Route::put('updFechasImportantes', [FeriadoImportanteController::class, 'updFechasImportantes']);
+    Route::delete('deleteFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'deleteFechasImportantes']);
+  });
 });
