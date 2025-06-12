@@ -101,6 +101,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('obtenerForoxiForoId', [ForosController::class, 'obtenerForoxiForoId']);
         Route::post('actualizarForo', [ForosController::class, 'actualizarForo']);
         Route::post('eliminarxiForoId', [ForosController::class, 'eliminarxiForoId']);
+        Route::post('/', [ForosController::class, 'guardarForos']); // Para crear
+
     });
 
     Route::group(['prefix' => 'notificacion_docente'], function () {

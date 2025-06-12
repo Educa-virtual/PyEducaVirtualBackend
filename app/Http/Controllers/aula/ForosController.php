@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\Controller;
-use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -13,21 +12,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ForosController extends Controller
 {
-
-    protected $hashids;
-
-    public function __construct()
-    {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
-
-    private function decodeValue($value)
-    {
-        if (is_null($value)) {
-            return null;
-        }
-        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
-    }
 
     public function obtenerForoxiForoId(Request $request)
     {
@@ -251,6 +235,119 @@ class ForosController extends Controller
             ];
             $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
             return new JsonResponse($response, $estado);
+        }
+    }
+
+    public function guardarForos(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'iForoCatId' => ['required'],
+            'iDocenteId' => ['required'],
+            'cForoTitulo' => ['required', 'string', 'max:150'],
+            'cForoDescripcion' => ['required', 'string'],
+            'dtForoInicio' => ['required', 'date'],
+            'dtForoFin' => ['required', 'date', 'after:dtForoInicio'],
+
+            'iContenidoSemId' => ['required'],
+            'iActTipoId' => ['required'],
+            'idDocCursoId' => ['required'],
+        ], [
+            'iForoCatId.required' => 'No se encontró el identificador iForoCatId',
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+
+            'cForoTitulo.required' => 'Debe ingresar el título del foro',
+            'cForoTitulo.string' => 'El título debe ser una cadena de texto',
+            'cForoTitulo.max' => 'El título no debe exceder los 150 caracteres',
+
+            'cForoDescripcion.required' => 'Debe ingresar la descripción del foro',
+            'cForoDescripcion.string' => 'La descripción debe ser una cadena de texto',
+
+            'dtForoInicio.required' => 'Debe ingresar la fecha de inicio del foro',
+            'dtForoInicio.date' => 'La fecha de inicio debe ser una fecha válida',
+
+            'dtForoFin.required' => 'Debe ingresar la fecha de fin del foro',
+            'dtForoFin.date' => 'La fecha de fin debe ser una fecha válida',
+            'dtForoFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio',
+
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+            'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
+            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iForoCatId',
+                'iDocenteId',
+                'iInstrumentoId',
+                'iContenidoSemId',
+                'iActTipoId',
+                'idDocCursoId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iForoCatId                     ?? NULL,
+                $request->iDocenteId                     ?? NULL,
+                $request->cForoTitulo                    ?? NULL,
+                $request->cForoDescripcion               ?? NULL,
+                $request->dtForoInicio                   ?? NULL,
+                $request->dtForoFin                      ?? NULL,
+                $request->cForoUrl                       ?? NULL,
+                $request->cTareaUrlnstrumentoEvaluacion  ?? NULL,
+                $request->iInstrumentoId                 ?? NULL,
+                $request->iContenidoSemId                ?? NULL,
+                $request->iActTipoId                     ?? NULL,
+                $request->idDocCursoId                   ?? NULL,
+
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC aula.SP_INS_Foros 
+                    @_iForoCatId=?, 
+                    @_iDocenteId=?, 
+                    @_cForoTitulo=?, 
+                    @_cForoDescripcion=?, 
+                    @_dtForoInicio=?, 
+                    @_dtForoFin=?, 
+                    @_cForoUrl=?, 
+                    @_cTareaUrlnstrumentoEvaluacion=?, 
+                    @_iInstrumentoId=?,
+                    @_iContenidoSemId=?,
+                    @_iActTipoId=?,
+                    @_idDocCursoId=?,
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iForoId > 0) {
+                $message = 'Se ha guardado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }
