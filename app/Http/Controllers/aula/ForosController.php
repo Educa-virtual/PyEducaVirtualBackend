@@ -31,12 +31,26 @@ class ForosController extends Controller
 
     public function obtenerForoxiForoId(Request $request)
     {
-        if ($request->iForoId) {
-            $iForoId = $this->hashids->decode($request->iForoId);
-            $iForoId = count($iForoId) > 0 ? $iForoId[0] : $iForoId;
+        $validator = Validator::make($request->all(), [
+            'iForoId' => ['required'],
+        ], [
+            'iForoId.required' => 'No se encontró el identificador iForoId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+        
+        $fieldsToDecode = [
+            'iForoId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
         $parametros = [
-            $iForoId,
+            $request->iForoId,
         ];
 
         try {
