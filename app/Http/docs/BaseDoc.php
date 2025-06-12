@@ -18,7 +18,7 @@ namespace App\Http\Docs;
  *         name="iCredEntPerfId",
  *         in="header",
  *         required=true,
- *         description="Id de la credencial a nivel entidad y perfil",
+ *         description="Id del perfil seleccionado del usuario",
  *         @OA\Schema(type="integer")
  * )
  * @OA\Parameter(
@@ -66,6 +66,10 @@ namespace App\Http\Docs;
  * @OA\Tag(
  *     name="Autenticación",
  *     description="Inicio de sesión de usuarios"
+ * )
+ * @OA\Tag(
+ *     name="Gestión de usuarios",
+ *     description="Operaciones relacionadas con la gestión de usuarios del sistema"
  * )
  */
 final class BaseDoc {}

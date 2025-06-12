@@ -4,7 +4,9 @@ namespace App\Http\Controllers\ere;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use App\Models\ere\Evaluacion;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\acad\DocentesRepository;
 use App\Repositories\Acad\IeRepository;
@@ -12,6 +14,7 @@ use App\Repositories\ere\AreasRepository as EreAreasRepository;
 use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\grl\PersonasRepository;
 use App\Repositories\grl\YearsRepository;
+use App\Repositories\PreguntasRepository;
 use App\Services\ere\AreasService;
 use App\Services\FechaHoraService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,6 +32,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 
 class AreasController extends Controller
 {
@@ -232,5 +236,47 @@ class AreasController extends Controller
         }
         AreasRepository::liberarAreasPorEvaluacion($evaluacionIdDescifrado[0]);
         return response()->json(['status' => 'Success', 'message' => 'Se han liberado las áreas de la evaluación especificada.'], Response::HTTP_OK);
+    }
+
+    public function obtenerAreasPorEvaluacion($evaluacionId)
+    {
+        try {
+            $evaluacionIdDescifrado =  VerifyHash::decodesxId($evaluacionId);//$this->hashids->decode($evaluacionId);
+            //$personaIdDescifrado =  $this->hashids->decode($personaId);
+            if (empty($evaluacionIdDescifrado)) {
+                throw new Exception('El ID enviado no se pudo descifrar.');
+            }
+            $resultados = DB::select(
+                'EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @iEvaluacionId=?, @iPersId=?, @iCredEntPerfId=?',
+                [$evaluacionIdDescifrado, Auth::user()->iPersId, request()->header('icredentperfid')]
+            );
+
+            if (empty($resultados)) {
+                throw new Exception('No se encontraron datos para los cursos asociados.');
+            }
+
+            foreach ($resultados as $fila) {
+                /*$params = [
+                    'iEvaluacionId' => $evaluacionIdDescifrado[0],
+                    'iCursosNivelGradId' => $fila->iCursosNivelGradId,
+                    'busqueda' => '',
+                    'iTipoPregId' => 0,
+                    'bPreguntaEstado' => 1,
+                    'iPreguntaId' => NULL,
+                    'ids' => NULL
+                ];*/
+                $fila->iCantidadMaximaPreguntas = Evaluacion::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId) ?? 20;//EvaluacionesRepository::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
+                $fila->iCantidadPreguntas = PreguntasRepository::obtenerCantidadPreguntasPorEvaluacion($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
+                $fila->iEvaluacionId = $evaluacionIdDescifrado;
+                $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
+                $fila->bTieneArchivo = AreasService::tieneArchivoErePdfSubido($evaluacionId, $fila->iCursosNivelGradId);
+                $fila->iEvaluacionIdHashed = $evaluacionId;
+            }
+            return FormatearMensajeHelper::ok('Datos obtenidos', $resultados);
+            //return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+            //return response()->json(['status' => 'Error', 'message' => $ex->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 }

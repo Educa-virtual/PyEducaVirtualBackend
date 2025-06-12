@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 //use App\Models\ere\ereEvaluacion; // Importa tu modelo aquí
 use App\Models\ere\EreEvaluacion;
+use App\Models\ere\Evaluacion;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\PreguntasRepository;
@@ -135,7 +136,7 @@ class EvaluacionesController extends ApiController
         // ];
         try {
             // Llama al método del modelo que ejecuta el procedimiento almacenado
-            $evaluaciones = EreEvaluacion::guardarEvaluaciones($params);
+            $evaluaciones = Evaluacion::guardarEvaluaciones($params);
             // Suponiendo que guardarEvaluaciones() retorna el ID generado
             $iEvaluacionId = $evaluacion->iEvaluacionId ?? null;
             return response()->json([
@@ -345,15 +346,25 @@ class EvaluacionesController extends ApiController
                 return response()->json(['message' => 'Datos incompletos.'], 400);
             }
 
+
             // Inserta los cursos
             foreach ($selectedCursos as $curso) {
+                if (isset($curso['dtExamenFechaInicio']) && $curso['dtExamenFechaInicio'] != null) {
+                    $fecha = Carbon::parse($curso['dtExamenFechaInicio']);
+                    $fecha = $fecha->format('Ymd H:i:s');
+                } else {
+                    $fecha = null;
+                }
                 DB::table('ere.examen_cursos')->insert([
                     'iEvaluacionId' => $iEvaluacionId,
                     'iCursoNivelGradId' => $curso['iCursoNivelGradId'],
+                    'dtExamenFechaInicio' => $fecha,
+                    'dtExamenFechaFin' => $fecha,
+                    'iExamenCantidadPreguntas' => $curso['iExamenCantidadPreguntas'],
                 ]);
             }
 
-            return response()->json(['message' => 'Cursos insertados correctamente'], 200);
+            return response()->json(['message' => 'Cursos insertados correctamentex'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error al insertar cursos', 'error' => $e->getMessage()], 500);
         }

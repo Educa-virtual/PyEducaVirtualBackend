@@ -18,7 +18,7 @@ class CredencialesController extends Controller
     {
         try {
             $data = DB::select("
-                SELECT 
+                SELECT
                     MAX(c.iCredId) AS iCredId
                     FROM seg.credenciales AS c
                     INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
@@ -56,7 +56,7 @@ class CredencialesController extends Controller
     {
         try {
             $data = DB::select("
-                SELECT 
+                SELECT
                     MAX(c.iCredId) AS iCredId
                     FROM seg.credenciales AS c
                     INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
@@ -82,7 +82,7 @@ class CredencialesController extends Controller
     {
         try {
             $data = DB::select("
-                SELECT 
+                SELECT
                     MAX(c.iCredId) AS iCredId
                     FROM seg.credenciales AS c
                     INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
@@ -101,64 +101,6 @@ class CredencialesController extends Controller
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
-        }
-
-        return new JsonResponse($response, $codeResponse);
-    }
-
-    public function updatePassword(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'contraseniaNueva' => [
-                'nullable',
-                'min:8',
-                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
-            ]
-        ], [
-            'contraseniaNueva.min' => 'La contraseña debe tener al menos 8 caracteres.',
-            'contraseniaNueva.regex' => 'La contraseña debe contener una mayúscula, una minúscula y un número.'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'validated' => false,
-                'errors' => $validator->errors() // Devuelve MessageBag
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $fieldsToDecode = [
-            'iPersId',
-            'iCredId',
-        ];
-
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-        $parametros = [
-            $request->iCredId,
-            $request->iPersId,
-            $request->contraseniaActual,
-            $request->contraseniaNueva
-        ];
-
-        try {
-            $data = DB::select("execute seg.Sp_UPD_credenciasxUpdatePassword ?,?,?,?", $parametros);
-
-            if ($data[0]->iPersId > 0) {
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se actualizó la contraseña exitosamente '],
-                    Response::HTTP_OK
-                );
-            } else {
-                return new JsonResponse(
-                    ['validated' => false, 'message' => 'No se pudo actualizar la contraseña'],
-                    Response::HTTP_INTERNAL_SERVER_ERROR
-                );
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54)],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
         }
 
         return new JsonResponse($response, $codeResponse);

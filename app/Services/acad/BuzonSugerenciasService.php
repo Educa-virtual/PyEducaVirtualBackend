@@ -2,11 +2,26 @@
 
 namespace App\Services\acad;
 
+use App\Http\Requests\acad\RegistrarSugerenciaRequest;
+use App\Models\acad\BuzonSugerencia;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class BuzonSugerenciasService
 {
+    public static function registrarSugerencia(RegistrarSugerenciaRequest $request) {
+        $id=BuzonSugerencia::insBuzonSugerencias($request);
+        self::guardarArchivos($id, $request->file('fArchivos'));
+    }
+
+    public static function obtenerSugerenciasEstudiante($request) {
+        return BuzonSugerencia::selBuzonSugerenciasEstudiante($request);
+    }
+
+    public static function eliminarSugerencia($iSugerenciaId, $request) {
+        return BuzonSugerencia::delBuzonSugerenciasEstudiante($iSugerenciaId, $request);
+    }
+
     public static function guardarArchivos($id, $archivos)
     {
         if ($archivos) {

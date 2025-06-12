@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 use App\Services\ConsultarDocumentoIdentidadService;
+use App\Services\ParseSqlErrorService;
 use Carbon\Carbon; // Agrega esta línea para importar Carbon
 
 class GestionInstitucionalController extends Controller
@@ -69,7 +70,7 @@ class GestionInstitucionalController extends Controller
             $request->tablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
             $request->datosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
             $request->campoFK // NVARCHAR(128)
-    
+
         ];
 
         $query = DB::select("EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
@@ -167,7 +168,7 @@ class GestionInstitucionalController extends Controller
             'message' => $e->getMessage(),
             'data' => [],
         ];
-        
+
         $estado = 500;
         }
         return new JsonResponse($response, $estado);
@@ -183,7 +184,7 @@ class GestionInstitucionalController extends Controller
             $request->tabla, // NVARCHAR(128),   -- Nombre de la tabla principal
             $request->campo, //NVARCHAR(128),       -- Nombre del campo ID de la tabla principal
             $request->valorId, // BIGINT,              -- Valor del ID a eliminar
-            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)        
+            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
@@ -216,12 +217,12 @@ class GestionInstitucionalController extends Controller
 
     public function reporteHorasNivelGrado(Request $request)
     {
-       
+
         $solicitud = [
             $request->iNivelTipoId, //INT,
             $request->iProgId, //INT,
             $request->iConfigId, //INT,
-            $request->iYAcadId, //INT        
+            $request->iYAcadId, //INT
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
@@ -253,10 +254,10 @@ class GestionInstitucionalController extends Controller
     }
     public function reporteSeccionesNivelGrado(Request $request)
     {
-       
+
         $solicitud = [
             $request->iNivelTipoId, //INT,
-            $request->iConfigId, //INT,      
+            $request->iConfigId, //INT,
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
@@ -294,8 +295,8 @@ class GestionInstitucionalController extends Controller
         $r_horas = $request->r_horas;
         $perfil = $request->perfil;
         $configuracion = $request->configuracion;
- 
-        
+
+
         $cTipoSectorNombre = $perfil["cTipoSectorNombre"];
         $cPersNombreLargo = $perfil["cPersNombreLargo"];
         $cPersDocumento = $perfil["cPersDocumento"];
@@ -304,7 +305,7 @@ class GestionInstitucionalController extends Controller
         $cNivelNombre = $perfil["cNivelNombre"];
         $cIieeNombre = $perfil["cIieeNombre"];
         $cIieeCodigoModular = $perfil["cIieeCodigoModular"];
-     
+
         $cYAcadNombre = $configuracion[0]["cYAcadNombre"];
         // $cEstadoConfigNombre = $perfil["cEstadoConfigNombre"];
         // $cSedeNombre = $perfil["cSedeNombre"];
@@ -313,20 +314,20 @@ class GestionInstitucionalController extends Controller
         // $iProgId = $perfil["iProgId"];
 
 
-  
+
 
         switch($request->iNivelTipoId){
             case 3:
                 $title = 'Primaria'; break;
-            case 4: 
+            case 4:
                 $title = 'Secundaria'; break;
-            
+
             default :
                 $title = 'Sin nivel';
                 break;
         }
-       
-   
+
+
         $imagePath = public_path('images\logo_IE\dremo.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
         $region = 'data:image/jpeg;base64,' . $imageData;
@@ -339,7 +340,7 @@ class GestionInstitucionalController extends Controller
         $imageData = base64_encode(file_get_contents($imagePath));
         $virtual = 'data:image/jpeg;base64,' . $imageData;
 
- 
+
         $respuesta = [
             "totalHorasPendientes" => $request->totalHorasPendientes,
             "title" => $title,
@@ -357,14 +358,14 @@ class GestionInstitucionalController extends Controller
             "cIieeCodigoModular" => $cIieeCodigoModular,
             "cIieeNombre" =>$cIieeNombre,
             "cNivelNombre" =>$cNivelNombre,
-            "cYAcadNombre" => $cYAcadNombre, 
+            "cYAcadNombre" => $cYAcadNombre,
             "cPersNombreLargo" =>$cPersNombreLargo,
-            "cNivelTipoNombre" =>$cNivelTipoNombre, 
-            // "cPerfilNombre" =>$cPerfilNombre, 
-            // "cPersDocumento" =>$cPersDocumento, 
+            "cNivelTipoNombre" =>$cNivelTipoNombre,
+            // "cPerfilNombre" =>$cPerfilNombre,
+            // "cPersDocumento" =>$cPersDocumento,
             // "cPersNombreLargo" =>$cPersNombreLargo,
             // "cTipoSectorNombre" =>$cTipoSectorNombre,
-           
+
         ];
 //portrait landscape
         $pdf = Pdf::loadView('resumen_reporte_ambientes_primaria', $respuesta)
@@ -374,7 +375,7 @@ class GestionInstitucionalController extends Controller
     }
 
     public function buscarDni(Request $request){
-   
+
         $servicio = $this->consultarDocumentoIdentidadService->buscar($request->iTipoIdentId, $request->cPersDocumento);
         $response = ['validated' => true, 'message' => $servicio['message'], 'data' => $servicio['data']];
         $codeResponse = $servicio['status'];
@@ -382,10 +383,10 @@ class GestionInstitucionalController extends Controller
     }
     // consulta para traslados
     public function obtenerInformacionEstudianteDNI(Request $request)
-    {                
+    {
         $solicitud = [
             $request->dni]; //INT,
-           
+
         //41789603
         $query = DB::select("EXEC acad.SP_SEL_ObtenerInformacionEsdudianteXdni ?", $solicitud);
 
@@ -411,21 +412,21 @@ class GestionInstitucionalController extends Controller
 
      // consulta para traslados
      public function obtenerCredencialesSede(Request $request)
-     {                
+     {
          $solicitud = [
              $request->iSedeId, //INT,
              $request->option]; //INT,
 
          //41789603
          $query = DB::select("EXEC seg.SP_SEL_ObtenerCredencialesXiSedeId ?,?", $solicitud);
- 
+
          try {
              $response = [
                  'validated' => true,
                  'message' => 'se obtuvo la información',
                  'data' => $query,
              ];
- 
+
              $estado = 201;
          } catch (Exception $e) {
              $response = [
@@ -435,7 +436,7 @@ class GestionInstitucionalController extends Controller
              ];
              $estado = 500;
          }
- 
+
          return new JsonResponse($response, $estado);
      }
 
@@ -444,7 +445,7 @@ class GestionInstitucionalController extends Controller
         $json   = $request->data;
         $iSedeId = $request->iSedeId;
         $iYAcadId = $request->iYAcadId;
-        
+
         // Variables para almacenar resultados
         $procesados = [];
         $observados = [];
@@ -468,10 +469,10 @@ class GestionInstitucionalController extends Controller
             $cPersNombre     = isset($item["cPersNombre"])     ? trim($item["cPersNombre"]) : null;
             $cPersSexo       = isset($item["cPersSexo"])       ? trim($item["cPersSexo"]) : null;
 
-            //validar 
+            //validar
             $servicio = $this->consultarDocumentoIdentidadService->buscar($cTipoIdentId, $cPersDocumento);
-           
-           
+
+
 
             // Convertir la fecha usando Carbon, si se proporciona
             if (isset($item["dPersNacimiento"]) && !empty($item["dPersNacimiento"])) {
@@ -528,7 +529,7 @@ class GestionInstitucionalController extends Controller
 
         // Determinar el código de estado: si hay algún error, se asigna 500; de lo contrario, 201
         $estado = (count($observados) > 0) ? 500 : 201;
-        
+
         return new JsonResponse($response, $estado);
     }
 
@@ -538,7 +539,7 @@ class GestionInstitucionalController extends Controller
         $iSedeId = $request->iSedeId;
         $iYAcadId = $request->iYAcadId;
         $iNivelTipoId = $request->iNivelTipoId;
-        
+
         // Variables para almacenar resultados
         $procesados = [];
         $observados = [];
@@ -548,11 +549,11 @@ class GestionInstitucionalController extends Controller
         foreach ($json as $item) {
 
             // Convertir y formatear los valores del JSON
-            
+
             $TipoAmbienteId     = isset($item["TipoAmbienteId"])       ? trim($item["TipoAmbienteId"]) : null;
             $EstadoAmbId        = isset($item["EstadoAmbId"])       ? trim($item["EstadoAmbId"]) : null;
             $UbicaAmbId         = isset($item["UbicaAmbId"])       ? trim($item["UbicaAmbId"]) : null;
-            $UsoAmbId           = isset($item["iUsoAmbId"])       ? trim($item["iUsoAmbId"]) : null; 
+            $UsoAmbId           = isset($item["iUsoAmbId"])       ? trim($item["iUsoAmbId"]) : null;
             $PisoAmbid          = isset($item["PisoAmbid"])       ? trim($item["PisoAmbid"]) : null;
             $AmbienteEstado     = isset($item["AmbienteEstado"])       ? trim($item["AmbienteEstado"]) : null;
             $Turno              = isset($item["Turno"])       ? trim($item["Turno"]) : null;
@@ -568,21 +569,21 @@ class GestionInstitucionalController extends Controller
             $msg = new ConsoleOutput();
             $msg->writeln("EXEC acad.SP_INS_ImportarAmbientesIE " . implode(",", [
                "'" . $TipoAmbienteId . "'",
-               "'" . $EstadoAmbId . "'",  
-               "'" . $UbicaAmbId . "'",         
-               "'" . $UsoAmbId . "'",           
-               "'" . $PisoAmbid . "'",          
-               "'" . $AmbienteEstado . "'",     
-               "'" . $Turno . "'",             
-               "'" . $Modalidad . "'",         
-               "'" . $dni_tutor . "'",          
-               "'" . $Grado . "'",              
-               "'" . $Seccion . "'",            
-               "'" . $AmbienteNombre . "'",    
-               "'" . $AmbienteArea . "'",       
-               "'" . $AmbienteAforo . "'",     
+               "'" . $EstadoAmbId . "'",
+               "'" . $UbicaAmbId . "'",
+               "'" . $UsoAmbId . "'",
+               "'" . $PisoAmbid . "'",
+               "'" . $AmbienteEstado . "'",
+               "'" . $Turno . "'",
+               "'" . $Modalidad . "'",
+               "'" . $dni_tutor . "'",
+               "'" . $Grado . "'",
+               "'" . $Seccion . "'",
+               "'" . $AmbienteNombre . "'",
+               "'" . $AmbienteArea . "'",
+               "'" . $AmbienteAforo . "'",
                "'" . $AmbienteObs . "'",
-                
+
                "'" . $iSedeId . "'",
                "'" . $iYAcadId . "'",
                "'" . $iNivelTipoId . "'"
@@ -592,21 +593,21 @@ class GestionInstitucionalController extends Controller
                 // Ejecutar el procedimiento almacenado pasando los parámetros en un array
                 $query = DB::select("EXEC acad.SP_INS_ImportarAmbientesIE ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", [
                     $TipoAmbienteId,
-                    $EstadoAmbId,  
-                    $UbicaAmbId,         
-                    $UsoAmbId,           
-                    $PisoAmbid,          
-                    $AmbienteEstado,     
-                    $Turno,             
-                    $Modalidad,         
-                    $dni_tutor,          
-                    $Grado,              
-                    $Seccion,            
-                    $AmbienteNombre,    
-                    $AmbienteArea,       
-                    $AmbienteAforo,     
+                    $EstadoAmbId,
+                    $UbicaAmbId,
+                    $UsoAmbId,
+                    $PisoAmbid,
+                    $AmbienteEstado,
+                    $Turno,
+                    $Modalidad,
+                    $dni_tutor,
+                    $Grado,
+                    $Seccion,
+                    $AmbienteNombre,
+                    $AmbienteArea,
+                    $AmbienteAforo,
                     $AmbienteObs,
-                    
+
                     $iSedeId,
                     $iYAcadId,
                     $iNivelTipoId
@@ -638,10 +639,10 @@ class GestionInstitucionalController extends Controller
 
         // Determinar el código de estado: si hay algún error, se asigna 500; de lo contrario, 201
         $estado = (count($observados) > 0) ? 500 : 201;
-        
+
         return new JsonResponse($response, $estado);
-    }  
-      
+    }
+
 
 
     public function generarCredencialesIE(Request $request)
@@ -654,29 +655,29 @@ class GestionInstitucionalController extends Controller
             'iCredId' => 'required|integer',
             'condicion' => 'required|string',
         ]);
-    
+
         $item = $request->data;
         $iSedeId = $request->iSedeId;
         $iYAcadId = $request->iYAcadId;
         $iCredId = $request->iCredId;
         $condicion = $request->condicion;
-        
+
         $procesados = [];
         $observados = [];
-    
+
         $perfilMapping = [
             1 => 4,    // DIRECTOR
             3 => 7,    // DOCENTE
             5 => 100,  // ASISTENCIA SOCIAL
             6 => 9     // AUXILIAR ASISTENCIA
         ];
-    
+
         // Procesar cada item
         if (empty($condicion)) {
             $observados[] = ['validated' => false, 'message' => 'Falta la condición.', 'item' => $item];
             return new JsonResponse(['observados' => $observados], 400);
         }
-  
+
         try {
             // Registrar nuevo personal si no existe
             if (empty($item["iPersId"])) {
@@ -703,10 +704,10 @@ class GestionInstitucionalController extends Controller
                     trim($item['iPrvnId']) ?: NULL,
                     trim($item['iDsttId']) ?: NULL,
                 ];
-    
+
                 $data = DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                 $iPersId = !empty($data) ? $data[0]->iPersId : null;
-    
+
                 if ($iPersId) {
                     $procesados[] = ['validated' => true, 'message' => 'Nuevo personal registrado y credencial generada.', 'data' => $data, 'item' => $item];
                 } else {
@@ -715,7 +716,7 @@ class GestionInstitucionalController extends Controller
             } else {
                 $iPersId = $item["iPersId"];
             }
-    
+
             // Procesar según la condición
             if ($condicion === 'add_personal_ie') {
                 if (is_null($iPersId) || is_null($item["iPersCargoId"]) || is_null($item["iYAcadId"]) || is_null($item["iSedeId"])) {
@@ -724,13 +725,13 @@ class GestionInstitucionalController extends Controller
                     $iPersCargoId = $item["iPersCargoId"];
                     $iHorasLabora = $item["iHorasLabora"] ?? 0;
                     $iPerfilId = $perfilMapping[$iPersCargoId] ?? 0;
-    
+
                     $id = DB::table('acad.personal_ies')
                         ->where('iPersId', $iPersId)
                         ->where('iSedeId', $iSedeId)
                         ->where('iYAcadId', $iYAcadId)
                         ->value('id');
-    
+
                     if ($id) {
                         $procesados[] = ['validated' => false, 'message' => 'Ya existe registro en Personal IE.', 'item' => $item];
                     } else {
@@ -743,29 +744,29 @@ class GestionInstitucionalController extends Controller
                         ]);
                         $procesados[] = ['validated' => true, 'message' => 'Se generó registro en Personal IE.', 'item' => $item];
                     }
-    
+
                     $data = DB::select('execute seg.Sp_INS_credenciales_IE ?,?,?,?,?', [10, $iPersId, $iCredId, $iSedeId, $iPerfilId]);
                     $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
                 }
             }
-    
+
             if ($condicion === 'add_credencial_ie') {
                 $iPerfilId = $request->iPerfilId;
-                
+
                 if (is_null($iPersId) || is_null($iCredId) || is_null($iPerfilId)) {
                     $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
                 } else {
-                  
+
                     $data = DB::select('execute seg.Sp_INS_credenciales_IE ?,?,?,?,?', [10, $iPersId, $iCredId, $iSedeId, $iPerfilId]);
                     $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
                 }
             }
             if ($condicion === 'add_credencial') {
-                
+
                 if (is_null($iPersId) || is_null($iCredId) ) {
                     $observados[] = ['validated' => false, 'message' => 'Faltan parámetros requeridos.', 'item' => $item];
                 } else {
-                  
+
                     $data = DB::select('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
                     $procesados[] = ['validated' => true, 'message' => 'Credencial generada.', 'data' => $data, 'item' => $item];
                 }
@@ -773,13 +774,13 @@ class GestionInstitucionalController extends Controller
         } catch (\Exception $e) {
             $observados[] = ['validated' => false, 'message' => 'Error en base de datos: ' . $e->getMessage(), 'item' => $item];
         }
-    
+
         // Construir la respuesta
         $response = [
             'procesados' => $procesados,
             'observados' => $observados,
         ];
-    
+
         $estado = (count($observados) > 0) ? 500 : 201;
         return new JsonResponse($response, $estado);
     }
@@ -930,7 +931,7 @@ class GestionInstitucionalController extends Controller
     }
 
     public function obtenerEstudiantesMatriculados(Request $request)
-    {  
+    {
       // \Log::info($request->all());
       $solicitud = [
         //30902,//
@@ -938,7 +939,7 @@ class GestionInstitucionalController extends Controller
         (int)$request->iYAcadId,
         VerifyHash::decodesxId($request->iCursosNivelGradId),
         (int)$request->iSedeId,
-        
+
        // 5 //(int)
     ];
 

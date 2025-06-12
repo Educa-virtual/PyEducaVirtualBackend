@@ -24,9 +24,9 @@ class BuzonSugerencia extends Model
         return $data->iSugerenciaId;
     }
 
-    public static function selBuzonSugerencias(Request $request)
+    public static function selBuzonSugerenciasEstudiante(Request $request)
     {
-        $data = DB::select("EXEC [acad].[SP_SEL_buzonSugerenciasAlumno] @iCredEntPerfId=?", [
+        $data = DB::select("EXEC [acad].[SP_SEL_buzonSugerenciasEstudiante] @iCredEntPerfId=?", [
             $request->header('iCredEntPerfId')
         ]);
         return $data;
@@ -34,7 +34,7 @@ class BuzonSugerencia extends Model
 
     public static function delBuzonSugerencias($iSugerenciaId, Request $request)
     {
-        $data = DB::statement("EXEC [acad].[SP_DEL_buzonSugerenciasAlumno] @iCredEntPerfId=?, @iSugerenciaId=?", [
+        $data = DB::statement("EXEC [acad].[SP_DEL_buzonSugerenciasEstudiante] @iCredEntPerfId=?, @iSugerenciaId=?", [
             $request->header('iCredEntPerfId'),
             $iSugerenciaId,
         ]);
