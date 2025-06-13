@@ -53,7 +53,7 @@ class ForosController extends Controller
 
     public function actualizarForo(Request $request)
     {
-
+        // return $request ->all();
         $validator = Validator::make($request->all(), [
             'iForoId' => ['required'],
         ], [
@@ -83,7 +83,6 @@ class ForosController extends Controller
             $request->dtForoPublicacion,
             $request->dtForoInicio,
             $request->dtForoFin,
-            $request->iEstado ?? 1
         ];
 
         try {
@@ -96,8 +95,7 @@ class ForosController extends Controller
                     @_cForoDescripcion=?, 
                     @_dtForoPublicacion=?, 
                     @_dtForoInicio=?, 
-                    @_dtForoFin=?, 
-                    @_iEstado=?',
+                    @_dtForoFin=?',
                 $parametros
             );
 
