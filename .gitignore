@@ -4,6 +4,14 @@
 /public/hot
 /public/storage
 /public/ere
+/public/alternativas
+/public/configuracion-iiee
+/public/DocumentosInstitucional
+/public/material-educativos
+/public/tareas
+/public/tareas-estudiantes
+/public/users
+/public/web.config
 /storage/*.key
 /vendor
 .env

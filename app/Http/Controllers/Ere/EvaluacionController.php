@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Gate;
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
+use App\Models\ere\Evaluacion;
+use Exception;
 
 class EvaluacionController extends Controller
 {
@@ -16,6 +22,29 @@ class EvaluacionController extends Controller
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
+
+    /**
+     * Obtiene la cantidad máxima de preguntas para una evaluación y un curso específico.
+     *
+     * @param int $iEvaluacionId ID de la evaluación (cifrado).
+     * @param int $iCursosNivelGradId ID del curso y nivel de grado (cifrado).
+     * @return \Illuminate\Http\JsonResponse Cantidad de preguntas máximas o un mensaje de error.
+     */
+    public function obtenerCantidadMaximaPreguntas($evaluacionId, $areaId)
+    {
+        try {
+            $evaluacionDescifrado = VerifyHash::decodesxId($evaluacionId);
+            $areaDescifrada = VerifyHash::decodesxId($areaId);
+            $cantidad = Evaluacion::selCantidadMaxPreguntas($evaluacionDescifrado, $areaDescifrada) ?? 20;
+            return FormatearMensajeHelper::ok('Cantidad máxima de preguntas obtenida correctamente', $cantidad);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+
+
+
 
     private function decodeValue($value)
     {
@@ -146,6 +175,7 @@ class EvaluacionController extends Controller
 
     public function obtenerEstudianteAreasEvaluacion(Request $request)
     {
+        Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
         try {
             $fieldsToDecode = [
                 'iEstudianteId',

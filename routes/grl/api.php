@@ -5,6 +5,7 @@ use App\Http\Controllers\api\grl\DiasController;
 use App\Http\Controllers\grl\FeriadosNacionalesController;
 use App\Http\Controllers\grl\PersonasContactosController;
 use App\Http\Controllers\grl\PersonasController;
+use App\Http\Controllers\grl\PrioridadController;
 
 Route::group(['prefix' => 'administracion'], function () {
 
@@ -14,6 +15,7 @@ Route::group(['prefix' => 'administracion'], function () {
 });
 
 Route::group(['prefix' => 'grl'], function () {
+    Route::get('prioridades', [PrioridadController::class, 'obtenerPrioridades']);
   Route::group(['prefix' => 'personas'], function () {
     Route::post('list', [PersonasController::class, 'list']);
     Route::post('obtenerPersonasxiPersId', [PersonasController::class, 'obtenerPersonasxiPersId']);
