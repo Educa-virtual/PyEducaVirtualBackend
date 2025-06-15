@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\bienestar;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Services\ParseSqlErrorService;
+use App\Models\bienestar\Ficha;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,22 +19,13 @@ class FichaBienestarController extends Controller
      */
     public function listarEstudiantesApoderado(Request $request)
     {
-        $parametros = [
-            $request->iCredEntPerfId,
-            $request->iYAcadId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichasApoderado ?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Ficha::selfichasApoderado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -42,25 +35,13 @@ class FichaBienestarController extends Controller
      */
     public function listarFichas(Request $request)
     {
-        $parametros = [
-            $request->iCredSesionId,
-            $request->iFichaDGId,
-            $request->iPersId,
-            $request->cPersDocumento,
-            $request->cPersNombresApellidos,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichas ?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Ficha::selfichas($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -70,22 +51,13 @@ class FichaBienestarController extends Controller
      */
     public function crearFicha(Request $request)
     {
-        $parametros = [
-            $request->iYAcadId,
-            $request->iPersId,
-        ];
-
         try {
-            DB::select('EXEC obe.Sp_INS_ficha ?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => []];
-            $codeResponse = 200;
+            $data = Ficha::insFicha($request);
+            return FormatearMensajeHelper::ok('Se guardo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -97,15 +69,11 @@ class FichaBienestarController extends Controller
     {
         try {
             $data = DB::select('EXEC obe.Sp_SEL_fichaParametros');
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -115,21 +83,13 @@ class FichaBienestarController extends Controller
      */
     public function borrarFicha(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-        ];
-
         try {
-            DB::select('EXEC obe.Sp_DEL_ficha ?', $parametros);
-            $response = ['validated' => true, 'message' => 'se elimino la ficha', 'data' => []];
-            $codeResponse = 200;
+            $data = Ficha::delFicha($request);
+            return FormatearMensajeHelper::ok('Se elimino la ficha', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -139,22 +99,12 @@ class FichaBienestarController extends Controller
      */
     public function verFicha(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->iPersId,
-            $request->iYAcadId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_ficha ?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Ficha::selficha($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }

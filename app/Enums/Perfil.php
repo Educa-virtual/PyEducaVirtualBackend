@@ -12,5 +12,6 @@ enum Perfil: int
     case DOCENTE = 7;
     case ESTUDIANTE = 80;
     case ADMINISTRADOR_DREMO = 214;
+    case APODERADO = 90;
 }
 
