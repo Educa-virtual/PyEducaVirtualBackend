@@ -20,6 +20,7 @@ class PreguntasController extends Controller
         try {
             $fieldsToDecode = [
                 'iCuestionarioId',
+                'iPregId',
                 'iTipoPregId',
                 'iCredId',
             ];
@@ -38,7 +39,7 @@ class PreguntasController extends Controller
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
-            foreach ($data as &$pregunta) {
+            foreach ($data as $pregunta) {
                 if (!empty($pregunta->jsonAlternativas)) {
                     // Decodificamos jsonAlternativas
                     $alternativas = json_decode($pregunta->jsonAlternativas, true);
@@ -166,6 +167,19 @@ class PreguntasController extends Controller
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
+
+            if (!empty($request->jsonAlternativas)) {
+                // Decodificamos jsonAlternativas
+                $alternativas = json_decode($request->jsonAlternativas, true);
+                //Encriptamos cada iPregAlterId
+                foreach ($alternativas as &$alternativa) {
+                    if (isset($alternativa['iPregAlterId'])) {
+                        $alternativa['iPregAlterId'] = VerifyHash::decodesxId($alternativa['iPregAlterId']);
+                    }
+                }
+                $request['jsonAlternativas'] = json_encode($alternativas);
+            }
+
             $parametros = [
                 $request->iPregId             ??  NULL,
                 $request->iTipoPregId                 ??  NULL,
@@ -177,7 +191,7 @@ class PreguntasController extends Controller
                 $request->jsonAlternativas            ??  NULL,
                 $request->iCredId                     ??  NULL
             ];
-
+            
             $data = DB::select(
                 'exec aula.SP_UPD_preguntasxiPregId
                     @_iPregId=?,   
