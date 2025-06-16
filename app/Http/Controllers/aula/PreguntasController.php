@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
-use App\Http\Controllers\grl\PersonasController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 

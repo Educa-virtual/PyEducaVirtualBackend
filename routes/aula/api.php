@@ -16,6 +16,7 @@ use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\aula\PreguntaAlternativasRespuestasController;
 use App\Http\Controllers\aula\PreguntasController;
 use App\Http\Controllers\aula\ReunionVirtualesController;
 use Illuminate\Notifications\Notification;
@@ -141,6 +142,9 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('/', [PreguntasController::class, 'guardarPreguntas']); // Para crear
         Route::put('/{iPregId}', [PreguntasController::class, 'actualizarPreguntasxiPregId']); // Para actualizar
         Route::delete('/{iPregId}', [PreguntasController::class, 'eliminarPreguntaxiPregId']); // Para eliminar
-        Route::get('/cuestionario/{iCuestionarioId}', [PreguntasController::class, 'listarPreguntasxiCuestionarioId']); // Para obtener un cuestionario específico
+        Route::get('/cuestionario/{iCuestionarioId}', [PreguntasController::class, 'listarPreguntasxiCuestionarioId']); // Para obtener las preguntas de un cuestionario específico
+    });
+    Route::prefix('pregunta-alternativas-respuestas')->group(function () {
+        Route::get('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}', [PreguntaAlternativasRespuestasController::class, 'listarPreguntasxiCuestionarioIdxiEstudianteId']); // Para obtener las preguntas del cuestionario del estudiante
     });
 });
