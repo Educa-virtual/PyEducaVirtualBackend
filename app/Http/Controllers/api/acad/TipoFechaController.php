@@ -22,7 +22,7 @@ class TipoFechaController extends Controller
                 'esquema' => self::schema,
                 'tabla' => 'tipo_fechas',
                 'campos' => '*',
-                'where' => "1=1",
+                'where' => "iTipoFerId IN (4)",
             ]);
 
             $strategy = new CollectionStrategy();

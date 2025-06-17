@@ -88,6 +88,7 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'feriados-importantes'], function () {
     Route::get('getFechasImportantes/{iYAcadId?}/{iSedeId?}', [FeriadoImportanteController::class, 'getFechasImportantes']);
+    Route::get('getDependenciaFechas/{iFechaImpId?}', [FeriadoImportanteController::class, 'getDependenciaFechas']);
     Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
     Route::put('updFechasImportantes', [FeriadoImportanteController::class, 'updFechasImportantes']);
     Route::delete('deleteFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'deleteFechasImportantes']);

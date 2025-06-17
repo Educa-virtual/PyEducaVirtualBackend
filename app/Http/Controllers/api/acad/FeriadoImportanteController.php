@@ -41,18 +41,39 @@ class FeriadoImportanteController extends Controller
         }
     }
 
+    public function getDependenciaFechas(Request $request)
+    {
+        try {
+            $query = DB::select('EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion', [
+                'json' => json_encode([
+                    'iFechaImpId' => $request->route('iFechaImpId'),
+                ]),
+                'opcion' => 'getDependenciaFechas'
+            ]);
+
+            return ResponseHandler::success($query, 'Fechas importantes obtenidas correctamente.');
+        } catch (\Exception $e) {
+            return ResponseHandler::error(
+                'Error al obtener los feriados nacionales.',
+                500,
+                $e->getMessage()
+            );
+        }
+    }
+
     public function insFechasImportantes(Request $request)
     {
         $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion", [
             'json' => json_encode([
                 'iFechaImpId' => $request->input('iFechaImpId') ?? NULL,
-                'iTipoFerId' => $request->input('iTipoFerId') ?? 1,
+                'iTipoFerId' => $request->input('iTipoFerId'),
                 'iCalAcadId' => $request->input('iCalAcadId'),
                 'bFechaImpSeraLaborable' => $request->input('bFechaImpSeraLaborable'),
                 'cFechaImpNombre' => $request->input('cFechaImpNombre'),
                 'dtFechaImpFecha' => $request->input('dtFechaImpFecha'),
                 'cFechaImpURLDocumento' => $request->input('cFechaImpURLDocumento'),
                 'cFechaImpInfoAdicional' => $request->input('cFechaImpInfoAdicional'),
+                'iDepFechaImpId' => $request->input('iDepFechaImpId') ?? NULL
             ]),
             'opcion' => 'addFechasEspecialesIE'
         ]);
@@ -65,7 +86,7 @@ class FeriadoImportanteController extends Controller
         $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion", [
             'json' => json_encode([
                 'iFechaImpId' => $request->input('iFechaImpId'),
-                'iTipoFerId' => $request->input('iTipoFerId') ?? 1,
+                'iTipoFerId' => 4,
                 'iCalAcadId' => $request->input('iCalAcadId'),
                 'bFechaImpSeraLaborable' => $request->input('bFechaImpSeraLaborable'),
                 'cFechaImpNombre' => $request->input('cFechaImpNombre'),
