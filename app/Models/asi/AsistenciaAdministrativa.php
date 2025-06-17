@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class AsistenciaAdministrativa extends Model
 {
-    protected $schema = 'asi';
-    protected $table = 'configuracion_horario';
-
     public static function buscarHorarioInstitucion(Request $request){
-        
-        $data = DB::select("EXEC [asi].[SP_SEL_configuracion_horario] ?");
+        $datos = [
+            $request["iSedeId"],
+        ];
+        $data = DB::select("EXEC [asi].[SP_SEL_configuracion_horario] ?",$datos);
         return $data;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\asi;
 
+use App\Enums\Perfil;
+use Illuminate\Support\Facades\Gate;
 use App\Helpers\ResponseHandler;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
@@ -104,8 +106,8 @@ class AsistenciaController extends Controller
 
     public function buscarHorarioInstitucion(Request $request){
         try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AsistenciaAdministrativa::buscarHorarioInstitucion($request);
-            // $data = DB::select($query, $enviar);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
