@@ -5,6 +5,7 @@ namespace App\Http\Controllers\asi;
 use App\Helpers\ResponseHandler;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use App\Models\asi\AsistenciaAdministrativa;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\FormatearMensajeHelper;
 
 class AsistenciaController extends Controller
 {
@@ -55,8 +57,6 @@ class AsistenciaController extends Controller
     public function verificarGrupoAsistencia(Request $request){
   
         $iSedeId = $request["iSedeId"];
-        $cGrupoNombre = $request["cGrupoNombre"];
-        $cGrupoDescripcion = $request["cGrupoDescripcion"];
 
         if(empty($iSedeId)){
             $mensaje = "No se envio datos de la institucion";
@@ -65,11 +65,9 @@ class AsistenciaController extends Controller
 
         $enviar = [
             $iSedeId,
-            $cGrupoNombre ?? NULL,  
-            $cGrupoDescripcion ?? NULL
         ];
 
-        $query = 'EXEC asi.Sp_SEL_asistenciaGrupos ?,?,?';
+        $query = 'EXEC asi.Sp_SEL_asistenciaGrupos ?';
 
         try {
             $data = DB::select($query, $enviar);
@@ -80,6 +78,39 @@ class AsistenciaController extends Controller
 
     }
 
+    public function verificarHorarioAsistencia(Request $request){
+  
+        $iSedeId = $request["iSedeId"];
+
+        if(empty($iSedeId)){
+            $mensaje = "No se envio datos de la institucion";
+            return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
+        }
+
+        $enviar = [
+            $iSedeId,
+        ];
+
+        $query = 'EXEC asi.Sp_SEL_asistenciaGruposHorarios ?';
+
+        try {
+            $data = DB::select($query, $enviar);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
+
+    }
+
+    public function buscarHorarioInstitucion(Request $request){
+        try {
+            $data = AsistenciaAdministrativa::buscarHorarioInstitucion($request);
+            // $data = DB::select($query, $enviar);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
     // Decodifica los id enviados por el frontend
     private function decodificar($id){
         return is_null($id) ? null : (is_numeric($id) ? $id : ($this->hashids->decode($id)[0] ?? null));
