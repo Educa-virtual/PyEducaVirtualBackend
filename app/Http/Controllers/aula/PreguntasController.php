@@ -36,6 +36,11 @@ class PreguntasController extends Controller
                     @_iCredId=?',
                 $parametros
             );
+            $fieldsToDecode = [
+                'iCuestionarioId',
+                'iPregId',
+                'iCredId',
+            ];
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             foreach ($data as $pregunta) {
