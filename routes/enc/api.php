@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\enc\CategoriaController;
 use App\Http\Controllers\enc\DirectorController;
@@ -26,7 +27,11 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::clas
         });
     });
 
-    Route::get('ugeles', [UgelController::class, 'obtenerUgeles']);
+    /*Route::group(['prefix' => 'ugeles'], function () {
+        Route::get('', [UgelController::class, 'obtenerUgeles']);
+        Route::get('{iUgelId}/instituciones-educativas', [InstitucionEducativaController::class, 'obtenerUgelPorId']);
+    });*/
+
 
 
     Route::group(['prefix' => 'encuestas'], function () {
