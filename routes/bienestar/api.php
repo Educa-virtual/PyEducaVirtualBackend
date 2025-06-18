@@ -13,6 +13,7 @@ use app\Http\Controllers\bienestar\EstudianteController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
+use App\Http\Controllers\FichaDosisController;
 
 Route::group(['prefix' => 'bienestar'], function () {
 
@@ -63,6 +64,12 @@ Route::group(['prefix' => 'bienestar'], function () {
     /* Rutas para gestion seccion recreación */
     Route::post('verFichaRecreacion', [FichaRecreacionController::class, 'verFichaRecreacion']);
     Route::post('actualizarFichaRecreacion', [FichaRecreacionController::class, 'actualizarFichaRecreacion']);
+
+    Route::post('listarDosis', [FichaDosisController::class, 'listarDosis']);
+    Route::post('verDosis', [FichaDosisController::class, 'verDosis']);
+    Route::post('guardarDosis', [FichaDosisController::class, 'guardarDosis']);
+    Route::post('actualizarDosis', [FichaDosisController::class, 'actualizarDosis']);
+    Route::post('borrarDosis', [FichaDosisController::class, 'borrarDosis']);
 
 });
 
