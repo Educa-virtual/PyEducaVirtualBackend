@@ -2,57 +2,44 @@
 
 namespace App\Http\Controllers\bienestar;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\bienestar\FichaRecreacionSaveRequest;
-use App\Services\ParseSqlErrorService;
-use Illuminate\Http\JsonResponse;
+use App\Models\bienestar\FichaRecreacion;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class FichaRecreacionController extends Controller
 {
+    private $perfiles_permitidos = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+        Perfil::DOCENTE,
+        Perfil::DIRECTOR_IE,
+    ];
+
     public function actualizarFichaRecreacion(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->cFichaDGPerteneceLigaDeportiva,
-            $request->cFichaDGPerteneceCentroArtistico,
-            $request->cFichaDGAsistioConsultaPsicologica,
-            $request->jsonDeportes,
-            $request->jsonTransportes,
-            $request->jsonPasatiempos,
-            $request->jsonProblemas,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaRecreacion ?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaRecreacion::updFichaRecreacion($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function verFichaRecreacion(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaRecreacion ?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaRecreacion::selFichaRecreacion($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }

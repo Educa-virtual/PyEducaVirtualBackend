@@ -2,80 +2,56 @@
 
 namespace App\Http\Controllers\bienestar;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Services\ParseSqlErrorService;
-use Illuminate\Http\JsonResponse;
+use App\Models\bienestar\FichaSalud;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class FichaSaludController extends Controller
 {
+    private $perfiles_permitidos = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+        Perfil::DOCENTE,
+        Perfil::DIRECTOR_IE,
+    ];
+
     public function guardarFichaSalud(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->bFichaDGAlergiaMedicamentos,
-            $request->cFichaDGAlergiaMedicamentos,
-            $request->bFichaDGAlergiaOtros,
-            $request->cFichaDGAlergiaOtros,
-            $request->jsonSeguros,
-            $request->jsonDolencias,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaSalud ?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaSalud::insFichaSalud($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function actualizarFichaSalud(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->bFichaDGAlergiaMedicamentos,
-            $request->cFichaDGAlergiaMedicamentos,
-            $request->bFichaDGAlergiaOtros,
-            $request->cFichaDGAlergiaOtros,
-            $request->jsonSeguros,
-            $request->jsonDolencias,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaSalud ?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
+            $data = FichaSalud::updFichaSalud($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function verFichaSalud(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaSalud ?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaSalud::selfichaSalud($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }
