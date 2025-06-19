@@ -26,18 +26,18 @@ Route::group(['prefix' => 'bienestar'], function () {
 
     Route::post('descargarFicha', [FichaPdfController::class, 'descargarFicha']);
 
-    Route::post('searchFichaGeneral', [FichaGeneralController::class, 'verFichaGeneral']);
+    Route::post('verFichaGeneral', [FichaGeneralController::class, 'verFichaGeneral']);
     Route::post('actualizarFichaGeneral', [FichaGeneralController::class, 'actualizarFichaGeneral']);
 
     /* Rutas para gestionar familiares */
-    Route::post('searchFichaFamiliares', [FichaFamiliarController::class, 'listarFichaFamiliares']);
+    Route::post('listarFichaFamiliares', [FichaFamiliarController::class, 'listarFichaFamiliares']);
     Route::post('guardarFichaFamiliar', [FichaFamiliarController::class, 'guardarFichaFamiliar']);
-    Route::post('searchFichaFamiliar', [FichaFamiliarController::class, 'verFichaFamiliar']);
+    Route::post('verFichaFamiliar', [FichaFamiliarController::class, 'verFichaFamiliar']);
     Route::post('actualizarFichaFamiliar', [FichaFamiliarController::class, 'actualizarFichaFamiliar']);
     Route::post('borrarFichaFamiliar', [FichaFamiliarController::class, 'borrarFichaFamiliar']);
 
     /* Rutas para gestion seccion economica */
-    Route::post('searchFichaEconomico', [FichaEconomicoController::class, 'verFichaEconomico']);
+    Route::post('verFichaEconomico', [FichaEconomicoController::class, 'verFichaEconomico']);
     Route::post('guardarFichaEconomico', [FichaEconomicoController::class, 'guardarFichaEconomico']);
     Route::post('actualizarFichaEconomico', [FichaEconomicoController::class, 'actualizarFichaEconomico']);
 
