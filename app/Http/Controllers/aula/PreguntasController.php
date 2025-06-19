@@ -117,7 +117,7 @@ class PreguntasController extends Controller
                     @_iCredId=?',
                 $parametros
             );
-            return $data;
+       
             if ($data[0]->iPregId > 0) {
                 $message = 'Se ha guardado exitosamente';
                 return new JsonResponse(
