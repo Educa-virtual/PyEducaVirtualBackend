@@ -41,10 +41,10 @@ class FichaFamiliarController extends Controller
             // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
             if( !$request->has('iPersId') || $request->iPersId == null ) {
                 $data = FichaFamiliar::insPersonas($request);
+                $request->merge([
+                    'iPersId' => $data[0]->iPersId || null,
+                ]);
             }
-            $request->merge([
-                'iPersId' => $data[0]->iPersId,
-            ]);
             $data = FichaFamiliar::insfichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se guardo la información', $data);
         } catch (Exception $e) {
@@ -58,10 +58,10 @@ class FichaFamiliarController extends Controller
             // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
             if( !$request->has('iPersId') || $request->iPersId == null ) {
                 $data = FichaFamiliar::insPersonas($request);
+                $request->merge([
+                    'iPersId' => $data[0]->iPersId || null,
+                ]);
             }
-            $request->merge([
-                'iPersId' => $data[0]->iPersId,
-            ]);
             $data = FichaFamiliar::updFichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se actualizo la información', $data);
         } catch (Exception $e) {
