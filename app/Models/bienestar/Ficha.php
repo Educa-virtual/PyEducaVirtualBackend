@@ -14,11 +14,10 @@ class Ficha
     public static function selfichas($request)
     {
         $parametros = [
-            $request->iCredSesionId,
+            $request->iCredEntPerfId,
+            $request->iYAcadId,
             $request->iFichaDGId,
-            $request->iPersId,
-            $request->cPersDocumento,
-            $request->cPersNombresApellidos,
+            $request->iPersId
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichas ' . $placeholders, $parametros);
