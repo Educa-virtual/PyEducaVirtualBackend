@@ -5,103 +5,285 @@ namespace App\Http\Controllers\eval;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
+use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class EvaluacionesController extends Controller
 {
-    protected $hashids;
 
-    public function __construct()
+    public function obtenerEvaluacionesxiEvaluacionId(Request $request, $iEvaluacionId)
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
+        $request->merge(['iEvaluacionId' => $iEvaluacionId]);
 
-    private function decodeValue($value)
-    {
-        if (is_null($value)) {
-            return null;
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iTipoEvalId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEvaluacionId             ??  NULL,
+                $request->iCredId                   ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_SEL_evaluacionesxiEvaluacionId
+                    @_iEvaluacionId=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
-    public function validateRequest(Request $request)
+    public function guardarEvaluaciones(Request $request)
     {
-        $request->validate(
-            ['opcion' => 'required'],
-            ['opcion.required' => 'Hubo un problema al obtener la acción']
-        );
+        // Validación de los parámetros de entrada
+        $validator = Validator::make($request->all(), [
+            'iDocenteId' => ['required'],
+            'cEvaluacionTitulo' => ['required', 'max:250'],
+            'cEvaluacionDescripcion' => ['required'],
+            'dtEvaluacionInicio'     => ['required', 'date'],
+            'dtEvaluacionFin'        => ['required', 'date', 'after:dtEvaluacionInicio'],
 
-        $fieldsToDecode = [
-            'valorBusqueda',
+            'iContenidoSemId' => ['required'],
+            'iActTipoId' => ['required'],
+            'idDocCursoId' => ['required'],
+        ], [
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+            'cEvaluacionTitulo.required' => 'No se encontró el identificador cEvaluacionTitulo',
+            'cEvaluacionTitulo.max' => 'El título no debe exceder los 250 caracteres.',
+            'cEvaluacionDescripcion.required' => 'No se encontró una descripción',
+            'dtEvaluacionInicio.required'     => 'La fecha y hora de inicio es obligatoria',
+            'dtEvaluacionInicio.date'         => 'La fecha de inicio no es válida.',
+            'dtEvaluacionFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtEvaluacionFin.date'            => 'La fecha de fin no es válida.',
+            'dtEvaluacionFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
 
-            'iEvaluacionId',
-            'iTipoEvalId',
-            'iProgActId',
-            'iInstrumentoId',
-            'iEscalaCalifId',
-            'iDocenteId'
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+            'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
+            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+        ]);
 
-        ];
-
-        foreach ($fieldsToDecode as $field) {
-            $request[$field] = $this->decodeValue($request->$field);
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return [
-            $request->opcion,
-            $request->valorBusqueda ?? '-',
+        try {
+            $fieldsToDecode = [
+                'iTipoEvalId',
+                'iInstrumentoId',
+                'iEscalaCalifId',
+                'iEvaluacionIdPadre',
+                'iDocenteId',
+                'iContenidoSemId',
+                'iActTipoId',
+                'idDocCursoId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
-            $request->iEvaluacionId                 ??  NULL,
-            $request->iTipoEvalId                   ??  NULL,
-            $request->iProgActId                    ??  NULL,
-            $request->iInstrumentoId                ??  NULL,
-            $request->iEscalaCalifId                ??  NULL,
-            $request->iDocenteId                    ??  NULL,
-            $request->dtEvaluacionPublicacion       ??  NULL,
-            $request->cEvaluacionTitulo             ??  NULL,
-            $request->cEvaluacionDescripcion        ??  NULL,
-            $request->cEvaluacionObjetivo           ??  NULL,
-            $request->nEvaluacionPuntaje            ??  NULL,
-            $request->iEvaluacionNroPreguntas       ??  NULL,
-            $request->dtEvaluacionInicio            ??  NULL,
-            $request->dtEvaluacionFin               ??  NULL,
-            $request->iEvaluacionDuracionHoras      ??  NULL,
-            $request->iEvaluacionDuracionMinutos    ??  NULL,
-            $request->iEstado                       ??  NULL,
-            $request->iSesionId                     ??  NULL,
-            $request->dtCreado                      ??  NULL,
-            $request->dtActualizado                 ??  NULL,
-            $request->iEvaluacionIdPadre            ??  NULL,
-            $request->cEvaluacionArchivoAdjunto     ??  NULL,
+            $parametros = [
+                $request->iTipoEvalId               ?? NULL,
+                $request->iDocenteId                ?? NULL,
+                $request->cEvaluacionTitulo         ?? NULL,
+                $request->cEvaluacionDescripcion    ?? NULL,
+                $request->dtEvaluacionInicio        ?? NULL,
+                $request->dtEvaluacionFin           ?? NULL,
+                $request->cEvaluacionArchivoAdjunto ?? NULL,
+                $request->iContenidoSemId           ?? NULL,
+                $request->iActTipoId                ?? NULL,
+                $request->idDocCursoId              ?? NULL,
 
-            $request->iCredId                       ??  NULL
-        ];
-    }
+                $request->iCredId                   ?? NULL
+            ];
 
-    private function encodeFields($item)
-    {
-        $fieldsToEncode = [
-            'iEvaluacionId',
-            'iTipoEvalId',
-            'iProgActId',
-            'iInstrumentoId',
-            'iEscalaCalifId',
-            'iDocenteId'
-        ];
+            $data = DB::select(
+                'exec eval.SP_INS_evaluaciones 
+                    @_iTipoEvalId=?,
+                    @_iDocenteId=?,
+                    @_cEvaluacionTitulo=?,
+                    @_cEvaluacionDescripcion=?,
+                    @_dtEvaluacionInicio=?,
+                    @_dtEvaluacionFin=?,
+                    @_cEvaluacionArchivoAdjunto=?,
+                    @_iContenidoSemId=?,
+                    @_iActTipoId=?,
+                    @_idDocCursoId=?,
+                    @_iCredId=?',
+                $parametros
+            );
 
-        foreach ($fieldsToEncode as $field) {
-            if (isset($item->$field)) {
-                $item->$field = $this->hashids->encode($item->$field);
+            if ($data[0]->iEvaluacionId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido guardar', 'data' => null],
+                    Response::HTTP_OK
+                );
             }
+        } catch (Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-
-        return $item;
     }
 
-    public function encodeId($data)
-    {
-        return array_map([$this, 'encodeFields'], $data);
+    public function actualizarEvaluacionesxiEvaluacionId(Request $request, $iEvaluacionId)
+    {   
+        $request->merge(['iEvaluacionId' => $iEvaluacionId]);
+        // Validación de los parámetros de entrada
+        $validator = Validator::make($request->all(), [
+            'iEvaluacionId' => ['required'],
+            'cEvaluacionTitulo' => ['required', 'max:250'],
+            'cEvaluacionDescripcion' => ['required'],
+            'dtEvaluacionInicio'     => ['required', 'date'],
+            'dtEvaluacionFin'        => ['required', 'date', 'after:dtEvaluacionInicio'],
+        ], [
+            'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
+            'cEvaluacionTitulo.required' => 'No se encontró el identificador cEvaluacionTitulo',
+            'cEvaluacionTitulo.max' => 'El título no debe exceder los 250 caracteres.',
+            'cEvaluacionDescripcion.required' => 'No se encontró una descripción',
+            'dtEvaluacionInicio.required'     => 'La fecha y hora de inicio es obligatoria',
+            'dtEvaluacionInicio.date'         => 'La fecha de inicio no es válida.',
+            'dtEvaluacionFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtEvaluacionFin.date'            => 'La fecha de fin no es válida.',
+            'dtEvaluacionFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEvaluacionId             ?? NULL,
+                $request->cEvaluacionTitulo         ?? NULL,
+                $request->cEvaluacionDescripcion    ?? NULL,
+                $request->dtEvaluacionInicio        ?? NULL,
+                $request->dtEvaluacionFin           ?? NULL,
+                $request->cEvaluacionArchivoAdjunto ?? NULL,
+
+                $request->iCredId                   ?? NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_UPD_evaluacionesxiEvaluacionId
+                    @_iEvaluacionId=?,
+                    @_cEvaluacionTitulo=?,
+                    @_cEvaluacionDescripcion=?,
+                    @_dtEvaluacionInicio=?,
+                    @_dtEvaluacionFin=?,
+                    @_cEvaluacionArchivoAdjunto=?,
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iEvaluacionId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido actualizar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function eliminarEvaluacionesxiEvaluacionId(Request $request, $iEvaluacionId)
+    {   
+        $request->merge(['iEvaluacionId' => $iEvaluacionId]);
+        // Validación de los parámetros de entrada
+        $validator = Validator::make($request->all(), [
+            'iEvaluacionId' => ['required'],
+        ], [
+            'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iCredId',
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEvaluacionId      ??  NULL,
+                $request->iCredId            ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_DEL_evaluacionesxiEvaluacionId
+                    @_iEvaluacionId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iEvaluacionId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha eliminado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido eliminar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     public function handleCrudOperation(Request $request)
@@ -168,7 +350,8 @@ class EvaluacionesController extends Controller
         }
     }
 
-    public function guardarConclusionxiEvalPromId(Request $request){
+    public function guardarConclusionxiEvalPromId(Request $request)
+    {
         $data = DB::update(
             "   UPDATE eval.evaluacion_promedios
                 SET cConclusionDescriptiva = '" . $request->cConclusionDescriptiva . "'
