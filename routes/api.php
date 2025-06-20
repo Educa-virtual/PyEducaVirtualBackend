@@ -72,6 +72,7 @@ Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 Route::group(['prefix' => 'administrador'], function () {
     Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']);
     Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
+    Route::post('addCursosNivelesGrados', [AdministradorController::class, 'addCursosNivelesGrados']);
     Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
     Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);

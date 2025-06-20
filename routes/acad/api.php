@@ -8,6 +8,7 @@ use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\acad\SilabosController;
+use App\Http\Controllers\api\acad\DistribucionBloqueController;
 use App\Http\Controllers\api\acad\FeriadoImportanteController;
 use App\Http\Controllers\api\acad\TipoFechaController;
 use App\Http\Controllers\asi\AsistenciaController;
@@ -87,10 +88,17 @@ Route::group(['prefix' => 'acad'], function () {
     });
 
     Route::group(['prefix' => 'feriados-importantes'], function () {
-    Route::get('getFechasImportantes/{iYAcadId?}/{iSedeId?}', [FeriadoImportanteController::class, 'getFechasImportantes']);
-    Route::get('getDependenciaFechas/{iFechaImpId?}', [FeriadoImportanteController::class, 'getDependenciaFechas']);
-    Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
-    Route::put('updFechasImportantes', [FeriadoImportanteController::class, 'updFechasImportantes']);
-    Route::delete('deleteFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'deleteFechasImportantes']);
-  });
+        Route::get('getFechasImportantes/{iYAcadId?}/{iSedeId?}', [FeriadoImportanteController::class, 'getFechasImportantes']);
+        Route::get('getDependenciaFechas/{iFechaImpId?}', [FeriadoImportanteController::class, 'getDependenciaFechas']);
+        Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
+        Route::put('updFechasImportantes', [FeriadoImportanteController::class, 'updFechasImportantes']);
+        Route::delete('deleteFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'deleteFechasImportantes']);
+    });
+
+    Route::group(['prefix' => 'distribucion-bloques'], function () {
+        Route::get('getDistribucionBloques/{iYearId}/{iDistribucionBloqueId?}', [DistribucionBloqueController::class, 'getDistribucionBloques']);
+        Route::post('insDistribucionBloques', [DistribucionBloqueController::class, 'insDistribucionBloques']);
+        Route::put('updDistribucionBloques', [DistribucionBloqueController::class, 'updDistribucionBloques']);
+        Route::delete('deleteDistribucionBloques/{iFechaImpId}', [DistribucionBloqueController::class, 'deleteDistribucionBloques']);
+    });
 });
