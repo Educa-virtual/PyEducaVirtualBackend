@@ -69,7 +69,8 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
 
     Route::get('/ficha-pdf/{id}/{anio}', [FichaPdfController::class, 'mostrarFichaPdf'])->name('ficha.pdf');
-    
+
+    Route::get('verRecordatorioPeriodos', [RecordarioFechasController::class, 'verRecordatorioPeriodos']);
     Route::post('verFechasEspeciales', [RecordarioFechasController::class, 'verFechasEspeciales']);
     Route::post('verConfRecordatorio', [RecordarioFechasController::class, 'verConfRecordatorio']);
     Route::post('actualizarConfRecordatorio', [RecordarioFechasController::class, 'actualizarConfRecordatorio']);

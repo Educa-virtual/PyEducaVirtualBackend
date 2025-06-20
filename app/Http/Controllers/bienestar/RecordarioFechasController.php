@@ -2,67 +2,51 @@
 
 namespace App\Http\Controllers\bienestar;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Services\ParseSqlErrorService;
-use Illuminate\Http\JsonResponse;
+use App\Models\bienestar\RecordatorioFechas;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class RecordarioFechasController extends Controller
 {
     public function verFechasEspeciales(Request $request)
     {
-        $parametros = [
-            $request->iCredEntPerfId,
-            $request->iYAcadId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_cumpleanios ?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            $data = RecordatorioFechas::selCumpleanios($request);
+            return FormatearMensajeHelper::ok('se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function verRecordatorioPeriodos(Request $request)
+    {
+        try {
+            $data = RecordatorioFechas::selRecordatorioPeriodos($request);
+            return FormatearMensajeHelper::ok('se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
     }
 
     public function verConfRecordatorio(Request $request)
     {
-        $parametros = [
-            $request->iCredEntPerfId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_cumpleaniosConfiguracion ?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            $data = RecordatorioFechas::selCumpleaniosConfiguracion($request);
+            return FormatearMensajeHelper::ok('se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function actualizarConfRecordatorio(Request $request)
     {
-        $parametros = [
-            $request->iCredEntPerfId,
-            $request->iPeriodoId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_cumpleaniosConfiguracion ?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            $data = RecordatorioFechas::updCumpleaniosConfiguracion($request);
+            return FormatearMensajeHelper::ok('se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }
