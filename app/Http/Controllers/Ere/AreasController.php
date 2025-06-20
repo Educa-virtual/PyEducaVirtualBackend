@@ -136,7 +136,7 @@ class AreasController extends Controller
 
     private function descargarArchivoPreguntasWord($evaluacion, $area)
     {
-        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
+        //Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]); REACTIVAR
         $url = env('APP_ASPNET_URL') . "/api/ere/evaluaciones/$evaluacion->evaluacionIdHashed/areas/$area->areaIdCifrado/archivo-preguntas";
 
         $response = Http::withOptions([
