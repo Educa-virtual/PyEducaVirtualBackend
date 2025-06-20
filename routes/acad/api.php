@@ -99,6 +99,6 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('getDistribucionBloques/{iYearId}/{iDistribucionBloqueId?}', [DistribucionBloqueController::class, 'getDistribucionBloques']);
         Route::post('insDistribucionBloques', [DistribucionBloqueController::class, 'insDistribucionBloques']);
         Route::put('updDistribucionBloques', [DistribucionBloqueController::class, 'updDistribucionBloques']);
-        Route::delete('deleteDistribucionBloques/{iFechaImpId}', [DistribucionBloqueController::class, 'deleteDistribucionBloques']);
+        Route::delete('deleteDistribucionBloques/{iDistribucionBloqueId}', [DistribucionBloqueController::class, 'deleteDistribucionBloques']);
     });
 });

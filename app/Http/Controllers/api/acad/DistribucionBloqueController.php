@@ -79,8 +79,13 @@ class DistribucionBloqueController extends Controller
 
   public function deleteDistribucionBloques(Request $request)
   {
-    $query = '';
+    $query = DB::select('EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion', [
+      'json' => json_encode([
+        'iDistribucionBloqueId' => $request->route('iDistribucionBloqueId'),
+      ]),
+      'opcion' => 'deleteBloqueDistribucion',
+    ]);
 
-    return ResponseHandler::success($query, 'Bloque agregado correctamente.');
+    return ResponseHandler::success($query, 'Bloque eliminado correctamente.');
   }
 }
