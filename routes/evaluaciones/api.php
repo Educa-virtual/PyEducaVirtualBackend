@@ -16,7 +16,7 @@ use App\Http\Controllers\evaluaciones\LogrosController;
 use App\Http\Controllers\evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
 use App\Http\Controllers\evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController ;
+use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
 use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
@@ -31,6 +31,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
         Route::get('obtenerEncabezadosPreguntas', [BancoPreguntasController::class, 'obtenerEncabezadosPreguntas']);
         Route::delete('eliminarBancoPreguntasById/{id}', [BancoPreguntasController::class, 'eliminarBancoPreguntasById']);
+        Route::get('/{iEvaluacionId}/curso/{iCursoId}/docente/{iDocenteId}', [EvaluacionesBancoPreguntasController::class, 'obtenerBancoPreguntasxiEvaluacionIdxiCursoIdxiDocenteId']); // Para obtener
+        Route::post('importar', [EvaluacionesBancoPreguntasController::class, 'importarBancoPreguntas']);
     });
 
     Route::group(['prefix' => 'evaluacion'], function () {
@@ -43,7 +45,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 
         Route::post('actualizarRubricaEvaluacion', [EvaluacionController::class, 'actualizarRubricaEvaluacion']);
         Route::post('deleteRubricaEvaluacion', [EvaluacionController::class, 'deleteRubricaEvaluacion']);
-        
+
         Route::post('guardarActualizarCalificacionRubricaEvaluacion', [EvaluacionController::class, 'guardarActualizarCalificacionRubricaEvaluacion']);
 
         Route::group(['prefix' => 'estudiantes'], function () {
@@ -81,7 +83,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::delete('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'eliminarEncabezadoPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
     });
     Route::group(['prefix' => 'evaluaciones'], function () {
-        Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']);//corregir 16/06/2025
+        Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']); //corregir 16/06/2025
         Route::post('/', [EvaluacionesController::class, 'guardarEvaluaciones']); // Para crear
         Route::get('/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerEvaluacionesxiEvaluacionId']); // Para obtener
         Route::put('/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacionesxiEvaluacionId']); // Para actualizar

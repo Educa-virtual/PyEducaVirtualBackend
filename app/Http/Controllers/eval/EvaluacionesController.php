@@ -4,11 +4,10 @@ namespace App\Http\Controllers\eval;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class EvaluacionesController extends Controller
@@ -144,7 +143,7 @@ class EvaluacionesController extends Controller
                     Response::HTTP_OK
                 );
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -222,7 +221,7 @@ class EvaluacionesController extends Controller
                     Response::HTTP_OK
                 );
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 Response::HTTP_INTERNAL_SERVER_ERROR
