@@ -75,7 +75,10 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('handleCrudOperation', [EvaluacionesBancoPreguntasController::class, 'handleCrudOperation']);
     });
     Route::group(['prefix' => 'encabezado-preguntas'], function () {
-        Route::post('handleCrudOperation', [EncabezadoPreguntasController::class, 'handleCrudOperation']);
+        Route::post('/', [EncabezadoPreguntasController::class, 'guardarEncabezadoPreguntas']); // Para crear
+        Route::get('/{iEvaluacionId}', [EncabezadoPreguntasController::class, 'obtenerEncabezadoPreguntasxiEvaluacionId']); // Para obtener x iEvaluacionId
+        Route::put('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'actualizarEncabezadoPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
+        Route::put('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'eliminarEncabezadoPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
     });
     Route::group(['prefix' => 'evaluaciones'], function () {
         Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']);//corregir 16/06/2025

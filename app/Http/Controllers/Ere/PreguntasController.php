@@ -404,12 +404,12 @@ class PreguntasController extends ApiController
     {
         $params = [
             'BancoId' => $request->ids,
-            'iDocenteId' => 1,
+            'iDocenteId' => VerifyHash::decodesxId($request->iDocenteId),
             'iCursoId' => $request->iCursoId,
         ];
         // Obtener las preguntas desde el repositorio
         $preguntasDB = PreguntasRepository::obtenerBancoPreguntas($params);
-
+        
         // Verificar si se encontraron preguntas
         if (empty($preguntasDB)) {
             return response()->json(['error' => 'No se encontraron preguntas para los IDs proporcionados.'], 404);
