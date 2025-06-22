@@ -98,7 +98,7 @@ class EvaluacionPreguntasController extends Controller
             );
         }
     }
-    
+
     public function obtenerEvaluacionPreguntasxiEvaluacionId(Request $request, $iEvaluacionId)
     {
         $request->merge(['iEvaluacionId' => $iEvaluacionId]);
@@ -135,6 +135,130 @@ class EvaluacionPreguntasController extends Controller
             );
         }
     }
-    public function actualizarEvaluacionPreguntasxiEvalPregId(Request $request, $iEvalPregId) {}
-    public function eliminarEvaluacionPreguntasxiEvalPregId(Request $request, $iEvalPregId) {}
+    public function actualizarEvaluacionPreguntasxiEvalPregId(Request $request, $iEvalPregId)
+    {   
+        $request->merge(['iEvalPregId' => $iEvalPregId]);
+
+        $validator = Validator::make($request->all(), [
+            'iEvalPregId' => ['required'],
+            'iTipoPregId' => ['required'],
+            'cEvalPregPregunta' => ['required']
+        ], [
+            'iEvalPregId.required' => 'No se encontró el identificador iEvalPregId',
+            'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
+            'cEvalPregPregunta.required' => 'Debe ingresar el enunciado de la pregunta',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iEvalPregId',
+                'iTipoPregId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEvalPregId                 ??  NULL,
+                $request->iTipoPregId                 ??  NULL,
+                $request->cEvalPregPregunta           ??  NULL,
+                $request->cEvalPregTextoAyuda         ??  NULL,
+                $request->jsonAlternativas            ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_UPD_evaluacionPreguntasxiEvalPregId 
+                    @_iEvalPregId=?,   
+                    @_iTipoPregId=?,   
+                    @_cEvalPregPregunta=?,   
+                    @_cEvalPregTextoAyuda=?,   
+                    @_jsonAlternativas=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iEvalPregId > 0) {
+                $message = 'Se ha actualizado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido actualizar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function eliminarEvaluacionPreguntasxiEvalPregId(Request $request, $iEvalPregId)
+    {
+        $request->merge(['iEvalPregId' => $iEvalPregId]);
+
+        $validator = Validator::make($request->all(), [
+            'iEvalPregId' => ['required'],
+        ], [
+            'iEvalPregId.required' => 'No se encontró el identificador iEvalPregId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iEvalPregId',
+                'iCredId'
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEvalPregId      ??  NULL,
+                $request->iCredId      ??  NULL
+            ];
+            $data = DB::select(
+                'exec eval.SP_DEL_evaluacionPreguntasxiEvalPregId
+                    @_iEvalPregId=?,    
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iEvalPregId > 0) {
+                $message = 'Se ha eliminado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido eliminar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

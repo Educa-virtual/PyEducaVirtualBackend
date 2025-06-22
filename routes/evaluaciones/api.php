@@ -78,7 +78,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('/', [EncabezadoPreguntasController::class, 'guardarEncabezadoPreguntas']); // Para crear
         Route::get('/{iEvaluacionId}', [EncabezadoPreguntasController::class, 'obtenerEncabezadoPreguntasxiEvaluacionId']); // Para obtener x iEvaluacionId
         Route::put('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'actualizarEncabezadoPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
-        Route::put('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'eliminarEncabezadoPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
+        Route::delete('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'eliminarEncabezadoPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
     });
     Route::group(['prefix' => 'evaluaciones'], function () {
         Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']);//corregir 16/06/2025
@@ -92,7 +92,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('/', [EvaluacionPreguntasController::class, 'guardarEvaluacionPreguntas']); // Para crear
         Route::get('/{iEvaluacionId}', [EvaluacionPreguntasController::class, 'obtenerEvaluacionPreguntasxiEvaluacionId']); // Para obtener x iEvaluacionId
         Route::put('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'actualizarEvaluacionPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
-        Route::put('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'eliminarEvaluacionPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
+        Route::delete('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'eliminarEvaluacionPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
     });
     Route::group(['prefix' => 'evaluacion-respuestas'], function () {
         Route::post('handleCrudOperation', [EvaluacionRespuestasController::class, 'handleCrudOperation']);
