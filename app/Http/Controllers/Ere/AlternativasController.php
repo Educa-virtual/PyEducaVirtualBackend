@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Services\Ere\ExtraerBase64;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -46,7 +49,6 @@ class AlternativasController extends Controller
         return [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $request->iAlternativaId              ??  NULL,
             $request->iPreguntaId                 ??  NULL,
             $request->cAlternativaDescripcion     ??  NULL,
@@ -82,30 +84,25 @@ class AlternativasController extends Controller
 
     public function handleCrudOperation(Request $request)
     {
-        $parametros = $this->validateRequest($request);
-       
         try {
-            switch ($request->opcion) {
-                case 'GUARDAR-ACTUALIZARxPreguntas':
-                    $data = DB::select('exec ere.Sp_INS_UPD_preguntas ?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iAlternativaId > 0) {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
-                            200
-                        );
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido guardar la información', 'data' => null],
-                            500
-                        );
-                    }
-                    break;
+            $parametros = $this->validateRequest($request);
+            $alternativas = json_decode($parametros[9], true);
+            foreach ($alternativas as $key => $alternativa) {
+                $alternativas[$key]['cAlternativaDescripcion'] = ExtraerBase64::extraer(
+                    $alternativa['cAlternativaDescripcion'],
+                    $request->iPreguntaId,
+                    'alternativa'
+                );
             }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
-                500
-            );
+            $parametros[9] = json_encode($alternativas);
+            $data = DB::select('exec ere.Sp_INS_UPD_preguntas ?,?,?,?,?,?,?,?,?,?', $parametros);
+            if ($data[0]->iAlternativaId > 0) {
+                return FormatearMensajeHelper::ok('Se guardó la información');
+            } else {
+                throw new Exception('No se ha podido guardar la información');
+            }
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }
