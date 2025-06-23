@@ -136,7 +136,7 @@ class EvaluacionPreguntasController extends Controller
         }
     }
     public function actualizarEvaluacionPreguntasxiEvalPregId(Request $request, $iEvalPregId)
-    {   
+    {
         $request->merge(['iEvalPregId' => $iEvalPregId]);
 
         $validator = Validator::make($request->all(), [
@@ -254,6 +254,47 @@ class EvaluacionPreguntasController extends Controller
                     Response::HTTP_OK
                 );
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId(Request $request, $iEvaluacionId, $iEstudianteId)
+    {
+        $request->merge(['iEvaluacionId' => $iEvaluacionId]);
+        $request->merge(['iEstudianteId' => $iEstudianteId]);
+
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iEstudianteId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEvaluacionId    ??  NULL,
+                $request->iEstudianteId    ??  NULL,
+                $request->iCredId          ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_SEL_evaluacionPreguntasxiEvaluacionIdxiEstudianteId
+                    @_iEvaluacionId=?,   
+                    @_iEstudianteId=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],

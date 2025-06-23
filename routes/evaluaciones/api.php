@@ -88,6 +88,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::get('/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerEvaluacionesxiEvaluacionId']); // Para obtener
         Route::put('/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacionesxiEvaluacionId']); // Para actualizar
         Route::delete('/{iEvaluacionId}', [EvaluacionesController::class, 'eliminarEvaluacionesxiEvaluacionId']); // Para eliminar
+        Route::get('/{iEvaluacionId}/estudiante/{iEstudianteId}', [EvaluacionesController::class, 'obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId']); // Para eliminar
 
     });
     Route::group(['prefix' => 'evaluacion-preguntas'], function () {
@@ -95,6 +96,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::get('/{iEvaluacionId}', [EvaluacionPreguntasController::class, 'obtenerEvaluacionPreguntasxiEvaluacionId']); // Para obtener x iEvaluacionId
         Route::put('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'actualizarEvaluacionPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
         Route::delete('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'eliminarEvaluacionPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
+        Route::get('/{iEvaluacionId}/estudiante/{iEstudianteId}', [EvaluacionPreguntasController::class, 'obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId']); // Para eliminar
+
     });
     Route::group(['prefix' => 'evaluacion-respuestas'], function () {
         Route::post('handleCrudOperation', [EvaluacionRespuestasController::class, 'handleCrudOperation']);

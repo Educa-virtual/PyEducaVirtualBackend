@@ -152,7 +152,7 @@ class EvaluacionesController extends Controller
     }
 
     public function actualizarEvaluacionesxiEvaluacionId(Request $request, $iEvaluacionId)
-    {   
+    {
         $request->merge(['iEvaluacionId' => $iEvaluacionId]);
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
@@ -230,7 +230,7 @@ class EvaluacionesController extends Controller
     }
 
     public function eliminarEvaluacionesxiEvaluacionId(Request $request, $iEvaluacionId)
-    {   
+    {
         $request->merge(['iEvaluacionId' => $iEvaluacionId]);
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
