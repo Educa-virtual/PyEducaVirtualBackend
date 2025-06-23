@@ -77,4 +77,74 @@ class PreguntaAlternativasRespuestasController extends Controller
             );
         }
     }
+
+    public function guardarPreguntasxiCuestionarioIdxiEstudianteId(Request $request, $iCuestionarioId, $iEstudianteId)
+    {
+        $request->merge(['iCuestionarioId' => $iCuestionarioId]);
+        $request->merge(['iEstudianteId' => $iEstudianteId]);
+
+        $validator = Validator::make($request->all(), [
+            'iCuestionarioId' => ['required'],
+            'iEstudianteId' => ['required'],
+            'iPregAlterId' => ['required'],
+        ], [
+            'iCuestionarioId.required' => 'No se encontró el identificador iCuestionarioId',
+            'iEstudianteId.required' => 'No se encontró el identificador iEstudianteId',
+            'iPregAlterId.required' => 'No se encontró el identificador iPregAlterId'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iCuestionarioId',
+                'iEstudianteId',
+                'iPregAlterId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iCuestionarioId               ??  NULL,
+                $request->iEstudianteId                 ??  NULL,
+                $request->iPregAlterId                  ??  NULL,
+                $request->cRespuesta                    ??  NULL,
+                $request->iCredId                       ??  NULL
+            ];
+            
+            $data = DB::select(
+                'exec aula.SP_INS_preguntaAlternativasRespuestas 
+                    @_iCuestionarioId=?,   
+                    @_iEstudianteId=?,   
+                    @_iPregAlterId=?,   
+                    @_cRespuesta=?,  
+                    @_iCredId=?',
+                $parametros
+            );
+            
+            if ($data[0]->iPrgAltRptaId > 0) {
+                $message = 'Se ha guardado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
