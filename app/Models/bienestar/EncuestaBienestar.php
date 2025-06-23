@@ -10,6 +10,7 @@ class EncuestaBienestar
     {
         $parametros = [
             $request->iCredEntPerfId,
+            $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC obe.Sp_SEL_encuestas $placeholders", $parametros);
@@ -27,10 +28,11 @@ class EncuestaBienestar
             $request->cEncuNombre,
             $request->cEncuDescripcion,
             $request->dEncuDesde,
-            $request->cEncuHasta,
-            $request->iCategoriaId,
-            $request->jsonPermisos,
+            $request->dEncuHasta,
+            $request->iEncuCateId,
             $request->jsonPoblacion,
+            $request->jsonPermisos,
+            $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::insert("EXEC obe.Sp_INS_encuesta $placeholders", $parametros);
@@ -44,10 +46,11 @@ class EncuestaBienestar
             $request->cEncuNombre,
             $request->cEncuDescripcion,
             $request->dEncuDesde,
-            $request->cEncuHasta,
-            $request->iCategoriaId,
+            $request->dEncuHasta,
+            $request->iEncuCateId,
             $request->jsonPoblacion,
             $request->jsonPermisos,
+            $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC obe.Sp_UPD_encuesta $placeholders", $parametros);
@@ -78,10 +81,11 @@ class EncuestaBienestar
         $parametros = [
             $request->iCredEntPerfId,
             $request->jsonPoblacion,
+            $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC obe.Sp_SEL_poblacion_objetivo $placeholders", $parametros);
     }
 
-    
+
 }
