@@ -538,7 +538,6 @@ class PreguntasController extends ApiController
             $request->iNivelGradoId         ??  NULL,
             $request->iEncabPregId          ??  NULL,
             $request->iCursosNivelGradId    ??  NULL,
-
             $request->iCredId               ??  NULL
         ];
     }
@@ -665,7 +664,8 @@ class PreguntasController extends ApiController
                     return $resp->handleCrudOperation($request);
                     break;
                 case 'GUARDAR-PREGUNTAS':
-                    DB::statement('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    array_push($parametros,$request->iPreguntaOrden);
+                    DB::statement('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     return FormatearMensajeHelper::ok('Se agregó la pregunta');
                     break;
             }
