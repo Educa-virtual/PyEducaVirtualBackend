@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\bienestar\EncuestaBienestarController;
 use App\Http\Controllers\bienestar\FichaAlimentacionController;
 use App\Http\Controllers\bienestar\FichaFamiliarController;
 use App\Http\Controllers\bienestar\FichaGeneralController;
@@ -69,6 +70,13 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
 
     Route::get('/ficha-pdf/{id}/{anio}', [FichaPdfController::class, 'mostrarFichaPdf'])->name('ficha.pdf');
+
+    Route::post('listarEncuestas', [EncuestaBienestarController::class, 'listarEncuestas']);
+    Route::get('crearEncuesta', [EncuestaBienestarController::class, 'crearEncuesta']);
+    Route::post('guardarEncuesta', [EncuestaBienestarController::class, 'guardarEncuesta']);
+    Route::post('actualizarEncuesta', [EncuestaBienestarController::class, 'actualizarEncuesta']);
+    Route::post('verEncuesta', [EncuestaBienestarController::class, 'verEncuesta']);
+    Route::post('borrarEncuesta', [EncuestaBienestarController::class, 'borrarEncuesta']);
 
 });
 
