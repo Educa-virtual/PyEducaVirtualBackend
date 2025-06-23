@@ -95,7 +95,7 @@ class YearController extends Controller
         'iYearId' => $request->input('iYearId'),
         'cYearNombre' => $request->input('cYearNombre'),
         'cYearOficial' => $request->input('cYearOficial'),
-        'iYearEstado' => $request->input('iYearEstado'),
+        // 'iYearEstado' => $request->input('iYearEstado'), 
       ]),
       'opcion' => 'updateYear',
     ]);
