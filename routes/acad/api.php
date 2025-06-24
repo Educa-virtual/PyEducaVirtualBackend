@@ -7,6 +7,7 @@ use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
+use App\Http\Controllers\acad\PeriodoEvaluacionesController;
 use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\api\acad\DistribucionBloqueController;
 use App\Http\Controllers\api\acad\FeriadoImportanteController;
@@ -100,5 +101,10 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('insDistribucionBloques', [DistribucionBloqueController::class, 'insDistribucionBloques']);
         Route::put('updDistribucionBloques', [DistribucionBloqueController::class, 'updDistribucionBloques']);
         Route::delete('deleteDistribucionBloques/{iDistribucionBloqueId}', [DistribucionBloqueController::class, 'deleteDistribucionBloques']);
+    });
+
+    Route::group(['prefix' => 'periodo-evaluaciones'], function () {
+        Route::get('getPeriodoEvaluaciones/{iYearId?}', [PeriodoEvaluacionesController::class, 'getPeriodoEvaluaciones']);
+        Route::post('processConfigCalendario', [PeriodoEvaluacionesController::class, 'processConfigCalendario']);
     });
 });

@@ -56,7 +56,7 @@ class DistribucionBloqueController extends Controller
       'opcion' => 'agregarBloqueDistribucion',
     ]);
 
-    return ResponseHandler::success($query, 'Bloque agregado correctamente.');
+    return ResponseHandler::success($query, 'Bloque agregado correctamente.');  
   }
 
   public function updDistribucionBloques(Request $request)

@@ -19,44 +19,14 @@ class YearController extends Controller
   public function getYears(Request $request)
   {
     try {
-
-      $iYearId = $request->route('iYearId');
-
-      if (!is_null($iYearId)) {
-        $validator = Validator::make(
-          ['iYearId' => $iYearId],
-          ['iYearId' => 'integer'],
-          ['iYearId.integer' => 'El año debe ser un número entero.']
-        );
-
-        if ($validator->fails()) {
-          return response()->json([
-            'validated' => false,
-            'message' => $validator->errors(),
-            'data' => [],
-          ], 422);
-        }
-
-        $where = "iYearId = {$iYearId}";
-      } else {
-        $where = '1=1';
-      }
-
-      // Construimos el request modificado
-      $request->replace([
-        'esquema' => self::schema,
-        'tabla' => 'years',
-        'campos' => '*',
-        'where' => $where,
+      $query = DB::select("EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion", [
+        'json' => json_encode([
+          'iYearId' => $request->route('iYearId')
+        ]),
+        'opcion' => 'getYears'
       ]);
 
-      $strategy = new CollectionStrategy();
-      $apiController = new ApiController($strategy);
-      $query = $apiController->getData($request);
-
-      if ($query instanceof Collection) {
-        $query = $query->sortByDesc('iYearId')->values();
-      }
+      $query = collect($query)->sortByDesc('iYearId')->values();
 
       return ResponseHandler::success($query, 'Años obtenidos correctamente.');
     } catch (\Exception $e) {
