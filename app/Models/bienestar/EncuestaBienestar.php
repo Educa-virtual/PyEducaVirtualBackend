@@ -35,7 +35,7 @@ class EncuestaBienestar
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert("EXEC obe.Sp_INS_encuesta $placeholders", $parametros);
+        return DB::select("EXEC obe.Sp_INS_encuesta $placeholders", $parametros);
     }
 
     public static function updEncuesta($request)
