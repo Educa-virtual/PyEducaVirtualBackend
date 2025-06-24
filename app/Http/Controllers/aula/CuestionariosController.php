@@ -27,7 +27,7 @@ class CuestionariosController extends Controller
         ], [
             'iProgActId.required' => 'No se encontró el identificador iProgActId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
-            'cTitulo.required' => 'No se encontró el identificador cTitulo',
+            'cTitulo.required' => 'No se encontró el título',
             'cTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cSubtitulo.max' => 'El subtítulo no debe exceder los 250 caracteres.',
             'cDescripcion.required' => 'No se encontró el identificador cDescripcion',
