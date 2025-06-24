@@ -22,7 +22,7 @@ class EncuestaBienestarPregunta
             $request->iCredEntPerfId,
             $request->iEncuId,
             $request->iEncuPregTipoId,
-            $request->cEncuPregOrden,
+            $request->iEncuPregOrden,
             $request->cEncuPregContenido,
             $request->cEncuPregAdicional,
         ];
@@ -37,7 +37,7 @@ class EncuestaBienestarPregunta
             $request->iEncuId,
             $request->iEncuPregId,
             $request->iEncuPregTipoId,
-            $request->cEncuPregOrden,
+            $request->iEncuPregOrden,
             $request->cEncuPregContenido,
             $request->cEncuPregAdicional,
         ];

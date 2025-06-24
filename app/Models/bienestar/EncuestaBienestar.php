@@ -56,6 +56,17 @@ class EncuestaBienestar
         return DB::update("EXEC obe.Sp_UPD_encuesta $placeholders", $parametros);
     }
 
+    public static function updEncuestaEstado($request)
+    {
+        $parametros = [
+            $request->iCredEntPerfId,
+            $request->iEncuId,
+            $request->iEncuEstadoId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::update("EXEC obe.Sp_UPD_encuestaEstado $placeholders", $parametros);
+    }
+
     public static function selEncuesta($request)
     {
         $parametros = [

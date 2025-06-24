@@ -77,6 +77,17 @@ class EncuestaBienestarController extends Controller
         }
     }
 
+    public function actualizarEncuestaEstado(Request $request)
+    {
+        try {
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = EncuestaBienestar::updEncuestaEstado($request);
+            return FormatearMensajeHelper::ok('se actualizó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function borrarEncuesta(Request $request)
     {
         try {
