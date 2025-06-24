@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\bienestar\EncuestaBienestarController;
+use App\Http\Controllers\bienestar\EncuestaBienestarPreguntaController;
 use App\Http\Controllers\bienestar\FichaAlimentacionController;
 use App\Http\Controllers\bienestar\FichaFamiliarController;
 use App\Http\Controllers\bienestar\FichaGeneralController;
@@ -77,6 +78,12 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarEncuesta', [EncuestaBienestarController::class, 'actualizarEncuesta']);
     Route::post('verEncuesta', [EncuestaBienestarController::class, 'verEncuesta']);
     Route::post('borrarEncuesta', [EncuestaBienestarController::class, 'borrarEncuesta']);
+
+    Route::post('listarPreguntas', [EncuestaBienestarPreguntaController::class, 'listarPreguntas']);
+    Route::post('guardarPregunta', [EncuestaBienestarPreguntaController::class, 'guardarPregunta']);
+    Route::post('actualizarPregunta', [EncuestaBienestarPreguntaController::class, 'actualizarPregunta']);
+    Route::post('verPregunta', [EncuestaBienestarPreguntaController::class, 'verPregunta']);
+    Route::post('borrarPregunta', [EncuestaBienestarPreguntaController::class, 'borrarPregunta']);
 
 });
 
