@@ -396,14 +396,7 @@ Route::group(['prefix' => 'acad'], function () {
     });
 });
 
-Route::group(['prefix' => 'seg'], function () {
-    Route::group(['prefix' => 'auditoria'], function () {
-        Route::post('selAuditoriaAccesos', [AuditoriaAccesosController::class, 'selAuditoriaAccesos']);
-        Route::post('selAuditoriaAccesosFallidos', [AuditoriaAccesosFallidosController::class, 'selAuditoriaAccesosFallidos']);
-        Route::post('selAuditoria', [AuditoriaController::class, 'selAuditoria']);
-        Route::post('selAuditoriaMiddleware', [AuditoriaMiddlewareController::class, 'selAuditoriaMiddleware']);
-    });
-});
+
 
 
 

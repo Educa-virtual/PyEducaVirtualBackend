@@ -25,7 +25,6 @@ class AuditoriaAccesos
      */
     public function handle(Request $request, Closure $next): Response
     {
-        //file_put_contents("D:\\audit.txt","Hola");
         /**
          * @var \Illuminate\Http\JsonResponse $response
          */
@@ -39,7 +38,6 @@ class AuditoriaAccesos
             $originalContent = $response->getData(true);
             //
             if (isset($originalContent['data']['user']['iCredId'])) {
-                file_put_contents("D:\\audit.txt","Si ingresa");
                 DB::select(
                     "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
                     [
