@@ -13,38 +13,40 @@ class AuditoriaAccesos
 {
     /**
      * Middleware para registrar auditorías de accesos exitosos y fallidos
-     * 
+     *
      * Este middleware realiza las siguientes acciones:
      * - Si la respuesta contiene información de usuario (`iCredId`), registra
      *   los detalles del acceso exitoso.
      * - Si la respuesta contiene un error, registra un intento fallido de
      *   acceso con la información correspondiente.
-     * 
+     *
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
+        //file_put_contents("D:\\audit.txt","Hola");
         /**
          * @var \Illuminate\Http\JsonResponse $response
          */
         $response = $next($request);
 
         // Herramienta para identificar el dispositivo del cliente.
-        $agent = new Agent(); 
+        $agent = new Agent();
 
         // Registro de accesos exitosos
         if ($response instanceof \Illuminate\Http\JsonResponse) {
-            $originalContent = $response->getData(true); 
-
-            if (isset($originalContent['user']['iCredId'])) {
+            $originalContent = $response->getData(true);
+            //
+            if (isset($originalContent['data']['user']['iCredId'])) {
+                file_put_contents("D:\\audit.txt","Si ingresa");
                 DB::select(
                     "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
                     [
                         'seg',
                         'auditoria_accesos',
                         json_encode([
-                            'iCredId' => $originalContent['user']['iCredId'],
+                            'iCredId' => $originalContent['data']['user']['iCredId'],
                             'cIpCliente' => $this->getIPCliente(),
                             'cNavegador' => $agent->browser(),
                             'cDispositivo' => $agent->deviceType(),
@@ -55,7 +57,7 @@ class AuditoriaAccesos
             }
 
             // Registro de accesos fallidos
-            if (isset($originalContent['message']) AND isset($originalContent['validated']) AND $originalContent['validated'] == false) {
+            if (isset($originalContent['message']) AND isset($originalContent['status']) AND $originalContent['status'] == 'Error') {
                 DB::select(
                     "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
                     [
@@ -114,15 +116,15 @@ class AuditoriaAccesos
     }
 
     /**
-     * Obtiene el sistema operativo del cliente basado en el agente de usuario 
+     * Obtiene el sistema operativo del cliente basado en el agente de usuario
      * (User-Agent).
      *
-     * Este método analiza la cadena `HTTP_USER_AGENT` para identificar el 
+     * Este método analiza la cadena `HTTP_USER_AGENT` para identificar el
      * sistema operativo
      * desde una lista predefinida.
      *
      * @return string
-     * El nombre del sistema operativo del cliente o 'SO Desconocido' si no 
+     * El nombre del sistema operativo del cliente o 'SO Desconocido' si no
      * se identifica.
      */
     function getSOCliente() {
@@ -149,8 +151,8 @@ class AuditoriaAccesos
             'Mobile' => '/Mobile/i'
         ];
 
-        foreach ($osArray as $os => $regex) 
-            if (preg_match($regex, $userAgent)) 
+        foreach ($osArray as $os => $regex)
+            if (preg_match($regex, $userAgent))
                 return $os;
 
         return 'SO Desconocido';
