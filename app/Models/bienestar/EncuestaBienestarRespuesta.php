@@ -20,8 +20,8 @@ class EncuestaBienestarRespuesta
     {
         $parametros = [
             $request->iCredEntPerfId,
-            $request->iEncuPregId,
-            $request->iEncuRpta,
+            $request->iEncuId,
+            $request->jsonPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC obe.Sp_INS_encuestaRespuesta $placeholders", $parametros);
@@ -31,8 +31,8 @@ class EncuestaBienestarRespuesta
     {
         $parametros = [
             $request->iCredEntPerfId,
-            $request->iEncuPregId,
-            $request->cEncuRptaContenido,
+            $request->iEncuId,
+            $request->jsonPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC obe.Sp_UPD_encuestaRespuesta $placeholders", $parametros);
