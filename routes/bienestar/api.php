@@ -81,6 +81,8 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('verEncuesta', [EncuestaBienestarController::class, 'verEncuesta']);
     Route::post('borrarEncuesta', [EncuestaBienestarController::class, 'borrarEncuesta']);
 
+    Route::post('obtenerPoblacionObjetivo', [EncuestaBienestarController::class, 'obtenerPoblacionObjetivo']);
+
     Route::post('listarPreguntas', [EncuestaBienestarPreguntaController::class, 'listarPreguntas']);
     Route::post('guardarPregunta', [EncuestaBienestarPreguntaController::class, 'guardarPregunta']);
     Route::post('actualizarPregunta', [EncuestaBienestarPreguntaController::class, 'actualizarPregunta']);

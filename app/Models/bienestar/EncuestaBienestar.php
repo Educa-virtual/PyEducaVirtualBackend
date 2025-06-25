@@ -91,11 +91,11 @@ class EncuestaBienestar
     {
         $parametros = [
             $request->iCredEntPerfId,
-            $request->jsonPoblacion,
             $request->iYAcadId,
+            $request->jsonPoblacion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_poblacion_objetivo $placeholders", $parametros);
+        return DB::select("EXEC obe.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
     }
 
 
