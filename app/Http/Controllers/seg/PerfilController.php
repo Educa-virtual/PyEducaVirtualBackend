@@ -18,14 +18,14 @@ class PerfilController extends Controller
                     $in = '4,7,8';
                     break;
                 case 'dremo':
-                    $in = '1,2';
+                    $in = '1,2,6';
                     break;
                 case 'ugel':
                     $in = '5';
                     break;
             }
             $perfiles = DB::select('SELECT iPerfilId, cPerfilNombre,iPerfilOrden FROM seg.perfiles
-WHERE iTipoPerfilId IN (' . $in . ')');
+WHERE iTipoPerfilId IN (' . $in . ') ORDER BY cPerfilNombre');
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $perfiles);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

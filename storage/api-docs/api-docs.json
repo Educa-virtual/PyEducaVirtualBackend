@@ -264,7 +264,7 @@
                 ],
                 "summary": "Login de usuario",
                 "description": "Autentica un usuario y retorna un token JWT junto con la data del usuario.",
-                "operationId": "d0fabbdd66ee2d9f03f4ab51b6928b21",
+                "operationId": "0979b4ec1ef4a149b82d179946612831",
                 "parameters": [
                     {
                         "name": "user",
@@ -288,7 +288,7 @@
                 ],
                 "responses": {
                     "401": {
-                        "description": "Errores de autenticación posibles:\n     *                      - Ya alcanzó el límite de intentos\n     *                      - Usuario y contraseña incorrectos\n     *                      - Debe actualizar su contraseña\n     *                      - Usuario no existe",
+                        "description": "Errores de autenticación posibles:\n     *                      - Usuario o contraseña incorrectos\n     *                      - Su usuario está desactivado, contacte con el área de soporte\n     *                      - Su cuenta ha expirado, contacte con el área de soporte)",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -299,7 +299,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Verifica tu usuario y contraseña"
+                                            "example": "Usuario o contraseña incorrectos"
                                         }
                                     },
                                     "type": "object"
@@ -336,6 +336,683 @@
                         }
                     }
                 }
+            }
+        },
+        "/api/seg/usuarios": {
+            "get": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Obtiene la lista de usuarios. Se requiere rol de administrador.",
+                "operationId": "5c5344d80f546d42dc0d947a1837bd2b",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "opcionBusquedaSeleccionada",
+                        "in": "query",
+                        "description": "Opción de búsqueda seleccionada",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "documento",
+                                "apellidos",
+                                "nombres"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "criterioBusqueda",
+                        "in": "query",
+                        "description": "Criterio de búsqueda de acuerdo a la opción seleccionada",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "description": "Cantidad de registros a omitir para la paginación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 0
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Cantidad de registros a obtener",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Datos obtenidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Datos obtenidos"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "Data de los usuarios"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Registra un usuario. Se requiere rol de administrador.",
+                "operationId": "1f2df90ba527304c42e49877de91ab43",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Datos del usuario a registrar",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "iTipoIdentId",
+                                    "cPersDocumento",
+                                    "cPersPaterno",
+                                    "cPersNombre",
+                                    "cPersSexo"
+                                ],
+                                "properties": {
+                                    "data": {
+                                        "properties": {
+                                            "iTipoIdentId": {
+                                                "type": "string",
+                                                "example": "1"
+                                            },
+                                            "cPersDocumento": {
+                                                "type": "string",
+                                                "example": "12345678"
+                                            },
+                                            "cPersPaterno": {
+                                                "type": "string",
+                                                "example": "Apellido de prueba"
+                                            },
+                                            "cPersMaterno": {
+                                                "type": "string",
+                                                "example": "Apellido de prueba"
+                                            },
+                                            "cPersNombre": {
+                                                "type": "string",
+                                                "example": "Nombre de prueba"
+                                            },
+                                            "cPersSexo": {
+                                                "type": "string",
+                                                "example": "M"
+                                            },
+                                            "dPersNacimiento": {
+                                                "type": "string",
+                                                "format": "date",
+                                                "example": "1988-04-12"
+                                            },
+                                            "iTipoEstCivId": {
+                                                "type": "string",
+                                                "example": "SOLTERO"
+                                            },
+                                            "iNacionId": {
+                                                "type": "string",
+                                                "example": "193"
+                                            },
+                                            "cPersDomicilio": {
+                                                "type": "string",
+                                                "example": "COSTA AZUL MZ.D LOTE.23"
+                                            },
+                                            "iPaisId": {
+                                                "type": "integer",
+                                                "example": 589
+                                            },
+                                            "iDptoId": {
+                                                "type": "integer",
+                                                "example": 17
+                                            },
+                                            "iPrvnId": {
+                                                "type": "integer",
+                                                "example": 149
+                                            },
+                                            "iDsttId": {
+                                                "type": "integer",
+                                                "example": 1494
+                                            },
+                                            "cEstUbigeo": {
+                                                "type": "string",
+                                                "example": "180301"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "iSedeId": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "iYAcadId": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "iPerfilId": {
+                                        "type": "integer",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Se ha registrado el usuario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Se ha registrado el usuario / El usuario ya se encuentra registrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/seg/usuarios/{iCredId}/perfiles": {
+            "get": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Obtiene los perfiles asignados del usuario especificado. Se requiere rol de administrador.",
+                "operationId": "691a7ccf9707fde0ae23ce364734a0c0",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iCredId",
+                        "in": "path",
+                        "description": "Id de la credencial del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Datos obtenidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Datos obtenidos"
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "example": "Data de los perfiles del usuario"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Agrega un perfil al usuario especificado. Los parámetros dependen de la opción seleccionada. Se requiere rol de administrador.",
+                "operationId": "56d6b71a1afe25996418224dc5db16ef",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "opcionBusquedaSeleccionada",
+                        "in": "query",
+                        "description": "Opción de perfil a agregar",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "addPerfilDremo",
+                                "addPerfilUgel",
+                                "addPerfilSede"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "iCredId",
+                        "in": "path",
+                        "description": "Id de la credencial del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "iEntId",
+                        "in": "query",
+                        "description": "Id de la entidad donde labora el usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "iPerfilId",
+                        "in": "query",
+                        "description": "Id del perfil a asignar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "iCursosNivelGradId",
+                        "in": "query",
+                        "description": "Id del curso del usuario (para opción DREMO, UGEL)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "cTipo",
+                        "in": "query",
+                        "description": "Tipo del perfil del usuario (para opción DREMO)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "iUgelId",
+                        "in": "query",
+                        "description": "Id de la UGEL donde labora el usuario (para opción UGEL)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "iSedeId",
+                        "in": "query",
+                        "description": "Id de la sede de la institución educativa (para opción Sede)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Registro generado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registro generado exitosamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/seg/usuarios/{iCredId}/estado": {
+            "patch": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Cambia el estado del usuario especificado. Se requiere rol de administrador.",
+                "operationId": "e8d5f3bed1dae0f910f5bc0beb543a84",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iCredId",
+                        "in": "path",
+                        "description": "Id de la credencial del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "iCredEstado",
+                        "in": "query",
+                        "description": "Nuevo estado del usuario (1: activo, 0: inactivo)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "enum": [
+                                1,
+                                0
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "El usuario ha sido activado/desactivado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El usuario ha sido activado/desactivado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/seg/usuarios/{iCredId}/password": {
+            "patch": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Establece la contraseña del usuario especificado a su nombre de usuario. Se requiere rol de administrador.",
+                "operationId": "248f6a656fbb8da7e7bc800b519bcb71",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iCredId",
+                        "in": "path",
+                        "description": "Id de la credencial del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Contraseña cambiada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La contraseña del usuario ha sido restablecida a su nombre de usuario"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/seg/usuarios/{iCredId}/perfiles/{iCredEntPerfId}": {
+            "delete": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Elimina un perfil del usuario especificado. Se requiere rol de administrador.",
+                "operationId": "4b1ab3537b4092e60470bc9d1ee7dfe2",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iCredId",
+                        "in": "path",
+                        "description": "Id de la credencial del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "iCredEntPerfId",
+                        "in": "path",
+                        "description": "Id del perfil a eliminar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Perfil eliminado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El perfil del usuario ha sido eliminado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/seg/usuarios/{iCredId}/fecha-vigencia": {
+            "patch": {
+                "tags": [
+                    "Gestión de usuarios"
+                ],
+                "summary": "Actualiza la fecha de vigencia del usuario especificado. Se requiere rol de administrador.",
+                "operationId": "a71d352e1c6f3a6ba3002f00205bbafb",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/iCredEntPerfId"
+                    },
+                    {
+                        "name": "iCredId",
+                        "in": "path",
+                        "description": "Id de la credencial del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dtCredCaduca",
+                        "in": "query",
+                        "description": "Fecha de caducidad de la credencial",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-05-15 03:10"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Se ha actualizado la fecha de vigencia de la cuenta",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Se ha actualizado la fecha de vigencia de la cuenta"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
@@ -422,7 +1099,7 @@
             "iCredEntPerfId": {
                 "name": "iCredEntPerfId",
                 "in": "header",
-                "description": "Id de la credencial a nivel entidad y perfil",
+                "description": "Id del perfil seleccionado del usuario",
                 "required": true,
                 "schema": {
                     "type": "integer"
@@ -455,6 +1132,10 @@
         {
             "name": "Autenticación",
             "description": "Inicio de sesión de usuarios"
+        },
+        {
+            "name": "Gestión de usuarios",
+            "description": "Operaciones relacionadas con la gestión de usuarios del sistema"
         }
     ],
     "security": {

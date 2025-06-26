@@ -3,7 +3,17 @@
 /public/build
 /public/hot
 /public/storage
+!/public/storage/ere/evaluaciones/
+!/public/storage/ere/evaluaciones/hoja-respuestas/
 /public/ere
+/public/alternativas
+/public/configuracion-iiee
+/public/DocumentosInstitucional
+/public/material-educativos
+/public/tareas
+/public/tareas-estudiantes
+/public/users
+/public/web.config
 /storage/*.key
 /vendor
 .env

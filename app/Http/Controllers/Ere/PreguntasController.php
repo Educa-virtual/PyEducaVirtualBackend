@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiController;
+use App\Models\ere\Evaluacion;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
@@ -28,11 +31,9 @@ class PreguntasController extends ApiController
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
     }
 
-
     public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
         $iEncabPregId = $request->encabezado['iEncabPregId'];
-
         DB::beginTransaction();
         // Verificar si `iCursoId`, Con esto si llega el dato desde front
         //$iCursoId = $request->iCursoId ?? null;
@@ -537,7 +538,6 @@ class PreguntasController extends ApiController
             $request->iNivelGradoId         ??  NULL,
             $request->iEncabPregId          ??  NULL,
             $request->iCursosNivelGradId    ??  NULL,
-
             $request->iCredId               ??  NULL
         ];
     }
@@ -620,78 +620,57 @@ class PreguntasController extends ApiController
 
     public function eliminarPreguntaSimple(Request $request)
     {
-        $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
-        if (empty($evaluacionIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        try {
+            $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
+            if (empty($evaluacionIdDescifrado)) {
+                return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+            }
+            DB::statement('exec [ere].[Sp_DEL_preguntaSimple] @_iPreguntaId=?, @_iEvaluacionId=?', [$request->iPreguntaId, $evaluacionIdDescifrado[0]]);
+            return FormatearMensajeHelper::ok('Se ha eliminado la pregunta de la evaluación');
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        DB::statement('exec [ere].[Sp_DEL_preguntaSimple] @_iPreguntaId=?, @_iEvaluacionId=?', [$request->iPreguntaId, $evaluacionIdDescifrado[0]]);
-        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado la pregunta de la evaluación'], Response::HTTP_OK);
     }
 
     public function eliminarPreguntaMultiple(Request $request)
     {
-        $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
-        if (empty($evaluacionIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        try {
+            $evaluacionIdDescifrado = $this->hashids->decode($request->iEvaluacionId);
+            if (empty($evaluacionIdDescifrado)) {
+                return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+            }
+            DB::statement('exec [ere].[Sp_DEL_preguntaMultiple] @_iEncabPregId=?, @_iEvaluacionId=?', [$request->iEncabPregId, $evaluacionIdDescifrado[0]]);
+            return FormatearMensajeHelper::ok('Se ha eliminado la pregunta múltiple y todas sus preguntas');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
-        DB::statement('exec [ere].[Sp_DEL_preguntaMultiple] @_iEncabPregId=?, @_iEvaluacionId=?', [$request->iEncabPregId, $evaluacionIdDescifrado[0]]);
-        return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado la pregunta múltiple y todas sus preguntas'], Response::HTTP_OK);
     }
 
     public function handleCrudOperation(Request $request)
     {
         $parametros = $this->validateRequest($request);
-
         try {
             switch ($request->opcion) {
                 case 'ACTUALIZARxiPreguntaIdxbPreguntaEstado':
-                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iPreguntaId > 0) {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se eliminó la información', 'data' => null],
-                            200
-                        );
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido eliminar la información', 'data' => null],
-                            500
-                        );
-                    }
+                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    return FormatearMensajeHelper::ok('La pregunta se ha eliminado correctamente');
+
                     break;
                 case 'ACTUALIZARxiPreguntaId':
                     $parametros[5] = ExtraerBase64::extraer($request->cPregunta, $request->iPreguntaId, 'simple');
                     $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
-                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iPreguntaId > 0) {
-                        $resp = new AlternativasController();
-                        return $resp->handleCrudOperation($request);
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
-                            500
-                        );
-                    }
+                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    $resp = new AlternativasController();
+                    return $resp->handleCrudOperation($request);
                     break;
                 case 'GUARDAR-PREGUNTAS':
-                    $data = DB::select('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iPreguntaId > 0) {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
-                            200
-                        );
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
-                            500
-                        );
-                    }
+                    array_push($parametros,$request->iPreguntaOrden);
+                    DB::statement('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    return FormatearMensajeHelper::ok('Se agregó la pregunta');
                     break;
             }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
-                500
-            );
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }

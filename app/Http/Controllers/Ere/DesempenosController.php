@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use Exception;
@@ -118,31 +119,20 @@ class DesempenosController extends ApiController
 
     public function handleCrudOperation(Request $request)
     {
-        $request['valorBusqueda'] = $request->opcion === 'ACTUALIZARxiDesempenoId' ? $request['iCompetenciaId'] : null;
-        $parametros = $this->validateRequest($request);
-
         try {
-            switch ($request->opcion) {
-                case 'ACTUALIZARxiDesempenoId':
-                    $data = DB::select('exec ere.Sp_UPD_desempenos ?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iDesempenoId > 0) {
-                        $request['opcion'] = $request['iPreguntaId'] ? 'ACTUALIZARxiPreguntaId' : 'GUARDAR';
-                        $request['iDesempenoId'] = $data[0]->iDesempenoId;
-                        $resp = new PreguntasController();
-                        return $resp->handleCrudOperation($request);
-                    } else {
-                        return new JsonResponse(
-                            ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
-                            500
-                        );
-                    }
-                    break;
+            $request['valorBusqueda'] = $request->opcion === 'ACTUALIZARxiDesempenoId' ? $request['iCompetenciaId'] : null;
+            $parametros = $this->validateRequest($request);
+            $data = DB::select('exec ere.Sp_UPD_desempenos ?,?,?,?,?,?,?,?,?', $parametros);
+            if ($data[0]->iDesempenoId > 0) {
+                $request['opcion'] = $request['iPreguntaId'] ? 'ACTUALIZARxiPreguntaId' : 'GUARDAR';
+                $request['iDesempenoId'] = $data[0]->iDesempenoId;
+                $resp = new PreguntasController();
+                return $resp->handleCrudOperation($request);
+            } else {
+                throw new Exception("No se ha podido actualizar la información");
             }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
-                500
-            );
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }

@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers\bienestar;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\bienestar\FichaAlimentacionSaveRequest;
+use App\Services\ParseSqlErrorService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class FichaAlimentacionController extends Controller
+{
+    public function guardarFichaAlimentacion(FichaAlimentacionSaveRequest $request)
+    {
+        $parametros = [
+            $request->iFichaDGId,
+            $request->iLugarAlimIdDesayuno,
+            $request->cLugarAlimDesayuno,
+            $request->iLugarAlimIdAlmuerzo,
+            $request->cLugarAlimAlmuerzo,
+            $request->iLugarAlimIdCena,
+            $request->cLugarAlimCena,
+            $request->bDietaVegetariana,
+            $request->cDietaVegetarianaObs,
+            $request->bDietaVegana,
+            $request->cDietaVeganaObs,
+            $request->bAlergiasAlim,
+            $request->cAlergiasAlimObs,
+            $request->bIntoleranciaAlim,
+            $request->cIntoleranciaAlimObs,
+            $request->bSumplementosAlim,
+            $request->cSumplementosAlimObs,
+            $request->bDificultadAlim,
+            $request->cDificultadAlimObs,
+            $request->cInfoAdicionalAlimObs,
+            $request->jsonProgramas,
+        ];
+
+        try {
+            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function actualizarFichaAlimentacion(Request $request)
+    {
+        $parametros = [
+            $request->iAlimId,
+            $request->iFichaDGId,
+            $request->iLugarAlimIdDesayuno,
+            $request->cLugarAlimDesayuno,
+            $request->iLugarAlimIdAlmuerzo,
+            $request->cLugarAlimAlmuerzo,
+            $request->iLugarAlimIdCena,
+            $request->cLugarAlimCena,
+            $request->bDietaVegetariana,
+            $request->cDietaVegetarianaObs,
+            $request->bDietaVegana,
+            $request->cDietaVeganaObs,
+            $request->bAlergiasAlim,
+            $request->cAlergiasAlimObs,
+            $request->bIntoleranciaAlim,
+            $request->cIntoleranciaAlimObs,
+            $request->bSumplementosAlim,
+            $request->cSumplementosAlimObs,
+            $request->bDificultadAlim,
+            $request->cDificultadAlimObs,
+            $request->cInfoAdicionalAlimObs,
+            $request->jsonProgramas,
+        ];
+
+        try {
+            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function verFichaAlimentacion(Request $request)
+    {
+        $parametros = [
+            $request->iFichaDGId,
+        ];
+
+        try {
+            $data = DB::select('EXEC obe.Sp_SEL_fichaAlimentacion ?', $parametros);
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        }
+        catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+        return new JsonResponse($response, $codeResponse);
+    }
+}

@@ -70,8 +70,7 @@ class BuzonSugerenciaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $data = BuzonSugerencia::insBuzonSugerencias($request);
-            BuzonSugerenciasService::guardarArchivos($data, $request->file('fArchivos'));
+            $data = BuzonSugerenciasService::registrarSugerencia($request);
             return FormatearMensajeHelper::ok('Se ha registrado su sugerencia', $data, Response::HTTP_CREATED);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -138,11 +137,11 @@ class BuzonSugerenciaController extends Controller
      *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
-    public function obtenerListaSugerencias(Request $request)
+    public function obtenerListaSugerenciasEstudiante(Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $data = BuzonSugerencia::selBuzonSugerencias($request);
+            $data = BuzonSugerenciasService::obtenerSugerenciasEstudiante($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

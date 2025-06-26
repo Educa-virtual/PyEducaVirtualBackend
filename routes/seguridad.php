@@ -1,7 +1,6 @@
 <?php
 
-
-use App\Http\Controllers\api\seg\CredencialModuloController;
+use App\Http\Controllers\seg\CredencialModuloController;
 use App\Http\Controllers\seg\DatabaseController;
 use Illuminate\Support\Facades\Route;
 

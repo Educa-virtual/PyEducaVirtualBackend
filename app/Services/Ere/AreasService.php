@@ -41,20 +41,29 @@ class AreasService
         $archivo->move(Storage::disk('public')->path($rutaDestino), $nombreArchivo);
     }
 
-    public static function obtenerCartillaRespuestas($evaluacion, $area)
+    public static function obtenerCartillaRespuestas($evaluacionId, $areaId)
     {
-        $fechaInicio = new Carbon($evaluacion->dtEvaluacionFechaInicio);
-        //$rutaArchivo = "ere/evaluaciones/$evaluacion->evaluacionIdHashed/areas/$area->areaIdCifrado/examen.pdf";
         $rutaArchivo = "ere/evaluaciones/hoja-respuestas/Hoja respuestas.docx";
         if (!Storage::disk('public')->exists($rutaArchivo)) {
             throw new Exception('El archivo no existe');
         }
-        $data = [];
-        $data['contenido'] = Storage::disk('public')->get($rutaArchivo);
-        /*$data['nombreArchivo'] = ucwords(strtolower($area->cCursoNombre)) . '-' . $area->cGradoAbreviacion . '-'
-            . str_replace('Educación ', '', $area->cNivelTipoNombre) . '-' . $fechaInicio->year . '.pdf';*/
-        $data['nombreArchivo'] = 'Hoja respuestas.docx';
-        return $data;
+        /*$evaluacionIdDescifrado = VerifyHash::decodesxId($evaluacionId);
+        $areaIdDescifrado = VerifyHash::decodesxId($areaId);
+        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
+            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        }
+        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
+        if ($evaluacion == null) {
+            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
+        }
+        $area = AreasRepository::obtenerAreaPorNivelGradId($areaIdDescifrado[0]);
+        if ($area == null) {
+            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
+        }*/
+        return $rutaArchivo;
+        //$evaluacion->evaluacionIdHashed = $evaluacionId;
+        //$area->areaIdCifrado = $areaId;
+
     }
 
     public static function obtenerArchivoErePdf($evaluacion, $area)
