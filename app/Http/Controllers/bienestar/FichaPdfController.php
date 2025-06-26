@@ -11,8 +11,7 @@ class FichaPdfController extends Controller
 {
     public function descargarFicha(Request $request)
     {
-        $id = $request->get('id');
-        $anio = $request->get('anio');
+        $iFichaDGId = $request->get('iFichaDGId');
 
         //---------------- Datos generales y de dirección------------
         $datosGenerales = DB::selectOne("
@@ -56,8 +55,8 @@ class FichaPdfController extends Controller
                 LEFT JOIN acad.estudiantes std ON fdg.iPersId = std.iPersId
                 LEFT JOIN grl.ubigeos ubg ON std.cEstUbigeoNacimiento = ubg.cUbigeoReniec
                 LEFT JOIN grl.tipos_estados_civiles ec ON p.iTipoEstCivId = ec.iTipoEstCivId
-                WHERE fdg.iPersId = ? AND YEAR(fdg.dtFichaDG) = ?;
-            ", [$id, $anio]);
+                WHERE fdg.iFichaDGId = ?;
+            ", [$iFichaDGId]);
 
         //--------------IE Procedencia------------------------------------------------------
         $ie_procedencia = DB::select("     
@@ -71,8 +70,8 @@ class FichaPdfController extends Controller
                 INNER JOIN acad.institucion_educativas ie ON hist_ie.iIieeId = ie.iIieeId
                 INNER JOIN grl.tipos_sectores tipsect ON ie.iTipoSectorId = tipsect.iTipoSectorId
                 INNER JOIN grl.personas persnas ON dtgnrales.iPersId = persnas.iPersId
-            WHERE dtgnrales.iPersId = ? AND YEAR(dtgnrales.dtFichaDG) = ?;
-                ", [$id, $anio]);
+            WHERE dtgnrales.iFichaDGId = ?;
+                ", [$iFichaDGId]);
 
         $familiares = DB::select("
             SELECT 
@@ -102,8 +101,7 @@ class FichaPdfController extends Controller
                 LEFT JOIN grl.provincias provincs ON gper.iPrvnId = provincs.iPrvnId
                 LEFT JOIN grl.distritos dstrit ON gper.iDsttId = dstrit.iDsttId
             WHERE 
-                fichdat.iPersId = ?
-                AND YEAR(fichdat.dtFichaDG) = ?
+                fichdat.iFichaDGId = ?
 
             UNION ALL
 
@@ -130,9 +128,8 @@ class FichaPdfController extends Controller
                 LEFT JOIN grl.provincias provincs ON gper.iPrvnId = provincs.iPrvnId
                 LEFT JOIN grl.distritos dstrit ON gper.iDsttId = dstrit.iDsttId
             WHERE 
-                fichdat.iPersId = ?
-                AND YEAR(fichdat.dtFichaDG) = ?
-            ", [$id, $anio, $id, $anio]);
+                fichdat.iFichaDGId = ?
+            ", [$iFichaDGId, $iFichaDGId]);
 
 
         $aspeconimico = DB::selectOne("
@@ -156,8 +153,8 @@ class FichaPdfController extends Controller
                         obe.tipos_apoyo_economicos tipapoyecon ON fiecon.iTipoAEcoId = tipapoyecon.iTipoAEcoId
                     LEFT JOIN
                         obe.jornada_trabajos jorndtrab ON fiecon.iJorTrabId = jorndtrab.iJorTrabId
-                    WHERE fdgen.iPersId = ? AND YEAR(fdgen.dtFichaDG) = ?
-                    ", [$id, $anio]);
+                    WHERE fdgen.iFichaDGId = ?
+                    ", [$iFichaDGId]);
 
         //-----------------Direccion Actual de los Familiares de los Estudiantes----26 May-------------
         $direcc_familiares = DB::select("      
@@ -184,9 +181,8 @@ class FichaPdfController extends Controller
                         LEFT JOIN obe.grado_instrucciones gdi ON fam.iGradoInstId = gdi.iGradoInstId
                         LEFT JOIN obe.ocupaciones ocup ON fam.iOcupacionId = ocup.iOcupacionId
                         WHERE 
-                            fichdat.iPersId = ?
-                            AND YEAR(fichdat.dtFichaDG) = ?
-                              ", [$id, $anio]);
+                            fichdat.iFichaDGId = ?
+                              ", [$iFichaDGId]);
 
         // ---------IV ASPECTO DE LA VIVIENDA (DODE VIVE EL ESTUDIANTE----------------------------	
         $aspvivienda = DB::selectOne("
@@ -227,8 +223,8 @@ class FichaPdfController extends Controller
                                 obe.tipos_alumbrado_viviendas tipalumbviv ON vndacar.iViendaCarId = tipalumbviv.iViendaCarId
                             LEFT JOIN 
                                 obe.tipos_alumbrado tipalumb ON tipalumbviv.iTipoAlumId = tipalumb.iTipoAlumId
-                            WHERE fichdg.iPersId = ? AND YEAR(fichdg.dtFichaDG) = ?
-                             ", [$id, $anio]);
+                            WHERE fichdg.iFichaDGId = ?
+                             ", [$iFichaDGId]);
 
         // ----------EQUIPAMIENTO EN EL HOGAR--------------------------
         $equipamiento = DB::select("
@@ -244,8 +240,8 @@ class FichaPdfController extends Controller
                              obe.elementos_viviendas elemviv ON vndacarac.iViendaCarId = elemviv.iViendaCarId
                              LEFT JOIN 
                              obe.elementos_para_vivienda elmpviv ON elemviv.iEleParaVivId = elmpviv.iEleParaVivId
-                             WHERE fdtsg.iPersId = ? AND YEAR(fdtsg.dtFichaDG) = ?
-                            ", [$id, $anio]);
+                             WHERE fdtsg.iFichaDGId = ?
+                            ", [$iFichaDGId]);
 
         $alimentacionstd = DB::selectOne("
                     SELECT
@@ -260,8 +256,8 @@ class FichaPdfController extends Controller
                         INNER JOIN obe.lugar_alimentacion AS alm ON af.iLugarAlimIdAlmuerzo = alm.iLugAlimId
                         INNER JOIN obe.lugar_alimentacion AS cen ON af.iLugarAlimIdCena = cen.iLugAlimId
                     WHERE
-                        fdg.iPersId =? AND YEAR(fdg.dtFichaDG) = ?
-                    ", [$id, $anio]);
+                        fdg.iFichaDGId = ?
+                    ", [$iFichaDGId]);
 
         //--------------VI. DISCAPACIDAD-------------------------------------
         $dispacidad  =  DB::select("
@@ -274,8 +270,8 @@ class FichaPdfController extends Controller
                         obe.ficha_datos_grales AS fdatgnrls 
                         LEFT JOIN obe.discapcidades_fichas fchdiscap ON fdatgnrls.iFichaDGId = fchdiscap.iFichaDGId
                         LEFT JOIN obe.discapacidades discap ON fchdiscap.iDiscId =  discap.iDiscId
-                        WHERE fdatgnrls.iPersId = ? AND YEAR(fdatgnrls.dtFichaDG) = ?
-                    ", [$id, $anio]);
+                        WHERE fdatgnrls.iFichaDGId = ?
+                    ", [$iFichaDGId]);
 
         // ---------------VII SALUD----------------------------------------
         $salud = DB::select("
@@ -289,9 +285,8 @@ class FichaPdfController extends Controller
                         obe.ficha_datos_grales AS fdatsgnral
                         LEFT JOIN obe.dolencias_fichas fdolenc ON fdatsgnral.iFichaDGId = fdolenc.iFichaDGId
                         LEFT JOIN obe.dolencias dolenc ON fdolenc.iDolenciaId = dolenc.iDolenciaId
-                    WHERE fdatsgnral.iPersId = ? AND dolenc.bDolenciaEsCronica = 1
-                        AND YEAR(fdatsgnral.dtFichaDG) = ?;
-                    ", [$id, $anio]);
+                    WHERE fdatsgnral.iFichaDGId = ?;
+                    ", [$iFichaDGId]);
 
         //--------------------------SEGURO DE SALUD------------------------------
         $sis_salud = DB::select("
@@ -305,9 +300,8 @@ class FichaPdfController extends Controller
                         LEFT JOIN obe.seguros_aportacion segaport ON fdtsgnls.iFichaDGId = segaport.iFichaDGId
                         LEFT JOIN obe.seguros_salud segsalud ON segaport.iSegSaludId = segsalud.iSegSaludId
                         LEFT JOIN obe.tipo_seguro_aportacion tipsegaport ON segaport.iSegAportaId = tipsegaport.iTipSegAportaId
-                        WHERE fdtsgnls.iPersId = ?
-                                    AND YEAR(fdtsgnls.dtFichaDG) = ?;
-                    ", [$id, $anio]);
+                        WHERE fdtsgnls.iFichaDGId = ?;
+                    ", [$iFichaDGId]);
 
 
         // ------------VIII-INFORMACION COMPLEMENTARIA---(DEPORTE)------------------
@@ -320,9 +314,8 @@ class FichaPdfController extends Controller
                        obe.ficha_datos_grales AS fdtsgral
                        LEFT JOIN obe.deportes_fichas fdeports ON fdtsgral.iFichaDGId = fdeports.iFichaDGId
                        LEFT JOIN obe.deportes deports ON fdeports.iDeporteId = deports.iDeporteId
-                   WHERE fdtsgral.iPersId = ?
-                       AND YEAR(fdtsgral.dtFichaDG) = ?;
-                    ", [$id, $anio]);
+                   WHERE fdtsgral.iFichaDGId = ?;
+                    ", [$iFichaDGId]);
 
         // -------------INFORMACION COMPLEMENTARIA---CULTURA Y RECREACION----------------
 
@@ -337,9 +330,8 @@ class FichaPdfController extends Controller
                         INNER JOIN obe.pasatiempos pastiempo ON fchpasatiemp.iPasaTiempoId = pastiempo.iPasaTiempoId 
                             AND pastiempo.bPasaTiempoEsActividadArtistica = 1
                         INNER JOIN obe.religiones relig ON fdtsgrl.iReligionId = relig.iReligionId
-                    WHERE fdtsgrl.iPersId = ?
-                        AND YEAR(fdtsgrl.dtFichaDG) = ?;
-                ", [$id, $anio]);
+                    WHERE fdtsgrl.iFichaDGId = ?;
+                ", [$iFichaDGId]);
 
         //----------------RELIGION-----------------------------------------------
         $religiones = DB::select("
@@ -348,9 +340,8 @@ class FichaPdfController extends Controller
                     FROM
                     obe.ficha_datos_grales as fdgrals
                     INNER JOIN obe.religiones relig ON fdgrals.iReligionId = relig.iReligionId
-                    WHERE fdgrals.iPersId = ?
-                            AND YEAR(fdgrals.dtFichaDG) = ?;
-                    ", [$id, $anio]);
+                    WHERE fdgrals.iFichaDGId = ?;
+                    ", [$iFichaDGId]);
 
         //---------------PASATIEMPOS--------------------------------------------
 
@@ -362,9 +353,8 @@ class FichaPdfController extends Controller
                         INNER JOIN obe.pasatiempo_fichas fpasatmpo ON fdatsgen.iFichaDGId = fpasatmpo.iFichaDGId
                         INNER JOIN obe.pasatiempos psatmpos ON fpasatmpo.iPasaTiempoId = psatmpos.iPasaTiempoId 
                             AND psatmpos.bPasaTiempoEsActividadArtistica = 0
-                    WHERE fdatsgen.iPersId = ?
-                        AND YEAR(fdatsgen.dtFichaDG) = ?;
-                ", [$id, $anio]);
+                    WHERE fdatsgen.iFichaDGId = ?;
+                ", [$iFichaDGId]);
 
         // -----------------------PSICOPEDAGOGICO-----------------------------
         $emociones = DB::select("
@@ -376,9 +366,8 @@ class FichaPdfController extends Controller
                         obe.ficha_datos_grales AS fdgrales
                         INNER JOIN obe.problemas_emocionales_ficha fproblem ON fdgrales.iFichaDGId = fproblem.iFichaDGId
                         INNER JOIN obe.tipo_familiares tipfamles ON fproblem.iTipoFamiliarId = tipfamles.iTipoFamiliarId
-                    WHERE fdgrales.iPersId = ?
-                        AND YEAR(fdgrales.dtFichaDG) = ?;
-                ", [$id, $anio]);
+                    WHERE fdgrales.iFichaDGId = ?;
+                ", [$iFichaDGId]);
 
         //-----------------TRANSPORTE------------------  
         $med_transporte = DB::select("
@@ -392,9 +381,8 @@ class FichaPdfController extends Controller
                         INNER JOIN obe.transportes trasnprt 
                             ON fichtransport.iTransporteId = trasnprt.iTransporteId
                    WHERE 
-                        ficdtosgrals.iPersId = ?
-                        AND YEAR(ficdtosgrals.dtFichaDG) = ?;;
-                ", [$id, $anio]);
+                        ficdtosgrals.iFichaDGId = ?;
+                ", [$iFichaDGId]);
 
         //------------------------27 Mayo-----------------------------------------
 
@@ -406,9 +394,8 @@ class FichaPdfController extends Controller
                         obe.ficha_datos_grales AS fdatsgnral
                         INNER JOIN obe.dolencias_fichas fdolenc ON fdatsgnral.iFichaDGId = fdolenc.iFichaDGId
                         INNER JOIN obe.dolencias dolenc ON fdolenc.iDolenciaId = dolenc.iDolenciaId
-                        WHERE fdatsgnral.iPersId = ? AND dolenc.bDolenciaEsTransmisible = 1
-                                    AND YEAR(fdatsgnral.dtFichaDG) = ?;
-                    ", [$id, $anio]);
+                        WHERE fdatsgnral.iFichaDGId = ?;
+                    ", [$iFichaDGId]);
 
         $dosis_vacunaCovid = DB::select("
                     SELECT
@@ -417,9 +404,8 @@ class FichaPdfController extends Controller
                             obe.ficha_datos_grales AS fdtsgrals 
                             INNER JOIN obe.pandemia_dosis_fichas fpandedosis ON fdtsgrals.iFichaDGId = fpandedosis.iFichaDGId
                             INNER JOIN obe.pandemia_murieron_fichas fpandmur ON  fpandedosis.iPanDFichaId = fpandmur.iPandemiaId
-                            WHERE fdtsgrals.iPersId = ?
-                                        AND YEAR(fdtsgrals.dtFichaDG) = ?;
-                    ", [$id, $anio]);
+                            WHERE fdtsgrals.iFichaDGId = ?;
+                    ", [$iFichaDGId]);
 
         //-------------------------------------------------------------------
         $datos = [
@@ -690,7 +676,7 @@ class FichaPdfController extends Controller
         }
         //  dd($datos); // Verifica que contiene lo esperado
         $pdf = Pdf::loadView('pdfFicha.ficha', $datos)->setPaper('A4');
-        return $pdf->stream("ficha_socioeconomica_{$id}_{$anio}.pdf");
+        return $pdf->stream("ficha_socioeconomica_{$iFichaDGId}.pdf");
         // return view('pdfFicha.ficha', $datos);
     }
 }

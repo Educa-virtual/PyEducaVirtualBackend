@@ -163,7 +163,7 @@
         <!-- Sección 1: Dirección en Moquegua -->
         <div class="section">
             <h2>I. DATOS GENERALES DEL ESTUDIANTE</h2>
-            <h3>Dirección Domiciliaria en Moquegua</h3>
+            <h3>Dirección del Estudiante</h3>
             
             <table>
                 <tr>
