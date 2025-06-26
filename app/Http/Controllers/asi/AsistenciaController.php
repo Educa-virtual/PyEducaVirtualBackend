@@ -31,31 +31,23 @@ class AsistenciaController extends Controller
     }
     
     public function guardarGrupo(Request $request){
-        $iSedeId = $request["iSedeId"];
-        $cGrupoNombre = $request["cGrupoNombre"];
-        $cGrupoDescripcion = $request["cGrupoDescripcion"];
-
-        if(empty($iSedeId) || empty($cGrupoNombre)){
-            $mensaje = "No se envio datos del Grupo";
-            return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
-        }
-
-        $enviar = [
-            $iSedeId,
-            $cGrupoNombre ?? NULL,  
-            $cGrupoDescripcion ?? NULL
-        ];
-
-        $query = 'EXEC asi.Sp_INS_grupos ?,?,?';
-        
         try {
-            $data = DB::select($query, $enviar);
-            return ResponseHandler::success($data);
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarHorarioInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
-            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+            return FormatearMensajeHelper::error($e);
         }
     }
-
+    public function buscarPersonalInstitucion(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::buscarPersonalInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
     public function verificarGrupoAsistencia(Request $request){
   
         $iSedeId = $request["iSedeId"];
@@ -83,6 +75,7 @@ class AsistenciaController extends Controller
     public function verificarHorarioAsistencia(Request $request){
   
         $iSedeId = $request["iSedeId"];
+        $iYAcadId = $request["iYAcadId"];
 
         if(empty($iSedeId)){
             $mensaje = "No se envio datos de la institucion";
@@ -91,9 +84,10 @@ class AsistenciaController extends Controller
 
         $enviar = [
             $iSedeId,
+            $iYAcadId,
         ];
 
-        $query = 'EXEC asi.Sp_SEL_asistenciaGruposHorarios ?';
+        $query = 'EXEC asi.Sp_SEL_asistenciaGruposHorarios ?,?';
 
         try {
             $data = DB::select($query, $enviar);

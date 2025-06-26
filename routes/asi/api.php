@@ -8,6 +8,7 @@ Route::group(['prefix' => 'asi'], function () {
         Route::post('verificar-grupo-asistencia', [AsistenciaController::class, 'verificarGrupoAsistencia']);
         Route::post('guardar-grupo-asistencia', [AsistenciaController::class, 'guardarGrupo']);
         Route::post('verificar-horario', [AsistenciaController::class, 'verificarHorarioAsistencia']);
-        Route::post('buscar-horario-ie', [AsistenciaController::class, 'buscarHorarioInstitucion']);  
+        Route::post('buscar-horario-ie', [AsistenciaController::class, 'buscarHorarioInstitucion']);
+        Route::post('buscar-personal-ie', [AsistenciaController::class, 'buscarPersonalInstitucion']);  
     });
 });
