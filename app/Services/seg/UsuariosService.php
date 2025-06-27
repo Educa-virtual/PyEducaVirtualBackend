@@ -14,7 +14,7 @@ class UsuariosService
 {
     public static function generarParametrosParaObtenerUsuarios($tipo, Request $request)
     {
-        switch ($request->get('opcionBusquedaSeleccionada')) {
+        /*switch ($request->get('opcionBusquedaSeleccionada')) {
             case 'documento':
                 $documento = $request->get('criterioBusqueda', NULL);
                 $apellidos = null;
@@ -35,14 +35,17 @@ class UsuariosService
                 $apellidos = null;
                 $nombres = null;
                 break;
-        }
+        }*/
         $parametros = [
             $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
             $request->get('offset', 0),
             $request->get('limit', 20),
-            $documento,
-            $apellidos,
-            $nombres
+            $request->get('opcionSeleccionada'),
+            $request->get('criterioBusqueda') ?? '',
+            $request->get('institucionSeleccionada'),
+            $request->get('perfilSeleccionado'),
+            $request->get('iUgelSeleccionada'),
+            $request->get('ieSedeSeleccionada')
         ];
         return $parametros;
     }
