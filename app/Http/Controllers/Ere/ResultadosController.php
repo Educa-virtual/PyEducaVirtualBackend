@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -112,21 +114,12 @@ class ResultadosController extends Controller
             ];
             $data = DB::select('exec ere.SP_INS_UPD_GuardaRptasEvaluacion ?,?,?,?,?,?,?,?,?', $parametros);
             if ($data[0]->iResultadoId > 0) {
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se ha registrado su respuesta', 'data' => null],
-                    200
-                );
+                return FormatearMensajeHelper::ok('Se ha registrado su respuesta');
             } else {
-                return new JsonResponse(
-                    ['validated' => false, 'message' => 'No se ha podido registrar su respuesta', 'data' => null],
-                    500
-                );
+                throw new Exception('Hubo un problema al registrar su respuesta, por favor intente nuevamente');
             }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                500
-            );
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 
