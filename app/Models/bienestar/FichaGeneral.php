@@ -24,7 +24,7 @@ class FichaGeneral
             $request->cFichaDGDireccionNroPuerta,
             $request->cFichaDGDireccionBlock,
             $request->cFichaDGDireccionInterior,
-            $request->cFichaDGDireccionPiso,
+            $request->iFichaDGDireccionPiso,
             $request->cFichaDGDireccionManzana,
             $request->cFichaDGDireccionLote,
             $request->cFichaDGDireccionKm,

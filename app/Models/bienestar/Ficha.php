@@ -17,7 +17,7 @@ class Ficha
             $request->iCredEntPerfId,
             $request->iYAcadId,
             $request->iFichaDGId,
-            $request->iPersId
+            $request->iPersId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichas ' . $placeholders, $parametros);
@@ -39,6 +39,7 @@ class Ficha
             $request->iFichaDGId,
             $request->iPersId,
             $request->iYAcadId,
+            $request->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_ficha ' . $placeholders, $parametros);
@@ -49,6 +50,7 @@ class Ficha
         $parametros = [
             $request->iPersId,
             $request->iYAcadId,
+            $request->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_INS_ficha ' . $placeholders, $parametros);
@@ -58,6 +60,7 @@ class Ficha
     {
         $parametros = [
             $request->iFichaDGId,
+            $request->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_DEL_ficha ' . $placeholders, $parametros);
