@@ -47,7 +47,7 @@ class AuditoriaAccesos
                         json_encode([
                             'iCredId' => $originalContent['data']['user']['iCredId'],
                             'cIpCliente' => $this->getIPCliente(),
-                            'cNavegador' => Browser::browserFamily(),//$agent->browser(),
+                            'cNavegador' => Browser::browserFamily(), //$agent->browser(),
                             'cDispositivo' => Browser::deviceType(),
                             'cSistmaOperativo' => Browser::platformName(),
                         ])
@@ -56,7 +56,11 @@ class AuditoriaAccesos
             }
 
             // Registro de accesos fallidos
-            if (isset($originalContent['message']) AND isset($originalContent['status']) AND $originalContent['status'] == 'Error') {
+            if (isset($originalContent['message']) and isset($originalContent['status']) and $originalContent['status'] == 'Error') {
+                $pass = isset($request->pass) ? (strlen($request->pass) >= 3 ? '***' . substr($request->pass, 3) : str_repeat('*', strlen($request->pass))) : null;
+                if (strlen($pass) > 30) {
+                    $pass = substr($pass, 0, 30);
+                }
                 DB::select(
                     "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
                     [
@@ -64,7 +68,7 @@ class AuditoriaAccesos
                         'auditoria_accesos_fallidos',
                         json_encode([
                             'cLogin' => $request->user,
-                            'cPassword' => isset($request->pass) ? (strlen($request->pass) >= 3 ? '***' . substr($request->pass, 3) : str_repeat('*', strlen($request->pass))) : null,
+                            'cPassword' => $pass,
                             'cMotivo' => json_encode($originalContent['message']),
                             'cIpCliente' => $this->getIPCliente(),
                             'cNavegador' => Browser::browserFamily(),
@@ -76,7 +80,6 @@ class AuditoriaAccesos
             }
             $response->setData($originalContent);
         }
-
         return $response;
     }
 
@@ -113,5 +116,4 @@ class AuditoriaAccesos
 
         return $ipAddress;
     }
-
 }
