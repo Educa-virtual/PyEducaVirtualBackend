@@ -4,49 +4,151 @@ namespace App\Http\Controllers\eval;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
+use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class BancoPreguntasController extends Controller
 {
-    protected $hashids;
-
-    public function __construct()
+    public function obtenerBancoPreguntasxiEvaluacionIdxiCursoIdxiDocenteId(Request $request, $iEvaluacionId, $iCursoId, $iDocenteId)
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
+        $request->merge(['iEvaluacionId' => $iEvaluacionId]);
+        $request->merge(['iCursoId' => $iCursoId]);
+        $request->merge(['iDocenteId' => $iDocenteId]);
 
-    private function decodeValue($value)
-    {
-        if (is_null($value)) {
-            return null;
-        }
-        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
-    }
+        $validator = Validator::make($request->all(), [
+            'iEvaluacionId' => ['required'],
+            'iCursoId' => ['required'],
+            'iDocenteId' => ['required'],
+        ], [
+            'iEvaluacionId.required' => 'No se encontró el identificador iCursoId',
+            'iCursoId.required' => 'No se encontró el identificador iCursoId',
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+        ]);
 
-    public function validateRequest(Request $request)
-    {
-        $request->validate(
-            ['opcion' => 'required'],
-            ['opcion.required' => 'Hubo un problema al obtener la acción']
-        );
-
-        $fieldsToDecode = [
-            'valorBusqueda',
-            'iBancoId',
-            'iDocenteId',
-            'iTipoPregId',
-            'iCurrContId',
-            'iCursoId',
-            'iNivelCicloId'
-        ];
-
-        foreach ($fieldsToDecode as $field) {
-            $request[$field] = $this->decodeValue($request->$field);
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return [
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iCursoId',
+                'iDocenteId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEvaluacionId          ??  NULL,
+                $request->iCursoId               ??  NULL,
+                $request->iDocenteId             ??  NULL,
+                $request->iCredId                ??  NULL
+            ];
+
+
+            $data = DB::select(
+                'exec eval.SP_SEL_bancoPreguntasxiEvaluacionIdxiCursoIdxiDocenteId
+                    @_iEvaluacionId=?,   
+                    @_iCursoId=?,   
+                    @_iDocenteId=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function importarBancoPreguntas(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'iCursoId' => ['required'],
+            // 'iDocenteId' => ['required'],
+            'iEvaluacionId' => ['required'],
+        ], [
+            'iCursoId.required' => 'No se encontró el identificador iCursoId',
+            // 'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+            'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iCursoId',
+                'iDocenteId',
+                'iEvaluacionId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iCursoId                    ??  NULL,
+                $request->iDocenteId                  ??  NULL,
+                $request->iEvaluacionId               ??  NULL,
+                $request->jsonData                    ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_INS_importarBancoPreguntas
+                    @_iCursoId=?,   
+                    @_iDocenteId=?,   
+                    @_iEvaluacionId=?,   
+                    @_jsonData=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iEvaluacionId > 0) {
+                $message = 'Se ha importado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido importar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function handleCrudOperation(Request $request)
+    {
+        // $fieldsToDecode = [
+        //         'iBancoId',
+        //     ];
+        // $parametros = VerifyHash::validateRequest($request, $fieldsToDecode);
+        $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
@@ -69,36 +171,6 @@ class BancoPreguntasController extends Controller
 
             $request->iCredId           ??  NULL
         ];
-    }
-
-    private function encodeFields($item)
-    {
-        $fieldsToEncode = [
-            'iBancoId',
-            'iDocenteId',
-            'iTipoPregId',
-            'iCurrContId',
-            'iCursoId',
-            'iNivelCicloId'
-        ];
-
-        foreach ($fieldsToEncode as $field) {
-            if (isset($item->$field)) {
-                $item->$field = $this->hashids->encode($item->$field);
-            }
-        }
-
-        return $item;
-    }
-
-    public function encodeId($data)
-    {
-        return array_map([$this, 'encodeFields'], $data);
-    }
-
-    public function handleCrudOperation(Request $request)
-    {
-        $parametros = $this->validateRequest($request);
 
         try {
             switch ($request->opcion) {
@@ -115,7 +187,7 @@ class BancoPreguntasController extends Controller
                     $data = DB::select('exec eval.Sp_INS_bancoPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iBancoId > 0) {
                         if ($request->iTipoPregId < 3) {
-                            $request['iBancoId'] = $this->hashids->encode($data[0]->iBancoId);
+                            $request['iBancoId'] = VerifyHash::encodexId($data[0]->iBancoId);
                             $resp = new EvaluacionPreguntasController();
                             return $resp->handleCrudOperation($request);
                         } else {
@@ -148,7 +220,7 @@ class BancoPreguntasController extends Controller
                     $data = DB::select('exec eval.Sp_UPD_bancoPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iBancoId > 0) {
                         if ($request->iTipoPregId < 3) {
-                            $request['iBancoId'] = $this->hashids->encode($data[0]->iBancoId);
+                            $request['iBancoId'] = VerifyHash::encodexId($data[0]->iBancoId);
                             $resp = new EvaluacionPreguntasController();
                             return $resp->handleCrudOperation($request);
                         } else {

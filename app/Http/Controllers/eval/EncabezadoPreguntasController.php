@@ -4,82 +4,212 @@ namespace App\Http\Controllers\eval;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
+use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EncabezadoPreguntasController extends Controller
 {
-    protected $hashids;
-
-    public function __construct()
+    public function guardarEncabezadoPreguntas(Request $request)
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
+        $validator = Validator::make($request->all(), [
+            'iEvaluacionId' => ['required'],
+            'iDocenteId' => ['required'],
+            'iCursoId' => ['required'],
+            'iNivelCicloId' => ['required'],
+            'cEncabPregTitulo' => ['required'],
+            'cEncabPregContenido' => ['required']
+        ], [
+            'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+            'iCursoId.required' => 'No se encontró el identificador iCursoId',
+            'iNivelCicloId.required' => 'No se encontró el identificador iNivelCicloId',
+            'cEncabPregTitulo.required' => 'Debe ingresar el título',
+            'cEncabPregContenido.required' => 'Debe ingresar la descripción',
+        ]);
 
-    private function decodeValue($value)
-    {
-        if (is_null($value)) {
-            return null;
-        }
-        return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
-    }
-
-    public function validateRequest(Request $request)
-    {
-        $request->validate(
-            ['opcion' => 'required'],
-            ['opcion.required' => 'Hubo un problema al obtener la acción']
-        );
-
-        $fieldsToDecode = [
-            'valorBusqueda',
-            'idEncabPregId',
-            'iDocenteId',
-            'iNivelCicloId',
-            'iCursoId'
-        ];
-
-        foreach ($fieldsToDecode as $field) {
-            $request[$field] = $this->decodeValue($request->$field);
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return [
-            $request->opcion,
-            $request->valorBusqueda ?? '-',
+        try {
+            $fieldsToDecode = [
+                'iEvaluacionId',
+                'iDocenteId',
+                'iNivelCicloId',
+                'iCursoId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
-            $request->idEncabPregId ?? null,
-            $request->iDocenteId ?? null,
-            $request->iNivelCicloId ?? null,
-            $request->iCursoId ?? null,
-            $request->cEncabPregTitulo ?? null,
-            $request->cEncabPregContenido ?? null,
+            $parametros = [
+                $request->iEvaluacionId               ??  NULL,
+                $request->iDocenteId                  ??  NULL,
+                $request->iNivelCicloId               ??  NULL,
+                $request->iCursoId                    ??  NULL,
+                $request->cEncabPregTitulo            ??  NULL,
+                $request->cEncabPregContenido         ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
 
-            $request->iCredId   ?? null
-        ];
-    }
 
-    private function encodeFields($item)
-    {
-        $fieldsToEncode = [
-            'idEncabPregId',
-            'iDocenteId',
-            'iNivelCicloId',
-            'iCursoId'
-        ];
+            $data = DB::select(
+                'exec eval.SP_INS_encabezadoPreguntasxiEvaluacionId
+                    @_iEvaluacionId=?,   
+                    @_iDocenteId=?,   
+                    @_iNivelCicloId=?,   
+                    @_iCursoId=?,   
+                    @_cEncabPregTitulo=?,   
+                    @_cEncabPregContenido=?,   
+                    @_iCredId=?',
+                $parametros
+            );
 
-        foreach ($fieldsToEncode as $field) {
-            if (isset($item->$field)) {
-                $item->$field = $this->hashids->encode($item->$field);
+            if ($data[0]->idEncabPregId > 0) {
+                $message = 'Se ha guardado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-
-        return $item;
     }
 
-    public function encodeId($data)
+    public function eliminarEncabezadoPreguntasxiEvalPregId(Request $request, $idEncabPregId)
     {
-        return array_map([$this, 'encodeFields'], $data);
+        $request->merge(['idEncabPregId' => $idEncabPregId]);
+
+        $validator = Validator::make($request->all(), [
+            'idEncabPregId' => ['required'],
+        ], [
+            'idEncabPregId.required' => 'No se encontró el identificador idEncabPregId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'idEncabPregId',
+                'iCredId'
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->idEncabPregId      ??  NULL,
+                $request->iCredId      ??  NULL
+            ];
+            $data = DB::select(
+                'exec eval.SP_DEL_encabezadoPreguntasxidEncabPregId
+                    @_idEncabPregId=?,    
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->idEncabPregId > 0) {
+                $message = 'Se ha eliminado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido eliminar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarEncabezadoPreguntasxiEvalPregId(Request $request, $idEncabPregId)
+    {
+        $request->merge(['idEncabPregId' => $idEncabPregId]);
+        $validator = Validator::make($request->all(), [
+            'idEncabPregId' => ['required'],
+            'cEncabPregTitulo' => ['required'],
+            'cEncabPregContenido' => ['required'],
+        ], [
+            'idEncabPregId.required' => 'No se encontró el identificador idEncabPregId',
+            'cEncabPregTitulo.required' => 'Debe ingresar el título',
+            'cEncabPregContenido.required' => 'Debe ingresar la descripción',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'idEncabPregId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->idEncabPregId               ??  NULL,
+                $request->cEncabPregTitulo            ??  NULL,
+                $request->cEncabPregContenido         ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_UPD_evaluacionPreguntasxidEncabPregId
+                    @_idEncabPregId=?,   
+                    @_cEncabPregTitulo=?,   
+                    @_cEncabPregContenido=?,     
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->idEncabPregId > 0) {
+                $message = 'Se ha actualizado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido actualizar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     public function handleCrudOperation(Request $request)
@@ -99,7 +229,7 @@ class EncabezadoPreguntasController extends Controller
                 case 'GUARDARxEncabezadoPreguntas':
                     $data = DB::select('exec eval.Sp_INS_encabezadoPreguntas ?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->idEncabPregId > 0) {
-                       // $data = $this->encodeId($data);
+                        // $data = $this->encodeId($data);
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'Se guardó la información', 'data' => $data],
                             200

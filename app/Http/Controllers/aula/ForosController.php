@@ -56,8 +56,21 @@ class ForosController extends Controller
         // return $request ->all();
         $validator = Validator::make($request->all(), [
             'iForoId' => ['required'],
+            'iForoCatId' => ['required'],
+            'cForoTitulo' => ['required', 'max:250'],
+            'dtForoInicio'     => ['required', 'date'],
+            'dtForoFin'        => ['required', 'date', 'after:dtForoInicio'],
+
         ], [
             'iForoId.required' => 'No se encontró el identificador iForoId',
+            'iForoCatId.required' => 'No se encontró el identificador iForoCatId',
+            'cForoTitulo.required' => 'No se encontró el título',
+            'cForoTitulo.max' => 'El título no debe exceder los 250 caracteres.',
+            'dtForoInicio.required'     => 'La fecha y hora de inicio es obligatoria',
+            'dtForoInicio.date'         => 'La fecha de inicio no es válida.',
+            'dtForoFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtForoFin.date'            => 'La fecha de fin no es válida.',
+            'dtForoFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
         ]);
 
         if ($validator->fails()) {
@@ -75,14 +88,13 @@ class ForosController extends Controller
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iForoId,
-            $request->iForoCatId,
-            $request->iDocenteId,
-            $request->cForoTitulo,
-            $request->cForoDescripcion,
-            $request->dtForoPublicacion,
-            $request->dtForoInicio,
-            $request->dtForoFin,
+            $request->iForoId           ?? NULL,
+            $request->iForoCatId        ?? NULL,
+            $request->cForoTitulo       ?? NULL,
+            $request->cForoDescripcion  ?? NULL,
+            $request->dtForoInicio      ?? NULL,
+            $request->dtForoFin         ?? NULL,
+            $request->cForoUrl          ?? NULL
         ];
 
         try {
@@ -90,16 +102,15 @@ class ForosController extends Controller
                 'exec aula.SP_UPD_foro 
                     @_iForoId=?, 
                     @_iForoCatId=?, 
-                    @_iDocenteId=?, 
                     @_cForoTitulo=?, 
                     @_cForoDescripcion=?, 
-                    @_dtForoPublicacion=?, 
                     @_dtForoInicio=?, 
-                    @_dtForoFin=?',
+                    @_dtForoFin=?, 
+                    @_cForoUrl=?',
                 $parametros
             );
 
-            return $data;
+          
             if ($data[0]->iForoId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
