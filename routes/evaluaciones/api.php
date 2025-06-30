@@ -17,6 +17,7 @@ use App\Http\Controllers\evaluaciones\TipoEvaluacionController as EvaluacionesTi
 use App\Http\Controllers\evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
+use App\Http\Controllers\eval\EvaluacionPromediosController;
 use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
@@ -96,6 +97,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::put('/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacionesxiEvaluacionId']); // Para actualizar
         Route::delete('/{iEvaluacionId}', [EvaluacionesController::class, 'eliminarEvaluacionesxiEvaluacionId']); // Para eliminar
         Route::get('/{iEvaluacionId}/estudiante/{iEstudianteId}', [EvaluacionesController::class, 'obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId']); // Para eliminar
+        Route::post('/obtenerReporteEstudiantesRetroalimentacion', [EvaluacionesController::class, 'obtenerReporteEstudiantesRetroalimentacion']);
 
     });
     Route::group(['prefix' => 'evaluacion-preguntas'], function () {
@@ -110,7 +112,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('handleCrudOperation', [EvaluacionRespuestasController::class, 'handleCrudOperation']);
     });
     Route::group(['prefix' => 'evaluacion-promedios'], function () {
-        Route::post('guardarConclusionxiEvalPromId', [EvaluacionesController::class, 'guardarConclusionxiEvalPromId']);
+        Route::post('/', [EvaluacionPromediosController::class, 'guardarConclusionxiEvaluacionIdxiEstudianteId']);
     });
 });
 
