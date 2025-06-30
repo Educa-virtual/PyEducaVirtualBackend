@@ -500,7 +500,7 @@ class AulaVirtualController extends ApiController
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
@@ -711,7 +711,7 @@ class AulaVirtualController extends ApiController
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);

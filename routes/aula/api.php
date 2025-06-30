@@ -104,6 +104,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('actualizarForo', [ForosController::class, 'actualizarForo']);
         Route::post('eliminarxiForoId', [ForosController::class, 'eliminarxiForoId']);
         Route::post('/', [ForosController::class, 'guardarForos']); // Para crear
+        Route::post('obtenerReporteEstudiantesRetroalimentacion', [ForosController::class, 'obtenerReporteEstudiantesRetroalimentacion']); // Para crear
 
     });
 

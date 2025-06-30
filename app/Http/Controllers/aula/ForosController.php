@@ -359,4 +359,79 @@ class ForosController extends Controller
             );
         }
     }
+
+    public function obtenerReporteEstudiantesRetroalimentacion(Request $request){
+        // Validación de los parámetros de entrada
+        $validator = Validator::make($request->all(), [
+            'iIeCursoId' => ['required'],
+            'iYAcadId' => ['required'],
+            'iSedeId' => ['required'],
+            'iSeccionId' => ['required'],
+            'iNivelGradoId' => ['required'],
+            'iForoId' => ['required'],
+        ], [
+            'iIeCursoId.required' => 'No se encontró el identificador iIeCursoId',
+            'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
+            'iSedeId.required' => 'No se encontró el identificador iSedeId',
+            'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
+            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
+            'iForoId.required' => 'No se encontró el identificador iForoId'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $fieldsToDecode = [
+            'iIeCursoId',
+            'iYAcadId',
+            'iSedeId',
+            'iSeccionId',
+            'iNivelGradoId',
+            'iForoId'
+        ];
+
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+        $parametros = [
+            $request->iIeCursoId            ??      NULL,
+            $request->iYAcadId              ??      NULL,
+            $request->iSedeId               ??      NULL,
+            $request->iSeccionId            ??      NULL,
+            $request->iNivelGradoId         ??      NULL,
+            $request->iForoId         ??      NULL,
+        ];
+
+        try {
+            // Ejecutar el procedimiento almacenado
+
+            $data = DB::select(
+                'EXEC [aula].[Sp_SEL_reporteEstudiantesRetroalimentacionxiForoId] 
+                    @_iIeCursoId=?,
+                    @_iYAcadId=?,
+                    @_iSedeId=?,
+                    @_iSeccionId=?,
+                    @_iNivelGradoId=?,
+                    @_iForoId=?',
+                $parametros
+            );
+            // Preparar la respuesta
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+            $estado = Response::HTTP_OK;
+
+            return $response;
+        } catch (\Exception $e) {
+            // Manejo de excepción y respuesta de error
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'data' => [],
+            ];
+            $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+            return new JsonResponse($response, $estado);
+        }
+    }
 }
