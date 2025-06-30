@@ -29,6 +29,7 @@ class TareaEstudiantesController extends Controller
             'iSedeId',
             'iSeccionId',
             'iNivelGradoId',
+            'iEscalaCalifId'
         ];
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
