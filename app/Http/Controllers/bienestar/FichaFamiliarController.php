@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class FichaFamiliarController extends Controller
 {
@@ -39,15 +40,12 @@ class FichaFamiliarController extends Controller
     {
         try {
             // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
-            if( !$request->has('iPersId') || $request->iPersId == null ) {
-                $data = FichaFamiliar::insPersonas($request);
-                $request->merge([
-                    'iPersId' => $data[0]->iPersId || null,
-                ]);
-            }
             $data = FichaFamiliar::insfichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se guardo la información', $data);
         } catch (Exception $e) {
+            // Log::info($e);
+            // $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            // return new JsonResponse($response, 500);
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -56,12 +54,6 @@ class FichaFamiliarController extends Controller
     {
         try {
             // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
-            if( !$request->has('iPersId') || $request->iPersId == null ) {
-                $data = FichaFamiliar::insPersonas($request);
-                $request->merge([
-                    'iPersId' => $data[0]->iPersId || null,
-                ]);
-            }
             $data = FichaFamiliar::updFichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se actualizo la información', $data);
         } catch (Exception $e) {

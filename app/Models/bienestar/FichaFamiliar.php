@@ -20,26 +20,7 @@ class FichaFamiliar
     public static function insPersonas($request)
     {
         $parametros = [
-            $request->iTipoPersId || 1, // Siempre persona natural
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersRazonSocialNombre,
-            $request->cPersRazonSocialCorto,
-            $request->cPersRazonSocialSigla,
-            $request->cPersDomicilio,
-            $request->iSesionId,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
+            
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC grl.Sp_INS_personas ' . $placeholders, $parametros);
@@ -68,6 +49,25 @@ class FichaFamiliar
             $request->iTipoIeEstId,
             $request->cTipoViaOtro,
             $request->cFamiliarResidenciaActual,
+            $request->iTipoPersId || 1, // Siempre persona natural
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->cPersFotografia,
+            $request->cPersRazonSocialNombre,
+            $request->cPersRazonSocialCorto,
+            $request->cPersRazonSocialSigla,
+            $request->cPersDomicilio,
+            $request->iSesionId,
+            $request->iNacionId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_INS_fichaFamiliar ' . $placeholders, $parametros);
@@ -97,6 +97,25 @@ class FichaFamiliar
             $request->iTipoIeEstId,
             $request->cTipoViaOtro,
             $request->cFamiliarResidenciaActual,
+            $request->iTipoPersId || 1, // Siempre persona natural
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->cPersNombre,
+            $request->cPersSexo,
+            $request->dPersNacimiento,
+            $request->cPersFotografia,
+            $request->cPersRazonSocialNombre,
+            $request->cPersRazonSocialCorto,
+            $request->cPersRazonSocialSigla,
+            $request->cPersDomicilio,
+            $request->iSesionId,
+            $request->iNacionId,
+            $request->iPaisId,
+            $request->iDptoId,
+            $request->iPrvnId,
+            $request->iDsttId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaFamiliar ' . $placeholders, $parametros);
