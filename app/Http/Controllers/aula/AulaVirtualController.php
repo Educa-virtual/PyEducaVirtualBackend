@@ -438,11 +438,14 @@ class AulaVirtualController extends ApiController
     public function guardarRespuesta(Request $request)
     {
         //return $request -> all();
-        $request->validate([
-            //'iEstudianteId' => 'required|integer',
-            'cForoRptaRespuesta' => 'required|string',
-            'iForoId' => 'required|string'
-        ]);
+        $request->validate(
+            [
+                //'iEstudianteId' => 'required|integer',
+                'cForoRptaRespuesta' => 'required|string',
+                'iForoId' => 'required|string'
+            ],
+            ['cForoRptaRespuesta.required' => 'El comentario es obligatorio',]
+        );
         $fieldsToDecode = [
             'iDocenteId',
             'iEstudianteId',
