@@ -1,6 +1,7 @@
 
 <?php
 
+use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
@@ -84,5 +85,8 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::prefix('detalle-matriculas')->group(function () {
         Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
+    });
+    Route::prefix('bandejaEntrante')->group(function () {
+        Route::post('bandeja-estudiante',[BandejaCotnroller::class,'bandejaEstudiante']);
     });
 });
