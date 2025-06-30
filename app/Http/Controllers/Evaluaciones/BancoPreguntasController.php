@@ -14,6 +14,8 @@ use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
 
 class BancoPreguntasController extends ApiController
 {
@@ -26,25 +28,33 @@ class BancoPreguntasController extends ApiController
 
     public function obtenerBancoPreguntas(Request $request)
     {
-
         $params = [
-            'iCursoId' => $this->decodeId($request->iCursoId ?? 0),
-            'iDocenteId' => $this->decodeId($request->iDocenteId ?? 0),
-            'iCurrContId' => $request->iCurrContId,
-            'iNivelCicloId' => $request->iNivelCicloId,
-            'busqueda' => $request->busqueda ?? '',
-            'iTipoPregId' => $request->iTipoPregId ?? 0,
-            'idEncabPregId' => $request->iEncabPregId ?? 0,
-            'iGradoId' => $this->decodeId($request->iGradoId ?? 0),
-        ];
+            // iCursoId
+            $request->iCursoId === 0 || $request->iCursoId === '0' ? null : (is_string($request->iCursoId) ? $this->decodeId($request->iCursoId) : (int) $request->iCursoId),
 
+            // iDocenteId
+            is_string($request->iDocenteId ?? null)
+                ? $this->decodeId($request->iDocenteId)
+                : (is_numeric($request->iDocenteId) ? (int) $request->iDocenteId : null),
+        ];
+        
         try {
-            $resp = BancoRepository::obtenerPreguntas($params);
-            return $this->successResponse($resp, 'Datos obtenidos correctamente');
+            $result = DB::selectOne(
+                'EXEC eval.SP_SEL_bancoPreguntasxiCursoIdxiDocenteId @_iCursoId = ?, @_iDocenteId = ?',
+                $params
+            );
+
+            $data = json_decode($result->jsonData ?? '[]', true);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
         } catch (Exception $e) {
             return $this->errorResponse($e->getMessage(), 'Error al obtener los datos');
         }
     }
+
 
     public function guardarActualizarPreguntaConAlternativas(Request $request)
     {

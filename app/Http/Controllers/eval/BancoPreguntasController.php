@@ -142,6 +142,214 @@ class BancoPreguntasController extends Controller
         }
     }
 
+    public function guardarBancoPreguntas(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            'iDocenteId' => ['required'],
+            'iTipoPregId' => ['required'],
+            'iCursoId' => ['required'],
+            'iNivelCicloId' => ['required'],
+            'cBancoPregunta' => ['required']
+        ], [
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+            'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
+            'iCursoId.required' => 'No se encontró el identificador iCursoId',
+            'iNivelCicloId.required' => 'No se encontró el identificador iNivelCicloId',
+            'cBancoPregunta.required' => 'Debe ingresar el enunciado de la pregunta',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iDocenteId',
+                'iTipoPregId',
+                'iCursoId',
+                'iNivelCicloId',
+                'idEncabPregId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iDocenteId                  ??  NULL,
+                $request->iTipoPregId                 ??  NULL,
+                $request->iCursoId                    ??  NULL,
+                $request->iNivelCicloId               ??  NULL,
+                $request->idEncabPregId               ??  NULL,
+                $request->cBancoPregunta              ??  NULL,
+                $request->cBancoTextoAyuda            ??  NULL,
+                $request->jsonAlternativas            ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_INS_bancoPreguntas 
+                    @_iDocenteId=?,   
+                    @_iTipoPregId=?,   
+                    @_iCursoId=?,   
+                    @_iNivelCicloId=?,   
+                    @_idEncabPregId=?,   
+                    @_cBancoPregunta=?,   
+                    @_cBancoTextoAyuda=?,   
+                    @_jsonAlternativas=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iBancoId > 0) {
+                $message = 'Se ha guardado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarBancoPreguntasxiBancoId(Request $request, $iBancoId)
+    {
+        $request->merge(['iBancoId' => $iBancoId]);
+
+        $validator = Validator::make($request->all(), [
+            'iBancoId' => ['required'],
+            'iTipoPregId' => ['required'],
+            'cBancoPregunta' => ['required']
+        ], [
+            'iBancoId.required' => 'No se encontró el identificador iBancoId',
+            'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
+            'cBancoPregunta.required' => 'Debe ingresar el enunciado de la pregunta',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iBancoId',
+                'iTipoPregId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iBancoId                 ??  NULL,
+                $request->iTipoPregId                 ??  NULL,
+                $request->cBancoPregunta           ??  NULL,
+                $request->cBancoTextoAyuda         ??  NULL,
+                $request->jsonAlternativas            ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec eval.SP_UPD_bancoPreguntasxiBancoId 
+                    @_iBancoId=?,   
+                    @_iTipoPregId=?,   
+                    @_cBancoPregunta=?,   
+                    @_cBancoTextoAyuda=?,   
+                    @_jsonAlternativas=?,   
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iBancoId > 0) {
+                $message = 'Se ha actualizado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido actualizar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function eliminarBancoPreguntasxiBancoId(Request $request, $iBancoId)
+    {
+        $request->merge(['iBancoId' => $iBancoId]);
+
+        $validator = Validator::make($request->all(), [
+            'iBancoId' => ['required'],
+        ], [
+            'iBancoId.required' => 'No se encontró el identificador iBancoId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iBancoId',
+                'iCredId'
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iBancoId      ??  NULL,
+                $request->iCredId      ??  NULL
+            ];
+            $data = DB::select(
+                'exec eval.SP_DEL_bancoPreguntasxiBancoId
+                    @_iBancoId=?,    
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iBancoId > 0) {
+                $message = 'Se ha eliminado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido eliminar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     public function handleCrudOperation(Request $request)
     {
         // $fieldsToDecode = [
