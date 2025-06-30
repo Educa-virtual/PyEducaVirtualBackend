@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 
-class ereEvaluacion extends Model
+class Evaluacion extends Model
 {
     // use HasFactory;
 
@@ -66,5 +66,12 @@ class ereEvaluacion extends Model
         $result = DB::select('EXEC ere.SP_UPD_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $params);
         // Si el procedimiento devuelve resultados, asumimos que el primer resultado es la evaluación actualizada
         return !empty($result) ? $result[0] : null;
+    }
+
+     public static function selCantidadMaxPreguntas($iEvaluacionId, $iCursosNivelGradId)
+    {
+        $cantidad = DB::selectOne("SELECT TOP 1 iExamenCantidadPreguntas AS cantidad FROM ere.examen_cursos WHERE iEvaluacionId=?
+	        AND iCursoNivelGradId=?", [$iEvaluacionId, $iCursosNivelGradId]);
+        return $cantidad->cantidad;
     }
 }

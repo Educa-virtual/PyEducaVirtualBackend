@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiController;
+use App\Models\ere\Evaluacion;
 use PhpOffice\PhpWord\TemplateProcessor;
 use App\Repositories\PreguntasRepository;
 use App\Repositories\AlternativaPreguntaRespository;
@@ -28,11 +31,9 @@ class PreguntasController extends ApiController
         $this->alternativaPreguntaRespository = $alternativaPreguntaRespository;
     }
 
-
     public function guardarActualizarPreguntaConAlternativas(Request $request)
     {
         $iEncabPregId = $request->encabezado['iEncabPregId'];
-
         DB::beginTransaction();
         // Verificar si `iCursoId`, Con esto si llega el dato desde front
         //$iCursoId = $request->iCursoId ?? null;
@@ -645,8 +646,9 @@ class PreguntasController extends ApiController
         try {
             switch ($request->opcion) {
                 case 'ACTUALIZARxiPreguntaIdxbPreguntaEstado':
-                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iPreguntaId > 0) {
+                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    return FormatearMensajeHelper::ok('La pregunta se ha eliminado correctamente');
+                    /*if ($data[0]->iPreguntaId > 0) {
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'Se eliminó la información', 'data' => null],
                             200
@@ -656,13 +658,15 @@ class PreguntasController extends ApiController
                             ['validated' => true, 'message' => 'No se ha podido eliminar la información', 'data' => null],
                             500
                         );
-                    }
+                    }*/
                     break;
                 case 'ACTUALIZARxiPreguntaId':
                     $parametros[5] = ExtraerBase64::extraer($request->cPregunta, $request->iPreguntaId, 'simple');
                     $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
-                    $data = DB::select('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iPreguntaId > 0) {
+                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    $resp = new AlternativasController();
+                    return $resp->handleCrudOperation($request);
+                    /*if ($data[0]->iPreguntaId > 0) {
                         $resp = new AlternativasController();
                         return $resp->handleCrudOperation($request);
                     } else {
@@ -670,11 +674,12 @@ class PreguntasController extends ApiController
                             ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
                             500
                         );
-                    }
+                    }*/
                     break;
                 case 'GUARDAR-PREGUNTAS':
-                    $data = DB::select('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    if ($data[0]->iPreguntaId > 0) {
+                    DB::statement('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    return FormatearMensajeHelper::ok('Se agregó la pregunta');
+                    /*if ($data[0]->iPreguntaId > 0) {
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'Se guardó la información', 'data' => null],
                             200
@@ -684,14 +689,11 @@ class PreguntasController extends ApiController
                             ['validated' => true, 'message' => 'No se ha podido actualizar la información', 'data' => null],
                             500
                         );
-                    }
+                    }*/
                     break;
             }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
-                500
-            );
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }

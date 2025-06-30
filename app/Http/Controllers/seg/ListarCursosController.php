@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\seg;
+namespace App\Http\Controllers\seg;
 
 use App\Http\Controllers\Controller;
 use Exception;

@@ -25,6 +25,26 @@ class AsistenciaController extends Controller
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
+    
+    public function verificarGrupoAsistencia(Request $request){
+  
+        $iSedeId = $request["iSedeId"];
+      
+        if(empty($iSedeId)){
+            $mensaje = "No se envio datos de la institucion";
+            return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
+        }
+    
+        $query = 'EXEC asi.Sp_SEL_asistenciaGrupos ?';  
+        try {
+           
+            //$data = DB::select($query, [$iSedeId]);
+            return ResponseHandler::success([1]);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
+
+    }
 
     // Decodifica los id enviados por el frontend
     private function decodificar($id){
@@ -256,49 +276,7 @@ class AsistenciaController extends Controller
 
         return new JsonResponse($response, $estado);
     }
-    // public function list(Request $request)
-    // {
-    //     $iCursoId = $this->decodificar($request["iCursoId"]);
-    //     $iYAcadId = $this->decodificar($request["iYAcadId"]);
-    //     $iDocenteId = $this->decodificar($request["iDocenteId"]);
-    //     $iSeccionId = $this->decodificar($request["iSeccionId"]);
-    //     $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
-        
-    //     $solicitud = [
-    //         $request->opcion,
-    //         $iCursoId,
-    //         $request->dtCtrlAsistencia ?? NULL,
-    //         $request->asistencia_json ?? NULL,
-    //         $iSeccionId,
-    //         $iYAcadId,
-    //         $iNivelGradoId ?? NULL,
-    //         $iDocenteId,
-    //         $request->iGradoId ?? NULL,
-    //         $request->inicio ?? NULL,
-    //         $request->fin ?? NULL,
-    //     ];
-        
-    //     $query = DB::select("execute asi.Sp_SEL_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
-        
-    //     try {
-    //         $response = [
-    //             'validated' => true,
-    //             'message' => 'se obtuvo la información',
-    //             'data' => $query,
-    //         ];
 
-    //         $estado = 200;
-    //     } catch (Exception $e) {
-    //         $response = [
-    //             'validated' => true,
-    //             'message' => $e->getMessage(),
-    //             'data' => [],
-    //         ];
-    //         $estado = 500;
-    //     }
-
-    //     return new JsonResponse($response, $estado);
-    // }
     public function report(Request $request)
     {
     
