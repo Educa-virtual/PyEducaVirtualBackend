@@ -33,6 +33,10 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::delete('eliminarBancoPreguntasById/{id}', [BancoPreguntasController::class, 'eliminarBancoPreguntasById']);
         Route::get('/{iEvaluacionId}/curso/{iCursoId}/docente/{iDocenteId}', [EvaluacionesBancoPreguntasController::class, 'obtenerBancoPreguntasxiEvaluacionIdxiCursoIdxiDocenteId']); // Para obtener
         Route::post('importar', [EvaluacionesBancoPreguntasController::class, 'importarBancoPreguntas']);
+        Route::post('/', [EvaluacionesBancoPreguntasController::class, 'guardarBancoPreguntas']); // Para crear
+        Route::put('/{iBancoId}', [EvaluacionesBancoPreguntasController::class, 'actualizarBancoPreguntasxiBancoId']); // Para actualizar
+        Route::delete('/{iBancoId}', [EvaluacionesBancoPreguntasController::class, 'eliminarBancoPreguntasxiBancoId']); // Para eliminar
+        
     });
 
     Route::group(['prefix' => 'evaluacion'], function () {
@@ -81,6 +85,9 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::get('/{iEvaluacionId}', [EncabezadoPreguntasController::class, 'obtenerEncabezadoPreguntasxiEvaluacionId']); // Para obtener x iEvaluacionId
         Route::put('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'actualizarEncabezadoPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
         Route::delete('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'eliminarEncabezadoPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
+        Route::post('/banco', [EncabezadoPreguntasController::class, 'guardarBancoEncabezadoPreguntas']); // Para crear
+        Route::put('/banco/{idEncabPregId}', [EncabezadoPreguntasController::class, 'actualizarBancoEncabezadoPreguntasxidEncabPregId']); // Para actualizar x idEncabPregId
+        Route::delete('/banco/{idEncabPregId}', [EncabezadoPreguntasController::class, 'eliminarBancoEncabezadoPreguntasxidEncabPregId']); // Para eliminar x idEncabPregId
     });
     Route::group(['prefix' => 'evaluaciones'], function () {
         Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']); //corregir 16/06/2025
