@@ -148,5 +148,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::get('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}', [PreguntaAlternativasRespuestasController::class, 'listarPreguntasxiCuestionarioIdxiEstudianteId']); // Para obtener las preguntas del cuestionario del estudiante
         Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}', [PreguntaAlternativasRespuestasController::class, 'guardarPreguntasxiCuestionarioIdxiEstudianteId']); // Para guardar las preguntas del cuestionario del estudiante
         Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}/finalizado', [PreguntaAlternativasRespuestasController::class, 'finalizarPreguntaAlternativasRespuestas']); // Para finalizar las preguntas del cuestionario del estudiante
+        Route::get('/cuestionario/{iCuestionarioId}/resultados', [PreguntaAlternativasRespuestasController::class, 'obtenerResultadosxiCuestionarioId']);
+
     });
 });

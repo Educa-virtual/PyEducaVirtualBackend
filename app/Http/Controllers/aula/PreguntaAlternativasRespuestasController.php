@@ -234,4 +234,38 @@ class PreguntaAlternativasRespuestasController extends Controller
             );
         }
     }
+
+    public function obtenerResultadosxiCuestionarioId(Request $request, $iCuestionarioId)
+    {
+        $request->merge(['iCuestionarioId' => $iCuestionarioId]);
+
+        try {
+            $fieldsToDecode = [
+                'iCuestionarioId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iCuestionarioId    ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec aula.SP_SEL_estadisticaRespuestasxiCuestionarioId
+                    @_iCuestionarioId=?',
+                $parametros
+            );
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
