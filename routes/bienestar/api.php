@@ -8,11 +8,11 @@ use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
 use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
-//Se agrego codigo el 22 Abril--------
 use app\Http\Controllers\bienestar\EstudianteController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
+use App\Http\Controllers\bienestar\RecordarioFechasController;
 use App\Http\Controllers\FichaDosisController;
 
 Route::group(['prefix' => 'bienestar'], function () {
@@ -70,6 +70,11 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('guardarDosis', [FichaDosisController::class, 'guardarDosis']);
     Route::post('actualizarDosis', [FichaDosisController::class, 'actualizarDosis']);
     Route::post('borrarDosis', [FichaDosisController::class, 'borrarDosis']);
+
+    Route::get('verRecordatorioPeriodos', [RecordarioFechasController::class, 'verRecordatorioPeriodos']);
+    Route::post('verFechasEspeciales', [RecordarioFechasController::class, 'verFechasEspeciales']);
+    Route::post('verConfRecordatorio', [RecordarioFechasController::class, 'verConfRecordatorio']);
+    Route::post('actualizarConfRecordatorio', [RecordarioFechasController::class, 'actualizarConfRecordatorio']);
 
 });
 
