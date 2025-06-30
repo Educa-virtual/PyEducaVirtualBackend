@@ -2,50 +2,60 @@
 
 namespace App\Http\Controllers\seg;
 
+use App\Enums\Perfil;
 use App\Helpers\CollectionStrategy;
+use App\Helpers\FormatearMensajeHelper;
 use Exception;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\seg\AuditoriaFiltroFechaRequest;
+use App\Services\seg\AuditoriaService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 class AuditoriaController extends Controller
 {
-  public const schema = 'seg';
-
-  public function selAuditoria(Request $request)
-  {
-    try {
-      // Validar los datos del request para asegurar consistencia
-      $validated = $request->validate([
-        'filtroFechaInicio' => 'required|date',
-        'filtroFechaFin' => 'required|date|after_or_equal:filtroFechaInicio',
-      ]);
-
-      $where = 'CAST(dtFecha as DATE) >= CAST(' . "'" . $validated['filtroFechaInicio'] . "'" . ' as DATE) AND CAST(dtFecha as DATE) <= CAST(' . "'" . $validated['filtroFechaFin'] . "'" . ' as DATE)';
-
-      // Usar `selDesdeTablaOVista` para realizar la consulta
-
-      $request->replace([
-        'esquema' => self::schema,
-        'tabla' => 'V_auditoria',
-        'campos' => '*',
-        'where' => $where,
-      ]);
-      
-      $query = (new ApiController(new CollectionStrategy()))->getData($request);
-
-
-      if ($query instanceof Collection) {
-        $query = $query->sortByDesc('dtFecha')->values();
-      }
-
-      // Retornar la respuesta exitosa usando ResponseHandler
-      return ResponseHandler::success($query, 'Auditoría de accesos obtenida correctamente.');
-    } catch (Exception $e) {
-      // Retornar un error con ResponseHandler
-      return ResponseHandler::error('Error al obtener la auditoría de accesos.', 500, $e->getMessage());
+    public function obtenerAccesosAutorizados(AuditoriaFiltroFechaRequest $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $data = AuditoriaService::obtenerAccesosAutorizados($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
-  }
+
+    public function obtenerConsultasDatabase(AuditoriaFiltroFechaRequest $request) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $data = AuditoriaService::obtenerConsultasDatabase($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerConsultasBackend(AuditoriaFiltroFechaRequest $request) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $data = AuditoriaService::obtenerConsultasBackend($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerAccesosFallidos(AuditoriaFiltroFechaRequest $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            $data = AuditoriaService::obtenerAccesosFallidos($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
 }
