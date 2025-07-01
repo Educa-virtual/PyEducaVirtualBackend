@@ -61,7 +61,7 @@ class EncuestaBienestar
         $parametros = [
             $request->iCredEntPerfId,
             $request->iEncuId,
-            $request->iEncuEstadoId,
+            $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC obe.Sp_UPD_encuestaEstado $placeholders", $parametros);
