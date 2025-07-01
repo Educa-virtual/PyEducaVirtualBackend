@@ -35,7 +35,7 @@ class EncuestaBienestarRespuesta
             $request->jsonPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::update("EXEC obe.Sp_UPD_encuestaRespuesta $placeholders", $parametros);
+        return DB::select("EXEC obe.Sp_UPD_encuestaRespuesta $placeholders", $parametros);
     }
 
     public static function selRespuesta($request)
