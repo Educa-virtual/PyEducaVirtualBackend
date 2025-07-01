@@ -46,7 +46,7 @@ class PersonaController extends Controller
         ];
 
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::ADMINISTRADOR_DREMO]]);
+            // Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::ADMINISTRADOR_DREMO]]);
             $resultado = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento ?,?', $parametros);
             $cantidadResultados = count($resultado);
             if ($cantidadResultados == 0) {
