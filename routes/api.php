@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\EstudianteController;
+use App\Http\Middleware\AuditoriaAccesos;
 use App\Http\Middleware\RefreshToken;
 
 //Linea 18 de febrero-------------------------------------
@@ -59,7 +60,8 @@ use App\Http\Middleware\RefreshToken;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware([AuditoriaAccesos::class]);
+
 Route::group(['middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::patch('usuarios/mi-contrasena', [AuthController::class, 'actualizarContrasenaUsuario']);
 });
@@ -394,14 +396,7 @@ Route::group(['prefix' => 'acad'], function () {
     });
 });
 
-Route::group(['prefix' => 'seg'], function () {
-    Route::group(['prefix' => 'auditoria'], function () {
-        Route::post('selAuditoriaAccesos', [AuditoriaAccesosController::class, 'selAuditoriaAccesos']);
-        Route::post('selAuditoriaAccesosFallidos', [AuditoriaAccesosFallidosController::class, 'selAuditoriaAccesosFallidos']);
-        Route::post('selAuditoria', [AuditoriaController::class, 'selAuditoria']);
-        Route::post('selAuditoriaMiddleware', [AuditoriaMiddlewareController::class, 'selAuditoriaMiddleware']);
-    });
-});
+
 
 
 
