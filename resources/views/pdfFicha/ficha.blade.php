@@ -501,7 +501,7 @@
                     <th width="20%">DISCAPACIDAD</th>
                     <th width="80%">OBSERVACIONES</th>
                 </tr>
-                @foreach($pers_discapacidad as $index => $discapacidad)
+                @foreach($discapacidades as $index => $discapacidad)
                     <tr>
                         <td>{{ $discapacidad['nomb_discapacidad'] ?? 'N/A' }}</td>
                         <td>{{ $discapacidad['observaciones'] ?? 'N/A' }}</td>
