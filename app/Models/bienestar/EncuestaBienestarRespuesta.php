@@ -42,7 +42,7 @@ class EncuestaBienestarRespuesta
     {
         $parametros = [
             $request->iCredEntPerfId,
-            $request->cEncuRptaContenido,
+            $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC obe.Sp_SEL_encuestaRespuesta $placeholders", $parametros);
