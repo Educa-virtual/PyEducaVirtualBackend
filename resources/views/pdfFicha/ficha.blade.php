@@ -540,7 +540,7 @@
                         <th width="20%">DOLENCIA</th>
                         <th width="80%">OBSERVACIONES</th>
                     </tr>
-                    @foreach($pers_salud as $index => $item)
+                    @foreach($dolencias_salud as $index => $item)
                     <tr>
                         <td>{{ $item['nomb_dolencia'] ?? 'N/A' }}</td>
                         <td>{{ $item['observaciones'] ?? 'N/A' }}</td>
