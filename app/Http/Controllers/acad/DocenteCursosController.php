@@ -105,7 +105,7 @@ class DocenteCursosController extends Controller
 
         $opcion=$request->opcion;
         $iDocenteId=$request->iDocenteId;
-        $iYearId=$request->iYearId;
+        $iYAcadId=$request->iYAcadId;
         $iSedeId=$request->iSedeId;
         $iIieeId=$request->iIieeId;
         
@@ -114,7 +114,7 @@ class DocenteCursosController extends Controller
         $solicitud = [
             $opcion
             ,$docente
-            ,$iYearId
+            ,$iYAcadId
             ,$iSedeId
             ,$iIieeId
         ];

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\api\grl\PersonaController;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class PersonasController extends Controller
@@ -133,6 +135,67 @@ class PersonasController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+    public function buscarPersonaxiTipoIdentIdxcPersDocumento(Request $request)
+    {
+        try {
+            $fieldsToDecode = ['iTipoIdentId', 'iCredId'];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $data = new PersonaController();
+            $data = ($data->validate($request))->getContent();
+
+            $data = json_decode($data, true);
+
+            if (isset($data['data']['iPersId'])) {
+
+                $request->merge(['iPersId' => $data['data']['iPersId']]);
+                $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+                $contacto = new PersonasContactosController();
+
+                $contacto = $contacto->obtenerxiPersId($request)->getData(true);
+                $contacto = $contacto['data'];
+                $data['data']['cPersDireccion'] = $contacto['cPersDireccion'];
+                $data['data']['cPersCel'] = $contacto['cPersCel'];
+                $data['data']['cPersCorreo'] = $contacto['cPersCorreo'];
+                $data['data']['cPersTel'] = $contacto['cPersTel'];
+                $data['data']['cPersRedSoc'] = $contacto['cPersRedSoc'];
+            }
+            return $data;
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function guardarPersonas(Request $request)
+    {
+        $fieldsToDecode = [
+            'iPersId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+        $parametros = [
+            $request->iTipoIdentId          ??  NULL,
+            $request->cPersDocumento        ??  NULL,
+            $request->cPersNombre           ??  NULL,
+            $request->cPersPaterno          ??  NULL,
+            $request->cPersMaterno          ??  NULL
+        ];
+
+        try {
+            $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?", $parametros);
+            return $data;
+            
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
