@@ -58,6 +58,7 @@ class InstructoresController extends Controller
                     Response::HTTP_OK
                 );
             } else {
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data['data']],
                     Response::HTTP_OK
@@ -113,7 +114,7 @@ class InstructoresController extends Controller
             'cPersNombre' => ['required', 'string'],
             'cPersPaterno' => ['required'],
             'cPersMaterno' => ['required'],
-            'cPersCel' => ['required'],
+            'cPersCelular' => ['required'],
             'cPersCorreo' => ['required', 'email'],
             'cPersDireccion' => ['required']
         ], [
@@ -123,7 +124,7 @@ class InstructoresController extends Controller
             'cPersNombre.string' => 'El nombre debe ser una cadena de texto',
             'cPersPaterno.required' => 'Debe ingresar el apellido paterno',
             'cPersMaterno.required' => 'Debe ingresar el apellido materno',
-            'cPersCel.required' => 'Debe ingresar el número de celular',
+            'cPersCelular.required' => 'Debe ingresar el número de celular',
             'cPersCorreo.required' => 'Debe ingresar el correo electrónico',
             'cPersCorreo.email' => 'Debe ingresar un correo electrónico válido',
             'cPersDireccion.required' => 'Debe ingresar la dirección'
@@ -139,13 +140,15 @@ class InstructoresController extends Controller
         if (!isset($request->iPersId)) {
             $persona = new PersonasController();
             $persona = $persona->guardarPersonas($request);
+
             if ($persona[0]->iPersId > 0) {
                 $request->merge(['iPersId' => $persona[0]->iPersId]);
                 $request->merge(['dPersNacimiento' => null]);
                 $request->merge(['cPersFotografia' => null]);
+                $request->merge(['cPersDomicilio' => $request->cPersDireccion]);
                 $datosPersonales = new PersonasController();
                 $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
-                //return $datosPersonales;
+                $request->merge(['iPersId' => $persona[0]->iPersId]);
             } else {
                 return response()->json([
                     'validated' => false,
@@ -153,7 +156,7 @@ class InstructoresController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
-        
+
         try {
             $fieldsToDecode = [
                 'iPersId',
@@ -172,8 +175,8 @@ class InstructoresController extends Controller
                     @_iCredId=?',
                 $parametros
             );
-            
-            if ($data[0]->iInstId>0) {
+
+            if ($data[0]->iInstId > 0) {
                 $message = 'Se ha guardado exitosamente';
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
@@ -186,7 +189,195 @@ class InstructoresController extends Controller
                     Response::HTTP_OK
                 );
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 
+    public function eliminarInstructores(Request $request, $iInstId)
+    {
+        $request->merge(['iInstId' => $iInstId]);
+
+        $validator = Validator::make($request->all(), [
+            'iInstId' => ['required'],
+        ], [
+            'iInstId.required' => 'No se encontró el identificador iInstId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iInstId',
+                'iCredId'
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iInstId      ??  NULL,
+                $request->iCredId      ??  NULL
+            ];
+            $data = DB::select(
+                'exec cap.SP_DEL_instructores
+                    @_iInstId=?,    
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iInstId > 0) {
+                $message = 'Se ha eliminado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => $data],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido eliminar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarInstructores(Request $request, $iInstId)
+    {
+        $request->merge(['iInstId' => $iInstId]);
+         
+        $validator = Validator::make($request->all(), [
+            'cOpcion' => ['required'],
+            'iInstId' => ['required'],
+            'cPersCelular' => ['required'],
+            'cPersCorreo' => ['required', 'email'],
+            'cPersDireccion' => ['required']
+        ], [
+            'cOpcion.required' => 'No se encontró la opción',
+            'iInstId.required' => 'No se encontró el identificador iInstId',
+            'cPersCelular.required' => 'Debe ingresar el número de celular',
+            'cPersCorreo.required' => 'Debe ingresar el correo electrónico',
+            'cPersCorreo.email' => 'Debe ingresar un correo electrónico válido',
+            'cPersDireccion.required' => 'Debe ingresar la dirección'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iInstId',
+                'iCredId'
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->cOpcion           ??  NULL,
+                $request->iInstId           ??  NULL,
+                $request->cPersCelular      ??  NULL,
+                $request->cPersCorreo       ??  NULL,
+                $request->cPersDireccion    ??  NULL,
+                $request->iCredId           ??  NULL
+            ];
+           
+            $data = DB::select(
+                'exec cap.SP_UPD_instructores
+                    @_cOpcion=?,    
+                    @_iInstId=?,    
+                    @_cPersCelular=?,    
+                    @_cPersCorreo=?,    
+                    @_cPersDireccion=?,    
+                    @_iCredId=?',
+                $parametros
+            );
+         
+            if ($data[0]->iInstId > 0) {
+                $message = 'Se ha actualizado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => $data],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido actualizar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function cambiarEstadoInstructores(Request $request, $iInstId)
+    {
+        $request->merge(['iInstId' => $iInstId]);
+
+        $validator = Validator::make($request->all(), [
+            'iInstId' => ['required'],
+        ], [
+            'iInstId.required' => 'No se encontró el identificador iInstId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iInstId',
+                'iCredId'
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iInstId      ??  NULL,
+                $request->iCredId      ??  NULL
+            ];
+            $data = DB::select(
+                'exec cap.SP_DEL_instructores
+                    @_iInstId=?,    
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iInstId > 0) {
+                $message = 'Se ha eliminado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => $data],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido eliminar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],

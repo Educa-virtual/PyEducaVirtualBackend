@@ -438,11 +438,14 @@ class AulaVirtualController extends ApiController
     public function guardarRespuesta(Request $request)
     {
         //return $request -> all();
-        $request->validate([
-            //'iEstudianteId' => 'required|integer',
-            'cForoRptaRespuesta' => 'required|string',
-            'iForoId' => 'required|string'
-        ]);
+        $request->validate(
+            [
+                //'iEstudianteId' => 'required|integer',
+                'cForoRptaRespuesta' => 'required|string',
+                'iForoId' => 'required|string'
+            ],
+            ['cForoRptaRespuesta.required' => 'El comentario es obligatorio',]
+        );
         $fieldsToDecode = [
             'iDocenteId',
             'iEstudianteId',
@@ -500,7 +503,7 @@ class AulaVirtualController extends ApiController
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);
@@ -711,7 +714,7 @@ class AulaVirtualController extends ApiController
         } catch (Exception $e) {
             $this->handleAndLogError($e);
             DB::rollBack();
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
         return new JsonResponse($response, $codeResponse);

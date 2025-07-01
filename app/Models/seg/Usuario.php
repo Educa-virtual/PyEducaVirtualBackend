@@ -16,8 +16,9 @@ class Usuario extends Model
 
     public static function selUsuarios($parametros)
     {
-        return DB::select("EXEC [seg].[SP_SEL_usuarios] @soloTotal=?, @offset=?, @limit=?,
-        @documentoFiltro=?, @apellidosFiltro=?, @nombresFiltro=?, @iPersId=NULL", $parametros);
+        return DB::select("EXEC [seg].[SP_SEL_usuarios] @soloTotal=?, @offset=?,  @limit=?, @opcionBusqueda=?,
+        @criterioBusqueda=?, @institucionSeleccionada=?, @perfilSeleccionado=?, @iUgelSeleccionada=?, @ieSedeSeleccionada=?,
+        @iPersId=NULL", $parametros);
     }
 
     public static function selUsuarioPorIdPersona($iPersId)

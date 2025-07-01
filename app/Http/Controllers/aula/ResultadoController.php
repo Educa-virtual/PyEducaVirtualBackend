@@ -149,13 +149,15 @@ class ResultadoController extends Controller
             'iYAcadId' => ['required'],
             'iSedeId' => ['required'],
             'iSeccionId' => ['required'],
-            'iNivelGradoId' => ['required']
+            'iNivelGradoId' => ['required'],
+            'iEstudianteId' => ['required'],
         ], [
             'iIeCursoId.required' => 'No se encontró el identificador iIeCursoId',
             'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
             'iSedeId.required' => 'No se encontró el identificador iSedeId',
             'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
-            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId'
+            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
+            'iEstudianteId.required' => 'No se encontró el identificador iEstudianteId'
         ]);
 
         if ($validator->fails()) {
@@ -170,7 +172,8 @@ class ResultadoController extends Controller
             'iYAcadId',
             'iSedeId',
             'iSeccionId',
-            'iNivelGradoId'
+            'iNivelGradoId',
+            'iEstudianteId'
         ];
 
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -180,7 +183,8 @@ class ResultadoController extends Controller
             $request->iYAcadId              ??      NULL,
             $request->iSedeId               ??      NULL,
             $request->iSeccionId            ??      NULL,
-            $request->iNivelGradoId         ??      NULL
+            $request->iNivelGradoId         ??      NULL,
+            $request->iEstudianteId         ??      NULL,
         ];
 
         try {
@@ -192,7 +196,8 @@ class ResultadoController extends Controller
                     @_iYAcadId=?,
                     @_iSedeId=?,
                     @_iSeccionId=?,
-                    @_iNivelGradoId=?',
+                    @_iNivelGradoId=?,
+                    @_iEstudianteId=?',
                 $parametros
             );
             // Preparar la respuesta

@@ -15,7 +15,7 @@ use Illuminate\Http\JsonResponse;
 class EvaluacionEstudiantesController extends ApiController
 {
     public function index(Request $request)
-    {   
+    {
         $iEvaluacionId = $this->decodeId($request->iEvaluacionId);
         try {
             $data = DB::select('exec eval.SP_SEL_estudiantesEvaluacion @_iEvaluacionId = ? ', [$iEvaluacionId]);
@@ -92,48 +92,58 @@ class EvaluacionEstudiantesController extends ApiController
 
     public function guardarRespuestaxiEstudianteId(Request $request)
     {
-        $evaluacion_respuestas = DB::select(
-            "
+        $data = DB::select("
+                SELECT 1 FROM eval.evaluaciones
+                WHERE iEvaluacionId = ? 
+                AND (iEstado = 10 OR (iEstado = 2 AND dtEvaluacionFin < GETDATE()))
+            ", [$request->iEvaluacionId]);
+
+        if (!empty($data)) {
+            $response = ['validated' => false, 'mensaje' => 'La evaluación ya ha finalizado'];
+            $codeResponse = 500;
+        } else {
+            $evaluacion_respuestas = DB::select(
+                "
         SELECT MAX(iEvalRptaId) as iEvalRptaId
         FROM eval.evaluacion_respuestas
         WHERE iEstudianteId = '" . $request->iEstudianteId . "' AND iEvalPregId = '" . $request->iEvalPregId . "'
         "
-        );
+            );
 
-        if ($evaluacion_respuestas[0]->iEvalRptaId > 0) {
-            // Actualizar respuesta existente
-            $rpta = DB::update(
-                "
+            if ($evaluacion_respuestas[0]->iEvalRptaId > 0) {
+                // Actualizar respuesta existente
+                $rpta = DB::update(
+                    "
             UPDATE eval.evaluacion_respuestas
             SET jEvalRptaEstudiante = '" . $request->jEvalRptaEstudiante . "'
             WHERE iEvalRptaId = '" . $evaluacion_respuestas[0]->iEvalRptaId . "'
             "
-            );
+                );
 
-            if ($rpta) {
-                $response = ['validated' => true, 'mensaje' => 'Se actualizó la respuesta.'];
-                $codeResponse = 200;
+                if ($rpta) {
+                    $response = ['validated' => true, 'mensaje' => 'Se actualizó la respuesta.'];
+                    $codeResponse = 200;
+                } else {
+                    $response = ['validated' => false, 'mensaje' => 'No se pudo actualizar la respuesta.'];
+                    $codeResponse = 500;
+                }
             } else {
-                $response = ['validated' => false, 'mensaje' => 'No se pudo actualizar la respuesta.'];
-                $codeResponse = 500;
-            }
-        } else {
-            // Insertar nueva respuesta
+                // Insertar nueva respuesta
 
-            $data = DB::select(
-                'exec eval.Sp_INS_evaluacionRespuestasCalificacionxiEstudianteId ?,?,?',
-                [$request->iEstudianteId, $request->iEvalPregId, $request->jEvalRptaEstudiante]
-            );
+                $data = DB::select(
+                    'exec eval.Sp_INS_evaluacionRespuestasCalificacionxiEstudianteId ?,?,?',
+                    [$request->iEstudianteId, $request->iEvalPregId, $request->jEvalRptaEstudiante]
+                );
 
-            if ($data[0]->iEvalRptaId) {
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la respuesta.'];
-                $codeResponse = 200; // Código para creación exitosa
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se pudo guardar la respuesta.'];
-                $codeResponse = 500;
+                if ($data[0]->iEvalRptaId) {
+                    $response = ['validated' => true, 'mensaje' => 'Se guardó la respuesta.'];
+                    $codeResponse = 200; // Código para creación exitosa
+                } else {
+                    $response = ['validated' => false, 'mensaje' => 'No se pudo guardar la respuesta.'];
+                    $codeResponse = 500;
+                }
             }
         }
-
         return new JsonResponse($response, $codeResponse);
     }
 }
