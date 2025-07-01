@@ -24,10 +24,14 @@ class NotificacionController extends Controller
     public function mostrar_notificacion(Request $request)
     {
         $iDocenteId = VerifyHash::decodes($request->iDocenteId);
-        $parametros = [$iDocenteId];
+        $solicitud = [
+            $iDocenteId,
+            $request->iYAcadId,
+            $request->iSedeId, 
+        ];
 
         try {
-            $data = DB::select('exec aula.Sp_SEL_notificacion_iDocenteId ?', $parametros);
+            $data = DB::select('exec aula.Sp_SEL_notificacion_iDocenteId ?,?,?', $solicitud);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;
         } catch (Exception $e) {
