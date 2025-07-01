@@ -932,19 +932,20 @@ class GestionInstitucionalController extends Controller
 
     public function obtenerEstudiantesMatriculados(Request $request)
     {
-      // \Log::info($request->all());
-      $solicitud = [
-        //30902,//
-        (int) $request->iCredEntPerfId,
-        (int)$request->iYAcadId,
-        VerifyHash::decodesxId($request->iCursosNivelGradId),
-        (int)$request->iSedeId,
-
-       // 5 //(int)
-    ];
+        // \Log::info($request->all());
+        $iEvaluacionId = ($request->iEvaluacionId) ? VerifyHash::decodesxId($request->iEvaluacionId) : 0;
+        $solicitud = [
+            //30902,//
+            (int) $request->iCredEntPerfId,
+            (int)$request->iYAcadId,
+            VerifyHash::decodesxId($request->iCursosNivelGradId),
+            (int)$request->iSedeId,
+            $iEvaluacionId,
+        // 5 //(int)
+        ];
 
         try {
-            $data = DB::select('EXEC ere.Sp_SEL_obtenerEstudiantesMatriculados ?,?,?,?', $solicitud);
+            $data = DB::select('EXEC ere.Sp_SEL_obtenerEstudiantesMatriculados ?,?,?,?,?', $solicitud);
             $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {

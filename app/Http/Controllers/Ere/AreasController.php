@@ -136,7 +136,7 @@ class AreasController extends Controller
 
     private function descargarArchivoPreguntasWord($evaluacion, $area)
     {
-        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
+        //Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
         $url = env('APP_ASPNET_URL') . "/api/ere/evaluaciones/$evaluacion->evaluacionIdHashed/areas/$area->areaIdCifrado/archivo-preguntas";
 
         $response = Http::withOptions([
@@ -148,7 +148,7 @@ class AreasController extends Controller
             abort(404, 'Archivo no encontrado.');
         }
         $contenido = $response->body();
-        $nombreArchivo = 'archivo.docx';
+        $nombreArchivo = 'Evaluacion.docx';
         $contentDisposition = $response->header('Content-Disposition');
         // Si el header existe, intentamos extraer el nombre del archivo
         if ($contentDisposition && preg_match('/filename\*?=(?:UTF-8\'\')?["\']?([^"\';]+)/i', $contentDisposition, $matches)) {
@@ -163,58 +163,45 @@ class AreasController extends Controller
 
     public function descargarArchivoPreguntas($evaluacionId, $areaId, Request $request)
     {
-
-        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
-        $areaIdDescifrado = $this->hashids->decode($areaId);
-        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
-        }
-        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
-        if ($evaluacion == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
-        }
-        $area = AreasRepository::obtenerAreaPorNivelGradId($areaIdDescifrado[0]);
-        if ($area == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
-        }
-        $evaluacion->evaluacionIdHashed = $evaluacionId;
-        $area->areaIdCifrado = $areaId;
-        switch ($request->query('tipo')) {
-            case 'pdf':
-                return $this->descargarArchivoPreguntasPdf($evaluacion, $area);
-            case 'word':
-                return $this->descargarArchivoPreguntasWord($evaluacion, $area);
-            default:
-                return response()->json(['status' => 'Error', 'message' => 'Tipo de archivo no soportado.'], Response::HTTP_BAD_REQUEST);
+        try {
+            $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
+            $areaIdDescifrado = $this->hashids->decode($areaId);
+            if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
+                throw new Exception('El ID enviado no se pudo descifrar.');
+            }
+            $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
+            if ($evaluacion == null) {
+                throw new Exception('No existe la evaluación con el ID enviado.');
+            }
+            $area = AreasRepository::obtenerAreaPorNivelGradId($areaIdDescifrado[0]);
+            if ($area == null) {
+                throw new Exception('No existe el área con el ID enviado.');
+            }
+            $evaluacion->evaluacionIdHashed = $evaluacionId;
+            $area->areaIdCifrado = $areaId;
+            ob_end_clean(); //Sin esto, al descargar el archivo, Word muestra un mensaje de error al abrirlo
+            switch ($request->query('tipo')) {
+                case 'pdf':
+                    return $this->descargarArchivoPreguntasPdf($evaluacion, $area);
+                case 'word':
+                    return $this->descargarArchivoPreguntasWord($evaluacion, $area);
+                default:
+                    throw new Exception('Tipo de archivo no soportado. Solo se permiten PDF y Word.');
+            }
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 
     public function descargarCartillaRespuestas($evaluacionId, $areaId)
     {
-        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
-        $areaIdDescifrado = $this->hashids->decode($areaId);
-        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
-        }
-        $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado[0]);
-        if ($evaluacion == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe la evaluación con el ID enviado.'], Response::HTTP_NOT_FOUND);
-        }
-        $area = AreasRepository::obtenerAreaPorNivelGradId($areaIdDescifrado[0]);
-        if ($area == null) {
-            return response()->json(['status' => 'Error', 'message' => 'No existe el área con el ID enviado.'], Response::HTTP_NOT_FOUND);
-        }
-        $evaluacion->evaluacionIdHashed = $evaluacionId;
-        $area->areaIdCifrado = $areaId;
         try {
-            $data = AreasService::obtenerCartillaRespuestas($evaluacion, $area);
+            ob_end_clean(); //Sin esto, al descargar el archivo, Word muestra un mensaje de error al abrirlo
+            $ruta = AreasService::obtenerCartillaRespuestas($evaluacionId, $areaId);
+            return Storage::disk('public')->download($ruta, "Hoja respuestas.docx");
         } catch (Exception $ex) {
-            abort(Response::HTTP_NOT_FOUND);
+            return FormatearMensajeHelper::error($ex);
         }
-        return response($data['contenido'], 200, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"' //"attachment; filename=\"$nombreArchivo\"",
-        ]);
     }
 
     public function generarMatrizCompetencias($evaluacionId, $areaId)
@@ -241,7 +228,7 @@ class AreasController extends Controller
     public function obtenerAreasPorEvaluacion($evaluacionId)
     {
         try {
-            $evaluacionIdDescifrado =  VerifyHash::decodesxId($evaluacionId);//$this->hashids->decode($evaluacionId);
+            $evaluacionIdDescifrado =  VerifyHash::decodesxId($evaluacionId); //$this->hashids->decode($evaluacionId);
             //$personaIdDescifrado =  $this->hashids->decode($personaId);
             if (empty($evaluacionIdDescifrado)) {
                 throw new Exception('El ID enviado no se pudo descifrar.');
@@ -265,7 +252,7 @@ class AreasController extends Controller
                     'iPreguntaId' => NULL,
                     'ids' => NULL
                 ];*/
-                $fila->iCantidadMaximaPreguntas = Evaluacion::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId) ?? 20;//EvaluacionesRepository::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
+                $fila->iCantidadMaximaPreguntas = Evaluacion::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId) ?? 20; //EvaluacionesRepository::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
                 $fila->iCantidadPreguntas = PreguntasRepository::obtenerCantidadPreguntasPorEvaluacion($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
                 $fila->iEvaluacionId = $evaluacionIdDescifrado;
                 $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
