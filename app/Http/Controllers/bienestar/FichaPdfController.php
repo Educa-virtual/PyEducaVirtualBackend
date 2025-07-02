@@ -29,7 +29,7 @@ class FichaPdfController extends Controller
 
         //--------------VI. DISCAPACIDAD-------------------------------------
         $tiene_discapacidad = FichaPdf::selTieneDiscapacidad($request);
-        $programas_dispacidad = FichaPdf::selProgramasDiscapacidad($request);
+        $programas_discapacidad = FichaPdf::selProgramasDiscapacidad($request);
         $discapacidades = FichaPdf::selDiscapacidades($request);
 
         // ---------------VII SALUD----------------------------------------
@@ -56,8 +56,6 @@ class FichaPdfController extends Controller
                 'departamento' => $datosGenerales->cDptoNombre ?? '',
                 'provincia' => $datosGenerales->cPrvnNombre ?? '',
                 'distrito' => $datosGenerales->cDsttNombre ?? '',
-                'vive_padre' => $datosGenerales->bFamiliarPadreVive ?? '',
-                'vive_madre' => $datosGenerales->bFamiliarMadreVive ?? '',
                 'referencia' => $datosGenerales->cFichaDGDireccionReferencia ?? ''
             ],
 
@@ -74,6 +72,8 @@ class FichaPdfController extends Controller
                     ? ($datosGenerales->cPersSexo == 'M' ? 'MASCULINO' : 'FEMENINO')
                     : 'No especificado',
                 'estado_civil' => $datosGenerales->cTipoEstCivilNombre ?? '',
+                'vive_padre' => $datosGenerales->bFamiliarPadreVive ?? '',
+                'vive_madre' => $datosGenerales->bFamiliarMadreVive ?? '',
                 'num_hijos' => $datosGenerales->iFichaDGNroHijos ?? '',
                 'tiene_hijos' => $datosGenerales->bFichaDGTieneHijos ?? '',
                 'num_telefono' => $datosGenerales->cEstTelefono ?? '',
@@ -165,14 +165,14 @@ class FichaPdfController extends Controller
             'programas_alimentacion' => $programas_alimentacion->cProgAlimNombre ?? '',
         ];
 
-        $datos['programas_dispacidad'] = [
+        $datos['programas_discapacidad'] = [
             'tiene_discapacidad' => $tiene_discapacidad->EstaEnProgramaDiscapacidad == 1 && count($discapacidades) > 0 ? true : false,
-            'esta_en_omaped' => $programas_dispacidad->EstaEnOMAPED ?? '',
-            'codigo_omaped' => $programas_dispacidad->cFichaDGCodigoOMAPED ?? '',
-            'esta_en_conadis' => $programas_dispacidad->EstaEnCONADIS ?? '',
-            'codigo_conadis' => $programas_dispacidad->cFichaDGCodigoCONADIS ?? '',
-            'esta_otro_programa' => $programas_dispacidad->EstaOtroProgramaDiscapacidad ?? '',
-            'codigo_otro_programa' => $programas_dispacidad->cOtroProgramaDiscapacidad ?? '',
+            'esta_en_omaped' => $programas_discapacidad->EstaEnOMAPED ?? '',
+            'codigo_omaped' => $programas_discapacidad->cFichaDGCodigoOMAPED ?? '',
+            'esta_en_conadis' => $programas_discapacidad->EstaEnCONADIS ?? '',
+            'codigo_conadis' => $programas_discapacidad->cFichaDGCodigoCONADIS ?? '',
+            'esta_otro_programa' => $programas_discapacidad->EstaOtroProgramaDiscapacidad ?? '',
+            'codigo_otro_programa' => $programas_discapacidad->cOtroProgramaDiscapacidad ?? '',
         ];
 
         $datos['discapacidades'] = [];
