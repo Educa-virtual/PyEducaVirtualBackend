@@ -28,6 +28,7 @@ Route::group(['prefix' => 'cap'], function () {
     Route::post('persona-inscripcion', [InscripcionesController::class, 'listarPersonaInscripcion']);
     Route::post('inscripciones', [InscripcionesController::class, 'listarInscripcionesxiCapacitacionId']);
     Route::post('inscripcion', [InscripcionesController::class, 'guardarInscripcion']);
+    Route::put('/{iInscripId}/estado', [InscripcionesController::class, 'actualizarEstadoInscripcion']);
   });
   Route::prefix('instructores')->group(function () {
     Route::get('/{iTipoIdentId}/{cPersDocumento}', [InstructoresController::class, 'buscarInstructorxiTipoIdentIdxcPersDocumento']); // Para buscar
