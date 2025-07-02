@@ -27,6 +27,6 @@ class Categoria extends Model
 
     public static function selCategorias()
     {
-        return DB::select("EXEC [enc].[Sp_SEL_categorias]");
+        return DB::select("EXEC [enc].[Sp_SEL_categoriasTotalEncuestas]");
     }
 }
