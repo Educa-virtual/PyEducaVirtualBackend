@@ -164,6 +164,7 @@ class AreasController extends Controller
     public function descargarArchivoPreguntas($evaluacionId, $areaId, Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
             $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
             $areaIdDescifrado = $this->hashids->decode($areaId);
             if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
@@ -207,7 +208,7 @@ class AreasController extends Controller
     public function generarMatrizCompetencias($evaluacionId, $areaId)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
             $usuario = Auth::user();
             return AreasService::generarMatrizCompetencias($evaluacionId, $areaId, $usuario);
         } catch (Exception $ex) {
@@ -215,7 +216,7 @@ class AreasController extends Controller
         }
     }
 
-    public function actualizarLiberacionAreasPorEvaluacion($evaluacionId)
+    /*public function actualizarLiberacionAreasPorEvaluacion($evaluacionId)
     {
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         if (empty($evaluacionIdDescifrado)) {
@@ -223,11 +224,12 @@ class AreasController extends Controller
         }
         AreasRepository::liberarAreasPorEvaluacion($evaluacionIdDescifrado[0]);
         return response()->json(['status' => 'Success', 'message' => 'Se han liberado las áreas de la evaluación especificada.'], Response::HTTP_OK);
-    }
+    }*/
 
     public function obtenerAreasPorEvaluacion($evaluacionId)
     {
         try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
             $evaluacionIdDescifrado =  VerifyHash::decodesxId($evaluacionId); //$this->hashids->decode($evaluacionId);
             //$personaIdDescifrado =  $this->hashids->decode($personaId);
             if (empty($evaluacionIdDescifrado)) {

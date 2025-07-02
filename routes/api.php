@@ -417,7 +417,7 @@ Route::group(['prefix' => 'grl'], function () {
     Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
     Route::post('guardarPersona', [PersonaController::class, 'save']);
     Route::post('searchPersona', [PersonaController::class, 'show']);
-    Route::post('validarPersona', [PersonaController::class, 'validate']);
+    Route::post('validarPersona', [PersonaController::class, 'buscarPersona']);
 });
 
 Route::group(['prefix' => 'enlaces-ayuda'], function () {
