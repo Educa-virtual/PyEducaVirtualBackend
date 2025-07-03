@@ -17,26 +17,26 @@ class CategoriasService
     public static function registrarCategoria(RegistrarCategoriaRequest $request)
     {
         $params = [
-            'cNombre' => $request->cNombre,
-            'cDescripcion' => $request->cDescripcion,
-            'bPuedeCrearEspDremo' => $request->bPuedeCrearEspDremo,
-            'bPuedeCrearAccesoEspUgel' => $request->bPuedeCrearAccesoEspUgel,
-            'bPuedeCrearDirector' => $request->bPuedeCrearDirector,
-            'cImagenUrl' => $request->cImagenUrl
+            $request->cNombre,
+            $request->cDescripcion,
+            $request->bPuedeCrearEspDremo ?? false,
+            $request->bPuedeCrearEspUgel ?? false,
+            $request->bPuedeCrearDirector ?? false,
+            $request->cImagenUrl
         ];
-        return Categoria::insCategorias($params);
+        return Categoria::insCategoria($params);
     }
 
     public static function actualizarCategoria(ActualizarCategoriaRequest $request)
     {
         $params = [
-            'iCategoriaEncuestaId' => $request->iCategoriaEncuestaId,
-            'cNombre' => $request->cNombre,
-            'cDescripcion' => $request->cDescripcion,
-            'bPuedeCrearEspDremo' => $request->bPuedeCrearEspDremo,
-            'bPuedeCrearAccesoEspUgel' => $request->bPuedeCrearAccesoEspUgel,
-            'bPuedeCrearDirector' => $request->bPuedeCrearDirector,
-            'cImagenUrl' => $request->cImagenUrl
+            $request->iCategoriaEncuestaId,
+            $request->cNombre,
+            $request->cDescripcion,
+            $request->bPuedeCrearEspDremo,
+            $request->bPuedeCrearEspUgel,
+            $request->bPuedeCrearDirector,
+            $request->cImagenUrl
         ];
         return Categoria::updCategorias($params);
     }

@@ -10,8 +10,9 @@ class Categoria extends Model
 
     public static function insCategoria($params)
     {
-        return DB::select("EXEC [enc].[Sp_INS_categoria] @cNombre=?, @cDescripcion=?, @bPuedeCrearEspDremo=?,
-        @bPuedeCrearAccesoEspUgel=?, @bPuedeCrearDirector=?, @cImagenUrl=?", $params);
+        $resultado= DB::selectOne("EXEC [enc].[Sp_INS_categorias] @cNombre=?, @cDescripcion=?, @bPuedeCrearEspDremo=?,
+        @bPuedeCrearEspUgel=?, @bPuedeCrearDirector=?, @cImagenUrl=?", $params);
+        return $resultado->id;
     }
 
     public static function updCategoria($params)

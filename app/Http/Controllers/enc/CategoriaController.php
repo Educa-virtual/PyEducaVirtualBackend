@@ -26,8 +26,8 @@ class CategoriaController extends Controller
     public function registrarCategoria(RegistrarCategoriaRequest $request)
     {
         try {
-            CategoriasService::registrarCategoria($request);
-            return FormatearMensajeHelper::ok('Categoría registrada correctamente');
+            $id=CategoriasService::registrarCategoria($request);
+            return FormatearMensajeHelper::ok('Categoría registrada correctamente', ['id' => $id]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

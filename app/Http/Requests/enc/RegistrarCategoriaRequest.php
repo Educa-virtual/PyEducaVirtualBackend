@@ -11,10 +11,10 @@ class RegistrarCategoriaRequest extends GeneralFormRequest
     {
         return [
             'cNombre' => 'required|string|max:150',
-            'cDescripcion' => 'required|string|max:150',
-            'bPuedeCrearEspDremo' =>'required|boolean',
-            'bPuedeCrearAccesoEspUgel'=>'required|boolean',
-            'bPuedeCrearDirector'=>'required|boolean',
+            'cDescripcion' => 'nullable|string|max:150',
+            'bPuedeCrearEspDremo' =>'nullable|boolean',
+            'bPuedeCrearEspUgel'=>'nullable|boolean',
+            'bPuedeCrearDirector'=>'nullable|boolean',
             'cImagenUrl' => 'nullable|string|max:255'
         ];
     }
@@ -25,7 +25,7 @@ class RegistrarCategoriaRequest extends GeneralFormRequest
             'cNombre' => 'Nombre',
             'cDescripcion' => 'Descripción',
             'bPuedeCrearEspDremo' =>'Esp. Dremo puede crear encuestas',
-            'bPuedeCrearAccesoEspUgel' => 'Esp. Ugel puede crear encuestas',
+            'bPuedeCrearEspUgel' => 'Esp. Ugel puede crear encuestas',
             'bPuedeCrearDirector' => 'Director puede crear encuestas',
             'cImagenUrl' => 'URL de la imagen'
         ];
