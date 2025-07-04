@@ -11,6 +11,7 @@ use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\grl\PersonasContactosController;
+use Illuminate\Support\Facades\Validator;
 
 class InscripcionesController extends Controller
 {
@@ -180,13 +181,29 @@ class InscripcionesController extends Controller
 
     public function actualizarEstadoInscripcion(Request $request, $iInscripId)
     {
+        $request->merge(['iInscripId' => $iInscripId]);
+
+        $validator = Validator::make($request->all(), [
+            'iCapacitacionId' => ['required'],
+            'bEstado' => ['required'],
+        ], [
+            'iCapacitacionId.required' => 'No se encontró el identificador iCapacitacionId',
+            'bEstado.required' => 'No se encontró el estado',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $iEstado = $request->bEstado ? 10 : 100;
+        $request->merge(['iEstado' => $iEstado]);
+
+
         try {
-
-            $request->merge(['iInscripId' => $iInscripId]);
-
-            $iEstado = $request->bEstado ? 10 : 100;
-            $request->merge(['iEstado' => $iEstado]);
-
             $fieldsToDecode = [
                 'iInscripId',
                 'iCredId',
@@ -206,7 +223,7 @@ class InscripcionesController extends Controller
                     @_iCredId=?',
                 $parametros
             );
-            $cEstado = $request->iEstado ? 'Validado' : 'Rechazado';
+            $cEstado = $request->bEstado ? 'Validado' : 'Rechazado';
 
             if ($data[0]->iInscripId > 0) {
                 $message = 'Se ha ' . $cEstado . ' correctamente a la Inscripción';
@@ -221,7 +238,6 @@ class InscripcionesController extends Controller
                     Response::HTTP_OK
                 );
             }
-
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],

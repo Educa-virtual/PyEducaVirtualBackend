@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class CapacitacionesController extends Controller
 {
@@ -229,6 +230,108 @@ class CapacitacionesController extends Controller
                     Response::HTTP_OK
                 );
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarEstadoCapacitacion(Request $request, $iCapacitacionId)
+    {
+        $request->merge(['iCapacitacionId' => $iCapacitacionId]);
+
+        $validator = Validator::make($request->all(), [
+            'iCapacitacionId' => ['required'],
+            'bEstado' => ['required'],
+        ], [
+            'iCapacitacionId.required' => 'No se encontró el identificador iCapacitacionId',
+            'bEstado.required' => 'No se encontró el estado',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $iEstado = $request->bEstado ? 10 : 2;
+        $request->merge(['iEstado' => $iEstado]);
+
+        try {
+            $fieldsToDecode = [
+                'iCapacitacionId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $parametros = [
+                $request->iCapacitacionId             ??  NULL,
+                $request->iEstado                     ??  NULL,
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec cap.SP_UPD_capacitacionesxiCapacitacionIdxiEstado 
+                    @_iCapacitacionId=?, 
+                    @_iEstado=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $cEstado = $request->bEstado ? 'Finalizado' : 'Publicado';
+
+            if ($data[0]->iCapacitacionId > 0) {
+                $message = 'Se ha ' . $cEstado . ' correctamente la capacitación';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha ' . $cEstado . ' correctamente la capacitación';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function listarCapacitacionesxMatriculados(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iCapacitacionId',
+                'iTipoCapId',
+                'iNivelPedId',
+                'iTipoPubId',
+                'iInstId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iCredId              ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec cap.SP_SEL_capacitacionesxMatriculados 
+                    @_iCredId=?',
+                $parametros
+            );
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],

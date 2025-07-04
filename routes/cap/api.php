@@ -23,6 +23,8 @@ Route::group(['prefix' => 'cap'], function () {
     Route::post('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
     Route::post('actualizarCapacitaciones', [CapacitacionesController::class, 'actualizarCapacitaciones']);
     Route::post('eliminarCapacitaciones', [CapacitacionesController::class, 'eliminarCapacitaciones']);
+    Route::put('/{iCapacitacionId}/estado', [CapacitacionesController::class, 'actualizarEstadoCapacitacion']);
+    Route::get('/', [CapacitacionesController::class, 'listarCapacitacionesxMatriculados']); // Para listar las capacitaciones con sus inscripciones aprobadas
   });
   Route::group(['prefix' => 'inscripciones'], function () {
     Route::post('persona-inscripcion', [InscripcionesController::class, 'listarPersonaInscripcion']);
