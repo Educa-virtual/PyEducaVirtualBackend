@@ -20,7 +20,7 @@ Route::group(['prefix' => 'cap'], function () {
   });
   Route::group(['prefix' => 'capacitaciones'], function () {
     Route::post('guardarCapacitaciones', [CapacitacionesController::class, 'guardarCapacitaciones']);
-    Route::post('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
+    Route::get('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
     Route::post('actualizarCapacitaciones', [CapacitacionesController::class, 'actualizarCapacitaciones']);
     Route::post('eliminarCapacitaciones', [CapacitacionesController::class, 'eliminarCapacitaciones']);
     Route::put('/{iCapacitacionId}/estado', [CapacitacionesController::class, 'actualizarEstadoCapacitacion']);

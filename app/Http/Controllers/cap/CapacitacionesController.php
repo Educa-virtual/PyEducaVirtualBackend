@@ -104,13 +104,11 @@ class CapacitacionesController extends Controller
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEstado              ??  NULL,
                 $request->iCredId              ??  NULL
             ];
 
             $data = DB::select(
-                'exec cap.SP_SEL_capacitaciones 
-                    @_iEstado=?,   
+                'exec cap.SP_SEL_capacitaciones  
                     @_iCredId=?',
                 $parametros
             );
