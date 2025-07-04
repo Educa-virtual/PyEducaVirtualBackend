@@ -17,12 +17,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::group(['prefix' => 'categorias'], function () {
+
         Route::get('', [CategoriaController::class, 'obtenerCategorias']);
         Route::post('', [CategoriaController::class, 'registrarCategoria']);
-        Route::patch('', [CategoriaController::class, 'actualizarCategoria']);
-        Route::delete('', [CategoriaController::class, 'eliminarCategoria']);
 
         Route::group(['prefix' => '{iCategoriaEncuestaId}'], function () {
+            Route::get('', [CategoriaController::class, 'obtenerDetallesCategoria']);
+            Route::patch('', [CategoriaController::class, 'actualizarCategoria']);
+            Route::delete('', [CategoriaController::class, 'eliminarCategoria']);
             Route::get('encuestas', [EncuestaController::class, 'obtenerEncuestasPorCategoria']);
         });
     });
@@ -35,6 +37,9 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::clas
 
 
     Route::group(['prefix' => 'encuestas'], function () {
+        Route::group(['prefix' => '{iConfEncId}'], function () {
+            Route::delete('', [EncuestaController::class, 'eliminarEncuesta']);
+        });
         Route::group(['prefix' => 'filtros'], function () {
             Route::get('estudiantes', [EstudianteController::class, 'obtenerEstudiantesParaFiltroEncuesta']);
             Route::get('docentes', [DocenteController::class, 'obtenerDocentesParaFiltroEncuesta']);
@@ -42,5 +47,4 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::clas
             Route::get('ugeles', [UgelController::class, 'obtenerUgelesParaFiltroEncuesta']);
         });
     });
-
 });

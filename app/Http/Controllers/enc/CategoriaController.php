@@ -23,6 +23,16 @@ class CategoriaController extends Controller
         }
     }
 
+    public function obtenerDetallesCategoria($iCategoriaEncuestaId)
+    {
+        try {
+            $data = CategoriasService::obtenerDetallesCategoria($iCategoriaEncuestaId);
+            return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
     public function registrarCategoria(RegistrarCategoriaRequest $request)
     {
         try {
