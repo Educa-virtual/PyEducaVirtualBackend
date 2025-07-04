@@ -14,13 +14,12 @@ class FichaGeneralSaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'iPersId' => 'required|integer',
             'iTipoViaId' => 'nullable|integer',
             'cFichaDGDireccionNombreVia' => 'nullable|string|max:150',
             'cFichaDGDireccionNroPuerta' => 'nullable|string|max:10',
             'cFichaDGDireccionBlock' => 'nullable|string|max:3',
-            'cFichaDGDirecionInterior' => 'nullable|string|max:3',
-            'cFichaDGDirecionPiso' => 'nullable|integer',
+            'cFichaDGDireccionInterior' => 'nullable|string|max:3',
+            'iFichaDGDireccionPiso' => 'nullable|integer',
             'cFichaDGDireccionManzana' => 'nullable|string|max:10',
             'cFichaDGDireccionLote' => 'nullable|string|max:3',
             'cFichaDGDireccionKm' => 'nullable|string|max:10',
@@ -39,13 +38,12 @@ class FichaGeneralSaveRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'iPersId' => 'id de persona',
             'iTipoViaId' => 'tipo de vía',
             'cFichaDGDireccionNombreVia' => 'nombre de vía',
             'cFichaDGDireccionNroPuerta' => 'número de puerta',
             'cFichaDGDireccionBlock' => 'block',
-            'cFichaDGDirecionInterior' => 'interior',
-            'cFichaDGDirecionPiso' => 'piso',
+            'cFichaDGDireccionInterior' => 'interior',
+            'iFichaDGDireccionPiso' => 'piso',
             'cFichaDGDireccionManzana' => 'manzana',
             'cFichaDGDireccionLote' => 'lote',
             'cFichaDGDireccionKm' => 'km',

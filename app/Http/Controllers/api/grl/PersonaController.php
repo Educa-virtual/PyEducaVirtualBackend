@@ -33,7 +33,7 @@ class PersonaController extends Controller
     }
 
 
-/**
+    /**
      * Busca si la persona está registrada en la base de datos. Si no está, consulta en el servicio web.
      * @param Request $request
      * @return JsonResponse
@@ -46,7 +46,7 @@ class PersonaController extends Controller
         ];
 
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            // Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::ADMINISTRADOR_DREMO]]);
             $resultado = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento ?,?', $parametros);
             $cantidadResultados = count($resultado);
             if ($cantidadResultados == 0) {
