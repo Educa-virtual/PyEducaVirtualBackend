@@ -21,4 +21,13 @@ class EncuestaController extends Controller
             return FormatearMensajeHelper::error($ex);
         }
     }
+
+    public function eliminarEncuesta($iConfEncId) {
+        try {
+            EncuestasService::eliminarEncuesta($iConfEncId);
+            return FormatearMensajeHelper::ok('Encuesta eliminada correctamente');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
 }
