@@ -58,6 +58,9 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('store', [ProgramacionActividadesController::class, 'store']);
     });
     Route::group(['prefix' => 'tareas'], function () {
+        Route::post('', [TareasController::class, 'guardarTareas']);
+
+        ////
         Route::post('list', [TareasController::class, 'list']);
         Route::post('store', [TareasController::class, 'store']);
         Route::post('getTareasxiCursoId', [TareasController::class, 'getTareasxiCursoId']);
@@ -150,6 +153,5 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}', [PreguntaAlternativasRespuestasController::class, 'guardarPreguntasxiCuestionarioIdxiEstudianteId']); // Para guardar las preguntas del cuestionario del estudiante
         Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}/finalizado', [PreguntaAlternativasRespuestasController::class, 'finalizarPreguntaAlternativasRespuestas']); // Para finalizar las preguntas del cuestionario del estudiante
         Route::get('/cuestionario/{iCuestionarioId}/resultados', [PreguntaAlternativasRespuestasController::class, 'obtenerResultadosxiCuestionarioId']);
-
     });
 });
