@@ -17,32 +17,12 @@ class TareasController extends Controller
     public function guardarTareas(Request $request)
     {
 
-        try {
-            // Formatea y reemplaza los valores en el mismo request
-            if ($request->filled('dtTareaInicio')) {
-                $request->merge([
-                    'dtTareaInicio' => Carbon::parse($request->dtTareaInicio)->format('Y-m-d H:i:s')
-                ]);
-            }
-
-            if ($request->filled('dtTareaFin')) {
-                $request->merge([
-                    'dtTareaFin' => Carbon::parse($request->dtTareaFin)->format('Y-m-d H:i:s')
-                ]);
-            }
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Formato de fecha inválido',
-                'error' => $e->getMessage()
-            ], 422);
-        }
-
         $validator = Validator::make($request->all(), [
             'iDocenteId' => ['required'],
             'cTareaTitulo' => ['required', 'string', 'max:250'],
             'cTareaDescripcion' => ['required', 'string'],
-            'dtTareaInicio' => ['required', 'date'],
-            'dtTareaFin' => ['required', 'date', 'after:dtTareaInicio'],
+            'dtTareaInicio' => ['required'],
+            'dtTareaFin' => ['required'],
 
             'iContenidoSemId' => ['required'],
             'iActTipoId' => ['required'],
@@ -50,19 +30,18 @@ class TareasController extends Controller
         ], [
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
 
-            'cTareaTitulo.required' => 'Debe ingresar el título del foro',
+            'cTareaTitulo.required' => 'Debe ingresar el título',
             'cTareaTitulo.string' => 'El título debe ser una cadena de texto',
             'cTareaTitulo.max' => 'El título no debe exceder los 150 caracteres',
 
-            'cTareaDescripcion.required' => 'Debe ingresar la descripción del foro',
+            'cTareaDescripcion.required' => 'Debe ingresar la descripción',
             'cTareaDescripcion.string' => 'La descripción debe ser una cadena de texto',
 
-            'dtTareaInicio.required' => 'Debe ingresar la fecha de inicio del foro',
-            'dtTareaInicio.date' => 'La fecha de inicio debe ser una fecha válida',
+            'dtTareaInicio.required' => 'Debe ingresar la fecha de inicio',
 
-            'dtTareaFin.required' => 'Debe ingresar la fecha de fin del foro',
-            'dtTareaFin.date' => 'La fecha de fin debe ser una fecha válida',
-            'dtTareaFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio',
+
+            'dtTareaFin.required' => 'Debe ingresar la fecha de fin',
+
 
             'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
             'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
@@ -127,6 +106,90 @@ class TareasController extends Controller
                 );
             } else {
                 $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarTareasxiTareaId(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'iTareaId' => ['required'],
+            'cTareaTitulo' => ['required', 'string', 'max:250'],
+            'cTareaDescripcion' => ['required', 'string'],
+            'dtTareaInicio' => ['required'],
+            'dtTareaFin' => ['required'],
+        ], [
+            'iTareaId.required' => 'No se encontró el identificador iTareaId',
+
+            'cTareaTitulo.required' => 'Debe ingresar el título',
+            'cTareaTitulo.string' => 'El título debe ser una cadena de texto',
+            'cTareaTitulo.max' => 'El título no debe exceder los 150 caracteres',
+
+            'cTareaDescripcion.required' => 'Debe ingresar la descripción',
+            'cTareaDescripcion.string' => 'La descripción debe ser una cadena de texto',
+
+            'dtTareaInicio.required' => 'Debe ingresar la fecha de inicio',
+
+            'dtTareaFin.required' => 'Debe ingresar la fecha de fin',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iTareaId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iTareaId                        ?? NULL,
+                $request->cTareaTitulo                    ?? NULL,
+                $request->cTareaDescripcion               ?? NULL,
+                $request->cTareaArchivoAdjunto            ?? NULL,
+                $request->dtTareaInicio                   ?? NULL,
+                $request->dtTareaFin                      ?? NULL,
+
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC aula.SP_UPD_tareasxiTareaId 
+                    @_iTareaId=?, 
+                    @_cTareaTitulo=?, 
+                    @_cTareaDescripcion=?, 
+                    @_cTareaArchivoAdjunto=?,
+                    @_dtTareaInicio=?, 
+                    @_dtTareaFin=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iTareaId > 0) {
+                $message = 'Se ha actualizado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido actualizar';
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK

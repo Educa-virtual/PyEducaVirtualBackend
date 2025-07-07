@@ -59,6 +59,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     });
     Route::group(['prefix' => 'tareas'], function () {
         Route::post('', [TareasController::class, 'guardarTareas']);
+        Route::put('{iTareaId}', [TareasController::class, 'actualizarTareasxiTareaId']);
 
         ////
         Route::post('list', [TareasController::class, 'list']);
