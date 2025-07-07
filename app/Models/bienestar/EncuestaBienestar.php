@@ -18,7 +18,11 @@ class EncuestaBienestar
 
     public static function selEncuestaParametros($request)
     {
-        return DB::select('EXEC obe.Sp_SEL_encuestaParametros');
+        $parametros = [
+            $request->iCredEntPerfId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC obe.Sp_SEL_encuestaParametros $placeholders", $parametros);
     }
 
     public static function insEncuesta($request)

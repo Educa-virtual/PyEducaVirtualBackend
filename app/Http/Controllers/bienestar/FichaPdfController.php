@@ -221,7 +221,7 @@ class FichaPdfController extends Controller
         ];
 
         //  dd($datos); // Verifica que contiene lo esperado
-        $pdf = Pdf::loadView('pdfFicha.ficha', $datos)->setPaper('A4');
+        $pdf = Pdf::loadView('bienestar.ficha_socioeconomica_pdf', $datos)->setPaper('A4');
         return $pdf->stream("ficha_socioeconomica_{$iFichaDGId}.pdf");
         // return view('pdfFicha.ficha', $datos);
     }
