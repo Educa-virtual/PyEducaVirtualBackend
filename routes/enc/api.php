@@ -7,6 +7,7 @@ use App\Http\Controllers\enc\DirectorController;
 use App\Http\Controllers\enc\DocenteController;
 use App\Http\Controllers\enc\EncuestaController;
 use App\Http\Controllers\enc\EstudianteController;
+use App\Http\Controllers\enc\TipoAccesoController;
 use App\Http\Controllers\enc\UgelController;
 use App\Http\Controllers\seg\AuthController;
 use App\Http\Controllers\seg\ModuloAdministrativoController;
@@ -16,11 +17,12 @@ use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::class]], function () {
+    Route::group(['prefix' => 'tipos-acceso'], function () {
+        Route::get('', [TipoAccesoController::class, 'obtenerTiposAcceso']);
+    });
     Route::group(['prefix' => 'categorias'], function () {
-
         Route::get('', [CategoriaController::class, 'obtenerCategorias']);
         Route::post('', [CategoriaController::class, 'registrarCategoria']);
-
         Route::group(['prefix' => '{iCategoriaEncuestaId}'], function () {
             Route::get('', [CategoriaController::class, 'obtenerDetallesCategoria']);
             Route::patch('', [CategoriaController::class, 'actualizarCategoria']);
@@ -29,15 +31,9 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::clas
         });
     });
 
-    /*Route::group(['prefix' => 'ugeles'], function () {
-        Route::get('', [UgelController::class, 'obtenerUgeles']);
-        Route::get('{iUgelId}/instituciones-educativas', [InstitucionEducativaController::class, 'obtenerUgelPorId']);
-    });*/
-
-
-
     Route::group(['prefix' => 'encuestas'], function () {
         Route::group(['prefix' => '{iConfEncId}'], function () {
+            Route::patch('accesos', [EncuestaController::class, 'actualizarAccesosEncuesta']);
             Route::delete('', [EncuestaController::class, 'eliminarEncuesta']);
         });
         Route::group(['prefix' => 'filtros'], function () {

@@ -30,4 +30,13 @@ class EncuestaController extends Controller
             return FormatearMensajeHelper::error($ex);
         }
     }
+
+    public function actualizarAccesosEncuesta($iConfEncId, Request $request) {
+        try {
+            EncuestasService::actualizarAccesosEncuesta($iConfEncId, $request);
+            return FormatearMensajeHelper::ok('Se han actualizado los accesos de la encuesta');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
 }
