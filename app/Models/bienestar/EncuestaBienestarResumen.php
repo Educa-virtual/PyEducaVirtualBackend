@@ -11,6 +11,10 @@ class EncuestaBienestarResumen
         $parametros = [
             $request->iCredEntPerfId,
             $request->iEncuId,
+            $request->iEncuPregId,
+            $request->iTipoReporte,
+            $request->iLimitePalabras,
+            $request->jsonEtiquetas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC obe.Sp_SEL_encuestaResumen $placeholders", $parametros);

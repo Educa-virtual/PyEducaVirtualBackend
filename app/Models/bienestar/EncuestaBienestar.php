@@ -55,6 +55,7 @@ class EncuestaBienestar
             $request->jsonPoblacion,
             $request->jsonPermisos,
             $request->iYAcadId,
+            $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC obe.Sp_UPD_encuesta $placeholders", $parametros);
