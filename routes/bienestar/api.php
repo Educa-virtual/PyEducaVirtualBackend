@@ -104,21 +104,5 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('printRespuestas', [EncuestaBienestarRespuestaController::class, 'printRespuestas']);
 
     Route::post('verResumen', [EncuestaBienestarResumenController::class, 'verResumen']);
-
-    Route::get('excel', function () {
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('A1', 'Hello World');
-
-        return response()->streamDownload(function () use ($spreadsheet) {
-            while (ob_get_level() > 0) {
-                ob_end_clean();
-            }
-            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-            $writer->save('php://output');
-        }, 'test.xlsx', [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]);
-    });
 });
 
