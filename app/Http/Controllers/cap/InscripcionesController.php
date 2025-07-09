@@ -10,8 +10,8 @@ use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 use App\Http\Controllers\api\grl\PersonaController;
-use App\Http\Controllers\grl\PersonasContactosController;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\grl\PersonasController;
 
 class InscripcionesController extends Controller
 {
@@ -21,9 +21,12 @@ class InscripcionesController extends Controller
     // 10 => Validado
     // 100 => Rechazado
 
-    public function listarPersonaInscripcion(Request $request)
+    public function buscarPersonaInscripcion(Request $request, $iCapacitacionId, $iTipoIdentId, $cPersDocumento)
     {
-        // return $request -> all();
+        $request->merge(['iCapacitacionId' => $iCapacitacionId]);
+        $request->merge(['iTipoIdentId' => $iTipoIdentId]);
+        $request->merge(['cPersDocumento' => $cPersDocumento]);
+
         try {
             $fieldsToDecode = [
                 'iTipoIdentId',
@@ -33,19 +36,15 @@ class InscripcionesController extends Controller
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $data = new PersonaController();
-            // $data = $data->validate($request)->getData(true);
-            $data = ($data->validate($request))->getContent();
+            $data = ($data->buscarPersona($request))->getContent();
             $data = json_decode($data, true);
-            //return ($data);
-            if (isset($data['iPersId'])) {
+
+            if (isset($data['data']['iPersId'])) {
                 $request->merge(['iPersId' => $data['data']['iPersId']]);
                 $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
-                $contacto = new PersonasContactosController();
-                $contacto = $contacto->obtenerxiPersId($request)->getData(true);
-                $contacto = $contacto['data'];
-                $data['data']['cPersCel'] = $contacto['cPersCel'];
-                $data['data']['cPersCorreo'] = $contacto['cPersCorreo'];
+                $data['data']['cPersCel'] = $data['data']['cPersConTelefonoMovil'];
+                $data['data']['cPersCorreo'] = $data['data']['cPersConCorreoElectronico'];
 
                 $parametros = [
                     $request->iPersId              ??  NULL,
@@ -92,6 +91,28 @@ class InscripcionesController extends Controller
     }
     public function guardarInscripcion(Request $request)
     {
+        if (!isset($request->iPersId)) {
+            $persona = new PersonasController();
+            $persona = $persona->guardarPersonas($request);
+
+            if ($persona[0]->iPersId > 0) {
+                $request->merge(['iPersId' => $persona[0]->iPersId]);
+                $request->merge(['dPersNacimiento' => null]);
+                $request->merge(['cPersFotografia' => null]);
+                $request->merge(['cPersDomicilio' => $request->cPersDireccion]);
+                $request->merge(['cPersCorreo' => $request->cInscripCorreo]);
+                $request->merge(['cPersCelular' => $request->cInscripCel]);
+                $datosPersonales = new PersonasController();
+                $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
+                $request->merge(['iPersId' => $persona[0]->iPersId]);
+            } else {
+                return response()->json([
+                    'validated' => false,
+                    'errors' => 'No se encontró el iPersId'
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
+
         try {
             $fieldsToDecode = [
                 'iCapacitacionId',
