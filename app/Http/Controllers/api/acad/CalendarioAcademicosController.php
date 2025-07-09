@@ -391,7 +391,8 @@ class CalendarioAcademicosController extends Controller
     }
 
     public function addCalAcademico(Request $request)
-    {
+{
+    try {
         $solicitud = [
             $request->json,
             $request->_opcion
@@ -399,22 +400,21 @@ class CalendarioAcademicosController extends Controller
 
         $query = DB::select(
             "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-
             $solicitud
         );
 
-        try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
+        $response = [
+            'validated' => true,
+            'message' => 'Se obtuvo la información',
+            'data' => $query,
+        ];
 
-            $estado = 201;
-        } catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
+        return response()->json($response, 201);
+
+    } catch (Exception $e) {
+        return FormatearMensajeHelper::error($e);
     }
+}
 
     public function searchAcademico(Request $request)
     {
