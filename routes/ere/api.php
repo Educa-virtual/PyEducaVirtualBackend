@@ -10,6 +10,7 @@ use App\Http\Controllers\ere\EncabezadoPreguntasController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\ere\EvaluacionExclusionesController;
 use App\Http\Controllers\ere\InstitucionesEducativasController;
 use App\Http\Controllers\ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\ImportarResultadosController;
@@ -200,6 +201,13 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
          //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
          Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+
+        // Gestionar exclusion de estudiantes en evaluaciones ERE
+        Route::post('verExclusiones', [EvaluacionExclusionesController::class, 'verExclusiones']);
+        Route::post('guardarExclusion', [EvaluacionExclusionesController::class, 'guardarExclusion']);
+        Route::post('actualizarExclusion', [EvaluacionExclusionesController::class, 'actualizarExclusion']);
+        Route::post('verExclusion', [EvaluacionExclusionesController::class, 'verExclusion']);
+        Route::post('eliminarExclusion', [EvaluacionExclusionesController::class, 'eliminarExclusion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
