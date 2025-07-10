@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class EvaluacionExclusionesController extends Controller
 {
-    public function verExclusiones(Request $request)
+    public function listarExclusiones(Request $request)
     {
         try {
             $data = EvaluacionExclusion::selEvaluacionExclusiones($request);

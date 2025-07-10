@@ -203,7 +203,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
          Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
 
         // Gestionar exclusion de estudiantes en evaluaciones ERE
-        Route::post('verExclusiones', [EvaluacionExclusionesController::class, 'verExclusiones']);
+        Route::post('listarExclusiones', [EvaluacionExclusionesController::class, 'listarExclusiones']);
         Route::post('guardarExclusion', [EvaluacionExclusionesController::class, 'guardarExclusion']);
         Route::post('actualizarExclusion', [EvaluacionExclusionesController::class, 'actualizarExclusion']);
         Route::post('verExclusion', [EvaluacionExclusionesController::class, 'verExclusion']);

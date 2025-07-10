@@ -17,7 +17,7 @@ class EvaluacionExclusion
             is_numeric($id_cifrado) ? $id_cifrado : ($hashids->decode($id_cifrado)[0] ?? null),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("exec ere.Sp_SEL_EvaluacionExclusiones $placeholders", $parametros);
+        return DB::select("exec ere.Sp_SEL_evaluacionExclusiones $placeholders", $parametros);
     }
 
     public static function insEvaluacionExclusion($request)
@@ -31,7 +31,7 @@ class EvaluacionExclusion
 
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert("exec ere.Sp_INS_EvaluacionExclusion $placeholders", $parametros);
+        return DB::insert("exec ere.Sp_INS_evaluacionExclusion $placeholders", $parametros);
     }
 
     public static function updEvaluacionExclusion($request)
@@ -45,7 +45,7 @@ class EvaluacionExclusion
             $request->cEvalExcluArchivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::update("exec ere.Sp_UPD_EvaluacionExclusion $placeholders", $parametros);
+        return DB::update("exec ere.Sp_UPD_evaluacionExclusion $placeholders", $parametros);
     }
 
     public static function selEvaluacionExclusion($request)
@@ -55,7 +55,7 @@ class EvaluacionExclusion
             $request->iEvalExcluId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("exec ere.Sp_SEL_EvaluacionExclusion $placeholders", $parametros);
+        return DB::selectOne("exec ere.Sp_SEL_evaluacionExclusion $placeholders", $parametros);
     }
 
     public static function delEvaluacionExclusion($request)
@@ -65,6 +65,6 @@ class EvaluacionExclusion
             $request->iEvalExcluId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("exec ere.Sp_DEL_EvaluacionExclusion $placeholders", $parametros);
+        return DB::select("exec ere.Sp_DEL_evaluacionExclusion $placeholders", $parametros);
     }
 }
