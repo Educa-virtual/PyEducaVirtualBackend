@@ -416,38 +416,44 @@ class CalendarioAcademicosController extends Controller
     }
 }
 
-    public function searchAcademico(Request $request)
-    {
+public function searchAcademico(Request $request)
+{
+    try {
+        // Preparar parámetros del procedimiento almacenado
         $solicitud = [
             $request->json,
             $request->_opcion
         ];
 
+        // Ejecutar procedimiento almacenado
         $query = DB::select(
-            "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-
+            "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?, ?",
             $solicitud
         );
 
-        try {
-            $response = [
-                'validated' => true,
-                'message' => 'se obtuvo la información',
-                'data' => $query,
-            ];
+        // Preparar respuesta exitosa
+        $response = [
+            'validated' => true,
+            'message' => 'Se obtuvo la información',
+            'data' => $query,
+        ];
 
-            $estado = 201;
-        } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-            $estado = 500;
-        }
+        $estado = 200;
 
-        return new JsonResponse($response, $estado);
+    } catch (\Exception $e) {
+        // Manejar errores
+        $response = [
+            'validated' => false,
+            'message' => $e->getMessage(),
+            'data' => [],
+        ];
+
+        $estado = 500;
     }
+
+    return new JsonResponse($response, $estado);
+    }
+
 
     public function deleteCalPeriodosFormativos(Request $request)
     {
