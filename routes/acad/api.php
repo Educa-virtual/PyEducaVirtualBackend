@@ -2,6 +2,8 @@
 <?php
 
 use App\Http\Controllers\acad\BuzonSugerenciaController;
+use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
+use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DocenteCursosController;
@@ -84,5 +86,14 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::prefix('detalle-matriculas')->group(function () {
         Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
+    });
+
+    Route::group(['prefix' => 'calendario-periodos-evaluaciones'], function () {
+        Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioPeriodosEvaluacionesController::class, 'obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular']);
+    });
+    Route::group(['prefix' => 'contenido-semanas'], function () {
+        Route::post('', [ContenidoSemanasController::class, 'guardarContenidoSemanas']);
+        Route::put('/{iContenidoSemId}', [ContenidoSemanasController::class, 'actualizarContenidoSemanas']);
+        Route::delete('/{iContenidoSemId}', [ContenidoSemanasController::class, 'eliminarContenidoSemanas']);
     });
 });
