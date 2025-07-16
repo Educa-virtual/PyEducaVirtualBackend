@@ -7,6 +7,7 @@ use App\Http\Controllers\enc\DirectorController;
 use App\Http\Controllers\enc\DocenteController;
 use App\Http\Controllers\enc\EncuestaController;
 use App\Http\Controllers\enc\EstudianteController;
+use App\Http\Controllers\enc\TiempoDuracionController;
 use App\Http\Controllers\enc\TipoAccesoController;
 use App\Http\Controllers\enc\UgelController;
 use App\Http\Controllers\seg\AuthController;
@@ -19,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::group(['prefix' => 'tipos-acceso'], function () {
         Route::get('', [TipoAccesoController::class, 'obtenerTiposAcceso']);
+    });
+    Route::group(['prefix' => 'tiempos-duracion'], function () {
+        Route::get('', [TiempoDuracionController::class, 'obtenerTiemposDuracion']);
     });
     Route::group(['prefix' => 'categorias'], function () {
         Route::get('', [CategoriaController::class, 'obtenerCategorias']);
