@@ -95,5 +95,6 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('', [ContenidoSemanasController::class, 'guardarContenidoSemanas']);
         Route::put('/{iContenidoSemId}', [ContenidoSemanasController::class, 'actualizarContenidoSemanas']);
         Route::delete('/{iContenidoSemId}', [ContenidoSemanasController::class, 'eliminarContenidoSemanas']);
+        Route::get('/{iContenidoSemId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxiContenidoSemId']);
     });
 });

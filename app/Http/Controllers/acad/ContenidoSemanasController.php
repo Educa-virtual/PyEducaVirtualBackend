@@ -20,6 +20,7 @@ class ContenidoSemanasController extends Controller
             'iYAcadId' => ['required'],
             'idDocCursoId' => ['required'],
             'cContenidoSemTitulo' => ['required', 'string', 'max:250'],
+            'cTipoUsuario' => ['required']
         ];
 
         // Mensajes comunes
@@ -29,6 +30,7 @@ class ContenidoSemanasController extends Controller
             'cContenidoSemTitulo.required' => 'Debe ingresar el título',
             'cContenidoSemTitulo.string' => 'El título debe ser una cadena de texto',
             'cContenidoSemTitulo.max' => 'El título no debe exceder los 250 caracteres',
+            'cTipoUsuario.required' => 'No se detectó el tipo de usuario',
         ];
 
         // Reglas adicionales por tipo de usuario
@@ -132,6 +134,7 @@ class ContenidoSemanasController extends Controller
         $commonRules = [
             'iContenidoSemId' => ['required'],
             'cContenidoSemTitulo' => ['required', 'string', 'max:250'],
+            'cTipoUsuario' => ['required'],
         ];
 
         // Mensajes comunes
@@ -140,6 +143,7 @@ class ContenidoSemanasController extends Controller
             'cContenidoSemTitulo.required' => 'Debe ingresar el título',
             'cContenidoSemTitulo.string' => 'El título debe ser una cadena de texto',
             'cContenidoSemTitulo.max' => 'El título no debe exceder los 250 caracteres',
+            'cTipoUsuario.required' => 'No se detectó el tipo de usuario',
         ];
 
         // Reglas adicionales por tipo de usuario
@@ -281,6 +285,60 @@ class ContenidoSemanasController extends Controller
                     Response::HTTP_OK
                 );
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerContenidoSemanasxiContenidoSemId(Request $request, $iContenidoSemId)
+    {
+        $request->merge([
+            'iContenidoSemId' => $iContenidoSemId
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'iContenidoSemId' => ['required'],
+        ], [
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iContenidoSemId',
+                'iPeriodoEvalAperId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iContenidoSemId                ?? NULL,
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_SEL_contenidoSemanasxSesionAprendizajexiContenidoSemId
+                    @_iContenidoSemId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => false, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
