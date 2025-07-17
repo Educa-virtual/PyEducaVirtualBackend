@@ -370,6 +370,7 @@ class ContenidoSemanasController extends Controller
             $fieldsToDecode = [
                 'iSilaboId',
                 'iContenidoSemId',
+                'iPeriodoEvalAperId',
                 'iCredId'
 
             ];
