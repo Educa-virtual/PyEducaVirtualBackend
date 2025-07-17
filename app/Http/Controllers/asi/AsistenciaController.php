@@ -39,6 +39,24 @@ class AsistenciaController extends Controller
             return FormatearMensajeHelper::error($e);
         }
     }
+    public function guardarPersonalGrupo(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarPersonalInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function ActualizarGrupo(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::actualizarHorarioInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
     public function buscarPersonalInstitucion(Request $request){
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);

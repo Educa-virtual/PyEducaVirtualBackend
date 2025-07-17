@@ -24,11 +24,28 @@ class AsistenciaAdministrativa extends Model
             $request->iConfHorarioId,
             $request->tConfHorarioEntTur,
             $request->tConfHorarioSalTur,
-            $request->grupoPersonal,
-            $request->dtFechaIncio,
-            $request->dtFechaFin,
+            // $request->grupoPersonal,
+            // $request->dtFechaIncio,
+            // $request->dtFechaFin,
         ];
-        $data = DB::select("EXEC [asi].[Sp_INS_grupos] ?,?,?,?,?,?,?,?,?",$datos);
+        $enviados = str_repeat('?,',count($datos)-1).'?';
+        $data = DB::select("EXEC [asi].[Sp_INS_grupos] ".$enviados, $datos);
+        return $data;
+    }
+    public static function actualizarHorarioInstitucion(Request $request){
+        
+        $datos = [
+            $request->iSedeId,
+            $request->iGrupoId,
+            $request->cGrupoNombre,
+            $request->cGrupoDescripcion,
+            $request->iConfHorarioId,
+            $request->tConfHorarioEntTur,
+            $request->tConfHorarioSalTur,
+        ];
+
+        $enviados = str_repeat('?,',count($datos)-1).'?';
+        $data = DB::select("EXEC [asi].[Sp_UPD_grupos] ".$enviados, $datos);
         return $data;
     }
     public static function buscarPersonalInstitucion(Request $request){
@@ -37,6 +54,33 @@ class AsistenciaAdministrativa extends Model
             $request->iYAcadId,
         ];
         $data = DB::select("EXEC [asi].[Sp_SEL_GrupoPersonal] ?,?",$datos);
+        return $data;
+    }
+    public static function guardarPersonalInstitucion(Request $request){
+        $datos = [
+            $request->iGrupoId,
+            $request->grupoPersonal,
+        ];
+        $data = DB::select("EXEC [asi].[Sp_INS_personaGrupo] ?,?",$datos);
+        return $data;
+    }
+    
+    public static function editarGrupoInstitucion(Request $request){
+        $datos = [
+            $request->iSedeId,
+            $request->iGrupoId,
+            $request->cGrupoNombre,
+            $request->cGrupoDescripcion,
+            $request->iConfHorarioId,
+            $request->tConfHorarioEntTur,
+            $request->tConfHorarioSalTur,
+            $request->grupoPersonal,
+            $request->grupoEliminado,
+            $request->dtFechaIncio,
+            $request->dtFechaFin,
+        ];
+        $enviados = str_repeat('?,',count($datos)-1).'?';
+        $data = DB::select("EXEC [asi].[Sp_UPD_grupos] ".$enviados,$datos);
         return $data;
     }
 }
