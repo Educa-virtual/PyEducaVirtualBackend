@@ -229,7 +229,7 @@ class AreasController extends Controller
     public function obtenerAreasPorEvaluacion($evaluacionId)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ADMINISTRADOR_DREMO]]);
             $evaluacionIdDescifrado =  VerifyHash::decodesxId($evaluacionId); //$this->hashids->decode($evaluacionId);
             //$personaIdDescifrado =  $this->hashids->decode($personaId);
             if (empty($evaluacionIdDescifrado)) {
@@ -266,6 +266,18 @@ class AreasController extends Controller
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
             //return response()->json(['status' => 'Error', 'message' => $ex->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+
+    public function activarDescargas($evaluacionId, $areaId) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            $usuario = Auth::user();
+            return AreasService::activarDescargas($evaluacionId, $areaId, $usuario);
+        }
+        catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }
