@@ -336,7 +336,61 @@ class ContenidoSemanasController extends Controller
             $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             return new JsonResponse(
-                ['validated' => false, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
+                ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerContenidoSemanasxiSilaboId(Request $request, $iSilaboId)
+    {
+        $request->merge([
+            'iSilaboId' => $iSilaboId
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'iSilaboId' => ['required'],
+        ], [
+            'iSilaboId.required' => 'No se encontró el identificador del sílabo',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iSilaboId',
+                'iContenidoSemId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iSilaboId                ?? NULL,
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_SEL_contenidoSemanasxSesionAprendizajexiSilaboId
+                    @_iSilaboId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
