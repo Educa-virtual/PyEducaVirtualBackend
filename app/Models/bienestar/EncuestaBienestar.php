@@ -3,6 +3,7 @@
 namespace App\Models\bienestar;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EncuestaBienestar
 {
@@ -13,7 +14,15 @@ class EncuestaBienestar
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuestas $placeholders", $parametros);
+        try {
+            return DB::select("EXEC obe.Sp_SEL_encuestas $placeholders", $parametros);
+        } catch(\Exception $e) {
+            // Manejar error en caso de que no se devuelva ningún resultado
+            if (str_contains($e->getMessage(), 'contains no fields')) {
+                return [];
+            }
+            throw $e;
+        }
     }
 
     public static function selEncuestaParametros($request)
@@ -22,7 +31,7 @@ class EncuestaBienestar
             $request->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuestaParametros $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_SEL_encuestaParametros $placeholders", $parametros);
     }
 
     public static function insEncuesta($request)
@@ -79,7 +88,7 @@ class EncuestaBienestar
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuesta $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_SEL_encuesta $placeholders", $parametros);
     }
 
     public static function delEncuesta($request)
@@ -100,7 +109,7 @@ class EncuestaBienestar
             $request->jsonPoblacion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
     }
 
 
