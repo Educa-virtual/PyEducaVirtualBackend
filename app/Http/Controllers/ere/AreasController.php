@@ -164,7 +164,7 @@ class AreasController extends Controller
     public function descargarArchivoPreguntas($evaluacionId, $areaId, Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE]]);
             $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
             $areaIdDescifrado = $this->hashids->decode($areaId);
             if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
@@ -194,6 +194,17 @@ class AreasController extends Controller
         }
     }
 
+    public function eliminarArchivoPreguntasPdf($evaluacionId, $areaId)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
+            AreasService::eliminarArchivoErePdf($evaluacionId, $areaId);
+            return FormatearMensajeHelper::ok('Archivo eliminado correctamente.');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
     public function descargarCartillaRespuestas($evaluacionId, $areaId)
     {
         try {
@@ -208,7 +219,7 @@ class AreasController extends Controller
     public function generarMatrizCompetencias($evaluacionId, $areaId)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ADMINISTRADOR_DREMO]]);
             $usuario = Auth::user();
             return AreasService::generarMatrizCompetencias($evaluacionId, $areaId, $usuario);
         } catch (Exception $ex) {
@@ -230,53 +241,31 @@ class AreasController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ADMINISTRADOR_DREMO]]);
-            $evaluacionIdDescifrado =  VerifyHash::decodesxId($evaluacionId); //$this->hashids->decode($evaluacionId);
-            //$personaIdDescifrado =  $this->hashids->decode($personaId);
-            if (empty($evaluacionIdDescifrado)) {
-                throw new Exception('El ID enviado no se pudo descifrar.');
-            }
-            $resultados = DB::select(
-                'EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @iEvaluacionId=?, @iPersId=?, @iCredEntPerfId=?',
-                [$evaluacionIdDescifrado, Auth::user()->iPersId, request()->header('icredentperfid')]
-            );
-
-            if (empty($resultados)) {
-                throw new Exception('No se encontraron datos para los cursos asociados.');
-            }
-
-            foreach ($resultados as $fila) {
-                /*$params = [
-                    'iEvaluacionId' => $evaluacionIdDescifrado[0],
-                    'iCursosNivelGradId' => $fila->iCursosNivelGradId,
-                    'busqueda' => '',
-                    'iTipoPregId' => 0,
-                    'bPreguntaEstado' => 1,
-                    'iPreguntaId' => NULL,
-                    'ids' => NULL
-                ];*/
-                $fila->iCantidadMaximaPreguntas = Evaluacion::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId) ?? 20; //EvaluacionesRepository::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
-                $fila->iCantidadPreguntas = PreguntasRepository::obtenerCantidadPreguntasPorEvaluacion($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
-                $fila->iEvaluacionId = $evaluacionIdDescifrado;
-                $fila->iCursosNivelGradId = $this->hashids->encode($fila->iCursosNivelGradId);
-                $fila->bTieneArchivo = AreasService::tieneArchivoErePdfSubido($evaluacionId, $fila->iCursosNivelGradId);
-                $fila->iEvaluacionIdHashed = $evaluacionId;
-            }
+            $resultados = AreasService::obtenerAreasPorEvaluacion($evaluacionId, Auth::user()->iPersId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $resultados);
-            //return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $resultados], Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
-            //return response()->json(['status' => 'Error', 'message' => $ex->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 
-
-    public function activarDescargas($evaluacionId, $areaId) {
+    /*public function obtenerEstadoDescarga($evaluacionId, $areaId) {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
-            $usuario = Auth::user();
-            return AreasService::activarDescargas($evaluacionId, $areaId, $usuario);
+            $data = AreasService::obtenerEstadoDescarga($evaluacionId, $areaId);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         }
         catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }*/
+
+    public function actualizarEstadoDescarga($evaluacionId, $areaId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            AreasService::actualizarEstadoDescarga($evaluacionId, $areaId, $request->bDescarga);
+            return FormatearMensajeHelper::ok('Se ha actualizado el estado de la descarga');
+        } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
