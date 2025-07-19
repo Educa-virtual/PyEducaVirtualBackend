@@ -185,7 +185,6 @@ class AsistenciaController extends Controller
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
         $query = DB::select($consulta, $solicitud);
         try{
@@ -374,8 +373,12 @@ class AsistenciaController extends Controller
 
         $json_institucion = json_decode($query[0]->institucion,true);
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -441,9 +444,7 @@ class AsistenciaController extends Controller
         ];
         
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
-
         $query = DB::select($consulta, $solicitud);
-    
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -467,8 +468,13 @@ class AsistenciaController extends Controller
         $json_asistencia = json_decode($query[0]->asistencia,true);
         
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
+        
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -625,8 +631,13 @@ class AsistenciaController extends Controller
         $json_institucion = json_decode($query[0]->institucion,true);
 
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
+
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
