@@ -347,16 +347,19 @@ class ContenidoSemanasController extends Controller
         }
     }
 
-    public function obtenerContenidoSemanasxiSilaboId(Request $request, $iSilaboId)
+    public function obtenerContenidoSemanasxidDocCursoIdxiYAcadId(Request $request, $idDocCursoId, $iYAcadId)
     {
         $request->merge([
-            'iSilaboId' => $iSilaboId
+            'idDocCursoId' => $idDocCursoId,
+            'iYAcadId' => $iYAcadId
         ]);
 
         $validator = Validator::make($request->all(), [
-            'iSilaboId' => ['required'],
+            'idDocCursoId' => ['required'],
+            'iYAcadId' => ['required'],
         ], [
-            'iSilaboId.required' => 'No se encontró el identificador del sílabo',
+            'idDocCursoId.required' => 'No se encontró el identificador del curso docente',
+            'iYAcadId.required' => 'No se encontró el identificador del año académico',
         ]);
 
         if ($validator->fails()) {
@@ -368,7 +371,8 @@ class ContenidoSemanasController extends Controller
 
         try {
             $fieldsToDecode = [
-                'iSilaboId',
+                'idDocCursoId',
+                'iYAcadId',
                 'iContenidoSemId',
                 'iPeriodoEvalAperId',
                 'iCredId'
@@ -377,18 +381,76 @@ class ContenidoSemanasController extends Controller
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iSilaboId                ?? NULL,
-                $request->iCredId                        ?? NULL
+                $request->idDocCursoId                ?? NULL,
+                $request->iYAcadId                    ?? NULL,
+                $request->iCredId                     ?? NULL
             ];
 
             $data = DB::select(
-                'EXEC acad.Sp_SEL_contenidoSemanasxSesionAprendizajexiSilaboId
-                    @_iSilaboId=?, 
+                'EXEC acad.Sp_SEL_contenidoSemanasxSesionAprendizajexidDocCursoIdxiYAcadId
+                    @_idDocCursoId=?, 
+                    @_iYAcadId=?, 
                     @_iCredId=?',
                 $parametros
             );
 
             $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerActividadesxiContenidoSemId(Request $request, $iContenidoSemId)
+    {
+        $request->merge([
+            'iContenidoSemId' => $iContenidoSemId
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'iContenidoSemId' => ['required'],
+        ], [
+            'iContenidoSemId.required' => 'No se encontró el identificador del contenido semana',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iContenidoSemId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iContenidoSemId             ?? NULL,
+                $request->iCredId                     ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_SEL_contenidoSemanasxActividadesxiContenidoSemId
+                    @_iContenidoSemId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            foreach ($data as $item) {
+                $item->iEstado = (int) $item->iEstado;
+                $item->iActTipoId = (int) $item->iActTipoId;
+                $item->iEstadoActividad = (int) $item->iEstadoActividad;
+            }
 
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
