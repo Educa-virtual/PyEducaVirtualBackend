@@ -209,4 +209,18 @@ class BuzonSugerenciaController extends Controller
             //abort(Response::HTTP_NOT_FOUND);
         }
     }
+
+/**
+    *Ver sugerencia específica con respuesta del director
+ */
+    public function obtenerSugerenciaConRespuesta($id, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $sugerencia = BuzonSugerencia::obtenerDetalleSugerencia($id, $request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $sugerencia);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
 }

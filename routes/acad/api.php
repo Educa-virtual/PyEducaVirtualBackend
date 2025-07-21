@@ -1,6 +1,5 @@
 
 <?php
-
 use App\Http\Controllers\acad\BuzonSugerenciaController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DocenteCursosController;
@@ -39,6 +38,8 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
 
     Route::group(['prefix' => 'directores'], function () {
         Route::get('buzon-sugerencias', [BuzonSugerenciaController::class, 'obtenerListaSugerenciasDirector']);
+        Route::get('{iSugerenciaId}/detalle', [BuzonSugerenciaController:: class, 'obtenerDetalleSugerencia']);
+        Route::get('{iSugerenciaId}/responder', [BuzonSugerenciaController:: class, 'rsponderSugerencia']); 
     });
 });
 
