@@ -205,10 +205,10 @@ class InscripcionesController extends Controller
         $request->merge(['iInscripId' => $iInscripId]);
 
         $validator = Validator::make($request->all(), [
-            'iCapacitacionId' => ['required'],
+            'iInscripId' => ['required'],
             'bEstado' => ['required'],
         ], [
-            'iCapacitacionId.required' => 'No se encontró el identificador iCapacitacionId',
+            'iInscripId.required' => 'No se encontró el identificador iInscripId',
             'bEstado.required' => 'No se encontró el estado',
         ]);
 
