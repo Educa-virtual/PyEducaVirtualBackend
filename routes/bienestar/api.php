@@ -75,11 +75,13 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarDosis', [FichaDosisController::class, 'actualizarDosis']);
     Route::post('borrarDosis', [FichaDosisController::class, 'borrarDosis']);
 
+    /* Recordatorios de cumpleaños */
     Route::get('verRecordatorioPeriodos', [RecordarioFechasController::class, 'verRecordatorioPeriodos']);
     Route::post('verFechasEspeciales', [RecordarioFechasController::class, 'verFechasEspeciales']);
     Route::post('verConfRecordatorio', [RecordarioFechasController::class, 'verConfRecordatorio']);
     Route::post('actualizarConfRecordatorio', [RecordarioFechasController::class, 'actualizarConfRecordatorio']);
 
+    /* Gestionar encuestas de bienestar */
     Route::post('listarEncuestas', [EncuestaBienestarController::class, 'listarEncuestas']);
     Route::post('crearEncuesta', [EncuestaBienestarController::class, 'crearEncuesta']);
     Route::post('guardarEncuesta', [EncuestaBienestarController::class, 'guardarEncuesta']);
@@ -104,5 +106,9 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('printRespuestas', [EncuestaBienestarRespuestaController::class, 'printRespuestas']);
 
     Route::post('verResumen', [EncuestaBienestarResumenController::class, 'verResumen']);
+
+    /* Gestionar reporte de fichas de bienestar */
+    Route::post('crearReporte', [FichaBienestarController::class, 'crearReporte']);
+    Route::post('verReporte', [FichaBienestarController::class, 'verReporte']);
 });
 
