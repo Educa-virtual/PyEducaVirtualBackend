@@ -3,27 +3,15 @@
 namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
-use PhpParser\Node\Stmt\TryCatch;
+use App\Helpers\VerifyHash;
 
 class TareasController extends ApiController
 {
-    protected $hashids;
-    protected $iTareaId;
-    protected $iProgActId;
-    protected $iDocenteId;
-
-
-    public function __construct()
-    {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-    }
-
+   
     public function list(Request $request)
     {
         $request->validate(
@@ -34,27 +22,21 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
-        if ($request->iProgActId) {
-            $iProgActId = $this->hashids->decode($request->iProgActId);
-            $iProgActId = count($iProgActId) > 0 ? $iProgActId[0] : $iProgActId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
 
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $iProgActId            ?? NULL,
-            $iDocenteId            ?? NULL,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
+            $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
             $request->cTareaArchivoAdjunto  ?? NULL,
@@ -78,11 +60,8 @@ class TareasController extends ApiController
             $data = DB::select('exec aula.SP_SEL_tareas
             ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
-            foreach ($data as $key => $value) {
-                $value->iTareaId = $this->hashids->encode($value->iTareaId);
-                $value->iProgActId = $this->hashids->encode($value->iProgActId);
-                $value->iDocenteId = $this->hashids->encode($value->iDocenteId);
-            }
+            // Codificar los id de los registros a enviar al frontend
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
@@ -105,27 +84,20 @@ class TareasController extends ApiController
             ]
         );
 
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
-        if ($request->iProgActId) {
-            $iProgActId = $this->hashids->decode($request->iProgActId);
-            $iProgActId = count($iProgActId) > 0 ? $iProgActId[0] : $iProgActId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
-
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $iProgActId,
-            $iDocenteId            ?? NULL,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
+            $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
             $request->cTareaArchivoAdjunto  ?? NULL,
@@ -186,22 +158,23 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iCursoId) {
-            $iCursoId = $this->hashids->decode($request->iCursoId);
-            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
-        }
+
+        $fieldsToDecode = [
+            'iCursoId',
+            'iProgActId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $iCursoId,
+            $request->iCursoId,
         ];
 
         try {
             $data = DB::select('exec aula.SP_SEL_obtenerTareas
                 ?', $parametros);
 
-            foreach ($data as $key => $value) {
-                $value->iProgActId = $this->hashids->encode($value->iProgActId);
-            }
+            // Codificar los id de los registros a enviar al frontend
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
@@ -221,16 +194,17 @@ class TareasController extends ApiController
             ['opcion.required' => 'Hubo un problema al obtener la acción']
         );
 
-        $request['iTareaId'] = is_null($request->iTareaId)
-            ? null
-            : (is_numeric($request->iTareaId)
-                ? $request->iTareaId
-                : ($this->hashids->decode($request->iTareaId)[0] ?? null));
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $request->iTareaId                       ?? NULL,
+            $request->iTareaId              ?? NULL,
             $request->iProgActId            ?? NULL,
             $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
@@ -280,27 +254,22 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
-        if ($request->iProgActId) {
-            $iProgActId = $this->hashids->decode($request->iProgActId);
-            $iProgActId = count($iProgActId) > 0 ? $iProgActId[0] : $iProgActId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
+
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $request->iProgActId,
-            $iDocenteId            ?? NULL,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
+            $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
             $request->cTareaArchivoAdjunto  ?? NULL,
@@ -350,17 +319,21 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
+
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $request->iProgActId,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
             $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
@@ -403,12 +376,15 @@ class TareasController extends ApiController
 
     public function obtenerTareaxiTareaidxiEstudianteId(Request $request)
     {
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
+         $fieldsToDecode = [
+            'iTareaId',
+            'iEstudianteId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+       
         $parametros = [
-            $iTareaId,
+            $request->iTareaId,
             $request->iEstudianteId,
         ];
 

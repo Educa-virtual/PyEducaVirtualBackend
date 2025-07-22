@@ -2,80 +2,57 @@
 
 namespace App\Http\Controllers\bienestar;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Services\ParseSqlErrorService;
-use Illuminate\Http\JsonResponse;
+use App\Models\bienestar\FichaDiscapacidad;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class FichaDiscapacidadController extends Controller
 {
+    private $perfiles_permitidos = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+        Perfil::DOCENTE,
+        Perfil::DIRECTOR_IE,
+    ];
+
     public function guardarFichaDiscapacidad(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->bFichaDGEstaEnCONADIS,
-            $request->cCodigoCONADIS,
-            $request->bFichaDGEstaEnOMAPED,
-            $request->cCodigoOMAPED,
-            $request->cOtroProgramaDiscapacidad,
-            $request->jsonDiscapacidades,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaDiscapacidad::insFichaDiscapacidad($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function actualizarFichaDiscapacidad(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->bFichaDGEstaEnCONADIS,
-            $request->cCodigoCONADIS,
-            $request->bFichaDGEstaEnOMAPED,
-            $request->cCodigoOMAPED,
-            $request->cOtroProgramaDiscapacidad,
-            $request->jsonDiscapacidades,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', [$this->perfiles_permitidos)];
+            $data = FichaDiscapacidad::updFichaDiscapacidad($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function verFichaDiscapacidad(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaDiscapacidad ?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaDiscapacidad::selfichaDiscapacidad($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }

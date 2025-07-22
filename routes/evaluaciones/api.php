@@ -16,7 +16,8 @@ use App\Http\Controllers\evaluaciones\LogrosController;
 use App\Http\Controllers\evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
 use App\Http\Controllers\evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController ;
+use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
+use App\Http\Controllers\eval\EvaluacionPromediosController;
 use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
@@ -31,6 +32,12 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::get('obtenerBancoPreguntas', [BancoPreguntasController::class, 'obtenerBancoPreguntas']);
         Route::get('obtenerEncabezadosPreguntas', [BancoPreguntasController::class, 'obtenerEncabezadosPreguntas']);
         Route::delete('eliminarBancoPreguntasById/{id}', [BancoPreguntasController::class, 'eliminarBancoPreguntasById']);
+        Route::get('/{iEvaluacionId}/curso/{iCursoId}/docente/{iDocenteId}', [EvaluacionesBancoPreguntasController::class, 'obtenerBancoPreguntasxiEvaluacionIdxiCursoIdxiDocenteId']); // Para obtener
+        Route::post('importar', [EvaluacionesBancoPreguntasController::class, 'importarBancoPreguntas']);
+        Route::post('/', [EvaluacionesBancoPreguntasController::class, 'guardarBancoPreguntas']); // Para crear
+        Route::put('/{iBancoId}', [EvaluacionesBancoPreguntasController::class, 'actualizarBancoPreguntasxiBancoId']); // Para actualizar
+        Route::delete('/{iBancoId}', [EvaluacionesBancoPreguntasController::class, 'eliminarBancoPreguntasxiBancoId']); // Para eliminar
+        
     });
 
     Route::group(['prefix' => 'evaluacion'], function () {
@@ -43,7 +50,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
 
         Route::post('actualizarRubricaEvaluacion', [EvaluacionController::class, 'actualizarRubricaEvaluacion']);
         Route::post('deleteRubricaEvaluacion', [EvaluacionController::class, 'deleteRubricaEvaluacion']);
-        
+
         Route::post('guardarActualizarCalificacionRubricaEvaluacion', [EvaluacionController::class, 'guardarActualizarCalificacionRubricaEvaluacion']);
 
         Route::group(['prefix' => 'estudiantes'], function () {
@@ -75,19 +82,37 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('handleCrudOperation', [EvaluacionesBancoPreguntasController::class, 'handleCrudOperation']);
     });
     Route::group(['prefix' => 'encabezado-preguntas'], function () {
-        Route::post('handleCrudOperation', [EncabezadoPreguntasController::class, 'handleCrudOperation']);
+        Route::post('/', [EncabezadoPreguntasController::class, 'guardarEncabezadoPreguntas']); // Para crear
+        Route::get('/{iEvaluacionId}', [EncabezadoPreguntasController::class, 'obtenerEncabezadoPreguntasxiEvaluacionId']); // Para obtener x iEvaluacionId
+        Route::put('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'actualizarEncabezadoPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
+        Route::delete('/{iEvalPregId}', [EncabezadoPreguntasController::class, 'eliminarEncabezadoPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
+        Route::post('/banco', [EncabezadoPreguntasController::class, 'guardarBancoEncabezadoPreguntas']); // Para crear
+        Route::put('/banco/{idEncabPregId}', [EncabezadoPreguntasController::class, 'actualizarBancoEncabezadoPreguntasxidEncabPregId']); // Para actualizar x idEncabPregId
+        Route::delete('/banco/{idEncabPregId}', [EncabezadoPreguntasController::class, 'eliminarBancoEncabezadoPreguntasxidEncabPregId']); // Para eliminar x idEncabPregId
     });
     Route::group(['prefix' => 'evaluaciones'], function () {
-        Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']);
+        Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']); //corregir 16/06/2025
+        Route::post('/', [EvaluacionesController::class, 'guardarEvaluaciones']); // Para crear
+        Route::get('/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerEvaluacionesxiEvaluacionId']); // Para obtener
+        Route::put('/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacionesxiEvaluacionId']); // Para actualizar
+        Route::delete('/{iEvaluacionId}', [EvaluacionesController::class, 'eliminarEvaluacionesxiEvaluacionId']); // Para eliminar
+        Route::get('/{iEvaluacionId}/estudiante/{iEstudianteId}', [EvaluacionesController::class, 'obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId']); // Para eliminar
+        Route::post('/obtenerReporteEstudiantesRetroalimentacion', [EvaluacionesController::class, 'obtenerReporteEstudiantesRetroalimentacion']);
+
     });
     Route::group(['prefix' => 'evaluacion-preguntas'], function () {
-        Route::post('handleCrudOperation', [EvaluacionPreguntasController::class, 'handleCrudOperation']);
+        Route::post('/', [EvaluacionPreguntasController::class, 'guardarEvaluacionPreguntas']); // Para crear
+        Route::get('/{iEvaluacionId}', [EvaluacionPreguntasController::class, 'obtenerEvaluacionPreguntasxiEvaluacionId']); // Para obtener x iEvaluacionId
+        Route::put('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'actualizarEvaluacionPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
+        Route::delete('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'eliminarEvaluacionPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
+        Route::get('/{iEvaluacionId}/estudiante/{iEstudianteId}', [EvaluacionPreguntasController::class, 'obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId']); // Para eliminar
+
     });
     Route::group(['prefix' => 'evaluacion-respuestas'], function () {
         Route::post('handleCrudOperation', [EvaluacionRespuestasController::class, 'handleCrudOperation']);
     });
     Route::group(['prefix' => 'evaluacion-promedios'], function () {
-        Route::post('guardarConclusionxiEvalPromId', [EvaluacionesController::class, 'guardarConclusionxiEvalPromId']);
+        Route::post('/', [EvaluacionPromediosController::class, 'guardarConclusionxiEvaluacionIdxiEstudianteId']);
     });
 });
 

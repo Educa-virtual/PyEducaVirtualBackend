@@ -2,110 +2,57 @@
 
 namespace App\Http\Controllers\bienestar;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\bienestar\FichaAlimentacionSaveRequest;
-use App\Services\ParseSqlErrorService;
-use Illuminate\Http\JsonResponse;
+use App\Models\bienestar\FichaAlimentacion;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class FichaAlimentacionController extends Controller
 {
+    private $perfiles_permitidos = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+        Perfil::DOCENTE,
+        Perfil::DIRECTOR_IE,
+    ];
+
     public function guardarFichaAlimentacion(FichaAlimentacionSaveRequest $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->iLugarAlimIdDesayuno,
-            $request->cLugarAlimDesayuno,
-            $request->iLugarAlimIdAlmuerzo,
-            $request->cLugarAlimAlmuerzo,
-            $request->iLugarAlimIdCena,
-            $request->cLugarAlimCena,
-            $request->bDietaVegetariana,
-            $request->cDietaVegetarianaObs,
-            $request->bDietaVegana,
-            $request->cDietaVeganaObs,
-            $request->bAlergiasAlim,
-            $request->cAlergiasAlimObs,
-            $request->bIntoleranciaAlim,
-            $request->cIntoleranciaAlimObs,
-            $request->bSumplementosAlim,
-            $request->cSumplementosAlimObs,
-            $request->bDificultadAlim,
-            $request->cDificultadAlimObs,
-            $request->cInfoAdicionalAlimObs,
-            $request->jsonProgramas,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaAlimentacion::updfichaAlimentacion($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function actualizarFichaAlimentacion(Request $request)
     {
-        $parametros = [
-            $request->iAlimId,
-            $request->iFichaDGId,
-            $request->iLugarAlimIdDesayuno,
-            $request->cLugarAlimDesayuno,
-            $request->iLugarAlimIdAlmuerzo,
-            $request->cLugarAlimAlmuerzo,
-            $request->iLugarAlimIdCena,
-            $request->cLugarAlimCena,
-            $request->bDietaVegetariana,
-            $request->cDietaVegetarianaObs,
-            $request->bDietaVegana,
-            $request->cDietaVeganaObs,
-            $request->bAlergiasAlim,
-            $request->cAlergiasAlimObs,
-            $request->bIntoleranciaAlim,
-            $request->cIntoleranciaAlimObs,
-            $request->bSumplementosAlim,
-            $request->cSumplementosAlimObs,
-            $request->bDificultadAlim,
-            $request->cDificultadAlimObs,
-            $request->cInfoAdicionalAlimObs,
-            $request->jsonProgramas,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaAlimentacion::updfichaAlimentacion($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function verFichaAlimentacion(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaAlimentacion ?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaAlimentacion::selfichaAlimentacion($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }

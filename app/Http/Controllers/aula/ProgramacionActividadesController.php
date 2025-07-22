@@ -182,6 +182,8 @@ class ProgramacionActividadesController extends Controller
             $request->dtActualizado             ?? NULL,
             $request->iHorarioId                         ?? NULL,
 
+            $request->idDocCursoId                         ?? NULL,
+
             //$request->iCredId
 
         ];
@@ -190,7 +192,7 @@ class ProgramacionActividadesController extends Controller
             switch ($request->opcion) {
                 case 'GUARDARxProgActxiTarea':
                     $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
-                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
                         $resp = new TareasController();
@@ -199,7 +201,7 @@ class ProgramacionActividadesController extends Controller
                     break;
                 case 'GUARDARxProgActxiEvaluacionId':
                     $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
-                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
                         $resp = new EvaluacionesController();
@@ -215,9 +217,27 @@ class ProgramacionActividadesController extends Controller
                     }
                     return $resp->handleCrudOperation($request);
                     break;
+                case 'GUARDARxProgActxiCuestionarioId':
+                    $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iProgActId > 0) {
+                        $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
+                        $resp = new CuestionariosController();
+                    }
+                    return $resp->guardarCuestionario($request);
+                    break;
+                case 'GUARDARxProgActxiRVirtualId':
+                    $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
+                    ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    if ($data[0]->iProgActId > 0) {
+                        $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
+                        $resp = new ReunionVirtualesController();
+                    }
+                    return $resp->guardarReunionVirtuales($request);
+                    break;
                 default:
                     $data = DB::select('exec aula.SP_INS_aulaProgramacionActividades
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
                         $codeResponse = 200;
