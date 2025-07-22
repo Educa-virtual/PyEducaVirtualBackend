@@ -1,5 +1,7 @@
 
 <?php
+
+use App\Http\Controllers\acad\BuzonDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
@@ -31,6 +33,10 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
                 Route::delete('', [BuzonSugerenciaController::class, 'eliminarSugerencia']);
                 Route::get('archivos', [BuzonSugerenciaController::class, 'obtenerArchivosSugerencia']);
                 Route::get('archivos/{nombreArchivo}', [BuzonSugerenciaController::class, 'descargarArchivosSugerencia']);
+
+                Route::get('', [BuzonSugerenciaController::class, 'obtenerListaSugerenciasEstudiante']);
+                Route::get('{id}', [BuzonSugerenciaController::class, 'obtenerListaSugerenciaConRespuesta']);
+                Route::post('', [BuzonDirectorController::class, 'registrarSugerencia']);
             });
         });
 
