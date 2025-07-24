@@ -2,17 +2,29 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Services\acad\BuzonSugerenciasDirectorService;
 use Illuminate\Http\Request;
-use App\Services\acad\BuzonSugerenciasService;
 use Exception;
+use Illuminate\Support\Facades\Gate;
 
-class BuzonDirectorController extends Controller
+class BuzonSugerenciaDirectorController extends Controller
 {
-    public function indexSugerencias(Request $request)
+    public function obtenerListaSugerencias(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            $data = BuzonSugerenciasDirectorService::obtenerSugerencias($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+    /*public function indexSugerencias(Request $request)
     {
         $sugerencias = BuzonSugerenciasService::obtenerSugerenciasDirector($request);
-        
+
         return view('director.sugerencias', compact('sugerencias'));
     }
 
@@ -20,7 +32,7 @@ class BuzonDirectorController extends Controller
     {
         return view('director.sugerencia-detalle', compact('sugerencia'));
     }
-    
+
     public function responderSugerencia(Request $request, $id)
     {
         $request->validate([
@@ -36,15 +48,15 @@ class BuzonDirectorController extends Controller
     {
         try {
             $data = BuzonSugerenciasService::descargarArchivo($id, $archivo);
-            
+
             return response($data['contenido'])
                 ->header('Content-Type', 'application/octet-stream')
                 ->header('Content-Disposition', 'attachment; filename="' . $data['nombreArchivo'] . '"');
-                
+
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
-    }
+    }*/
 }
 
 

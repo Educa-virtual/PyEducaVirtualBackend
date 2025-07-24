@@ -3,26 +3,18 @@
 namespace App\Http\Controllers\acad;
 
 use App\Enums\Perfil;
-use App\Helpers\FormatearErrorHelper;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\acad\EliminarSugerenciaRequest;
 use App\Http\Requests\acad\RegistrarSugerenciaRequest;
-use App\Http\Requests\GeneralFormRequest;
 use App\Models\acad\BuzonSugerencia;
+use App\Services\acad\BuzonSugerenciasEstudianteService;
 use App\Services\acad\BuzonSugerenciasService;
-use App\Services\ParseSqlErrorService;
 use Exception;
-use Hashids\Hashids;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 
-class BuzonSugerenciaController extends Controller
+class BuzonSugerenciaEstudianteController extends Controller
 {
     /**
      * @OA\Post(
@@ -70,7 +62,7 @@ class BuzonSugerenciaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $data = BuzonSugerenciasService::registrarSugerencia($request);
+            $data = BuzonSugerenciasEstudianteService::registrarSugerencia($request);
             return FormatearMensajeHelper::ok('Se ha registrado su sugerencia', $data, Response::HTTP_CREATED);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -109,7 +101,7 @@ class BuzonSugerenciaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
-            $data = BuzonSugerencia::obtenerArchivosSugerencia($iSugerenciaId);
+            $data = BuzonSugerenciasEstudianteService::obtenerArchivosSugerencia($iSugerenciaId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -137,26 +129,18 @@ class BuzonSugerenciaController extends Controller
      *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
-    public function obtenerListaSugerenciasEstudiante(Request $request)
+    public function obtenerListaSugerencias(Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $data = BuzonSugerenciasService::obtenerSugerenciasEstudiante($request);
+            $data = BuzonSugerenciasEstudianteService::obtenerSugerencias($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
 
-    public function obtenerListaSugerenciasDirector(Request $request) {
-        try {
-            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
-            $data = BuzonSugerenciasService::obtenerSugerenciasDirector($request);
-            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
-        }
-    }
+
 
     /**
      * @OA\Delete(
@@ -188,7 +172,7 @@ class BuzonSugerenciaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            BuzonSugerencia::delBuzonSugerencias($iSugerenciaId, $request);
+            BuzonSugerenciasEstudianteService::eliminarSugerencia($iSugerenciaId, $request);
             return FormatearMensajeHelper::ok('Success', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -199,7 +183,7 @@ class BuzonSugerenciaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
-            $data = BuzonSugerenciasService::descargarArchivo($iSugerenciaId, $nombreArchivo);
+            $data = BuzonSugerenciasEstudianteService::descargarArchivo($iSugerenciaId, $nombreArchivo);
             return response($data['contenido'], 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"'
@@ -210,10 +194,7 @@ class BuzonSugerenciaController extends Controller
         }
     }
 
-/**
-    *Ver sugerencia específica con respuesta del director
- */
-    public function obtenerSugerenciaConRespuesta($id, Request $request)
+    /*public function obtenerSugerenciaConRespuesta($id, Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
@@ -222,5 +203,5 @@ class BuzonSugerenciaController extends Controller
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
-    }
+    }*/
 }
