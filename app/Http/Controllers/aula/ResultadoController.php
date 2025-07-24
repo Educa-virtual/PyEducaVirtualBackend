@@ -26,26 +26,56 @@ class ResultadoController extends Controller
 
     public function obtenerResultados(Request $request)
     {
-
-        //return $request->all();
-        //return 1;
-        $request->validate([
-            'idDocCursoId' => 'required|integer',
-            'iEstudianteId' => 'required|integer',
+        $validator = Validator::make($request->all(), [
+            'idDocCursoId' => ['required'],
+            'iEstudianteId' => ['required'],
+        ], [
+            'idDocCursoId.required' => 'No se encontró el identificador del curso',
+            'iEstudianteId.required' => 'No se encontró el identificador del estudiante',
         ]);
 
-        $idDocCursoId = $request->idDocCursoId;
-        $iEstudianteId = $request->iEstudianteId;
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
-        $params = [
-            $idDocCursoId,
-            $iEstudianteId
+        $fieldsToDecode = [
+            'idDocCursoId',
+            'iEstudianteId',
         ];
-        //return $params;
-        try {
-            $data = DB::select('EXEC aula.SP_SEL_listarActividadForoXiEstudianteId ?,?', $params);
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
+        try {
+            $params = [
+                $request->idDocCursoId      ??  NULL,
+                $request->iEstudianteId     ??  NULL
+            ];
+
+
+            $data = DB::select('EXEC aula.Sp_SEL_obtenerResultadosxidDocCursoIdxiEstudianteId ?,?', $params);
+
+            $foro = json_decode($data[0]->foro, true);
+            $tarea = json_decode($data[0]->tarea, true);
+            $evaluacion = json_decode($data[0]->evaluacion, true);
+
+            $mapEncrypted = fn($item) => [
+                ...$item,
+                'iProgActId'         => VerifyHash::encodexId($item['iProgActId'] ?? null),
+                'iContenidoSemId'    => VerifyHash::encodexId($item['iContenidoSemId'] ?? null),
+                'iPeriodoEvalAperId' => VerifyHash::encodexId($item['iPeriodoEvalAperId'] ?? null),
+            ];
+
+            $foro = collect($foro)->map($mapEncrypted);
+            $tarea = collect($tarea)->map($mapEncrypted);
+            $evaluacion = collect($evaluacion)->map($mapEncrypted);
+
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data'      => [
+                'foro'        => $foro,
+                'tarea'       => $tarea,
+                'evaluacion'  => $evaluacion,
+            ]];
             $estado = 200;
 
             return $response;
@@ -201,6 +231,14 @@ class ResultadoController extends Controller
                 $parametros
             );
             // Preparar la respuesta
+            $fieldsToDecode = [
+                'iEscalaCalifIdPromedio',
+                'iEscalaCalifIdPeriodo1',
+                'iEscalaCalifIdPeriodo2',
+                'iEscalaCalifIdPeriodo3',
+                'iEscalaCalifIdPeriodo4',
+            ];
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = Response::HTTP_OK;
 

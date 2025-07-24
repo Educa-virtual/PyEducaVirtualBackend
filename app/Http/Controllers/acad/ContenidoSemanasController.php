@@ -6,17 +6,462 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
+use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
 class ContenidoSemanasController extends Controller
 {
-    protected $hashids;
-    protected $iContenidoSemId;
-    protected $iIndActId;
 
-    public function __construct()
+    public function guardarContenidoSemanas(Request $request)
+    {   // tiposuario: DOCENTE - INSTRUCTOR
+        // Reglas comunes
+        $commonRules = [
+            'iYAcadId' => ['required'],
+            'idDocCursoId' => ['required'],
+            'cContenidoSemTitulo' => ['required', 'string', 'max:250'],
+            'cTipoUsuario' => ['required']
+        ];
+
+        // Mensajes comunes
+        $commonMessages = [
+            'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
+            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+            'cContenidoSemTitulo.required' => 'Debe ingresar el título',
+            'cContenidoSemTitulo.string' => 'El título debe ser una cadena de texto',
+            'cContenidoSemTitulo.max' => 'El título no debe exceder los 250 caracteres',
+            'cTipoUsuario.required' => 'No se detectó el tipo de usuario',
+        ];
+
+        // Reglas adicionales por tipo de usuario
+        $extraRules = [
+            'DOCENTE' => [
+                'iPeriodoEvalAperId' => ['required'],
+                'iTipExp' => ['required'],
+                'cAdjunto' => ['required'],
+            ],
+            'INSTRUCTOR' => [], // Sin reglas adicionales
+        ];
+
+        // Mensajes adicionales por tipo de usuario
+        $extraMessages = [
+            'DOCENTE' => [
+                'iPeriodoEvalAperId.required' => 'No se encontró el identificador iPeriodoEvalAperId',
+                'iTipExp.required' => 'No se encontró el identificador iTipExp',
+                'cAdjunto.required' => 'No se encontró el documento adjunto',
+            ],
+            'INSTRUCTOR' => [],
+        ];
+
+        // Selección dinámica de reglas y mensajes
+        $tipo = $request->cTipoUsuario;
+        $rules = array_merge($commonRules, $extraRules[$tipo] ?? []);
+        $messages = array_merge($commonMessages, $extraMessages[$tipo] ?? []);
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+
+        try {
+            $fieldsToDecode = [
+                'iYAcadId',
+                'idDocCursoId',
+                'iPeriodoEvalAperId',
+                'iTipExp',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->cTipoUsuario                    ?? NULL,
+                $request->iYAcadId                       ?? NULL,
+                $request->idDocCursoId                   ?? NULL,
+                $request->cContenidoSemTitulo            ?? NULL,
+                $request->iPeriodoEvalAperId             ?? NULL,
+                $request->iTipExp                        ?? NULL,
+                $request->cAdjunto                       ?? NULL,
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_INS_contenidoSemanasxSesionAprendizaje 
+                    @_cTipoUsuario=?, 
+                    @_iYAcadId=?, 
+                    @_idDocCursoId=?, 
+                    @_cContenidoSemTitulo=?, 
+                    @_iPeriodoEvalAperId=?, 
+                    @_iTipExp=?, 
+                    @_cAdjunto=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iContenidoSemId > 0) {
+                $message = 'Se ha guardado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarContenidoSemanas(Request $request, $iContenidoSemId)
     {
-        $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        $request->merge([
+            'iContenidoSemId' => $iContenidoSemId
+        ]);
+
+        // Reglas comunes
+        $commonRules = [
+            'iContenidoSemId' => ['required'],
+            'cContenidoSemTitulo' => ['required', 'string', 'max:250'],
+            'cTipoUsuario' => ['required'],
+        ];
+
+        // Mensajes comunes
+        $commonMessages = [
+            'iContenidoSemId.required' => 'No se encontró el identificador de la semana',
+            'cContenidoSemTitulo.required' => 'Debe ingresar el título',
+            'cContenidoSemTitulo.string' => 'El título debe ser una cadena de texto',
+            'cContenidoSemTitulo.max' => 'El título no debe exceder los 250 caracteres',
+            'cTipoUsuario.required' => 'No se detectó el tipo de usuario',
+        ];
+
+        // Reglas adicionales por tipo de usuario
+        $extraRules = [
+            'DOCENTE' => [
+                'iPeriodoEvalAperId' => ['required'],
+                'iTipExp' => ['required'],
+                'cAdjunto' => ['required'],
+            ],
+            'INSTRUCTOR' => [], // Sin reglas adicionales
+        ];
+
+        // Mensajes adicionales por tipo de usuario
+        $extraMessages = [
+            'DOCENTE' => [
+                'iPeriodoEvalAperId.required' => 'No se encontró el identificador iPeriodoEvalAperId',
+                'iTipExp.required' => 'No se encontró el identificador iTipExp',
+                'cAdjunto.required' => 'No se encontró el documento adjunto',
+            ],
+            'INSTRUCTOR' => [],
+        ];
+
+        // Selección dinámica de reglas y mensajes
+        $tipo = $request->cTipoUsuario;
+        $rules = array_merge($commonRules, $extraRules[$tipo] ?? []);
+        $messages = array_merge($commonMessages, $extraMessages[$tipo] ?? []);
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iContenidoSemId',
+                'iPeriodoEvalAperId',
+                'iTipExp',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->cTipoUsuario                   ?? NULL,
+                $request->iContenidoSemId                ?? NULL,
+                $request->cContenidoSemTitulo            ?? NULL,
+                $request->iPeriodoEvalAperId             ?? NULL,
+                $request->iTipExp                        ?? NULL,
+                $request->cAdjunto                       ?? NULL,
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_UPD_contenidoSemanasxSesionAprendizajexiContenidoSemId
+                    @_cTipoUsuario=?, 
+                    @_iContenidoSemId=?, 
+                    @_cContenidoSemTitulo=?, 
+                    @_iPeriodoEvalAperId=?, 
+                    @_iTipExp=?, 
+                    @_cAdjunto=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iContenidoSemId > 0) {
+                $message = 'Se ha actualizado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido actualizar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function eliminarContenidoSemanas(Request $request, $iContenidoSemId)
+    {
+        $request->merge([
+            'iContenidoSemId' => $iContenidoSemId
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'iContenidoSemId' => ['required'],
+        ], [
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iContenidoSemId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iContenidoSemId                ?? NULL,
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_DEL_contenidoSemanasxSesionAprendizajexiContenidoSemId
+                    @_iContenidoSemId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iContenidoSemId > 0) {
+                $message = 'Se ha eliminado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido eliminar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerContenidoSemanasxiContenidoSemId(Request $request, $iContenidoSemId)
+    {
+        $request->merge([
+            'iContenidoSemId' => $iContenidoSemId
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'iContenidoSemId' => ['required'],
+        ], [
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iContenidoSemId',
+                'iPeriodoEvalAperId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iContenidoSemId                ?? NULL,
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_SEL_contenidoSemanasxSesionAprendizajexiContenidoSemId
+                    @_iContenidoSemId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerContenidoSemanasxidDocCursoIdxiYAcadId(Request $request, $idDocCursoId, $iYAcadId)
+    {
+        $request->merge([
+            'idDocCursoId' => $idDocCursoId,
+            'iYAcadId' => $iYAcadId
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'idDocCursoId' => ['required'],
+            'iYAcadId' => ['required'],
+        ], [
+            'idDocCursoId.required' => 'No se encontró el identificador del curso docente',
+            'iYAcadId.required' => 'No se encontró el identificador del año académico',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'idDocCursoId',
+                'iYAcadId',
+                'iContenidoSemId',
+                'iPeriodoEvalAperId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->idDocCursoId                ?? NULL,
+                $request->iYAcadId                    ?? NULL,
+                $request->iCredId                     ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_SEL_contenidoSemanasxSesionAprendizajexidDocCursoIdxiYAcadId
+                    @_idDocCursoId=?, 
+                    @_iYAcadId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function obtenerActividadesxiContenidoSemId(Request $request, $iContenidoSemId)
+    {
+        $request->merge([
+            'iContenidoSemId' => $iContenidoSemId
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'iContenidoSemId' => ['required'],
+        ], [
+            'iContenidoSemId.required' => 'No se encontró el identificador del contenido semana',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iContenidoSemId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iContenidoSemId             ?? NULL,
+                $request->iCredId                     ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_SEL_contenidoSemanasxActividadesxiContenidoSemId
+                    @_iContenidoSemId=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+            foreach ($data as $item) {
+                $item->iEstado = (int) $item->iEstado;
+                $item->iActTipoId = (int) $item->iActTipoId;
+                $item->iEstadoActividad = (int) $item->iEstadoActividad;
+            }
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     public function list(Request $request)
@@ -29,21 +474,16 @@ class ContenidoSemanasController extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iContenidoSemId) {
-            $iContenidoSemId = $this->hashids->decode($request->iContenidoSemId);
-            $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
-        }
-        if ($request->iIndActId) {
-            $iIndActId = $this->hashids->decode($request->iIndActId);
-            $iIndActId = count($iIndActId) > 0 ? $iIndActId[0] : $iIndActId;
-        }
 
-        switch ($request->opcion) {
-            case 'CONSULTARxiSilaboId':
-                $request['valorBusqueda'] = $this->hashids->decode($request->valorBusqueda);
-                $request['valorBusqueda'] = count($request->valorBusqueda) > 0 ? $request->valorBusqueda[0] : $request->valorBusqueda;
-                break;
-        }
+        $fieldsToDecodeByOption = [
+            'default' => ['iContenidoSemId', 'iIndActId'],
+            'CONSULTARxiSilaboId' => ['iContenidoSemId', 'iIndActId', 'valorBusqueda'],
+        ];
+
+        $fieldsToDecode = $fieldsToDecodeByOption[$request->opcion] ?? $fieldsToDecodeByOption['default'];
+
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
+
 
         $parametros = [
             $request->opcion,
@@ -63,11 +503,12 @@ class ContenidoSemanasController extends Controller
             $data = DB::select('exec acad.Sp_SEL_contenidoSemanas
                 ?,?,?,?,?,?,?,?', $parametros);
 
-            foreach ($data as $key => $value) {
-                $value->iContenidoSemId = $this->hashids->encode($value->iContenidoSemId);
-                $value->iIndActId = $this->hashids->encode($value->iIndActId);
-            }
+            $fieldsToDecode = [
+                'iContenidoSemId',
+                'iIndActId'
+            ];
 
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -87,15 +528,13 @@ class ContenidoSemanasController extends Controller
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iContenidoSemId) {
-            $iContenidoSemId = $this->hashids->decode($request->iContenidoSemId);
-            $iContenidoSemId = count($iContenidoSemId) > 0 ? $iContenidoSemId[0] : $iContenidoSemId;
-        }
-        if ($request->iIndActId) {
-            $iIndActId = $this->hashids->decode($request->iIndActId);
-            $iIndActId = count($iIndActId) > 0 ? $iIndActId[0] : $iIndActId;
-        }
 
+        $fieldsToDecode = [
+            'iContenidoSemId',
+            'iIndActId'
+        ];
+
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
