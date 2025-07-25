@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Models\acad\Matricula;
 use App\Services\ParseSqlErrorService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Log;
 
 class MatriculaController extends Controller
 {
@@ -28,26 +32,12 @@ class MatriculaController extends Controller
      */
     public function searchGradoSeccionTurnoConf(Request $request)
     {
-        $parametros = [
-            $request->opcion,
-            $request->iSedeId,
-            $request->iYAcadId,
-            $request->iNivelGradoId,
-            $request->iSeccionId,
-            $request->iTurnoId,
-            $request->iCredSesionId,
-        ];
         try {
-            $data = DB::select("EXEC acad.Sp_SEL_gradoSeccionTurnoConf ?,?,?,?,?,?,?", $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Matricula::selGradoSeccionTurnoConf($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }        
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -58,20 +48,11 @@ class MatriculaController extends Controller
     public function searchNivelGrado(Request $request)
     {
         try {
-            $data = DB::select("SELECT ng.iNivelGradoId, n.cNivelNombre, nt.cNivelTipoNombre, c.cCicloNombre, g.cGradoAbreviacion, g.cGradoNombre
-                FROM acad.nivel_grados ng
-                    JOIN acad.grados g ON ng.iGradoId = g.iGradoId
-                    JOIN acad.nivel_ciclos nc ON nc.iNivelCicloId = ng.iNivelCicloId
-                    JOIN acad.ciclos c ON nc.iCicloId = c.iCicloId
-                    JOIN acad.nivel_tipos nt ON nc.iNivelTipoId = nt.iNivelTipoId
-                    JOIN acad.niveles n ON nt.iNivelId = n.iNivelId");
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            $codeResponse = 500;
+            $data = Matricula::selNivelGrado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -81,23 +62,12 @@ class MatriculaController extends Controller
      */
     public function determinarGradoEstudiante(Request $request)
     {
-        $parametros = [
-            $request->iCredSesionId,
-            $request->iEstudianteId,
-            $request->iYAcadId,
-            $request->iSedeId,
-        ];
-
         try {
-            $data = DB::select("EXEC acad.Sp_SEL_determinarGradoEstudiante ?,?,?,?", $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            $data = Matricula::selDeterminarGradoEstudiante($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -107,29 +77,12 @@ class MatriculaController extends Controller
      */
     public function save(Request $request)
     {
-        $parametros = [
-            $request->iEstudianteId,
-            $request->iYAcadId,
-            $request->iTipoMatrId,
-            $request->iSedeId,
-            $request->iNivelGradoId,
-            $request->iTurnoId,
-            $request->iSeccionId,
-            $request->dtMatrFecha,
-            $request->cMatrObservacion,
-            $request->iCredSesionId
-        ];
-
         try {
-            $data = DB::select('EXEC acad.Sp_INS_matricula ?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch(\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            $data = Matricula::insMatricula($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -139,33 +92,12 @@ class MatriculaController extends Controller
      */
     public function index(Request $request)
     {
-        $parametros = [
-            $request->iSedeId,
-            $request->iSemAcadId,
-            $request->iYAcadId,
-            $request->iNivelGradoId,
-            $request->iSeccionId,
-            $request->iTurnoId,
-            null,
-            null,
-            null,
-            null,
-            null,
-            $request->iCredSesionId,
-        ];
-
         try {
-            $data = DB::select("EXEC acad.Sp_SEL_matriculas ?,?,?,?,?,?,?,?,?,?,?,? ", $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Matricula::selMatriculas($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-        
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -175,23 +107,13 @@ class MatriculaController extends Controller
      */
     public function show(Request $request)
     {
-        $parametros = [
-            $request->iMatrId,
-            $request->iCredSesionId,
-        ];
-
         try {
-            $data = DB::select("EXEC acad.Sp_SEL_matriculaPorId ?,?", $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Matricula::selMatricula($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        
-        return new JsonResponse($response, $codeResponse);
     }
 
     /**
@@ -201,22 +123,11 @@ class MatriculaController extends Controller
      */
     public function delete(Request $request)
     {
-        $parametros = [
-            $request->iMatrId,
-            $request->iCredSesionId,
-        ];
-
         try {
-            $data = DB::select("EXEC acad.Sp_DEL_matriculaPorId ?,?", $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Matricula::delMatriculaPorId($request);
+            return FormatearMensajeHelper::ok('Se eliminó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-        
-        return new JsonResponse($response, $codeResponse);
     }
 }

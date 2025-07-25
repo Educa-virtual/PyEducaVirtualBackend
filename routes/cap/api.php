@@ -20,14 +20,17 @@ Route::group(['prefix' => 'cap'], function () {
   });
   Route::group(['prefix' => 'capacitaciones'], function () {
     Route::post('guardarCapacitaciones', [CapacitacionesController::class, 'guardarCapacitaciones']);
-    Route::post('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
+    Route::get('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
     Route::post('actualizarCapacitaciones', [CapacitacionesController::class, 'actualizarCapacitaciones']);
     Route::post('eliminarCapacitaciones', [CapacitacionesController::class, 'eliminarCapacitaciones']);
+    Route::put('/{iCapacitacionId}/estado', [CapacitacionesController::class, 'actualizarEstadoCapacitacion']);
+    Route::get('/', [CapacitacionesController::class, 'listarCapacitacionesxMatriculados']); // Para listar las capacitaciones con sus inscripciones aprobadas
   });
   Route::group(['prefix' => 'inscripciones'], function () {
     Route::post('persona-inscripcion', [InscripcionesController::class, 'listarPersonaInscripcion']);
     Route::post('inscripciones', [InscripcionesController::class, 'listarInscripcionesxiCapacitacionId']);
     Route::post('inscripcion', [InscripcionesController::class, 'guardarInscripcion']);
+    Route::put('/{iInscripId}/estado', [InscripcionesController::class, 'actualizarEstadoInscripcion']);
   });
   Route::prefix('instructores')->group(function () {
     Route::get('/{iTipoIdentId}/{cPersDocumento}', [InstructoresController::class, 'buscarInstructorxiTipoIdentIdxcPersDocumento']); // Para buscar
