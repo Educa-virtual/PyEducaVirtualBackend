@@ -437,12 +437,14 @@ class ContenidoSemanasController extends Controller
 
             $parametros = [
                 $request->iContenidoSemId             ?? NULL,
+                $request->cPerfil                     ?? NULL,
                 $request->iCredId                     ?? NULL
             ];
 
             $data = DB::select(
                 'EXEC acad.Sp_SEL_contenidoSemanasxActividadesxiContenidoSemId
                     @_iContenidoSemId=?, 
+                    @_cPerfil=?, 
                     @_iCredId=?',
                 $parametros
             );
