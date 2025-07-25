@@ -84,7 +84,6 @@ Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
         Route::get('obtenerIE', [InstitucionesEducativasController::class, 'obtenerInstitucionesEducativas']);
-
     });
     Route::group(['prefix' => 'nivelTipo'], function () {
         Route::get('obtenerNivelTipo', [NivelTipoController::class, 'obtenerNivelTipo']);
@@ -414,7 +413,7 @@ Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuar
 Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
 
 Route::group(['prefix' => 'grl'], function () {
-    Route::post('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
+    Route::get('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
     Route::post('guardarPersona', [PersonaController::class, 'save']);
     Route::post('searchPersona', [PersonaController::class, 'show']);
     Route::post('validarPersona', [PersonaController::class, 'buscarPersona']);
@@ -458,5 +457,3 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
 
 
 Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
-
-

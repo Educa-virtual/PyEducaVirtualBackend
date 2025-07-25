@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\evaluaciones;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\VerifyHash;
 
 class EscalaCalificacionesController extends ApiController
 {
@@ -26,7 +26,7 @@ class EscalaCalificacionesController extends ApiController
         return $this->successResponse($data, 'Datos obtenidos correctamente');
     }
 
-    public function list(Request $request)
+    public function obtenerEscalaCalificaciones()
     {
 
         try {
@@ -35,10 +35,13 @@ class EscalaCalificacionesController extends ApiController
              iEscalaCalifId
             ,cEscalaCalifNombre
             FROM eval.escala_calificaciones
-        ');
-            foreach ($data as $key => $value) {
-                $value->iEscalaCalifId = $this->hashids->encode($value->iEscalaCalifId);
-            }
+            ');
+
+            $fieldsToDecode = [
+                'iEscalaCalifId'
+            ];
+
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
