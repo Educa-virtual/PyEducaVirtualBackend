@@ -32,6 +32,14 @@ class BuzonSugerencia extends Model
         return $data;
     }
 
+    public static function insBuzonSugerenciaRespuestaDirector(Request $request) {
+        DB::statement("EXEC [acad].[SP_INS_buzonSugerenciaRespuestaDirector] @iCredEntPerfId=?, @iSugerenciaId=?, @cRespuesta=?", [
+            $request->header('iCredEntPerfId'),
+            $request->iSugerenciaId,
+            $request->cRespuesta
+        ]);
+    }
+
     public static function selBuzonSugerenciasDirector(Request $request)
     {
         $data = DB::select("EXEC [acad].[SP_SEL_buzonSugerenciasDirector] @iCredEntPerfId=?", [

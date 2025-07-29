@@ -21,6 +21,16 @@ class BuzonSugerenciaDirectorController extends Controller
             return FormatearMensajeHelper::error($ex);
         }
     }
+
+    public function registrarRespuestaSugerencias(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            $data = BuzonSugerenciasDirectorService::registrarRespuestaSugerencia($request);
+            return FormatearMensajeHelper::ok('Respuesta registrada correctamente', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
     /*public function indexSugerencias(Request $request)
     {
         $sugerencias = BuzonSugerenciasService::obtenerSugerenciasDirector($request);

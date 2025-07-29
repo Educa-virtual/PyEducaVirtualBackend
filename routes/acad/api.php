@@ -44,6 +44,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
     Route::group(['prefix' => 'directores'], function () {
         Route::group(['prefix' => 'buzon-sugerencias'], function () {
             Route::get('', [BuzonSugerenciaDirectorController::class, 'obtenerListaSugerencias']);
+            Route::post('', [BuzonSugerenciaDirectorController::class, 'registrarRespuestaSugerencias']);
         });
         //Route::get('{iSugerenciaId}/detalle', [BuzonSugerenciaController:: class, 'obtenerDetalleSugerencia']);
         //Route::get('{iSugerenciaId}/responder', [BuzonSugerenciaController:: class, 'rsponderSugerencia']);
