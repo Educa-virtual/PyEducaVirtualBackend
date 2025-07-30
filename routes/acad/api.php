@@ -97,4 +97,16 @@ Route::group(['prefix' => 'acad'], function () {
     Route::prefix('detalle-matriculas')->group(function () {
         Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
     });
+
+    Route::group(['prefix' => 'calendario-periodos-evaluaciones'], function () {
+        Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioPeriodosEvaluacionesController::class, 'obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular']);
+    });
+    Route::group(['prefix' => 'contenido-semanas'], function () {
+        Route::post('', [ContenidoSemanasController::class, 'guardarContenidoSemanas']);
+        Route::put('/{iContenidoSemId}', [ContenidoSemanasController::class, 'actualizarContenidoSemanas']);
+        Route::delete('/{iContenidoSemId}', [ContenidoSemanasController::class, 'eliminarContenidoSemanas']);
+        Route::get('/{iContenidoSemId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxiContenidoSemId']);
+        Route::get('/curso/{idDocCursoId}/year/{iYAcadId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxidDocCursoIdxiYAcadId']);
+        Route::get('/{iContenidoSemId}/actividades', [ContenidoSemanasController::class, 'obtenerActividadesxiContenidoSemId']);
+    });
 });
