@@ -57,7 +57,7 @@ class BuzonSugerencia extends Model
         return $data;
     }
 
-    public static function responderSugerencia($iSugerenciaId, Request $request)
+    /*public static function responderSugerencia($iSugerenciaId, Request $request)
     {
         $data = DB::statement("EXEC [acad].[SP_UPD_responderSugerencia] @iCredEntPerfId=?, @iSugerenciaId=?, @cRespuesta=?", [
             $request->header('iCredEntPerfId'),
@@ -65,18 +65,18 @@ class BuzonSugerencia extends Model
             $request->cRespuesta
         ]);
         return $data;
-    }
+    }*/
 
-    public static function obtenerDetalleSugerencia($iSugerenciaId, Request $request)
+    /*public static function obtenerDetalleSugerencia($iSugerenciaId, Request $request)
     {
         $data = DB::selectOne("EXEC [acad].[SP_SEL_detalleSugerencia] @iCredEntPerfId=?, @iSugerenciaId=?", [
             $request->header('iCredEntPerfId'),
             $iSugerenciaId
         ]);
         return $data;
-    }
+    }*/
 
-    public static function cambiarEstadoSugerencia($iSugerenciaId, $cEstado, Request $request)
+    /*public static function cambiarEstadoSugerencia($iSugerenciaId, $cEstado, Request $request)
     {
         $data = DB::statement("EXEC [acad].[SP_UPD_estadoSugerencia] @iCredEntPerfId=?, @iSugerenciaId=?, @cEstado=?", [
             $request->header('iCredEntPerfId'),
@@ -84,5 +84,5 @@ class BuzonSugerencia extends Model
             $cEstado
         ]);
         return $data;
-    }
+    }*/
 }
