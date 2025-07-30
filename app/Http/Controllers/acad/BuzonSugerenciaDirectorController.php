@@ -6,13 +6,15 @@ use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Services\acad\BuzonSugerenciasDirectorService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Gate;
 
 class BuzonSugerenciaDirectorController extends Controller
 {
-    public function obtenerListaSugerencias(Request $request) {
+    public function obtenerListaSugerencias(Request $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $data = BuzonSugerenciasDirectorService::obtenerSugerencias($request);
@@ -22,51 +24,17 @@ class BuzonSugerenciaDirectorController extends Controller
         }
     }
 
-    public function registrarRespuestaSugerencias(Request $request) {
+    public function registrarRespuestaSugerencias(Request $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
-            $data = BuzonSugerenciasDirectorService::registrarRespuestaSugerencia($request);
-            return FormatearMensajeHelper::ok('Respuesta registrada correctamente', $data);
+            BuzonSugerenciasDirectorService::registrarRespuestaSugerencia($request);
+            // Devuelve la fecha del servidor en formato ISO 8601
+            return FormatearMensajeHelper::ok('Respuesta registrada correctamente', [
+                'fecha' => Carbon::now()->toIso8601String()
+            ]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
-    /*public function indexSugerencias(Request $request)
-    {
-        $sugerencias = BuzonSugerenciasService::obtenerSugerenciasDirector($request);
-
-        return view('director.sugerencias', compact('sugerencias'));
-    }
-
-    public function showSugerencia($id)
-    {
-        return view('director.sugerencia-detalle', compact('sugerencia'));
-    }
-
-    public function responderSugerencia(Request $request, $id)
-    {
-        $request->validate([
-            'respuesta' => 'required|string|max:1000',
-            'estado' => 'required|in:aprobada,rechazada,en_revision'
-        ]);
-
-        return redirect()->route('director.sugerencias.show', $id)
-            ->with('success', 'Respuesta enviada correctamente');
-    }
-
-    public function descargarArchivo($id, $archivo)
-    {
-        try {
-            $data = BuzonSugerenciasService::descargarArchivo($id, $archivo);
-
-            return response($data['contenido'])
-                ->header('Content-Type', 'application/octet-stream')
-                ->header('Content-Disposition', 'attachment; filename="' . $data['nombreArchivo'] . '"');
-
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
-    }*/
 }
-
-
