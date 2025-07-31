@@ -22,6 +22,7 @@ class CapacitacionesController extends Controller
     public function guardarCapacitaciones(Request $request)
     {
         // return $request->all();
+
         try {
             $fieldsToDecode = [
                 'iTipoCapId',
@@ -46,6 +47,7 @@ class CapacitacionesController extends Controller
                 $request->nCosto               ??  NULL,
                 $request->iImageAleatorio      ??  NULL,
                 $request->cImagenUrl           ??  NULL,
+                $request->cLink                ??  NULL,
                 $request->iCredId              ??  NULL,
 
                 $request->jsonHorario          ??  NULL
@@ -67,10 +69,12 @@ class CapacitacionesController extends Controller
                     @_nCosto=?,
                     @_iImageAleatorio=?,
                     @_cImagenUrl=?,
+                    @_cLink=?,
                     @_iCredId=?,
                     @_jsonHorario=?',
                 $parametros
             );
+
             if ($data[0]->iCapacitacionId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
@@ -153,6 +157,7 @@ class CapacitacionesController extends Controller
                 $request->nCosto               ??  NULL,
                 $request->iImageAleatorio      ??  NULL,
                 $request->cImagenUrl           ??  NULL,
+                $request->cLink                ??  NULL,
                 $request->iCredId              ??  NULL,
 
                 $request->jsonHorario          ??  NULL
@@ -175,10 +180,12 @@ class CapacitacionesController extends Controller
                     @_nCosto=?,
                     @_iImageAleatorio=?,
                     @_cImagenUrl=?, 
+                    @_cLink=?, 
                     @_iCredId=?,
                     @_jsonHorario=?',
                 $parametros
             );
+            return $data;
             if ($data[0]->iCapacitacionId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],

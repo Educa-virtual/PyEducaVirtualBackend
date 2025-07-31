@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'general'], function () {
     Route::post('subir-archivo', [GeneralController::class, 'subirArchivo']);
+    Route::post('remover-archivo', [GeneralController::class, 'removerArchivo']);
 });
 
 Route::group(['prefix' => 'file'], function () {
