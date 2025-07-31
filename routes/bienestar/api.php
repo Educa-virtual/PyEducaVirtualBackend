@@ -17,6 +17,7 @@ use App\Http\Controllers\bienestar\FichaDiscapacidadController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
 use App\Http\Controllers\bienestar\RecordarioFechasController;
+use App\Http\Controllers\bienestar\SeguimientoBienestarController;
 use App\Http\Controllers\FichaDosisController;
 
 Route::group(['prefix' => 'bienestar'], function () {
@@ -110,5 +111,15 @@ Route::group(['prefix' => 'bienestar'], function () {
     /* Gestionar reporte de fichas de bienestar */
     Route::post('crearReporte', [FichaBienestarController::class, 'crearReporte']);
     Route::post('verReporte', [FichaBienestarController::class, 'verReporte']);
+
+    /* Gestionar fichas de seguimiento */
+    Route::post('crearSeguimiento', [SeguimientoBienestarController::class, 'crearSeguimiento']);
+    Route::post('verSeguimientos', [SeguimientoBienestarController::class, 'verSeguimientos']);
+    Route::post('verSeguimientosPersona', [SeguimientoBienestarController::class, 'verSeguimientosPersona']);
+    Route::post('guardarSeguimiento', [SeguimientoBienestarController::class, 'guardarSeguimiento']);
+    Route::post('actualizarSeguimiento', [SeguimientoBienestarController::class, 'actualizarSeguimiento']);
+    Route::post('verSeguimiento', [SeguimientoBienestarController::class, 'verSeguimiento']);
+    Route::post('borrarSeguimiento', [SeguimientoBienestarController::class, 'borrarSeguimiento']);
+    Route::post('verDatosPersona', [SeguimientoBienestarController::class, 'verDatosPersona']);
 });
 
