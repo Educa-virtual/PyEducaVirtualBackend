@@ -74,4 +74,29 @@ class EncuestaBienestarRespuestaController extends Controller
         }
     }
 
+    public function printRespuestas(Request $request)
+    {
+        try {
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = EncuestaBienestarRespuesta::selRespuestasDetalle($request);
+            $encuesta = $data[0][0];
+            $preguntas = $data[1];
+            $respuestas = $data[2];
+
+            foreach ( $respuestas as $respuesta) {
+                $respuesta->respuestas = json_decode($respuesta->respuestas);
+            }
+
+            $nro_preguntas = count($preguntas);
+
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+            return view('bienestar.encuesta_respuestas_excel', compact('encuesta', 'preguntas', 'respuestas', 'nro_preguntas'));
+
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
 }
