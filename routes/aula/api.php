@@ -19,6 +19,7 @@ use App\Http\Controllers\aula\EstadisticasController;
 use App\Http\Controllers\aula\PreguntaAlternativasRespuestasController;
 use App\Http\Controllers\aula\PreguntasController;
 use App\Http\Controllers\aula\ReunionVirtualesController;
+use App\Http\Controllers\aula\TipoExperienciaAprendizajeController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -58,6 +59,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('store', [ProgramacionActividadesController::class, 'store']);
     });
     Route::group(['prefix' => 'tareas'], function () {
+        Route::post('', [TareasController::class, 'guardarTareas']);
+        Route::put('{iTareaId}', [TareasController::class, 'actualizarTareasxiTareaId']);
+
+        ////
         Route::post('list', [TareasController::class, 'list']);
         Route::post('store', [TareasController::class, 'store']);
         Route::post('getTareasxiCursoId', [TareasController::class, 'getTareasxiCursoId']);
@@ -150,6 +155,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}', [PreguntaAlternativasRespuestasController::class, 'guardarPreguntasxiCuestionarioIdxiEstudianteId']); // Para guardar las preguntas del cuestionario del estudiante
         Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}/finalizado', [PreguntaAlternativasRespuestasController::class, 'finalizarPreguntaAlternativasRespuestas']); // Para finalizar las preguntas del cuestionario del estudiante
         Route::get('/cuestionario/{iCuestionarioId}/resultados', [PreguntaAlternativasRespuestasController::class, 'obtenerResultadosxiCuestionarioId']);
-
+    });
+    Route::prefix('tipo-experiencia-aprendizaje')->group(function () {
+        Route::get('/', [TipoExperienciaAprendizajeController::class, 'listarTipoExperienciaAprendizaje']); // Para obtener los tipos de experiencia de aprendizaje
     });
 });

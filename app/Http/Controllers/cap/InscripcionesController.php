@@ -10,19 +10,23 @@ use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 use App\Http\Controllers\api\grl\PersonaController;
-use App\Http\Controllers\grl\PersonasContactosController;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\grl\PersonasController;
 
 class InscripcionesController extends Controller
-{   
+{
     //Notas: Campo iEstado
     // 0 => Eliminado
     // 1 => Inscrito
     // 10 => Validado
     // 100 => Rechazado
 
-    public function listarPersonaInscripcion(Request $request)
+    public function buscarPersonaInscripcion(Request $request, $iCapacitacionId, $iTipoIdentId, $cPersDocumento)
     {
-        // return $request -> all();
+        $request->merge(['iCapacitacionId' => $iCapacitacionId]);
+        $request->merge(['iTipoIdentId' => $iTipoIdentId]);
+        $request->merge(['cPersDocumento' => $cPersDocumento]);
+
         try {
             $fieldsToDecode = [
                 'iTipoIdentId',
@@ -32,19 +36,15 @@ class InscripcionesController extends Controller
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $data = new PersonaController();
-            // $data = $data->validate($request)->getData(true);
-            $data = ($data->validate($request))->getContent();
+            $data = ($data->buscarPersona($request))->getContent();
             $data = json_decode($data, true);
-             //return ($data);
-            if (isset($data['iPersId'])) {
+
+            if (isset($data['data']['iPersId'])) {
                 $request->merge(['iPersId' => $data['data']['iPersId']]);
                 $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
-                $contacto = new PersonasContactosController();
-                $contacto = $contacto->obtenerxiPersId($request)->getData(true);
-                $contacto = $contacto['data'];
-                $data['data']['cPersCel'] = $contacto['cPersCel'];
-                $data['data']['cPersCorreo'] = $contacto['cPersCorreo'];
+                $data['data']['cPersCel'] = $data['data']['cPersConTelefonoMovil'];
+                $data['data']['cPersCorreo'] = $data['data']['cPersConCorreoElectronico'];
 
                 $parametros = [
                     $request->iPersId              ??  NULL,
@@ -91,6 +91,28 @@ class InscripcionesController extends Controller
     }
     public function guardarInscripcion(Request $request)
     {
+        if (!isset($request->iPersId)) {
+            $persona = new PersonasController();
+            $persona = $persona->guardarPersonas($request);
+
+            if ($persona[0]->iPersId > 0) {
+                $request->merge(['iPersId' => $persona[0]->iPersId]);
+                $request->merge(['dPersNacimiento' => null]);
+                $request->merge(['cPersFotografia' => null]);
+                $request->merge(['cPersDomicilio' => $request->cPersDireccion]);
+                $request->merge(['cPersCorreo' => $request->cInscripCorreo]);
+                $request->merge(['cPersCelular' => $request->cInscripCel]);
+                $datosPersonales = new PersonasController();
+                $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
+                $request->merge(['iPersId' => $persona[0]->iPersId]);
+            } else {
+                return response()->json([
+                    'validated' => false,
+                    'errors' => 'No se encontró el iPersId'
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
+
         try {
             $fieldsToDecode = [
                 'iCapacitacionId',
@@ -121,8 +143,8 @@ class InscripcionesController extends Controller
                     @_iCredId=?',
                 $parametros
             );
-           
-            if ($data[0]->iInscripId>0) {
+
+            if ($data[0]->iInscripId > 0) {
                 $message = 'Se ha inscrito correctamente a la capacitación';
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => $data],
@@ -142,7 +164,8 @@ class InscripcionesController extends Controller
             );
         }
     }
-    public function listarInscripcionesxiCapacitacionId(Request $request) {
+    public function listarInscripcionesxiCapacitacionId(Request $request)
+    {
         try {
             $fieldsToDecode = [
                 'iInscripId',
@@ -169,6 +192,73 @@ class InscripcionesController extends Controller
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK
             );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarEstadoInscripcion(Request $request, $iInscripId)
+    {
+        $request->merge(['iInscripId' => $iInscripId]);
+
+        $validator = Validator::make($request->all(), [
+            'iInscripId' => ['required'],
+            'bEstado' => ['required'],
+        ], [
+            'iInscripId.required' => 'No se encontró el identificador iInscripId',
+            'bEstado.required' => 'No se encontró el estado',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $iEstado = $request->bEstado ? 10 : 100;
+        $request->merge(['iEstado' => $iEstado]);
+
+
+        try {
+            $fieldsToDecode = [
+                'iInscripId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iInscripId      ??  NULL,
+                $request->iEstado         ??  NULL,
+                $request->iCredId         ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec cap.SP_UPD_inscripcionesxiInscripIdxiEstado
+                    @_iInscripId=?, 
+                    @_iEstado=?,
+                    @_iCredId=?',
+                $parametros
+            );
+            $cEstado = $request->bEstado ? 'Validado' : 'Rechazado';
+
+            if ($data[0]->iInscripId > 0) {
+                $message = 'Se ha ' . $cEstado . ' correctamente a la Inscripción';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => $data],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha ' . $cEstado . ' correctamente a la Inscripción';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
         } catch (\Exception $e) {
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],

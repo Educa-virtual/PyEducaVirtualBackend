@@ -110,7 +110,7 @@ class ForosController extends Controller
                 $parametros
             );
 
-          
+
             if ($data[0]->iForoId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
@@ -252,7 +252,7 @@ class ForosController extends Controller
         $validator = Validator::make($request->all(), [
             'iForoCatId' => ['required'],
             'iDocenteId' => ['required'],
-            'cForoTitulo' => ['required', 'string', 'max:150'],
+            'cForoTitulo' => ['required', 'string', 'max:250'],
             'cForoDescripcion' => ['required', 'string'],
             'dtForoInicio' => ['required', 'date'],
             'dtForoFin' => ['required', 'date', 'after:dtForoInicio'],
@@ -360,7 +360,8 @@ class ForosController extends Controller
         }
     }
 
-    public function obtenerReporteEstudiantesRetroalimentacion(Request $request){
+    public function obtenerReporteEstudiantesRetroalimentacion(Request $request)
+    {
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
             'iIeCursoId' => ['required'],

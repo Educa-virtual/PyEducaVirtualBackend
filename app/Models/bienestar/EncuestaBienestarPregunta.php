@@ -25,6 +25,7 @@ class EncuestaBienestarPregunta
             $request->iEncuPregOrden,
             $request->cEncuPregContenido,
             $request->cEncuPregAdicional,
+            $request->iEncuAlterGrupoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC obe.Sp_INS_encuestaPregunta $placeholders", $parametros);
@@ -40,6 +41,7 @@ class EncuestaBienestarPregunta
             $request->iEncuPregOrden,
             $request->cEncuPregContenido,
             $request->cEncuPregAdicional,
+            $request->iEncuAlterGrupoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC obe.Sp_UPD_encuestaPregunta $placeholders", $parametros);
@@ -52,7 +54,7 @@ class EncuestaBienestarPregunta
             $request->iEncuPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuestaPregunta $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_SEL_encuestaPregunta $placeholders", $parametros);
     }
 
     public static function delPregunta($request)

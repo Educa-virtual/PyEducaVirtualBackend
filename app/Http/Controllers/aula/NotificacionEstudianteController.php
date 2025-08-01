@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 
 class NotificacionEstudianteController extends Controller
-{   
+{
     protected $hashids;
 
     public function __construct()
@@ -17,7 +17,8 @@ class NotificacionEstudianteController extends Controller
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
 
-    public function mostrar_notificacion(Request $request){
+    public function mostrar_notificacion(Request $request)
+    {
 
         $request['iEstudianteId'] = is_null($request->iEstudianteId)
             ? null
@@ -25,11 +26,23 @@ class NotificacionEstudianteController extends Controller
                 ? $request->iEstudianteId
                 : ($this->hashids->decode($request->iEstudianteId)[0] ?? null));
 
+        $request['iYAcadId'] = is_null($request->iYAcadId)
+            ? null
+            : (is_numeric($request->iYAcadId)
+                ? $request->iYAcadId
+                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
 
-        $parametros = [$request->iEstudianteId];
-   
+        $request['iSedeId'] = is_null($request->iSedeId)
+            ? null
+            : (is_numeric($request->iSedeId)
+                ? $request->iSedeId
+                : ($this->hashids->decode($request->iSedeId)[0] ?? null));
+
+
+        $parametros = [$request->iEstudianteId, $request->iYAcadId, $request->iSedeId];
+
         try {
-            $data = DB::select('exec aula.Sp_SEL_notificacion_estudiante ?', $parametros);
+            $data = DB::select('exec aula.Sp_SEL_notificacion_estudiante ?,?,?', $parametros);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;
@@ -38,6 +51,6 @@ class NotificacionEstudianteController extends Controller
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
 }

@@ -107,4 +107,26 @@ class FichaBienestarController extends Controller
             return FormatearMensajeHelper::error($e);
         }
     }
+
+    public function crearReporte(Request $request)
+    {
+        try {
+            $data = Ficha::selFichaReporteParametros($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function verReporte(Request $request)
+    {
+        try {
+            $data = Ficha::selFichaReporte($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
 }
