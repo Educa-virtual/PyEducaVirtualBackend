@@ -184,6 +184,7 @@ class BuzonSugerenciaEstudianteController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
             $data = BuzonSugerenciasEstudianteService::descargarArchivo($iSugerenciaId, $nombreArchivo);
+            ob_clean();
             return response($data['contenido'], 200, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"'
