@@ -3,6 +3,7 @@
 use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\enc\CategoriaController;
+use App\Http\Controllers\enc\ConfiguracionEncuestaController;
 use App\Http\Controllers\enc\DirectorController;
 use App\Http\Controllers\enc\DocenteController;
 use App\Http\Controllers\enc\EncuestaController;
@@ -36,6 +37,9 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::clas
     });
 
     Route::group(['prefix' => 'encuestas'], function () {
+        Route::group(['prefix' => 'configuracion'], function () {
+            Route::post('', [ConfiguracionEncuestaController::class, 'registrarConfiguracion']);
+        });
         Route::group(['prefix' => '{iConfEncId}'], function () {
             Route::patch('accesos', [EncuestaController::class, 'actualizarAccesosEncuesta']);
             Route::delete('', [EncuestaController::class, 'eliminarEncuesta']);
