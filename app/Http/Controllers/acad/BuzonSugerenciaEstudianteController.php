@@ -186,8 +186,8 @@ class BuzonSugerenciaEstudianteController extends Controller
             $data = BuzonSugerenciasEstudianteService::descargarArchivo($iSugerenciaId, $nombreArchivo);
             ob_clean();
             return response($data['contenido'], 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"'
+            'Content-Type' => $data['mimeType'] ?? 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $data['nombreArchivo'] . '"'
             ]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
