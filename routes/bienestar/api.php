@@ -12,15 +12,15 @@ use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
 use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
-use app\Http\Controllers\bienestar\EstudianteController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
 use App\Http\Controllers\bienestar\RecordarioFechasController;
 use App\Http\Controllers\bienestar\SeguimientoBienestarController;
 use App\Http\Controllers\FichaDosisController;
+use App\Http\Middleware\RefreshToken;
 
-Route::group(['prefix' => 'bienestar'], function () {
+Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function () {
 
     Route::post('listarEstudiantesApoderado', [FichaBienestarController::class, 'listarEstudiantesApoderado']);
     Route::post('listarFichas', [FichaBienestarController::class, 'listarFichas']);

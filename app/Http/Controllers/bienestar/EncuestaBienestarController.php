@@ -15,17 +15,23 @@ use Illuminate\Support\Facades\Gate;
 
 class EncuestaBienestarController extends Controller
 {
-    private $perfiles_permitidos = [
+    private array $administran = [
         Perfil::ESPECIALISTA_DREMO,
         Perfil::ESPECIALISTA_UGEL,
+        Perfil::ASISTENTE_SOCIAL,
         Perfil::DIRECTOR_IE,
         Perfil::SUBDIRECTOR_IE,
+    ];
+
+    private array $visualizan = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
     ];
 
     public function listarEncuestas(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, $this->visualizan)]);
             $data = EncuestaBienestar::selEncuestas($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
@@ -36,7 +42,7 @@ class EncuestaBienestarController extends Controller
     public function crearEncuesta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestar::selEncuestaParametros($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
@@ -47,7 +53,7 @@ class EncuestaBienestarController extends Controller
     public function verEncuesta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, $this->visualizan)]);
             $data = EncuestaBienestar::selEncuesta($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
@@ -58,7 +64,7 @@ class EncuestaBienestarController extends Controller
     public function guardarEncuesta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestar::insEncuesta($request);
             return FormatearMensajeHelper::ok('se guardó la información', $data);
         } catch (Exception $e) {
@@ -69,7 +75,7 @@ class EncuestaBienestarController extends Controller
     public function actualizarEncuesta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestar::updEncuesta($request);
             return FormatearMensajeHelper::ok('se actualizó la información', $data);
         } catch (Exception $e) {
@@ -80,7 +86,7 @@ class EncuestaBienestarController extends Controller
     public function actualizarEncuestaEstado(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestar::updEncuestaEstado($request);
             return FormatearMensajeHelper::ok('se actualizó la información', $data);
         } catch (Exception $e) {
@@ -91,7 +97,7 @@ class EncuestaBienestarController extends Controller
     public function borrarEncuesta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestar::delEncuesta($request);
             return FormatearMensajeHelper::ok('se eliminó la encuesta', $data);
         } catch (Exception $e) {
@@ -102,7 +108,7 @@ class EncuestaBienestarController extends Controller
     public function obtenerPoblacionObjetivo(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestar::selPoblacionObjetivo($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {

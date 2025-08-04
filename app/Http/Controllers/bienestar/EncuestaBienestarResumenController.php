@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
 
 class EncuestaBienestarResumenController extends Controller
 {
-    private $perfiles_permitidos = [
+    private $visualizan = [
         Perfil::ESPECIALISTA_DREMO,
         Perfil::ESPECIALISTA_UGEL,
         Perfil::DIRECTOR_IE,
@@ -22,7 +22,7 @@ class EncuestaBienestarResumenController extends Controller
     public function verResumen(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->visualizan]);
             $data = EncuestaBienestarResumen::verResumen($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
