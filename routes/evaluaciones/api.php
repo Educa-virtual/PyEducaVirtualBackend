@@ -60,6 +60,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
             Route::post('calificarLogrosRubrica', [EvaluacionEstudiantesController::class, 'calificarLogrosRubrica']);
             Route::post('guardarRespuestaxiEstudianteId', [EvaluacionEstudiantesController::class, 'guardarRespuestaxiEstudianteId']);
         });
+        Route::get('generarListaEstudiantesSedeSeccionGrado', [EvaluacionController::class, 'generarListaEstudiantesSedeSeccionGrado']);
+  
     });
 
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
