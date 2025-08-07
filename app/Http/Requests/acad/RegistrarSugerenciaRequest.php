@@ -12,7 +12,7 @@ class RegistrarSugerenciaRequest extends GeneralFormRequest
             'cAsunto' => 'required|string|max:255',
             'cSugerencia' => 'required|string',
             'iPrioridadId' => 'required|integer',
-            'fArchivos.*' => 'file|mimetypes:application/octet-stream,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,pdf,image/jpeg,image/png|max:10240',
+            'fArchivos.*' => 'file|mimetypes:application/octet-stream,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/pdf,image/jpeg,image/png|max:10240',
 
         ];
     }
