@@ -288,7 +288,8 @@ class EvaluacionesController extends Controller
         }
     }
 
-     public function obtenerReporteEstudiantesRetroalimentacion(Request $request){
+    public function obtenerReporteEstudiantesRetroalimentacion(Request $request)
+    {
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
             'iIeCursoId' => ['required'],
@@ -430,7 +431,7 @@ class EvaluacionesController extends Controller
     public function generarListaEstudiantesSedeSeccionGrado(Request $request)
     {
         try {
-           
+
             $parametros = [
                 $request->iSedeId ??  NULL,
                 $request->iSeccionId ??  NULL,
@@ -460,6 +461,24 @@ class EvaluacionesController extends Controller
             );
         }
     }
+    public function obtenerPeriodosEvaluacion(Request $request)
+    {
+        try {
+            $data = DB::select(
+                'SELECT c.iPeriodoEvalId, iPeriodoEvalCantidad, c.*  
+             FROM acad.calendario_academicos c 
+             INNER JOIN acad.periodo_evaluaciones p ON p.iPeriodoEvalId = c.iPeriodoEvalId'
+            );
 
-
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Períodos obtenidos exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
