@@ -32,6 +32,22 @@ class BuzonSugerencia extends Model
         return $data;
     }
 
+    public static function insBuzonSugerenciaRespuestaDirector(Request $request) {
+        DB::statement("EXEC [acad].[SP_INS_buzonSugerenciaRespuestaDirector] @iCredEntPerfId=?, @iSugerenciaId=?, @cRespuesta=?", [
+            $request->header('iCredEntPerfId'),
+            $request->iSugerenciaId,
+            $request->cRespuesta
+        ]);
+    }
+
+    public static function selBuzonSugerenciasDirector(Request $request)
+    {
+        $data = DB::select("EXEC [acad].[SP_SEL_buzonSugerenciasDirector] @iCredEntPerfId=?", [
+            $request->header('iCredEntPerfId')
+        ]);
+        return $data;
+    }
+
     public static function delBuzonSugerencias($iSugerenciaId, Request $request)
     {
         $data = DB::statement("EXEC [acad].[SP_DEL_buzonSugerenciasEstudiante] @iCredEntPerfId=?, @iSugerenciaId=?", [
@@ -41,22 +57,32 @@ class BuzonSugerencia extends Model
         return $data;
     }
 
-    public static function obtenerArchivosSugerencia($iSugerenciaId) {
-        $rutaCarpeta = "sugerencias/$iSugerenciaId/";
-        if (!Storage::disk('public')->exists($rutaCarpeta)) {
-            return []; // Retorna un array vacío si la carpeta no existe
-        }
+    /*public static function responderSugerencia($iSugerenciaId, Request $request)
+    {
+        $data = DB::statement("EXEC [acad].[SP_UPD_responderSugerencia] @iCredEntPerfId=?, @iSugerenciaId=?, @cRespuesta=?", [
+            $request->header('iCredEntPerfId'),
+            $iSugerenciaId,
+            $request->cRespuesta
+        ]);
+        return $data;
+    }*/
 
-        $archivos = Storage::disk('public')->files($rutaCarpeta);
-        $listaArchivos = [];
+    /*public static function obtenerDetalleSugerencia($iSugerenciaId, Request $request)
+    {
+        $data = DB::selectOne("EXEC [acad].[SP_SEL_detalleSugerencia] @iCredEntPerfId=?, @iSugerenciaId=?", [
+            $request->header('iCredEntPerfId'),
+            $iSugerenciaId
+        ]);
+        return $data;
+    }*/
 
-        foreach ($archivos as $archivo) {
-            $listaArchivos[] = [
-                'nombreArchivo' => basename($archivo),
-                'rutaCompleta' => $archivo,
-            ];
-        }
-
-        return $listaArchivos;
-    }
+    /*public static function cambiarEstadoSugerencia($iSugerenciaId, $cEstado, Request $request)
+    {
+        $data = DB::statement("EXEC [acad].[SP_UPD_estadoSugerencia] @iCredEntPerfId=?, @iSugerenciaId=?, @cEstado=?", [
+            $request->header('iCredEntPerfId'),
+            $iSugerenciaId,
+            $cEstado
+        ]);
+        return $data;
+    }*/
 }
