@@ -73,7 +73,7 @@ class Ficha
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaReporteParametros ' . $placeholders, $parametros);
+        return DB::selectOne('EXEC obe.Sp_SEL_fichaReporteParametros ' . $placeholders, $parametros);
     }
 
     public static function selFichaReporte($request)

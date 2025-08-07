@@ -13,7 +13,15 @@ class RecordatorioFechas
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_cumpleanios ' . $placeholders, $parametros);
+        try {
+            return DB::select('EXEC obe.Sp_SEL_cumpleanios ' . $placeholders, $parametros);
+        } catch(\Exception $e) {
+            // Manejar error en caso de que no se devuelva ningún resultado
+            if (str_contains($e->getMessage(), 'contains no fields')) {
+                return [];
+            }
+            throw $e;
+        }
     }
 
     public static function selRecordatorioPeriodos($request)
