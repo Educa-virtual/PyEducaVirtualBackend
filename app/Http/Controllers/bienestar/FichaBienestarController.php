@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\bienestar;
 
+use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\bienestar\Ficha;
@@ -9,9 +10,27 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class FichaBienestarController extends Controller
 {
+    private $administran = [
+        Perfil::DIRECTOR_IE,
+        Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
+    ];
+
+    private $registran = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+    ];
+
+    private $ven_reporte = [
+        Perfil::ESPECIALISTA_UGEL,
+        Perfil::ESPECIALISTA_DREMO,
+        Perfil::ADMINISTRADOR_DREMO,
+    ];
+
     /**
      * Obtiene una lista de estudiantes asociados a un apoderado
      * @param Request $request contiene el perfil y el año académico
@@ -20,6 +39,7 @@ class FichaBienestarController extends Controller
     public function listarEstudiantesApoderado(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
             $data = Ficha::selfichasApoderado($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -36,6 +56,7 @@ class FichaBienestarController extends Controller
     public function listarFichas(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = Ficha::selfichas($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -52,6 +73,7 @@ class FichaBienestarController extends Controller
     public function crearFicha(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = Ficha::insFicha($request);
             return FormatearMensajeHelper::ok('Se guardo la información', $data);
         }
@@ -68,6 +90,7 @@ class FichaBienestarController extends Controller
     public function obtenerParametrosFicha(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = DB::select('EXEC obe.Sp_SEL_fichaParametros');
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -84,6 +107,7 @@ class FichaBienestarController extends Controller
     public function borrarFicha(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = Ficha::delFicha($request);
             return FormatearMensajeHelper::ok('Se elimino la ficha', $data);
         }
@@ -100,6 +124,7 @@ class FichaBienestarController extends Controller
     public function verFicha(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = Ficha::selficha($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -111,6 +136,7 @@ class FichaBienestarController extends Controller
     public function crearReporte(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [$this->administran, $this->ven_reporte]);
             $data = Ficha::selFichaReporteParametros($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -122,6 +148,7 @@ class FichaBienestarController extends Controller
     public function verReporte(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [$this->administran, $this->ven_reporte]);
             $data = Ficha::selFichaReporte($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }

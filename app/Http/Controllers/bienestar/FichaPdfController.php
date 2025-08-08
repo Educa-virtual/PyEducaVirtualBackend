@@ -1,45 +1,66 @@
 <?php
 namespace App\Http\Controllers\bienestar;
+
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 
 use App\Http\Controllers\Controller;
 use App\Models\bienestar\FichaPdf;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Para usar consultas SQL crudas
+use Illuminate\Support\Facades\Gate;
 
 class FichaPdfController extends Controller
 {
+    private $permitidos = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+        Perfil::DIRECTOR_IE,
+        Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
+    ];
+
     public function descargarFicha(Request $request)
     {
-        $iFichaDGId = $request->get('iFichaDGId');
+        try {
 
-        //---------------- Datos generales y de dirección------------
-        $datosGenerales = FichaPdf::selDatosGenerales($request);
-        $familiares = FichaPdf::selFamiliares($request);
-        $aspeconimico = FichaPdf::selEconomico($request);
+            Gate::authorize('tiene-perfil', [$this->permitidos]);
 
-        // ---------IV ASPECTO DE LA VIVIENDA (DODE VIVE EL ESTUDIANTE----------------------------	
-        $aspvivienda = FichaPdf::selVivienda($request);
+            $iFichaDGId = $request->get('iFichaDGId');
 
-        // ----------EQUIPAMIENTO EN EL HOGAR--------------------------
-        $equipamiento = FichaPdf::selEquipamiento($request);
-        $alimentacionstd = FichaPdf::selAlimentacion($request);
-        $programas_alimentacion = FichaPdf::selProgramasAlimentacion($request);
+            //---------------- Datos generales y de dirección------------
+            $datosGenerales = FichaPdf::selDatosGenerales($request);
+            $familiares = FichaPdf::selFamiliares($request);
+            $aspeconimico = FichaPdf::selEconomico($request);
 
-        //--------------VI. DISCAPACIDAD-------------------------------------
-        $tiene_discapacidad = FichaPdf::selTieneDiscapacidad($request);
-        $programas_discapacidad = FichaPdf::selProgramasDiscapacidad($request);
-        $discapacidades = FichaPdf::selDiscapacidades($request);
+            // ---------IV ASPECTO DE LA VIVIENDA (DODE VIVE EL ESTUDIANTE----------------------------	
+            $aspvivienda = FichaPdf::selVivienda($request);
 
-        // ---------------VII SALUD----------------------------------------
-        $ficha_salud = FichaPdf::selSalud($request);
-        $dolencias_salud = FichaPdf::selDolenciasSalud($request);
-        $seguros_salud = FichaPdf::selSeguros($request);
-        $dosis_vacunas = FichaPdf::selDosisVacunas($request);
+            // ----------EQUIPAMIENTO EN EL HOGAR--------------------------
+            $equipamiento = FichaPdf::selEquipamiento($request);
+            $alimentacionstd = FichaPdf::selAlimentacion($request);
+            $programas_alimentacion = FichaPdf::selProgramasAlimentacion($request);
 
-        // ------------VIII-RECREACION------------------
-        $recreacion = FichaPdf::selRecreacion($request);
+            //--------------VI. DISCAPACIDAD-------------------------------------
+            $tiene_discapacidad = FichaPdf::selTieneDiscapacidad($request);
+            $programas_discapacidad = FichaPdf::selProgramasDiscapacidad($request);
+            $discapacidades = FichaPdf::selDiscapacidades($request);
+
+            // ---------------VII SALUD----------------------------------------
+            $ficha_salud = FichaPdf::selSalud($request);
+            $dolencias_salud = FichaPdf::selDolenciasSalud($request);
+            $seguros_salud = FichaPdf::selSeguros($request);
+            $dosis_vacunas = FichaPdf::selDosisVacunas($request);
+
+            // ------------VIII-RECREACION------------------
+            $recreacion = FichaPdf::selRecreacion($request);
+
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
 
         //-------------------------------------------------------------------
         $datos = [

@@ -18,6 +18,16 @@ class Ficha
             $request->iYAcadId,
             $request->iFichaDGId,
             $request->iPersId,
+            $request->iNivelTipoId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->iDsttId,
+            $request->cPersSexo,
+            $request->iUgelId,
+            $request->iIieeId,
+            $request->iSedeId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichas ' . $placeholders, $parametros);
