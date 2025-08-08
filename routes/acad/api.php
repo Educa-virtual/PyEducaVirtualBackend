@@ -3,6 +3,8 @@
 
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
+use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
+use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DocenteCursosController;
@@ -26,6 +28,9 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
     });
 
     Route::group(['prefix' => 'estudiantes'], function () {
+        Route::group(['prefix' => 'calendario-academico'], function () {
+            Route::get('', [EstudiantesController::class, 'obtenerCalendario']);
+        });
         Route::group(['prefix' => 'buzon-sugerencias'], function () {
             Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerencias']);

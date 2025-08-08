@@ -10,4 +10,9 @@ class MatriculasService
     {
         return Matricula::selDetalleMatriculaEstudiante($iCredEntPerfId);
     }
+
+    public static function obtenerCursosMatricula($iMatrId)
+    {
+        return Matricula::selCursosMatricula($iMatrId);
+    }
 }
