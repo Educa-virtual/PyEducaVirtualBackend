@@ -481,4 +481,20 @@ class EvaluacionesController extends Controller
             );
         }
     }
+    public function obtenerCompetencias (Request $request)
+    {
+        try {
+            $data = DB::select('SELECT iCompetenciaId, cCompetenciaNro, cCompetenciaNombre, cCompetenciaDescripcion, iCurrId FROM acad.curriculo_competencias ORDER BY iCompetenciaId');
+    
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Competencias obtenidas exitosamente', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
