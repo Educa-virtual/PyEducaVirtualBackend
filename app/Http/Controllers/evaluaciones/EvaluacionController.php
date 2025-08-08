@@ -9,6 +9,7 @@ use App\Repositories\aula\ProgramacionActividadesRepository;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 use Throwable;
 
 class EvaluacionController extends ApiController
@@ -314,5 +315,44 @@ class EvaluacionController extends ApiController
             $mensaje = $this->handleAndLogError($e, 'Error al anular la publicación');
             return $this->errorResponse(null, $mensaje);
         }
+    }
+
+    public function generarListaEstudiantesSedeSeccionGrado(Request $request)
+    { 
+        //return $request->all();
+        try {
+            $parametros = [
+                $request->iSedeId ?? NULL,
+                $request->iSeccionId ?? NULL,
+                $request->iYAcadId ?? NULL,
+                $request->iNivelGradoId ?? NULL,
+            ];
+
+            $data = DB::select(
+                'EXEC aula.SP_SEL_listarEstudiantesSedeSeccionYAcad   
+                    @iSedeId = ?, 
+                    @iSeccionId = ?, 
+                    @iYAcadId = ?, 
+                    @iNivelGradoId = ?',
+                $parametros
+            );
+
+            $response = [
+                'validated' => true,
+                'message' => 'Se obtuvo la información',
+                'data' => $data,
+            ];
+            $estado = 201;
+
+        } catch (\Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
     }
 }

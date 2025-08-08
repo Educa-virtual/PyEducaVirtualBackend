@@ -427,39 +427,4 @@ class EvaluacionesController extends Controller
         }
     }
 
-    public function generarListaEstudiantesSedeSeccionGrado(Request $request)
-    {
-        try {
-           
-            $parametros = [
-                $request->iSedeId ??  NULL,
-                $request->iSeccionId ??  NULL,
-                $request->iYAcadId ??  NULL,
-                $request->iNivelGradoId ??  NULL,
-            ];
-
-            $data = DB::select(
-                'exec aula.SP_SEL_listarEstudiantesSedeSeccionYAcad   
-                   	@iSedeId=?,
-                    @iSeccionId=?,
-                    @iYAcadId=?,
-                    @iNivelGradoId=?,
-                $parametros'
-            );
-
-            //$data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-
-            return new JsonResponse(
-                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-
 }
