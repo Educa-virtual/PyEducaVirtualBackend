@@ -10,21 +10,22 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'cap'], function () {
   Route::group(['prefix' => 'tipo-capacitaciones'], function () {
-    Route::post('listarTipoCapacitaciones', [TipoCapacitacionesController::class, 'listarTipoCapacitaciones']);
+    Route::get('/', [TipoCapacitacionesController::class, 'listarTipoCapacitaciones']);
   });
   Route::group(['prefix' => 'nivel-pedagogicos'], function () {
-    Route::post('listarNivelPedagogicos', [NivelPedagogicosController::class, 'listarNivelPedagogicos']);
+    Route::get('/', [NivelPedagogicosController::class, 'listarNivelPedagogicos']);
   });
   Route::group(['prefix' => 'tipo-publicos'], function () {
-    Route::post('listarTipoPublicos', [TipoPublicosController::class, 'listarTipoPublicos']);
+    Route::get('/', [TipoPublicosController::class, 'listarTipoPublicos']);
   });
   Route::group(['prefix' => 'capacitaciones'], function () {
-    Route::post('guardarCapacitaciones', [CapacitacionesController::class, 'guardarCapacitaciones']);
-    Route::get('listarCapacitaciones', [CapacitacionesController::class, 'listarCapacitaciones']);
-    Route::post('actualizarCapacitaciones', [CapacitacionesController::class, 'actualizarCapacitaciones']);
-    Route::post('eliminarCapacitaciones', [CapacitacionesController::class, 'eliminarCapacitaciones']);
+    Route::post('/', [CapacitacionesController::class, 'guardarCapacitaciones']);
+    Route::get('/', [CapacitacionesController::class, 'listarCapacitaciones']);
+    Route::put('/{iCapacitacionId}', [CapacitacionesController::class, 'actualizarCapacitaciones']);
+    Route::delete('/{iCapacitacionId}', [CapacitacionesController::class, 'eliminarCapacitaciones']);
     Route::put('/{iCapacitacionId}/estado', [CapacitacionesController::class, 'actualizarEstadoCapacitacion']);
-    Route::get('/', [CapacitacionesController::class, 'listarCapacitacionesxMatriculados']); // Para listar las capacitaciones con sus inscripciones aprobadas
+    Route::get('/matriculados', [CapacitacionesController::class, 'listarCapacitacionesxMatriculados']); // Para listar las capacitaciones con sus inscripciones aprobadas
+    Route::get('/publicadas', [CapacitacionesController::class, 'listarCapacitacionesPublicadas']);
   });
   Route::group(['prefix' => 'inscripciones'], function () {
     Route::get('capacitacion/{iCapacitacionId}/tipo/{iTipoIdentId}/documento/{cPersDocumento}', [InscripcionesController::class, 'buscarPersonaInscripcion']);
