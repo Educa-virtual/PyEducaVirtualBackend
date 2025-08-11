@@ -374,4 +374,56 @@ class CapacitacionesController extends Controller
             );
         }
     }
+
+    public function listarCapacitacionesxiCredId(Request $request, $cPerfil, $iCredId)
+    {
+        $request->merge(['cPerfil' => $cPerfil]);
+        $request->merge(['iCredId' => $iCredId]);
+
+        $validator = Validator::make($request->all(), [
+            'cPerfil' => ['required'],
+            'iCredId' => ['required'],
+        ], [
+            'cPerfil.required' => 'No se encontró el perfil',
+            'iCredId.required' => 'No se encontró la credencial',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->cPerfil              ??  NULL,
+                $request->iCredId              ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec cap.SP_SEL_capacitacionesxcPerfilxiCredId 
+                @_cPerfil=?,
+                @_iCredId=?',
+                $parametros
+            );
+
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
