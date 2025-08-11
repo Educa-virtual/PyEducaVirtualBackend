@@ -6,6 +6,7 @@ use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
+use App\Services\acad\FechasImportantesService;
 use App\Services\acad\MatriculasService;
 use App\Services\acad\TiposActividadService;
 use App\Services\acad\YearAcademicosService;
@@ -368,8 +369,8 @@ class EstudiantesController extends Controller
             $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
             $tiposActividad = TiposActividadService::obtenerTiposActividad();
             $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
-            //$matricula->iMatrId
-            $calendario = ProgramacionActividadesService::obtenerCalendarioAcademicoEstudiante(7845);
+
+            $calendario = ProgramacionActividadesService::obtenerCalendarioAcademicoEstudiante($matricula);
             return FormatearMensajeHelper::ok('Se obtuvo el calendario académico', [
                 'calendario' => $calendario,
                 'cursos' => $cursos,
