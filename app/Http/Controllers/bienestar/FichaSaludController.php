@@ -20,7 +20,7 @@ class FichaSaludController extends Controller
     public function actualizarFichaSalud(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[$this->registran]]);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaSalud::updFichaSalud($request);
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }

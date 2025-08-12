@@ -32,23 +32,6 @@ class FichaBienestarController extends Controller
     ];
 
     /**
-     * Obtiene una lista de estudiantes asociados a un apoderado
-     * @param Request $request contiene el perfil y el año académico
-     * @return JsonResponse respuesta con los datos de los estudiantes
-     */
-    public function listarEstudiantesApoderado(Request $request)
-    {
-        try {
-            Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            $data = Ficha::selfichasApoderado($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
-
-    /**
      * Obtiene una lista de fichas según los parámetros proporcionados
      * @param Request $request contiene los parámetros de búsqueda
      * @return JsonResponse respuesta con el estado de la operación y los datos obtenidos
@@ -56,7 +39,7 @@ class FichaBienestarController extends Controller
     public function listarFichas(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [$this->administran]);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, [Perfil::APODERADO])]);
             $data = Ficha::selfichas($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -136,7 +119,7 @@ class FichaBienestarController extends Controller
     public function crearReporte(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [$this->administran, $this->ven_reporte]);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, $this->ven_reporte)]);
             $data = Ficha::selFichaReporteParametros($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -148,7 +131,7 @@ class FichaBienestarController extends Controller
     public function verReporte(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [$this->administran, $this->ven_reporte]);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, $this->ven_reporte)]);
             $data = Ficha::selFichaReporte($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
