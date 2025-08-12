@@ -73,17 +73,17 @@ class SeguimientoBienestar
     public static function insSeguimiento($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
-            $request->iYAcadId,
-            $request->iPersId,
-            $request->iTipoSeguimId,
-            $request->iPrioridad,
-            $request->iFase,
-            $request->dSeguimFecha,
-            $request->cSeguimArchivo,
-            $request->cSeguimDescripcion,
-            $request->iMatrId,
-            $request->iPersIeId,
+            SeguimientoBienestar::formatearDatos($request->iCredEntPerfId, 'int'),
+            SeguimientoBienestar::formatearDatos($request->iYAcadId, 'int'),
+            SeguimientoBienestar::formatearDatos($request->iPersId, 'int'),
+            SeguimientoBienestar::formatearDatos($request->iTipoSeguimId, 'int'),
+            SeguimientoBienestar::formatearDatos($request->iPrioridad, 'int'),
+            SeguimientoBienestar::formatearDatos($request->iFase, 'int'),
+            SeguimientoBienestar::formatearDatos($request->dSeguimFecha, 'date'),
+            SeguimientoBienestar::formatearDatos($request->cSeguimArchivo, 'string'),
+            SeguimientoBienestar::formatearDatos($request->cSeguimDescripcion, 'string'),
+            SeguimientoBienestar::formatearDatos($request->iMatrId, 'int'),
+            SeguimientoBienestar::formatearDatos($request->iPersIeId, 'int'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC obe.Sp_INS_seguimiento $placeholders", $parametros);
@@ -154,5 +154,36 @@ class SeguimientoBienestar
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC acad.Sp_SEL_datosPersona $placeholders", $parametros);
+    }
+
+    private static function formatearDatos($valor, $tipo = 'int'|'string'|'bool'|'null'|'date')
+    {
+        if( in_array($valor, ['null', 'NULL', 'undefined']) ) {
+            return null;
+        }
+        switch ($tipo) {
+            case 'int':
+                return is_numeric($valor) ? intval($valor) : null;
+            case 'string':
+                return is_string($valor) ? $valor : null;
+            case 'bool':
+                if (is_bool($valor)) {
+                    return boolval($valor);
+                } elseif (is_numeric($valor)) {
+                    if (intval($valor) === 1) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+                return null;
+            case 'date':
+                $fecha = substr($valor, 0, 10);
+                return is_string($fecha) ? date('Y-m-d', strtotime($fecha)) : null;
+            case 'null':
+                return null;
+            default:
+                return null;
+        }
     }
 }

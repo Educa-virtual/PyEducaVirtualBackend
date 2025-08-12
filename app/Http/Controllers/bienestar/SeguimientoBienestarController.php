@@ -60,6 +60,18 @@ class SeguimientoBienestarController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
+
+            // Subir archivo
+            if( $request->hasFile('archivo') ) {
+                $archivo = $request->file('archivo');
+                $iYAcadId = $request->iYAcadId;
+                $iPersId = $request->iPersId;
+                $ruta = "bienestar/seguimiento/$iYAcadId/$iPersId";
+                $request->merge([
+                    'cSeguimArchivo' => $this->subirArchivo($archivo, $ruta),
+                ]);
+            }
+
             $data = SeguimientoBienestar::insSeguimiento($request);
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
@@ -80,6 +92,7 @@ class SeguimientoBienestarController extends Controller
 
     public function actualizarSeguimientoArchivo(Request $request)
     {
+        return FormatearMensajeHelper::ok('Desactivado');
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
 
@@ -148,16 +161,19 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::selSeguimiento($request);
-            $nombre_archivo = $data->data['cSeguimArchivo'];
-            $ruta = storage_path('app/bienestar/seguimiento/' . $nombre_archivo);
+            $nombre_archivo = $data->cSeguimArchivo;
+            $iYAcadId = $data->iYAcadId;
+            $iPersId = $data->iPersId;
+            $ruta = Storage::disk('local')->path("bienestar/seguimiento/$iYAcadId/$iPersId/$nombre_archivo");
             if (!file_exists($ruta)) {
                 abort(404, 'Archivo no encontrado');
             }
             return response()->download($ruta, $nombre_archivo, [
-                'Content-Type' => 'application/pdf'
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $nombre_archivo . '"',
             ]);
         } catch (Exception $e) {
-            return null;
+            return FormatearMensajeHelper::error($e);
         }
     }
 }
