@@ -399,6 +399,7 @@ class CapacitacionesController extends Controller
         try {
             $fieldsToDecode = [
                 'iCredId',
+                'iCapacitacionId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
