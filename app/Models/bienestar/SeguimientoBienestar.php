@@ -65,6 +65,11 @@ class SeguimientoBienestar
         return DB::selectOne("EXEC obe.Sp_SEL_seguimiento $placeholders", $parametros);
     }
 
+    /**
+     * Inserta un registro de seguimiento
+     * @param Request $request contiene los datos a insertar
+     * @return mixed devuelve el id del registro insertado
+     */
     public static function insSeguimiento($request)
     {
         $parametros = [
@@ -81,9 +86,14 @@ class SeguimientoBienestar
             $request->iPersIeId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert("EXEC obe.Sp_INS_seguimiento $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_INS_seguimiento $placeholders", $parametros);
     }
 
+    /**
+     * Actualiza un registro de seguimiento
+     * @param Request $request contiene los datos a actualizar
+     * @return mixed devuelve el id del registro actualizado
+     */
     public static function updSeguimiento($request)
     {
         $parametros = [
@@ -98,7 +108,23 @@ class SeguimientoBienestar
             $request->cSeguimDescripcion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::update("EXEC obe.Sp_UPD_seguimiento $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_UPD_seguimiento $placeholders", $parametros);
+    }
+
+    /**
+     * Actualiza el archivo de un registro de seguimiento
+     * @param Request $request contiene los datos a actualizar
+     * @return mixed devuelve true o false dependiendo si se actualizó o no
+     */
+    public static function updSeguimientoArchivo($request)
+    {
+        $parametros = [
+            $request->iCredEntPerfId,
+            $request->iSeguimId,
+            $request->cSeguimArchivo,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::update("EXEC obe.Sp_UPD_seguimientoArchivo $placeholders", $parametros);
     }
 
     public static function delSeguimiento($request)

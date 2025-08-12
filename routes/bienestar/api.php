@@ -118,8 +118,10 @@ Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function (
     Route::post('verSeguimientosPersona', [SeguimientoBienestarController::class, 'verSeguimientosPersona']);
     Route::post('guardarSeguimiento', [SeguimientoBienestarController::class, 'guardarSeguimiento']);
     Route::post('actualizarSeguimiento', [SeguimientoBienestarController::class, 'actualizarSeguimiento']);
+    Route::post('actualizarSeguimientoArchivo', [SeguimientoBienestarController::class, 'actualizarSeguimientoArchivo']);
     Route::post('verSeguimiento', [SeguimientoBienestarController::class, 'verSeguimiento']);
     Route::post('borrarSeguimiento', [SeguimientoBienestarController::class, 'borrarSeguimiento']);
     Route::post('verDatosPersona', [SeguimientoBienestarController::class, 'verDatosPersona']);
+    Route::post('descargarSeguimiento', [SeguimientoBienestarController::class, 'descargarSeguimiento']);
 });
 

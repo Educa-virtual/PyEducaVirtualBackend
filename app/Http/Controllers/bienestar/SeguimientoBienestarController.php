@@ -9,6 +9,8 @@ use App\Models\bienestar\SeguimientoBienestar;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class SeguimientoBienestarController extends Controller
 {
@@ -76,6 +78,25 @@ class SeguimientoBienestarController extends Controller
         }
     }
 
+    public function actualizarSeguimientoArchivo(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
+
+            // Subir archivo
+            $archivo = $request->file('archivo');
+            $ruta = 'bienestar/seguimiento';
+            $request->merge([
+                'cSeguimArchivo' => $this->subirArchivo($archivo, $ruta),
+            ]);
+
+            $data = SeguimientoBienestar::updSeguimientoArchivo($request);
+            return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function verSeguimiento(Request $request)
     {
         try {
@@ -106,6 +127,37 @@ class SeguimientoBienestarController extends Controller
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    private function subirArchivo($archivo, $ruta)
+    {
+        $nombre_archivo = hash('sha256', uniqid()) . '.' . $archivo->getClientOriginalExtension();
+        if(!Storage::disk('local')->exists($ruta)) {
+            Storage::disk('local')->makeDirectory($ruta, 0755, true);
+        }
+        $archivo->move(Storage::disk('local')->path($ruta), $nombre_archivo);
+        if (Storage::disk('local')->exists($ruta . '/' . $nombre_archivo)) {
+            return $nombre_archivo;
+        }
+        return null;
+    }
+
+    public function descargarSeguimiento(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
+            $data = SeguimientoBienestar::selSeguimiento($request);
+            $nombre_archivo = $data->data['cSeguimArchivo'];
+            $ruta = storage_path('app/bienestar/seguimiento/' . $nombre_archivo);
+            if (!file_exists($ruta)) {
+                abort(404, 'Archivo no encontrado');
+            }
+            return response()->download($ruta, $nombre_archivo, [
+                'Content-Type' => 'application/pdf'
+            ]);
+        } catch (Exception $e) {
+            return null;
         }
     }
 }
