@@ -42,7 +42,7 @@ class EncuestaBienestarController extends Controller
     public function crearEncuesta(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [$this->administran]);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, [Perfil::APODERADO])]);
             $data = EncuestaBienestar::selEncuestaParametros($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
@@ -108,7 +108,7 @@ class EncuestaBienestarController extends Controller
     public function obtenerPoblacionObjetivo(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [$this->administran]);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, [Perfil::APODERADO])]);
             $data = EncuestaBienestar::selPoblacionObjetivo($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
