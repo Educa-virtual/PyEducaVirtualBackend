@@ -493,6 +493,8 @@ class ContenidoSemanasController extends Controller
         try {
             $fieldsToDecode = [
                 'iContenidoSemId',
+                'idDocCursoId',
+                'iCapacitacionId',
                 'iCredId'
 
             ];
@@ -500,6 +502,8 @@ class ContenidoSemanasController extends Controller
 
             $parametros = [
                 $request->iContenidoSemId             ?? NULL,
+                $request->idDocCursoId             ?? NULL,
+                $request->iCapacitacionId             ?? NULL,
                 $request->cPerfil                     ?? NULL,
                 $request->iCredId                     ?? NULL
             ];
@@ -507,6 +511,8 @@ class ContenidoSemanasController extends Controller
             $data = DB::select(
                 'EXEC acad.Sp_SEL_contenidoSemanasxActividadesxiContenidoSemId
                     @_iContenidoSemId=?, 
+                    @_idDocCursoId=?, 
+                    @_iCapacitacionId=?, 
                     @_cPerfil=?, 
                     @_iCredId=?',
                 $parametros
