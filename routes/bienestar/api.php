@@ -26,7 +26,7 @@ Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function (
     Route::post('listarFichas', [FichaBienestarController::class, 'listarFichas']);
     Route::post('crearFicha', [FichaBienestarController::class, 'crearFicha']);
     Route::get('obtenerParametrosFicha', [FichaBienestarController::class, 'obtenerParametrosFicha']);
-    Route::delete('borrarFicha', [FichaBienestarController::class, 'borrarFicha']);
+    Route::post('borrarFicha', [FichaBienestarController::class, 'borrarFicha']);
     Route::post('verFicha', [FichaBienestarController::class, 'verFicha']);
 
     Route::post('descargarFicha', [FichaPdfController::class, 'descargarFicha']);
