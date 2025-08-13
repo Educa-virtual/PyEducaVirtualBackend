@@ -108,7 +108,7 @@ class Matricula
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("exec acad.Sp_SEL_matriculaPorId $placeholders", $parametros);
     }
-    
+
     public static function delMatriculaPorId($request)
     {
         $parametros = [
@@ -117,5 +117,10 @@ class Matricula
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::delete("exec acad.Sp_DEL_matriculaPorId $placeholders", $parametros);
+    }
+
+    public static function selDetalleMatriculaEstudiante($iCredEntPerfId)
+    {
+        return DB::selectOne("acad.SP_SEL_detalleMatriculaEstudiante @iCredEntPerfId=?", [$iCredEntPerfId]);
     }
 }

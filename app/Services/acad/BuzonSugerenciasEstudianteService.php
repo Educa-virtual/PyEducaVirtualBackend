@@ -7,19 +7,22 @@ use App\Models\acad\BuzonSugerencia;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 
-class BuzonSugerenciasService
+class BuzonSugerenciasEstudianteService
 {
-    public static function registrarSugerencia(RegistrarSugerenciaRequest $request) {
-        $id=BuzonSugerencia::insBuzonSugerencias($request);
+    public static function registrarSugerencia(RegistrarSugerenciaRequest $request)
+    {
+        $id = BuzonSugerencia::insBuzonSugerencias($request);
         self::guardarArchivos($id, $request->file('fArchivos'));
     }
 
-    public static function obtenerSugerenciasEstudiante($request) {
+    public static function obtenerSugerencias($request)
+    {
         return BuzonSugerencia::selBuzonSugerenciasEstudiante($request);
     }
 
-    public static function eliminarSugerencia($iSugerenciaId, $request) {
-        return BuzonSugerencia::delBuzonSugerenciasEstudiante($iSugerenciaId, $request);
+    public static function eliminarSugerencia($iSugerenciaId, $request)
+    {
+        return BuzonSugerencia::delBuzonSugerencias($iSugerenciaId, $request);
     }
 
     public static function guardarArchivos($id, $archivos)
@@ -42,24 +45,33 @@ class BuzonSugerenciasService
 
     public static function descargarArchivo($id, $archivo)
     {
-        /*
-        $rutaCarpeta = "sugerencias/$iSugerenciaId/";
-            $rutaArchivo = $rutaCarpeta . $nombreArchivo;
-
-            if (!Storage::disk('public')->exists($rutaArchivo)) {
-                return FormatearMensajeHelper::error(new Exception('El archivo no existe'), Response::HTTP_NOT_FOUND);
-            }
-
-            return Storage::disk('public')->download($rutaArchivo, $nombreArchivo);
-        */
-        $rutaArchivo = "sugerencias/".$id."/".$archivo;
+        $rutaArchivo = "sugerencias/" . $id . "/" . $archivo;
         if (!Storage::disk('public')->exists($rutaArchivo)) {
             throw new Exception('El archivo no existe');
         }
         $data = [];
         $data['contenido'] = Storage::disk('public')->get($rutaArchivo);
-        $data['nombreArchivo'] = $archivo;/*ucwords(strtolower($area->cCursoNombre)) . '-' . $area->cGradoAbreviacion . '-'
-            . str_replace('Educación ', '', $area->cNivelTipoNombre) . '-' . $fechaInicio->year . '.pdf';*/
+        $data['nombreArchivo'] = $archivo;
         return $data;
+    }
+
+    public static function obtenerArchivosSugerencia($iSugerenciaId)
+    {
+        $rutaCarpeta = "sugerencias/$iSugerenciaId/";
+        if (!Storage::disk('public')->exists($rutaCarpeta)) {
+            return []; // Retorna un array vacío si la carpeta no existe
+        }
+
+        $archivos = Storage::disk('public')->files($rutaCarpeta);
+        $listaArchivos = [];
+
+        foreach ($archivos as $archivo) {
+            $listaArchivos[] = [
+                'nombreArchivo' => basename($archivo),
+                'rutaCompleta' => $archivo,
+            ];
+        }
+
+        return $listaArchivos;
     }
 }
