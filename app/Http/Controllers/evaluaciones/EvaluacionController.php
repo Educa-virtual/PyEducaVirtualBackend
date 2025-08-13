@@ -355,4 +355,116 @@ class EvaluacionController extends ApiController
 
         return new JsonResponse($response, $estado);
     }
+
+    public function competenciasXCursoIdXCurricula(Request $request)
+    { 
+        //return $request->all();
+        try {
+            $parametros = [
+                $request->iCursoId,
+                $request->iNivelTipoId,
+                $request->iDetMatrId ?? 0,
+                
+            ];
+
+            $data = DB::select(
+                'EXEC acad.Sp_SEL_competenciasXCursoIdXCurricula   
+                    @_iCursoId = ?, 
+                    @_iNivelTipoId = ?,
+                    @_iDetMatrId = ?',
+                $parametros
+            );
+
+            $response = [
+                'validated' => true,
+                'message' => 'Se obtuvo la información',
+                'data' => $data,
+            ];
+            $estado = 201;
+
+        } catch (\Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
+    public function insertarResultadoXcompetencias(Request $request)
+    { 
+        //return $request->all();
+        try {
+            $parametros = [
+                $request->json,
+                $request->opcion,
+                $request->iCredId,
+                
+            ];
+
+            $data = DB::select(
+                'EXEC eval.Sp_INS_resultadoXcompetencias   
+                    @json = ?, 
+                    @_opcion = ?,
+                    @_iCredId = ?',
+                $parametros
+            );
+
+            $response = [
+                'validated' => true,
+                'message' => 'Se obtuvo la información',
+                'data' => $data,
+            ];
+            $estado = 201;
+
+        } catch (\Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+    
+    public function actualizarResultadoXperiodoDetMatricula(Request $request)
+    { 
+        //return $request->all();
+        try {
+            $parametros = [
+                $request->json,
+                $request->iCredId,
+                
+            ];
+
+            $data = DB::select(
+                'EXEC eval.Sp_UPD_resultadoXperiodoDetMatricula   
+                    @json = ?, 
+                    @_iCredId = ?',
+                $parametros
+            );
+
+            $response = [
+                'validated' => true,
+                'message' => 'Se obtuvo la información',
+                'data' => $data,
+            ];
+            $estado = 201;
+
+        } catch (\Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }    
 }

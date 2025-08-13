@@ -22,6 +22,10 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
     Route::get('lista-estudiantes', [EvaluacionController::class, 'generarListaEstudiantesSedeSeccionGrado']);
+    Route::get('competenciasXCursoIdXCurricula', [EvaluacionController::class, 'competenciasXCursoIdXCurricula']);
+    Route::post('insertarResultadoXcompetencias', [EvaluacionController::class, 'insertarResultadoXcompetencias']);
+    Route::post('actualizarResultadoXperiodoDetMatricula', [EvaluacionController::class, 'actualizarResultadoXperiodoDetMatricula']);
+ 
     Route::group(['prefix' => 'tipo-preguntas'], function () {
         Route::get('obtenerTipoPreguntas', [TipoPreguntaController::class, 'obtenerTipoPreguntas']);
     });
