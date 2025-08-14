@@ -38,21 +38,27 @@ class EstudiantesController extends Controller
         $request->validate(
             [
                 'iEstudianteId' => 'required',
-                'iYearId' => 'required',
+                'iYAcadId' => 'required',
+                'iSedeId' => 'required',
+                'iIieeId' => 'required',
             ],
             [
                 'iEstudianteId.required' => 'Hubo un problema al obtener el iEstudianteId',
-                'iYearId.required' => 'Hubo un problema al obtener el iYearId',
+                'iYAcadId.required' => 'Hubo un problema al obtener el iYAcadId',
+                'iSedeId.required' => 'Hubo un problema al obtener el iSedeId',
+                'iIieeId.required' => 'Hubo un problema al obtener el iIieeId',
             ]
         );
 
         $parametros = [
             $request->iEstudianteId,
-            $request->iYearId
+            $request->iYAcadId,
+            $request->iSedeId,
+            $request->iIieeId
         ];
 
         try {
-            $data = DB::select("execute acad.Sp_SEL_cursosXEstudianteAnioSemestre ?,?", $parametros);
+            $data = DB::select("execute acad.Sp_SEL_cursosXEstudianteAnioSemestre ?,?,?,?", $parametros);
 
             foreach ($data as $key => $value) {
                 $value->iCursoId = $this->hashids->encode($value->iCursoId);

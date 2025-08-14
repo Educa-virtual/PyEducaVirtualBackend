@@ -18,7 +18,7 @@ Route::group(['prefix' => 'grl'], function () {
   Route::get('prioridades', [PrioridadController::class, 'obtenerPrioridades']);
   Route::group(['prefix' => 'personas'], function () {
     Route::post('list', [PersonasController::class, 'list']);
-    Route::post('obtenerPersonasxiPersId', [PersonasController::class, 'obtenerPersonasxiPersId']);
+    Route::get('obtenerPersonasxiPersId', [PersonasController::class, 'obtenerPersonasxiPersId']);
     Route::post('guardarPersonasxDatosPersonales', [PersonasController::class, 'guardarPersonasxDatosPersonales']);
   });
   Route::group(['prefix' => 'personas-contactos'], function () {

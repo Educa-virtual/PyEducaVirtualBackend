@@ -52,6 +52,14 @@ class ConsultarDocumentoIdentidadService
      */
     public function buscarDni($documento)
     {
+        if(strlen($documento) != 8) {
+            return [
+                'message' => 'El DNI debe tener 8 digitos',
+                'data' => [],
+                'status' => 422,
+            ];
+        }
+
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -118,6 +126,14 @@ class ConsultarDocumentoIdentidadService
      */
     public function buscarCarnet($documento)
     {
+        if(strlen($documento) != 12) {
+            return [
+                'message' => 'El Carnet debe tener 12 digitos',
+                'data' => [],
+                'status' => 422,
+            ];
+        }
+
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -169,6 +185,14 @@ class ConsultarDocumentoIdentidadService
 
     private function buscarRuc($documento)
     {
+        if(strlen($documento) != 11) {
+            return [
+                'message' => 'El RUC debe tener 11 digitos',
+                'data' => [],
+                'status' => 422,
+            ];
+        }
+
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -224,6 +248,10 @@ class ConsultarDocumentoIdentidadService
                 FROM grl.distritos d
                     INNER JOIN grl.provincias p ON p.iPrvnId = d.iPrvnId
                 WHERE cDsttCodigoINEI = ?', [trim($respuesta->ubigeo_sunat)]);
+            
+            $estado_civil = DB::select('SELECT tec.iTipoEstCivId 
+                FROM grl.tipos_estados_civiles tec
+                WHERE UPPER(cTipoEstCivilReniec) LIKE UPPER(?)', [trim($respuesta->estado_civil)]);
         } catch (\Exception $e) {
             // No devolver error
         }
@@ -250,7 +278,7 @@ class ConsultarDocumentoIdentidadService
             'cPersNombre' => trim($respuesta->nombres),
             'cPersSexo' => trim($respuesta->sexo) ?: NULL,
             'dPersNacimiento' => $fecha_nacimiento_formateada,
-            'iTipoEstCivId' => trim($respuesta->estado_civil) ?: NULL,
+            'iTipoEstCivId' => count($estado_civil) > 0 ? $estado_civil[0]->iTipoEstCivId : NULL,
             'iNacionId' => "193",
             'cPersFotografia' => trim($respuesta->foto),
             'cPersDomicilio' => trim($respuesta->direccion),

@@ -10,6 +10,7 @@ use App\Http\Controllers\ere\EncabezadoPreguntasController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\ere\EvaluacionExclusionesController;
 use App\Http\Controllers\ere\InstitucionesEducativasController;
 use App\Http\Controllers\ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\ImportarResultadosController;
@@ -32,10 +33,13 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::get('areas', [AreasController::class, 'obtenerAreasPorEvaluacion']);
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
         Route::group(['prefix' => 'areas/{areaId}'], function () {
+            //Route::get('descargas/estado', [AreasController::class, 'obtenerEstadoDescarga']);
+            Route::patch('descargas/estado', [AreasController::class, 'actualizarEstadoDescarga']);
             Route::get('preguntas-reutilizables', [PreguntasController::class, 'obtenerPreguntasReutilizables']);
             Route::post('preguntas-reutilizables', [PreguntasController::class, 'asignarPreguntaAEvaluacion']);
             Route::post('archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
             Route::get('archivo-preguntas', [AreasController::class, 'descargarArchivoPreguntas']);
+            Route::delete('archivo-preguntas', [AreasController::class, 'eliminarArchivoPreguntasPdf']);
             Route::get('matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
             Route::get('cartilla-respuestas', [AreasController::class, 'descargarCartillaRespuestas']);
             Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
@@ -201,6 +205,13 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
          //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
          Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+
+        // Gestionar exclusion de estudiantes en evaluaciones ERE
+        Route::post('listarExclusiones', [EvaluacionExclusionesController::class, 'listarExclusiones']);
+        Route::post('guardarExclusion', [EvaluacionExclusionesController::class, 'guardarExclusion']);
+        Route::post('actualizarExclusion', [EvaluacionExclusionesController::class, 'actualizarExclusion']);
+        Route::post('verExclusion', [EvaluacionExclusionesController::class, 'verExclusion']);
+        Route::post('eliminarExclusion', [EvaluacionExclusionesController::class, 'eliminarExclusion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

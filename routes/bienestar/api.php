@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\bienestar\EncuestaBienestarController;
+use App\Http\Controllers\bienestar\EncuestaBienestarPreguntaController;
+use App\Http\Controllers\bienestar\EncuestaBienestarRespuestaController;
+use App\Http\Controllers\bienestar\EncuestaBienestarResumenController;
 use App\Http\Controllers\bienestar\FichaAlimentacionController;
 use App\Http\Controllers\bienestar\FichaFamiliarController;
 use App\Http\Controllers\bienestar\FichaGeneralController;
@@ -8,34 +12,37 @@ use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
 use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
-//Se agrego codigo el 22 Abril--------
 use app\Http\Controllers\bienestar\EstudianteController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
+use App\Http\Controllers\bienestar\RecordarioFechasController;
+use App\Http\Controllers\bienestar\SeguimientoBienestarController;
+use App\Http\Controllers\FichaDosisController;
 
 Route::group(['prefix' => 'bienestar'], function () {
 
-    Route::get('searchFichasEstudiantes', [FichaGeneralController::class, 'indexEstudiantes']);
+    Route::post('listarEstudiantesApoderado', [FichaBienestarController::class, 'listarEstudiantesApoderado']);
+    Route::post('listarFichas', [FichaBienestarController::class, 'listarFichas']);
+    Route::post('crearFicha', [FichaBienestarController::class, 'crearFicha']);
+    Route::get('obtenerParametrosFicha', [FichaBienestarController::class, 'obtenerParametrosFicha']);
+    Route::delete('borrarFicha', [FichaBienestarController::class, 'borrarFicha']);
+    Route::post('verFicha', [FichaBienestarController::class, 'verFicha']);
 
-    Route::post('searchFichas', [FichaBienestarController::class, 'listarFichas']);
-    Route::get('createFicha', [FichaBienestarController::class, 'crearFicha']);
-    Route::delete('deleteFicha', [FichaBienestarController::class, 'borrarFicha']);
-    Route::post('searchFicha', [FichaBienestarController::class, 'verFicha']);
+    Route::post('descargarFicha', [FichaPdfController::class, 'descargarFicha']);
 
-    Route::post('searchFichaGeneral', [FichaGeneralController::class, 'verFichaGeneral']);
-    Route::post('guardarFichaGeneral', [FichaGeneralController::class, 'guardarFichaGeneral']);
+    Route::post('verFichaGeneral', [FichaGeneralController::class, 'verFichaGeneral']);
     Route::post('actualizarFichaGeneral', [FichaGeneralController::class, 'actualizarFichaGeneral']);
 
     /* Rutas para gestionar familiares */
-    Route::post('searchFichaFamiliares', [FichaFamiliarController::class, 'listarFichaFamiliares']);
+    Route::post('listarFichaFamiliares', [FichaFamiliarController::class, 'listarFichaFamiliares']);
     Route::post('guardarFichaFamiliar', [FichaFamiliarController::class, 'guardarFichaFamiliar']);
-    Route::post('searchFichaFamiliar', [FichaFamiliarController::class, 'verFichaFamiliar']);
+    Route::post('verFichaFamiliar', [FichaFamiliarController::class, 'verFichaFamiliar']);
     Route::post('actualizarFichaFamiliar', [FichaFamiliarController::class, 'actualizarFichaFamiliar']);
     Route::post('borrarFichaFamiliar', [FichaFamiliarController::class, 'borrarFichaFamiliar']);
 
     /* Rutas para gestion seccion economica */
-    Route::post('searchFichaEconomico', [FichaEconomicoController::class, 'verFichaEconomico']);
+    Route::post('verFichaEconomico', [FichaEconomicoController::class, 'verFichaEconomico']);
     Route::post('guardarFichaEconomico', [FichaEconomicoController::class, 'guardarFichaEconomico']);
     Route::post('actualizarFichaEconomico', [FichaEconomicoController::class, 'actualizarFichaEconomico']);
 
@@ -45,7 +52,7 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarFichaVivienda', [FichaViviendaController::class, 'actualizarFichaVivienda']);
 
     /* Rutas para gestion seccion alimentacion */
-    Route::post('searchFichaAlimentacion', [FichaAlimentacionController::class, 'verFichaAlimentacion']);
+    Route::post('verFichaAlimentacion', [FichaAlimentacionController::class, 'verFichaAlimentacion']);
     Route::post('guardarFichaAlimentacion', [FichaAlimentacionController::class, 'guardarFichaAlimentacion']);
     Route::post('actualizarFichaAlimentacion', [FichaAlimentacionController::class, 'actualizarFichaAlimentacion']);
 
@@ -60,15 +67,59 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarFichaSalud', [FichaSaludController::class, 'actualizarFichaSalud']);
 
     /* Rutas para gestion seccion recreación */
-    Route::post('searchFichaRecreacion', [FichaRecreacionController::class, 'verFicharRecreacion']);
-    Route::post('guardarFichaRecreacion', [FichaRecreacionController::class, 'guardarFichaRecreacion']);
+    Route::post('verFichaRecreacion', [FichaRecreacionController::class, 'verFichaRecreacion']);
     Route::post('actualizarFichaRecreacion', [FichaRecreacionController::class, 'actualizarFichaRecreacion']);
 
-    
+    Route::post('listarDosis', [FichaDosisController::class, 'listarDosis']);
+    Route::post('verDosis', [FichaDosisController::class, 'verDosis']);
+    Route::post('guardarDosis', [FichaDosisController::class, 'guardarDosis']);
+    Route::post('actualizarDosis', [FichaDosisController::class, 'actualizarDosis']);
+    Route::post('borrarDosis', [FichaDosisController::class, 'borrarDosis']);
 
-    Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+    /* Recordatorios de cumpleaños */
+    Route::get('verRecordatorioPeriodos', [RecordarioFechasController::class, 'verRecordatorioPeriodos']);
+    Route::post('verFechasEspeciales', [RecordarioFechasController::class, 'verFechasEspeciales']);
+    Route::post('verConfRecordatorio', [RecordarioFechasController::class, 'verConfRecordatorio']);
+    Route::post('actualizarConfRecordatorio', [RecordarioFechasController::class, 'actualizarConfRecordatorio']);
 
-    Route::get('/ficha-pdf/{id}/{anio}', [FichaPdfController::class, 'mostrarFichaPdf'])->name('ficha.pdf');
+    /* Gestionar encuestas de bienestar */
+    Route::post('listarEncuestas', [EncuestaBienestarController::class, 'listarEncuestas']);
+    Route::post('crearEncuesta', [EncuestaBienestarController::class, 'crearEncuesta']);
+    Route::post('guardarEncuesta', [EncuestaBienestarController::class, 'guardarEncuesta']);
+    Route::post('actualizarEncuesta', [EncuestaBienestarController::class, 'actualizarEncuesta']);
+    Route::post('actualizarEncuestaEstado', [EncuestaBienestarController::class, 'actualizarEncuestaEstado']);
+    Route::post('verEncuesta', [EncuestaBienestarController::class, 'verEncuesta']);
+    Route::post('borrarEncuesta', [EncuestaBienestarController::class, 'borrarEncuesta']);
 
+    Route::post('obtenerPoblacionObjetivo', [EncuestaBienestarController::class, 'obtenerPoblacionObjetivo']);
+
+    Route::post('listarPreguntas', [EncuestaBienestarPreguntaController::class, 'listarPreguntas']);
+    Route::post('guardarPregunta', [EncuestaBienestarPreguntaController::class, 'guardarPregunta']);
+    Route::post('actualizarPregunta', [EncuestaBienestarPreguntaController::class, 'actualizarPregunta']);
+    Route::post('verPregunta', [EncuestaBienestarPreguntaController::class, 'verPregunta']);
+    Route::post('borrarPregunta', [EncuestaBienestarPreguntaController::class, 'borrarPregunta']);
+
+    Route::post('listarRespuestas', [EncuestaBienestarRespuestaController::class, 'listarRespuestas']);
+    Route::post('guardarRespuesta', [EncuestaBienestarRespuestaController::class, 'guardarRespuesta']);
+    Route::post('actualizarRespuesta', [EncuestaBienestarRespuestaController::class, 'actualizarRespuesta']);
+    Route::post('verRespuesta', [EncuestaBienestarRespuestaController::class, 'verRespuesta']);
+    Route::post('borrarRespuesta', [EncuestaBienestarRespuestaController::class, 'borrarRespuesta']);
+    Route::post('printRespuestas', [EncuestaBienestarRespuestaController::class, 'printRespuestas']);
+
+    Route::post('verResumen', [EncuestaBienestarResumenController::class, 'verResumen']);
+
+    /* Gestionar reporte de fichas de bienestar */
+    Route::post('crearReporte', [FichaBienestarController::class, 'crearReporte']);
+    Route::post('verReporte', [FichaBienestarController::class, 'verReporte']);
+
+    /* Gestionar fichas de seguimiento */
+    Route::post('crearSeguimiento', [SeguimientoBienestarController::class, 'crearSeguimiento']);
+    Route::post('verSeguimientos', [SeguimientoBienestarController::class, 'verSeguimientos']);
+    Route::post('verSeguimientosPersona', [SeguimientoBienestarController::class, 'verSeguimientosPersona']);
+    Route::post('guardarSeguimiento', [SeguimientoBienestarController::class, 'guardarSeguimiento']);
+    Route::post('actualizarSeguimiento', [SeguimientoBienestarController::class, 'actualizarSeguimiento']);
+    Route::post('verSeguimiento', [SeguimientoBienestarController::class, 'verSeguimiento']);
+    Route::post('borrarSeguimiento', [SeguimientoBienestarController::class, 'borrarSeguimiento']);
+    Route::post('verDatosPersona', [SeguimientoBienestarController::class, 'verDatosPersona']);
 });
 

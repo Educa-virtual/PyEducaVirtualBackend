@@ -2,92 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
+use App\Models\bienestar\FichaEconomico;
 use App\Services\ParseSqlErrorService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class FichaEconomicoController extends Controller
 {
+    private $perfiles_permitidos = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+        Perfil::DOCENTE,
+        Perfil::DIRECTOR_IE,
+    ];
+
     public function guardarFichaEconomico(Request $request)
     {
-        $parametros = [
-            $request->iCredId,
-            $request->iFichaDGId,
-            $request->iIngresoEcoFamiliar,
-            $request->cIngresoEcoActividad,
-            $request->iIngresoEcoEstudiante,
-            $request->iIngresoEcoTrabajoHoras,
-            $request->bIngresoEcoTrabaja,
-            $request->cIngresoEcoDependeDe,
-            $request->iRangoSueldoId,
-            $request->iRangoSueldoIdPersona,
-            $request->iDepEcoId,
-            $request->iTipoAEcoId,
-            $request->iJorTrabId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_INS_fichaEconomico ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaEconomico::insfichaEconomico($request);
+            return FormatearMensajeHelper::ok('Se guardo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function actualizarFichaEconomico(Request $request)
     {
-        $parametros = [
-            $request->iCredId,
-            $request->iIngresoEcoId,
-            $request->iFichaDGId,
-            $request->iIngresoEcoFamiliar,
-            $request->cIngresoEcoActividad,
-            $request->iIngresoEcoEstudiante,
-            $request->iIngresoEcoTrabajoHoras,
-            $request->bIngresoEcoTrabaja,
-            $request->cIngresoEcoDependeDe,
-            $request->iRangoSueldoId,
-            $request->iRangoSueldoIdPersona,
-            $request->iDepEcoId,
-            $request->iTipoAEcoId,
-            $request->iJorTrabId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_UPD_fichaEconomico ?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se guardo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaEconomico::updFichaEconomico($request);
+            return FormatearMensajeHelper::ok('Se actualizo la información', $data);
         }
-        catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function verFichaEconomico(Request $request)
     {
-        $parametros = [
-            $request->iFichaDGId,
-        ];
-
         try {
-            $data = DB::select('EXEC obe.Sp_SEL_fichaEconomico ?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            $data = FichaEconomico::selFichaEconomico($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
         catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }
