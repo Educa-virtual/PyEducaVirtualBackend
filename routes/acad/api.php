@@ -19,6 +19,7 @@ use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
+
 //, 'middleware' => ['auth:api', RefreshToken::class]
 Route::group(['prefix' => 'acad'], function () {
 

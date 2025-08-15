@@ -4,6 +4,7 @@ namespace App\Http\Controllers\acad;
 
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\acad\ReportesAcademicosService;
 use App\Services\FormatearExcelMatriculasService;
 use App\Services\LeerExcelService;
@@ -353,8 +354,9 @@ class EstudiantesController extends Controller
     }
 
     public function generarReporteAcademicoProgreso(Request $request) {
-        $usuario = Auth::user();
-        $pdf=ReportesAcademicosService::generarReporteAcademicoProgreso($usuario, $request->header('iCredId'));
-        return $pdf->stream('Reporte-academico-'.date('Ymdhis').'.pdf');
+        $usuario = new User();//Auth::user();
+        //$request->header('iCredId')
+        $pdf = ReportesAcademicosService::generarReporteAcademicoProgreso($usuario, 6730);
+        return $pdf->download('Reporte-academico-' . date('Ymdhis') . '.pdf');
     }
 }

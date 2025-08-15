@@ -1,5 +1,5 @@
 @php
-use App\Services\acad\ReportesAcademicosService;
+    use App\Services\acad\ReportesAcademicosService;
 @endphp
 
 @extends('layouts.pdf')
@@ -16,11 +16,13 @@ use App\Services\acad\ReportesAcademicosService;
             margin-right: 2cm;
         }
 
-        #tableDatosMatricula, #tableComentarioGeneral {
+        #tableDatosMatricula,
+        #tableComentarioGeneral {
             width: 65%;
             margin-left: auto;
             margin-right: auto;
         }
+
         #tableDatosMatricula th {
             text-align: left;
             background-color: #dae0e5;
@@ -34,7 +36,8 @@ use App\Services\acad\ReportesAcademicosService;
             font-size: 0.9em;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid black;
         }
     </style>
@@ -51,29 +54,30 @@ use App\Services\acad\ReportesAcademicosService;
                 </tr>
                 <tr>
                     <th>Nivel:</th>
-                    <td>{{$matricula->cNivelTipoNombre}}</td>
+                    <td>{{ $matricula->cNivelTipoNombre }}</td>
                     <th>Código Modular:</th>
-                    <td>{{$matricula->cIieeCodigoModular}}</td>
+                    <td>{{ $matricula->cIieeCodigoModular }}</td>
                 </tr>
                 <tr>
                     <th>Institución educativa:</th>
-                    <td colspan="3">{{$matricula->cIieeNombre}}</td>
+                    <td colspan="3">{{ $matricula->cIieeNombre }}</td>
                 </tr>
                 <tr>
                     <th>Grado:</th>
-                    <td>{{$matricula->cGradoNombre}}</td>
+                    <td>{{ $matricula->cGradoNombre }}</td>
                     <th>Sección:</th>
-                    <td>{{$matricula->cGradoAbreviacion}} {{$matricula->cSeccionNombre}}</td>
+                    <td>{{ $matricula->cGradoAbreviacion }} {{ $matricula->cSeccionNombre }}</td>
                 </tr>
                 <tr>
                     <th>Apellidos y nombres del estudiante:</th>
-                    <td colspan="3">{{$matricula->cPersPaterno}} {{$matricula->cPersMaterno}}, {{$matricula->cPersNombre}}</td>
+                    <td colspan="3">{{ $matricula->cPersPaterno }} {{ $matricula->cPersMaterno }},
+                        {{ $matricula->cPersNombre }}</td>
                 </tr>
                 <tr>
                     <th>Código del estudiante:</th>
-                    <td>{{$matricula->cEstCodigo}}</td>
-                    <th>{{$matricula->cTipoIdentSigla}}:</th>
-                    <td>{{$matricula->cPersDocumento}}</td>
+                    <td>{{ $matricula->cEstCodigo }}</td>
+                    <th>{{ $matricula->cTipoIdentSigla }}:</th>
+                    <td>{{ $matricula->cPersDocumento }}</td>
                 </tr>
                 <tr>
                     <th>Apellidos y nombres del docente o tutor:</th>
@@ -108,36 +112,61 @@ use App\Services\acad\ReportesAcademicosService;
             </thead>
             <tobdy>
                 @php
-                $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId);
+                    $cursos = ReportesAcademicosService::obtenerCursosPorIe(
+                        $matricula->iSedeId,
+                        $matricula->iNivelGradoId,
+                    );
 
-                foreach ($cursos as $curso) {
-                    echo "<tr>";
-                    echo "<td rowspan=".$curso->iCantidadFilas.">".$curso->cCursoNombre."</td>";
+                    foreach ($cursos as $curso) {
+                        echo '<tr>';
+                        echo '<td rowspan=' . $curso->iCantidadFilas . '>' . $curso->cCursoNombre . '</td>';
 
-                    $competencias = ReportesAcademicosService::obtenerCompetenciasPorCurso($curso->iNivelTipoId, $curso->iCursoId);
-                    $cantidadCompetencias = count($competencias);
-                    $primeraFila = true;
-                    foreach ($competencias as $competencia) {
-                        if (!$primeraFila) {
-                            echo "<tr>";
+                        $competencias = ReportesAcademicosService::obtenerCompetenciasPorCurso(
+                            $curso->iNivelTipoId,
+                            $curso->iCursoId,
+                        );
+                        $cantidadCompetencias = count($competencias);
+                        $primeraFila = true;
+                        if ($cantidadCompetencias == 0) {
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo "<td></td>";
+                            echo '</tr>';
                         } else {
-                            $primeraFila = false;
-                        }
-                        echo "<td>".$competencia->cCompetenciaNombre."</td>";
-                        for ($i = 1; $i <= 4; $i++) {
-                            $competencia= ReportesAcademicosService::obtenerResultadosPorCompetencia($matricula->iMatrId, $competencia->iCompetenciaId ?? 0, $curso->iIeCursoId, $i);
-                            if ($competencia) {
-                                echo "<td>".$competencia->cNivelLogro."</td>"; // NL
-                                echo "<td>".$competencia->cDescripcion."</td>"; // Conclusión descriptiva
-                            } else {
-                                echo "<td></td>"; // NL
-                                echo "<td></td>"; // Conclusión descriptiva
+                            foreach ($competencias as $competencia) {
+                                if (!$primeraFila) {
+                                    echo '<tr>';
+                                } else {
+                                    $primeraFila = false;
+                                }
+                                echo '<td>' . $competencia->cCompetenciaNombre . '</td>';
+                                for ($i = 1; $i <= 4; $i++) {
+                                    $competencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
+                                        $matricula->iMatrId,
+                                        $competencia->iCompetenciaId ?? 0,
+                                        $curso->iIeCursoId,
+                                        $i,
+                                    );
+                                    if ($competencia) {
+                                        echo '<td>' . $competencia->cNivelLogro . '</td>'; // NL
+                                        echo '<td>' . $competencia->cDescripcion . '</td>'; // Conclusión descriptiva
+                                    } else {
+                                        echo '<td></td>'; // NL
+                                        echo '<td></td>'; // Conclusión descriptiva
+                                    }
+                                }
+                                echo '<td></td>'; // NL alcanzado al finalizar el periodo lectivo
+                                echo '</tr>';
                             }
                         }
-                        echo "<td></td>"; // NL alcanzado al finalizar el periodo lectivo
-                        echo "</tr>";
                     }
-                }
                 @endphp
             </tobdy>
         </table>

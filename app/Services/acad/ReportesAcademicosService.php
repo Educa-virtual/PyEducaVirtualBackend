@@ -12,7 +12,7 @@ class ReportesAcademicosService
         //, compact('resultados')
         $pdf = App::make('snappy.pdf.wrapper');
         $matricula=self::obtenerDetallesMatricula($iCredPerfIdEstudiante);
-        $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact($usuarioActual, $matricula))->render();
+        $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('usuarioActual', 'matricula'))->render();
         $headerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_header')->render();
         $footerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_footer')->render();
         $pdf->loadHtml($htmlcontent)
