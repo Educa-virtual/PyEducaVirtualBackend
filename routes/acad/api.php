@@ -3,6 +3,8 @@
 
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
+use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
+use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DocenteCursosController;
@@ -17,8 +19,8 @@ use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
-
-Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
+//, 'middleware' => ['auth:api', RefreshToken::class]
+Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'instituciones-educativas'], function () {
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
@@ -37,6 +39,9 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
                 //Route::get('{id}', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerenciaConRespuesta']);
                 //Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             });
+        });
+        Route::group(['prefix' => 'reportes-academicos'], function () {
+            Route::get('progreso', [EstudiantesController::class, 'generarReporteAcademicoProgreso']);
         });
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
     });

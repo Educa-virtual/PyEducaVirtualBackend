@@ -4,6 +4,7 @@ namespace App\Http\Controllers\acad;
 
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
+use App\Services\acad\ReportesAcademicosService;
 use App\Services\FormatearExcelMatriculasService;
 use App\Services\LeerExcelService;
 use App\Services\FormatearExcelPadresService;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
 
 class EstudiantesController extends Controller
@@ -139,7 +141,7 @@ class EstudiantesController extends Controller
 
         try {
             $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            
+
             $data = DB::select('EXEC acad.Sp_SEL_estudiante_persona ?', [$data[0]->iEstudianteId]);
 
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
@@ -285,7 +287,7 @@ class EstudiantesController extends Controller
     public function importarEstudiantesPadresExcel(Request $request)
     {
         $datos_hojas = LeerExcelService::leer($request);
-        
+
         $datos_hoja = FormatearExcelPadresService::formatear($datos_hojas);
 
         $parametros = [
@@ -309,7 +311,7 @@ class EstudiantesController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-        
+
         return new JsonResponse($response, $codeResponse);
     }
 
@@ -348,5 +350,11 @@ class EstudiantesController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
+    }
+
+    public function generarReporteAcademicoProgreso(Request $request) {
+        $usuario = Auth::user();
+        $pdf=ReportesAcademicosService::generarReporteAcademicoProgreso($usuario, $request->header('iCredId'));
+        return $pdf->stream('Reporte-academico-'.date('Ymdhis').'.pdf');
     }
 }
