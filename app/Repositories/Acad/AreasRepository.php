@@ -12,6 +12,14 @@ class AreasRepository
         return $area;
     }
 
+    public static function obtenerAreasPorEvaluacion($evaluacionIdDescifrado, $iPersId, $iCredEntPerfId)
+    {
+        return DB::select(
+            'EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @iEvaluacionId=?, @iPersId=?, @iCredEntPerfId=?',
+            [$evaluacionIdDescifrado, $iPersId, $iCredEntPerfId]
+        );
+    }
+
     public static function obtenerMatrizPorEvaluacionArea($iEvaluacionId, $iCursosNivelGradId)
     {
         return DB::select('EXEC ere.Sp_SEL_MatrizEvaluacion @_iEvaluacionId=?, @_iCursosNivelGradId=?', [$iEvaluacionId, $iCursosNivelGradId]);
@@ -22,7 +30,8 @@ class AreasRepository
         return DB::statement('EXEC [ere].[SP_UPD_CursosEvaluacionLiberacion] @iEvaluacionId=?', [$iEvaluacionId]);
     }
 
-    public static function obtenerHorasAreasPorEvaluacionIe($evaluacionId, $iieeId) {
+    public static function obtenerHorasAreasPorEvaluacionIe($evaluacionId, $iieeId)
+    {
         return DB::select("SELECT iece.iIeeCursoExamenId,ec.iExamCurId, iepe.iIeeParticipaId,ec.iExamCurId,ec.iCursoNivelGradId, ec.dtExamenFechaInicio,
 ec.dtExamenFechaFin, c.cCursoNombre, g.cGradoAbreviacion, g.cGradoNombre, nt.cNivelTipoNombre, tInicio, tFin
  FROM ere.examen_cursos ec
@@ -40,14 +49,21 @@ ec.dtExamenFechaFin, c.cCursoNombre, g.cGradoAbreviacion, g.cGradoNombre, nt.cNi
 ", [$evaluacionId, $iieeId]);
     }
 
-    public static function eliminarHorasAreasPorEvaluacionIe($iIeeParticipaId) {
+    public static function eliminarHorasAreasPorEvaluacionIe($iIeeParticipaId)
+    {
         return DB::statement("DELETE FROM [ere].[iiee_cursos_examen] WHERE iIeeParticipaId=?", [$iIeeParticipaId]);
     }
 
-    public static function registrarHorasAreasPorEvaluacionIe($params, $horaInicio, $horaFin) {
+    public static function registrarHorasAreasPorEvaluacionIe($params, $horaInicio, $horaFin)
+    {
         DB::statement("INSERT INTO [ere].[iiee_cursos_examen]
            ([tInicio],[tFin],[iIeeParticipaId]
            ,[iExamCurId],[iEstado],[iSesionId],[dtCreado],[dtActualizado])
-     VALUES (?,?,?,?,?,?,GETDATE(),GETDATE())",[$horaInicio, $horaFin, $params['iIeeParticipaId'], $params['iExamCurId'], 1, 1]);
+     VALUES (?,?,?,?,?,?,GETDATE(),GETDATE())", [$horaInicio, $horaFin, $params['iIeeParticipaId'], $params['iExamCurId'], 1, 1]);
+    }
+
+    public static function actualizarEstadoDescarga($evaluacionId, $areaId, $bDescarga)
+    {
+        return DB::statement('UPDATE ere.examen_cursos SET bDescarga=? WHERE iEvaluacionId=? AND iCursoNivelGradId=?', [$bDescarga, $evaluacionId, $areaId]);
     }
 }

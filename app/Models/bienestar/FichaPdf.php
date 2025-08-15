@@ -37,13 +37,13 @@ class FichaPdf
                 per.cPersSexo,
                 tec.cTipoEstCivilNombre,
                 fic.iFichaDGNroHijos,
-                IIF(fic.bFichaDGTieneHijos = 1, 'SI', 'NO') AS bFichaDGTieneHijos,
+                IIF(fic.bFichaDGTieneHijos = 1, 'SÍ', 'NO') AS bFichaDGTieneHijos,
                 pai.cPaisNombre,
                 ubg.cUbigeoDpto,
                 ubg.cUbigeoProvincia,
                 ubg.cUbigeoDistrito,
-                IIF(fic.bFamiliarPadreVive = 1, 'SI', 'NO') AS bFamiliarPadreVive,
-                IIF(fic.bFamiliarMadreVive = 1, 'SI', 'NO') AS bFamiliarMadreVive
+                IIF(fic.bFamiliarPadreVive = 1, 'SÍ', 'NO') AS bFamiliarPadreVive,
+                IIF(fic.bFamiliarMadreVive = 1, 'SÍ', 'NO') AS bFamiliarMadreVive
             FROM obe.ficha_datos_grales AS fic
                 INNER JOIN grl.personas per ON 
                     fic.iPersId = per.iPersId
@@ -95,7 +95,7 @@ class FichaPdf
                 END AS cPersSexo,
                 tid.cTipoIdentSigla,
                 per.cPersDocumento,
-                IIF(fam.bFamiliarVivoConEl = 1, 'SI', 'NO') AS bFamiliarVivoConEl
+                IIF(fam.bFamiliarVivoConEl = 1, 'SÍ', 'NO') AS bFamiliarVivoConEl
             FROM obe.ficha_datos_grales AS fic
                 INNER JOIN obe.familiares fam ON 
                     fic.iFichaDGId = fam.iFichaDGId
@@ -129,11 +129,11 @@ class FichaPdf
 
         return DB::selectOne("
             SELECT 
-                COALESCE(iIngresoEcoFamiliar, rng.cRangoSueldoDescripcion) AS cRangoSueldoDescripcion,
-                COALESCE(iIngresoEcoEstudiante, rnp.cRangoSueldoDescripcion) AS cRangoSueldoDescripcionPersona,
+                COALESCE(CAST(iIngresoEcoFamiliar AS VARCHAR), rng.cRangoSueldoDescripcion) AS cRangoSueldoDescripcion,
+                COALESCE(CAST(iIngresoEcoEstudiante AS VARCHAR), rnp.cRangoSueldoDescripcion) AS cRangoSueldoDescripcionPersona,
                 dep.cDepEcoDescripcion,
                 tae.cTipoAEcoDescripcion,
-                IIF(bIngresoEcoTrabaja = 1, 'SI', 'NO') AS bIngresoEcoTrabaja,
+                IIF(bIngresoEcoTrabaja = 1, 'SÍ', 'NO') AS bIngresoEcoTrabaja,
                 fiecon.cIngresoEcoActividad,
                 fiecon.cIngresoEcoDependeDe,
                 fiecon.iIngresoEcoTrabajoHoras,
@@ -237,13 +237,13 @@ class FichaPdf
                 COALESCE(cLugarAlimDesayuno, des.cLugAlimDescripcion) AS lugarDesayuno,
                 COALESCE(cLugarAlimAlmuerzo, alm.cLugAlimDescripcion) AS lugarAlmuerzo,
                 COALESCE(cLugarAlimCena, cen.cLugAlimDescripcion) AS lugarCena,
-                IIF(bDietaEspecial = 1, 'SI', 'NO') AS bDietaEspecial,
+                IIF(bDietaEspecial = 1, 'SÍ', 'NO') AS bDietaEspecial,
                 cDietaEspecialObs,
-                IIF(bIntoleranciaAlim = 1, 'SI', 'NO') AS bIntoleranciaAlim,
+                IIF(bIntoleranciaAlim = 1, 'SÍ', 'NO') AS bIntoleranciaAlim,
                 cIntoleranciaAlimObs,
-                IIF(bSumplementosAlim = 1, 'SI', 'NO') AS bSumplementosAlim,
+                IIF(bSumplementosAlim = 1, 'SÍ', 'NO') AS bSumplementosAlim,
                 cSumplementosAlimObs,
-                IIF(bDificultadAlim = 1, 'SI', 'NO') AS bDificultadAlim,
+                IIF(bDificultadAlim = 1, 'SÍ', 'NO') AS bDificultadAlim,
                 cDificultadAlimObs,
                 cAlimObs
             FROM obe.ficha_datos_grales AS fic
@@ -263,7 +263,7 @@ class FichaPdf
     {
         $iFichaDGId = $request->get('iFichaDGId');
 
-        return DB::select("
+        return DB::selectOne("
             SELECT
                 STRING_AGG(cProgAlimNombre, ', ') AS cProgAlimNombre
             FROM obe.programas_alimentarios_ficha paf
@@ -295,11 +295,11 @@ class FichaPdf
         return DB::selectOne("
             SELECT
                 fic.iFichaDGId,
-                IIF(fic.bFichaDGEstaEnOMAPED = 1,'SI','NO') AS EstaEnOMAPED,
+                IIF(fic.bFichaDGEstaEnOMAPED = 1,'SÍ','NO') AS EstaEnOMAPED,
                 cFichaDGCodigoOMAPED,
-                IIF(fic.bFichaDGEstaEnCONADIS = 1, 'SI', 'NO') AS EstaEnCONADIS,
+                IIF(fic.bFichaDGEstaEnCONADIS = 1, 'SÍ', 'NO') AS EstaEnCONADIS,
                 cFichaDGCodigoCONADIS,
-                IIF(fic.bOtroProgramaDiscapacidad = 1, 'SI', 'NO') AS EstaOtroProgramaDiscapacidad,
+                IIF(fic.bOtroProgramaDiscapacidad = 1, 'SÍ', 'NO') AS EstaOtroProgramaDiscapacidad,
                 cOtroProgramaDiscapacidad
             FROM obe.ficha_datos_grales fic
             WHERE fic.iFichaDGId = ?; ",

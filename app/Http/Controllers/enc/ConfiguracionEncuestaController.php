@@ -2,17 +2,30 @@
 
 namespace App\Http\Controllers\enc;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Requests\enc\RegistrarConfiguracionEncuestaRequest;
+use App\Services\enc\ConfiguracionEncuestasService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
 
 class ConfiguracionEncuestaController extends Controller
 {
-    public function listarConfiguracionEncuesta(Request $request, $iConfEncId = 0)
+    public function registrarConfiguracion(RegistrarConfiguracionEncuestaRequest $request)
+    {
+        try {
+            $resultado = ConfiguracionEncuestasService::registrarConfiguracion($request, Auth::user());
+            return FormatearMensajeHelper::ok('Se ha registrado la configuración', $resultado);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+    /*public function listarConfiguracionEncuesta(Request $request, $iConfEncId = 0)
     {
         try {
             $fieldsToDecode = [
@@ -29,7 +42,7 @@ class ConfiguracionEncuestaController extends Controller
 
             $data = DB::select(
                 'exec enc.SP_SEL_configuracionEncuesta
-                    @_iConfEncId=?, 
+                    @_iConfEncId=?,
                     @_iCredId=?',
                 $parametros
             );
@@ -64,7 +77,7 @@ class ConfiguracionEncuestaController extends Controller
 
             $data = DB::select(
                 'exec enc.SP_DEL_configuracionEncuestaxiConfEncId
-                    @_iConfEncId=?, 
+                    @_iConfEncId=?,
                     @_iCredId=?',
                 $parametros
             );
@@ -120,11 +133,11 @@ class ConfiguracionEncuestaController extends Controller
                     @_iTiemDurId=?,
                     @_cConfEncDesc=?,
                     @_cDirigido=?,
-                    @_jsonPublicoObjetivo=?, 
+                    @_jsonPublicoObjetivo=?,
                     @_iCredId=?',
                 $parametros
             );
-            
+
             if ($data[0]->iConfEncId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
@@ -142,5 +155,5 @@ class ConfiguracionEncuestaController extends Controller
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
-    }
+    }*/
 }

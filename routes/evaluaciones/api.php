@@ -37,7 +37,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('/', [EvaluacionesBancoPreguntasController::class, 'guardarBancoPreguntas']); // Para crear
         Route::put('/{iBancoId}', [EvaluacionesBancoPreguntasController::class, 'actualizarBancoPreguntasxiBancoId']); // Para actualizar
         Route::delete('/{iBancoId}', [EvaluacionesBancoPreguntasController::class, 'eliminarBancoPreguntasxiBancoId']); // Para eliminar
-        
+
     });
 
     Route::group(['prefix' => 'evaluacion'], function () {
@@ -72,7 +72,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
 
     Route::group(['prefix' => 'escala-calificaciones'], function () {
-        Route::post('list', [EscalaCalificacionesController::class, 'list']);
+        Route::get('', [EscalaCalificacionesController::class, 'obtenerEscalaCalificaciones']);
     });
 
     Route::group(['prefix' => 'banco-alternativas'], function () {
@@ -98,7 +98,6 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::delete('/{iEvaluacionId}', [EvaluacionesController::class, 'eliminarEvaluacionesxiEvaluacionId']); // Para eliminar
         Route::get('/{iEvaluacionId}/estudiante/{iEstudianteId}', [EvaluacionesController::class, 'obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId']); // Para eliminar
         Route::post('/obtenerReporteEstudiantesRetroalimentacion', [EvaluacionesController::class, 'obtenerReporteEstudiantesRetroalimentacion']);
-
     });
     Route::group(['prefix' => 'evaluacion-preguntas'], function () {
         Route::post('/', [EvaluacionPreguntasController::class, 'guardarEvaluacionPreguntas']); // Para crear

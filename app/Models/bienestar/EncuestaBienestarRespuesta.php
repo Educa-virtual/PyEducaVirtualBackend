@@ -58,4 +58,15 @@ class EncuestaBienestarRespuesta
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::delete("EXEC obe.Sp_DEL_encuestaRespuesta $placeholders", $parametros);
     }
+
+    public static function selRespuestasDetalle($request)
+    {
+        $parametros = [
+            $request->iCredEntPerfId,
+            $request->iEncuId,
+            $request->iMatrId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectResultSets("EXEC obe.Sp_SEL_encuestaRespuestasDetalle $placeholders", $parametros);
+    }
 }

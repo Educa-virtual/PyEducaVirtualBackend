@@ -2,7 +2,10 @@
 <?php
 
 use App\Http\Controllers\acad\BandejaCotnroller;
-use App\Http\Controllers\acad\BuzonSugerenciaController;
+use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
+use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
+use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
+use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DocenteCursosController;
@@ -27,16 +30,27 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
 
     Route::group(['prefix' => 'estudiantes'], function () {
         Route::group(['prefix' => 'buzon-sugerencias'], function () {
-            Route::post('', [BuzonSugerenciaController::class, 'registrarSugerencia']);
-            Route::get('', [BuzonSugerenciaController::class, 'obtenerListaSugerenciasEstudiante']);
+            Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
+            Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerencias']);
             Route::group(['prefix' => '{iSugerenciaId}'], function () {
-                Route::delete('', [BuzonSugerenciaController::class, 'eliminarSugerencia']);
-                Route::get('archivos', [BuzonSugerenciaController::class, 'obtenerArchivosSugerencia']);
-                Route::get('archivos/{nombreArchivo}', [BuzonSugerenciaController::class, 'descargarArchivosSugerencia']);
+                Route::delete('', [BuzonSugerenciaEstudianteController::class, 'eliminarSugerencia']);
+                Route::get('archivos', [BuzonSugerenciaEstudianteController::class, 'obtenerArchivosSugerencia']);
+                Route::get('archivos/{nombreArchivo}', [BuzonSugerenciaEstudianteController::class, 'descargarArchivosSugerencia']);
+                //Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerenciasEstudiante']);
+                //Route::get('{id}', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerenciaConRespuesta']);
+                //Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             });
         });
-
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
+    });
+
+    Route::group(['prefix' => 'directores'], function () {
+        Route::group(['prefix' => 'buzon-sugerencias'], function () {
+            Route::get('', [BuzonSugerenciaDirectorController::class, 'obtenerListaSugerencias']);
+            Route::post('', [BuzonSugerenciaDirectorController::class, 'registrarRespuestaSugerencias']);
+        });
+        //Route::get('{iSugerenciaId}/detalle', [BuzonSugerenciaController:: class, 'obtenerDetalleSugerencia']);
+        //Route::get('{iSugerenciaId}/responder', [BuzonSugerenciaController:: class, 'rsponderSugerencia']);
     });
 });
 
@@ -86,7 +100,21 @@ Route::group(['prefix' => 'acad'], function () {
     Route::prefix('detalle-matriculas')->group(function () {
         Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
     });
+
+    Route::group(['prefix' => 'calendario-periodos-evaluaciones'], function () {
+        Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioPeriodosEvaluacionesController::class, 'obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular']);
+    });
+    Route::group(['prefix' => 'contenido-semanas'], function () {
+        Route::post('', [ContenidoSemanasController::class, 'guardarContenidoSemanas']);
+        Route::put('/{iContenidoSemId}', [ContenidoSemanasController::class, 'actualizarContenidoSemanas']);
+        Route::delete('/{iContenidoSemId}', [ContenidoSemanasController::class, 'eliminarContenidoSemanas']);
+        Route::get('/{iContenidoSemId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxiContenidoSemId']);
+        Route::get('/curso/{idDocCursoId}/year/{iYAcadId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxidDocCursoIdxiYAcadId']);
+        Route::get('/{iContenidoSemId}/actividades', [ContenidoSemanasController::class, 'obtenerActividadesxiContenidoSemId']);
+    });
+
     Route::prefix('bandejaEntrante')->group(function () {
         Route::post('bandeja-estudiante',[BandejaCotnroller::class,'bandejaEstudiante']);
     });
+
 });
