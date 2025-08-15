@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class AsistenciaController extends Controller
 {
@@ -240,12 +241,23 @@ class AsistenciaController extends Controller
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
         $iSeccionId = $this->decodificar($request["iSeccionId"]);
         $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        $archivos = $request->file('archivos');
+
+        $asistencia = json_decode($request->asistencia_json,true);
+        $ruta = 'justificaciones/'.$iDocenteId;
+        foreach ($archivos as $index => $archivo) {
+            // if (!Storage::disk('public')->exists($ruta.'/'.)) {
+                $documento = Storage::disk('public')->put($ruta,$archivo);
+                $asistencia[$index]['justificacion'] = basename($documento);
+            // }
+            
+        }
         
         $solicitud = [
             $request->opcion,
             $iCursoId,
             $request->dtCtrlAsistencia ?? NULL,
-            $request->asistencia_json ?? NULL,
+            json_encode($asistencia) ?? NULL,
             $iSeccionId,
             $iYAcadId,
             $iNivelGradoId ?? NULL,
@@ -254,7 +266,7 @@ class AsistenciaController extends Controller
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-        
+      
         $query = DB::select("execute asi.Sp_INS_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
         
         try {
@@ -666,6 +678,18 @@ class AsistenciaController extends Controller
             ->stream('reporte_asistencia.pdf');
         return $pdf;
     }
-
+    public function descargarJustificacion(Request $request){
+        $iDocenteId = $this->decodificar($request->iDocenteId);
+        $cJustificar = $request->cJustificar;
+        $rutaArchivo = "justificaciones/".$iDocenteId."/".$cJustificar;
+        
+        if (!Storage::disk('public')->exists($rutaArchivo)) {
+            throw new Exception('El archivo no existe');
+        }
+        
+        $archivo = Storage::disk('public')->get($rutaArchivo);
+        return $archivo;
+        
+    }
 }
 
