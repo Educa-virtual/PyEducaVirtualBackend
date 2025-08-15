@@ -104,7 +104,7 @@ class AsistenciaController extends Controller
             $iSedeId        ?? NULL,
             $iIieeId        ?? NULL,
         ];
-
+        
         $query = 'EXEC acad.Sp_SEL_buscar_cursos_horario '.str_repeat('?,',count($solicitud)-1).'?';
         try {
             $data = DB::select($query, $solicitud);
@@ -245,14 +245,12 @@ class AsistenciaController extends Controller
 
         $asistencia = json_decode($request->asistencia_json,true);
         $ruta = 'justificaciones/'.$iDocenteId;
-        foreach ($archivos as $index => $archivo) {
-            // if (!Storage::disk('public')->exists($ruta.'/'.)) {
-                $documento = Storage::disk('public')->put($ruta,$archivo);
-                $asistencia[$index]['justificacion'] = basename($documento);
-            // }
-            
+        if ($archivos) {
+            foreach ($archivos as $index => $archivo) {
+                    $documento = Storage::disk('public')->put($ruta,$archivo);
+                    $asistencia[$index]['justificacion'] = basename($documento);
+            }
         }
-        
         $solicitud = [
             $request->opcion,
             $iCursoId,
