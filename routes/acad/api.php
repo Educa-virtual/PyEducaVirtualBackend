@@ -121,7 +121,8 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'periodo-evaluaciones'], function () {
         Route::get('getPeriodoEvaluaciones/{iYearId?}', [PeriodoEvaluacionesController::class, 'getPeriodoEvaluaciones']);
         Route::post('processConfigCalendario', [PeriodoEvaluacionesController::class, 'processConfigCalendario']);
-
+    });
+    
     Route::prefix('detalle-matriculas')->group(function () {
         Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
     });
