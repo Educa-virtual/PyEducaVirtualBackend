@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services\seg;
 
 use App\Helpers\VerifyHash;
@@ -64,13 +63,16 @@ class UsuariosService
                 isset($item['cPersMaterno']) ? $item['cPersMaterno'] : null,
                 $item['cPersNombre'],
                 $item['cPersSexo'],
-                isset($item['cPersCorreo']) ? $item['cPersCorreo'] : null,
+                $item['dPersNacimiento'],
+                $item['iTipoEstCivId'],
+                NULL,'','','','',
+                /*isset($item['cPersCorreo']) ? $item['cPersCorreo'] : null,
                 isset($item['cPersCelular']) ? $item['cPersCelular'] : null,
                 isset($item['cPersFotografia']) ? (trim($item['cPersFotografia']) ?: null) : null,
                 isset($item['cPersTelefono']) ? $item['cPersTelefono'] : null,
                 isset($item['cPersDireccion']) ? $item['cPersDireccion'] : null,
                 isset($item['cPersReferencia']) ? $item['cPersReferencia'] : null,
-                isset($item['cPersDomicilio']) ? (trim($item['cPersDomicilio']) ?: null) : null,
+                isset($item['cPersDomicilio']) ? (trim($item['cPersDomicilio']) ?: null) : null,*/
                 isset($iCredId) ? $iCredId : null,
                 isset($item['iNacionId']) ? $item['iNacionId'] : null,
                 isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
