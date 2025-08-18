@@ -4,6 +4,7 @@ use App\Http\Controllers\cap\CapacitacionesController;
 use App\Http\Controllers\cap\InscripcionesController;
 use App\Http\Controllers\cap\InstructoresController;
 use App\Http\Controllers\cap\NivelPedagogicosController;
+use App\Http\Controllers\cap\NotasController;
 use App\Http\Controllers\cap\TipoCapacitacionesController;
 use App\Http\Controllers\cap\TipoPublicosController;
 use Illuminate\Support\Facades\Route;
@@ -41,5 +42,9 @@ Route::group(['prefix' => 'cap'], function () {
     Route::post('/', [InstructoresController::class, 'guardarInstructores']); // Para crear
     Route::put('/{iInstId}', [InstructoresController::class, 'actualizarInstructores']); // Para actualizar
     Route::delete('/{iInstId}', [InstructoresController::class, 'eliminarInstructores']); // Para eliminar
+  });
+  Route::prefix('notas')->group(function () {
+    Route::get('/{iCapacitacionId}', [NotasController::class, 'obtenerNotaEstudiantes']);
+    Route::put('/', [NotasController::class, 'calificarNotaEstudiantes']);
   });
 });
