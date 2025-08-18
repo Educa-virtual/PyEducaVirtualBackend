@@ -1,6 +1,7 @@
 
 <?php
 
+use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
 use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
@@ -138,4 +139,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('/curso/{idDocCursoId}/year/{iYAcadId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxidDocCursoIdxiYAcadId']);
         Route::get('/{iContenidoSemId}/actividades', [ContenidoSemanasController::class, 'obtenerActividadesxiContenidoSemId']);
     });
+
+    Route::prefix('bandejaEntrante')->group(function () {
+        Route::post('bandeja-estudiante',[BandejaCotnroller::class,'bandejaEstudiante']);
+    });
+
 });

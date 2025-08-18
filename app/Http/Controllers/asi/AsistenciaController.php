@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class AsistenciaController extends Controller
 {
@@ -103,7 +104,7 @@ class AsistenciaController extends Controller
             $iSedeId        ?? NULL,
             $iIieeId        ?? NULL,
         ];
-
+        
         $query = 'EXEC acad.Sp_SEL_buscar_cursos_horario '.str_repeat('?,',count($solicitud)-1).'?';
         try {
             $data = DB::select($query, $solicitud);
@@ -116,6 +117,7 @@ class AsistenciaController extends Controller
     }
     public function obtenerAsistencia(Request $request){
         // Se Decodifica los id hasheados que son enviados por el frontend
+        $idDocCursoId = $request["idDocCursoId"];
         $iGradoId = $request["iGradoId"];
         $iIieeId = $request["iIieeId"];
         $iSedeId = $request["iSedeId"];
@@ -134,6 +136,7 @@ class AsistenciaController extends Controller
             $iSeccionId ?? NULL,
             $iNivelGradoId ?? NULL,
             $iDocenteId ?? NULL,
+            $idDocCursoId ?? NULL,
         ];
 
         $query = "execute asi.Sp_SEL_fechas_asistencia ".str_repeat('?,',count($solicitud)-1)."?";
@@ -183,10 +186,8 @@ class AsistenciaController extends Controller
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
         $query = DB::select($consulta, $solicitud);
-  
         try{
             $response = [
                 'validated' => true, 
@@ -240,12 +241,21 @@ class AsistenciaController extends Controller
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
         $iSeccionId = $this->decodificar($request["iSeccionId"]);
         $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
-        
+        $archivos = $request->file('archivos');
+
+        $asistencia = json_decode($request->asistencia_json,true);
+        $ruta = 'justificaciones/'.$iDocenteId;
+        if ($archivos) {
+            foreach ($archivos as $index => $archivo) {
+                    $documento = Storage::disk('public')->put($ruta,$archivo);
+                    $asistencia[$index]['justificacion'] = basename($documento);
+            }
+        }
         $solicitud = [
             $request->opcion,
             $iCursoId,
             $request->dtCtrlAsistencia ?? NULL,
-            $request->asistencia_json ?? NULL,
+            json_encode($asistencia) ?? NULL,
             $iSeccionId,
             $iYAcadId,
             $iNivelGradoId ?? NULL,
@@ -254,7 +264,7 @@ class AsistenciaController extends Controller
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-        
+      
         $query = DB::select("execute asi.Sp_INS_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
         
         try {
@@ -373,8 +383,12 @@ class AsistenciaController extends Controller
 
         $json_institucion = json_decode($query[0]->institucion,true);
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -440,9 +454,7 @@ class AsistenciaController extends Controller
         ];
         
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
-
         $query = DB::select($consulta, $solicitud);
-    
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -466,8 +478,13 @@ class AsistenciaController extends Controller
         $json_asistencia = json_decode($query[0]->asistencia,true);
         
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
+        
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -624,8 +641,13 @@ class AsistenciaController extends Controller
         $json_institucion = json_decode($query[0]->institucion,true);
 
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
+
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -654,6 +676,18 @@ class AsistenciaController extends Controller
             ->stream('reporte_asistencia.pdf');
         return $pdf;
     }
-
+    public function descargarJustificacion(Request $request){
+        $iDocenteId = $this->decodificar($request->iDocenteId);
+        $cJustificar = $request->cJustificar;
+        $rutaArchivo = "justificaciones/".$iDocenteId."/".$cJustificar;
+        
+        if (!Storage::disk('public')->exists($rutaArchivo)) {
+            throw new Exception('El archivo no existe');
+        }
+        
+        $archivo = Storage::disk('public')->get($rutaArchivo);
+        return $archivo;
+        
+    }
 }
 
