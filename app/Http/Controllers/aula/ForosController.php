@@ -58,8 +58,8 @@ class ForosController extends Controller
             'iForoId' => ['required'],
             'iForoCatId' => ['required'],
             'cForoTitulo' => ['required', 'max:250'],
-            'dtForoInicio'     => ['required', 'date'],
-            'dtForoFin'        => ['required', 'date', 'after:dtForoInicio'],
+            'dtForoInicio'     => ['required'],
+            'dtForoFin'        => ['required'],
 
         ], [
             'iForoId.required' => 'No se encontró el identificador iForoId',
@@ -67,10 +67,7 @@ class ForosController extends Controller
             'cForoTitulo.required' => 'No se encontró el título',
             'cForoTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'dtForoInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtForoInicio.date'         => 'La fecha de inicio no es válida.',
             'dtForoFin.required'        => 'La fecha y hora de fin es obligatoria',
-            'dtForoFin.date'            => 'La fecha de fin no es válida.',
-            'dtForoFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
         ]);
 
         if ($validator->fails()) {
@@ -254,12 +251,12 @@ class ForosController extends Controller
             'iDocenteId' => ['required'],
             'cForoTitulo' => ['required', 'string', 'max:250'],
             'cForoDescripcion' => ['required', 'string'],
-            'dtForoInicio' => ['required', 'date'],
-            'dtForoFin' => ['required', 'date', 'after:dtForoInicio'],
+            'dtForoInicio' => ['required'],
+            'dtForoFin' => ['required'],
 
             'iContenidoSemId' => ['required'],
             'iActTipoId' => ['required'],
-            'idDocCursoId' => ['required'],
+            'iYAcadId' => ['required'],
         ], [
             'iForoCatId.required' => 'No se encontró el identificador iForoCatId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
@@ -272,15 +269,12 @@ class ForosController extends Controller
             'cForoDescripcion.string' => 'La descripción debe ser una cadena de texto',
 
             'dtForoInicio.required' => 'Debe ingresar la fecha de inicio del foro',
-            'dtForoInicio.date' => 'La fecha de inicio debe ser una fecha válida',
 
             'dtForoFin.required' => 'Debe ingresar la fecha de fin del foro',
-            'dtForoFin.date' => 'La fecha de fin debe ser una fecha válida',
-            'dtForoFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio',
 
             'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
             'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
-            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+            'iYAcadId.required' => 'No se encontró el identificador del año académico',
         ]);
 
 
@@ -299,7 +293,9 @@ class ForosController extends Controller
                 'iContenidoSemId',
                 'iActTipoId',
                 'idDocCursoId',
-                'iCredId'
+                'iCredId',
+                'iCapacitacionId',
+                'iYAcadId',
 
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -317,6 +313,8 @@ class ForosController extends Controller
                 $request->iContenidoSemId                ?? NULL,
                 $request->iActTipoId                     ?? NULL,
                 $request->idDocCursoId                   ?? NULL,
+                $request->iCapacitacionId                ?? NULL,
+                $request->iYAcadId                       ?? NULL,
 
                 $request->iCredId                        ?? NULL
             ];
@@ -335,6 +333,8 @@ class ForosController extends Controller
                     @_iContenidoSemId=?,
                     @_iActTipoId=?,
                     @_idDocCursoId=?,
+                    @_iCapacitacionId=?,
+                    @_iYAcadId=?,
                     @_iCredId=?',
                 $parametros
             );

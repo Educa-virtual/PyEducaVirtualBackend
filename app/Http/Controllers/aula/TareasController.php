@@ -18,7 +18,7 @@ class TareasController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'iPersId' => ['required'],
+            'iDocenteId' => ['required'],
             'cTareaTitulo' => ['required', 'string', 'max:250'],
             'cTareaDescripcion' => ['required', 'string'],
             'dtTareaInicio' => ['required'],
@@ -28,7 +28,7 @@ class TareasController extends Controller
             'iYAcadId' => ['required'],
 
         ], [
-            'iPersId.required' => 'No se encontró el identificador de la persona',
+            'iDocenteId.required' => 'No se encontró el identificador de la persona',
 
             'cTareaTitulo.required' => 'Debe ingresar el título',
             'cTareaTitulo.string' => 'El título debe ser una cadena de texto',
@@ -52,7 +52,7 @@ class TareasController extends Controller
 
         try {
             $fieldsToDecode = [
-                'iPersId',
+                'iDocenteId',
                 'iContenidoSemId',
                 'iActTipoId',
                 'idDocCursoId',
@@ -64,7 +64,7 @@ class TareasController extends Controller
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iPersId                        ?? NULL,
+                $request->iDocenteId                     ?? NULL,
                 $request->cTareaTitulo                   ?? NULL,
                 $request->cTareaDescripcion              ?? NULL,
                 $request->cTareaArchivoAdjunto           ?? NULL,
@@ -82,7 +82,7 @@ class TareasController extends Controller
 
             $data = DB::select(
                 'EXEC aula.SP_INS_tareas 
-                    @_iPersId=?, 
+                    @_iDocenteId=?, 
                     @_cTareaTitulo=?, 
                     @_cTareaDescripcion=?, 
                     @_cTareaArchivoAdjunto=?,
@@ -227,7 +227,7 @@ class TareasController extends Controller
 
             $request->iTareaId              ?? NULL,
             $request->iProgActId            ?? NULL,
-            $request->iPersId            ?? NULL,
+            $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
             $request->cTareaArchivoAdjunto  ?? NULL,
