@@ -17,6 +17,7 @@ class EncuestaBienestarResumenController extends Controller
         Perfil::ESPECIALISTA_UGEL,
         Perfil::DIRECTOR_IE,
         Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
     ];
 
     public function verResumen(Request $request)

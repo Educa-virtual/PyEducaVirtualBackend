@@ -127,14 +127,19 @@ class SeguimientoBienestar
         return DB::update("EXEC obe.Sp_UPD_seguimientoArchivo $placeholders", $parametros);
     }
 
+    /**
+     * Borra un registro de seguimiento
+     * @param Request $request contiene el id del registro a borrar
+     * @return mixed devuelve datos del registro borrado
+     */
     public static function delSeguimiento($request)
     {
         $parametros = [
             $request->iCredEntPerfId,
-            $request->iEncuId,
+            $request->iSeguimId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::delete("EXEC obe.Sp_DEL_seguimiento $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_DEL_seguimiento $placeholders", $parametros);
     }
 
     public static function selDatosPersona($request)

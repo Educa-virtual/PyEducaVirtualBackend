@@ -126,6 +126,15 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::delSeguimiento($request);
+            $iYAcadId = $data->iYAcadId;
+            $iPersId = $data->iPersId;
+            $cSeguimArchivo = $data->cSeguimArchivo;
+            if ($iYAcadId && $iPersId && $cSeguimArchivo) {
+                $ruta = "bienestar/seguimiento/$iYAcadId/$iPersId/$cSeguimArchivo";
+                if (Storage::disk('local')->exists($ruta)) {
+                    Storage::disk('local')->delete($ruta);
+                }
+            }
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
