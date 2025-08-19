@@ -154,7 +154,7 @@ class ForosController extends Controller
         ];
 
         try {
-            $data = DB::select('exec aula.SP_DEL_foros
+            $data = DB::select('exec aula.SP_DEL_forosxiForoId
                ?,?,?', $parametros);
 
             if ($data[0]->iForoId > 0) {
