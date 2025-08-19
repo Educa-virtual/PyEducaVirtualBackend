@@ -10,6 +10,7 @@ use App\Http\Controllers\ere\EncabezadoPreguntasController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EvaluacionController;
 use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\ere\EvaluacionExclusionesController;
 use App\Http\Controllers\ere\InstitucionesEducativasController;
 use App\Http\Controllers\ere\NivelEvaluacionController;
 use App\Http\Controllers\Ere\ImportarResultadosController;
@@ -24,26 +25,31 @@ use App\Http\Controllers\evaluaciones\AlternativaPreguntaController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 //$this->middleware('auth:api');
-Route::group(['prefix' => 'ere'], function () {
+Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
-        Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
+        //Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
+        Route::get('areas', [AreasController::class, 'obtenerAreasPorEvaluacion']);
+        Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
         Route::group(['prefix' => 'areas/{areaId}'], function () {
+            //Route::get('descargas/estado', [AreasController::class, 'obtenerEstadoDescarga']);
+            Route::patch('descargas/estado', [AreasController::class, 'actualizarEstadoDescarga']);
             Route::get('preguntas-reutilizables', [PreguntasController::class, 'obtenerPreguntasReutilizables']);
             Route::post('preguntas-reutilizables', [PreguntasController::class, 'asignarPreguntaAEvaluacion']);
             Route::post('archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
             Route::get('archivo-preguntas', [AreasController::class, 'descargarArchivoPreguntas']);
+            Route::delete('archivo-preguntas', [AreasController::class, 'eliminarArchivoPreguntasPdf']);
             Route::get('matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
             Route::get('cartilla-respuestas', [AreasController::class, 'descargarCartillaRespuestas']);
             Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
             Route::post('nivel-logros', [NivelLogrosController::class, 'registrarNivelLogroPorCurso']);
+            Route::get('cantidad-maxima-preguntas', [EvaluacionController::class, 'obtenerCantidadMaximaPreguntas']);
         });
         Route::group(['prefix' => 'instituciones-educativas/{iieeId}/directores/{iPersId}'], function () {
             Route::get('areas/horas', [AreasController::class, 'obtenerHorasAreasPorEvaluacionDirectorIe']);
             Route::post('areas/horas', [AreasController::class, 'registrarHorasAreasPorEvaluacionDirectorIe']);
         });
-        Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
     });
 
     Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogros']);
@@ -102,6 +108,7 @@ Route::group(['prefix' => 'ere'], function () {
         Route::post('obtenerInformeComparacion', [ReporteEvaluacionesController::class, 'obtenerInformeComparacion']);
         Route::post('generarPdfComparacion', [ReporteEvaluacionesController::class, 'obtenerInformeComparacionPdf']);
         Route::post('generarExcelComparacion', [ReporteEvaluacionesController::class, 'obtenerInformeComparacionExcel']);
+        Route::post('importarOffLine', [ImportarResultadosController::class, 'importarOffLine']);
     });
 
     Route::group(['prefix' => 'ie'], function () {
@@ -197,6 +204,13 @@ Route::group(['prefix' => 'ere'], function () {
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
          //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
          Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+
+        // Gestionar exclusion de estudiantes en evaluaciones ERE
+        Route::post('listarExclusiones', [EvaluacionExclusionesController::class, 'listarExclusiones']);
+        Route::post('guardarExclusion', [EvaluacionExclusionesController::class, 'guardarExclusion']);
+        Route::post('actualizarExclusion', [EvaluacionExclusionesController::class, 'actualizarExclusion']);
+        Route::post('verExclusion', [EvaluacionExclusionesController::class, 'verExclusion']);
+        Route::post('eliminarExclusion', [EvaluacionExclusionesController::class, 'eliminarExclusion']);
     });
     Route::group(['prefix' => 'Ugeles'], function () {
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);

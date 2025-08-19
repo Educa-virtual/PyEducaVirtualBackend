@@ -2,26 +2,205 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
-use PhpParser\Node\Stmt\TryCatch;
+use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
-class TareasController extends ApiController
+class TareasController extends Controller
 {
-    protected $hashids;
-    protected $iTareaId;
-    protected $iProgActId;
-    protected $iDocenteId;
 
-
-    public function __construct()
+    public function guardarTareas(Request $request)
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+
+        $validator = Validator::make($request->all(), [
+            'iDocenteId' => ['required'],
+            'cTareaTitulo' => ['required', 'string', 'max:250'],
+            'cTareaDescripcion' => ['required', 'string'],
+            'dtTareaInicio' => ['required'],
+            'dtTareaFin' => ['required'],
+
+            'iContenidoSemId' => ['required'],
+            'iActTipoId' => ['required'],
+            'idDocCursoId' => ['required'],
+        ], [
+            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+
+            'cTareaTitulo.required' => 'Debe ingresar el título',
+            'cTareaTitulo.string' => 'El título debe ser una cadena de texto',
+            'cTareaTitulo.max' => 'El título no debe exceder los 150 caracteres',
+
+            'cTareaDescripcion.required' => 'Debe ingresar la descripción',
+            'cTareaDescripcion.string' => 'La descripción debe ser una cadena de texto',
+
+            'dtTareaInicio.required' => 'Debe ingresar la fecha de inicio',
+
+
+            'dtTareaFin.required' => 'Debe ingresar la fecha de fin',
+
+
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+            'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
+            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iDocenteId',
+                'iContenidoSemId',
+                'iActTipoId',
+                'idDocCursoId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iDocenteId                      ?? NULL,
+                $request->cTareaTitulo                    ?? NULL,
+                $request->cTareaDescripcion               ?? NULL,
+                $request->cTareaArchivoAdjunto            ?? NULL,
+                $request->bTareaEsGrupal                  ?? NULL,
+                $request->dtTareaInicio                   ?? NULL,
+                $request->dtTareaFin                      ?? NULL,
+                $request->iContenidoSemId                ?? NULL,
+                $request->iActTipoId                     ?? NULL,
+                $request->idDocCursoId                   ?? NULL,
+
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC aula.SP_INS_tareas 
+                    @_iDocenteId=?, 
+                    @_cTareaTitulo=?, 
+                    @_cTareaDescripcion=?, 
+                    @_cTareaArchivoAdjunto=?,
+                    @_bTareaEsGrupal=?,  
+                    @_dtTareaInicio=?, 
+                    @_dtTareaFin=?, 
+                    @_iContenidoSemId=?,
+                    @_iActTipoId=?,
+                    @_idDocCursoId=?,
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iTareaId > 0) {
+                $message = 'Se ha guardado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido guardar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarTareasxiTareaId(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'iTareaId' => ['required'],
+            'cTareaTitulo' => ['required', 'string', 'max:250'],
+            'cTareaDescripcion' => ['required', 'string'],
+            'dtTareaInicio' => ['required'],
+            'dtTareaFin' => ['required'],
+        ], [
+            'iTareaId.required' => 'No se encontró el identificador iTareaId',
+
+            'cTareaTitulo.required' => 'Debe ingresar el título',
+            'cTareaTitulo.string' => 'El título debe ser una cadena de texto',
+            'cTareaTitulo.max' => 'El título no debe exceder los 150 caracteres',
+
+            'cTareaDescripcion.required' => 'Debe ingresar la descripción',
+            'cTareaDescripcion.string' => 'La descripción debe ser una cadena de texto',
+
+            'dtTareaInicio.required' => 'Debe ingresar la fecha de inicio',
+
+            'dtTareaFin.required' => 'Debe ingresar la fecha de fin',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iTareaId',
+                'iCredId'
+
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iTareaId                        ?? NULL,
+                $request->cTareaTitulo                    ?? NULL,
+                $request->cTareaDescripcion               ?? NULL,
+                $request->cTareaArchivoAdjunto            ?? NULL,
+                $request->dtTareaInicio                   ?? NULL,
+                $request->dtTareaFin                      ?? NULL,
+
+                $request->iCredId                        ?? NULL
+            ];
+
+            $data = DB::select(
+                'EXEC aula.SP_UPD_tareasxiTareaId 
+                    @_iTareaId=?, 
+                    @_cTareaTitulo=?, 
+                    @_cTareaDescripcion=?, 
+                    @_cTareaArchivoAdjunto=?,
+                    @_dtTareaInicio=?, 
+                    @_dtTareaFin=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iTareaId > 0) {
+                $message = 'Se ha actualizado exitosamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            } else {
+                $message = 'No se ha podido actualizar';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     public function list(Request $request)
@@ -34,27 +213,21 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
-        if ($request->iProgActId) {
-            $iProgActId = $this->hashids->decode($request->iProgActId);
-            $iProgActId = count($iProgActId) > 0 ? $iProgActId[0] : $iProgActId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
 
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $iProgActId            ?? NULL,
-            $iDocenteId            ?? NULL,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
+            $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
             $request->cTareaArchivoAdjunto  ?? NULL,
@@ -78,11 +251,8 @@ class TareasController extends ApiController
             $data = DB::select('exec aula.SP_SEL_tareas
             ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
-            foreach ($data as $key => $value) {
-                $value->iTareaId = $this->hashids->encode($value->iTareaId);
-                $value->iProgActId = $this->hashids->encode($value->iProgActId);
-                $value->iDocenteId = $this->hashids->encode($value->iDocenteId);
-            }
+            // Codificar los id de los registros a enviar al frontend
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
@@ -105,27 +275,20 @@ class TareasController extends ApiController
             ]
         );
 
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
-        if ($request->iProgActId) {
-            $iProgActId = $this->hashids->decode($request->iProgActId);
-            $iProgActId = count($iProgActId) > 0 ? $iProgActId[0] : $iProgActId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
-
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $iProgActId,
-            $iDocenteId            ?? NULL,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
+            $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
             $request->cTareaArchivoAdjunto  ?? NULL,
@@ -186,22 +349,23 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iCursoId) {
-            $iCursoId = $this->hashids->decode($request->iCursoId);
-            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
-        }
+
+        $fieldsToDecode = [
+            'iCursoId',
+            'iProgActId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $iCursoId,
+            $request->iCursoId,
         ];
 
         try {
             $data = DB::select('exec aula.SP_SEL_obtenerTareas
                 ?', $parametros);
 
-            foreach ($data as $key => $value) {
-                $value->iProgActId = $this->hashids->encode($value->iProgActId);
-            }
+            // Codificar los id de los registros a enviar al frontend
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
@@ -221,16 +385,17 @@ class TareasController extends ApiController
             ['opcion.required' => 'Hubo un problema al obtener la acción']
         );
 
-        $request['iTareaId'] = is_null($request->iTareaId)
-            ? null
-            : (is_numeric($request->iTareaId)
-                ? $request->iTareaId
-                : ($this->hashids->decode($request->iTareaId)[0] ?? null));
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $request->iTareaId                       ?? NULL,
+            $request->iTareaId              ?? NULL,
             $request->iProgActId            ?? NULL,
             $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
@@ -280,27 +445,22 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
-        if ($request->iProgActId) {
-            $iProgActId = $this->hashids->decode($request->iProgActId);
-            $iProgActId = count($iProgActId) > 0 ? $iProgActId[0] : $iProgActId;
-        }
-        if ($request->iDocenteId) {
-            $iDocenteId = $this->hashids->decode($request->iDocenteId);
-            $iDocenteId = count($iDocenteId) > 0 ? $iDocenteId[0] : $iDocenteId;
-        }
+
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $request->iProgActId,
-            $iDocenteId            ?? NULL,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
+            $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
             $request->cTareaArchivoAdjunto  ?? NULL,
@@ -350,17 +510,21 @@ class TareasController extends ApiController
                 'opcion.required' => 'Hubo un problema al obtener la acción',
             ]
         );
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
+
+        $fieldsToDecode = [
+            'iTareaId',
+            'iProgActId',
+            'iDocenteId',
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTareaId              ?? NULL,
-            $request->iProgActId,
+            $request->iTareaId              ?? NULL,
+            $request->iProgActId            ?? NULL,
             $request->iDocenteId            ?? NULL,
             $request->cTareaTitulo          ?? NULL,
             $request->cTareaDescripcion     ?? NULL,
@@ -403,12 +567,15 @@ class TareasController extends ApiController
 
     public function obtenerTareaxiTareaidxiEstudianteId(Request $request)
     {
-        if ($request->iTareaId) {
-            $iTareaId = $this->hashids->decode($request->iTareaId);
-            $iTareaId = count($iTareaId) > 0 ? $iTareaId[0] : $iTareaId;
-        }
+        $fieldsToDecode = [
+            'iTareaId',
+            'iEstudianteId'
+        ];
+        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+
         $parametros = [
-            $iTareaId,
+            $request->iTareaId,
             $request->iEstudianteId,
         ];
 

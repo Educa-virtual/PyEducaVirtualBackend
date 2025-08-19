@@ -11,6 +11,7 @@ class BancoRepository
 
     public static function obtenerPreguntas($params)
     {
+
         $params = [
             $params['iCursoId'] ?? 0,
             $params['busqueda'] ?? '',
@@ -23,21 +24,9 @@ class BancoRepository
             $params['idEncabPregId'] ?? 0,
             $params['iGradoId'] ?? 0
         ];
-
-        $preguntasDB = DB::select('exec eval.SP_SEL_bancoPreguntas
-            @_iCursoId   = ?
-            , @_busqueda = ?
-            , @_iCurrContId = ?
-            , @_iNivelCicloId = ?
-            , @_iDocenteId = ?
-            , @_iTipoPregId = ?
-            , @_iBancoIds = ?
-            , @_iEvaluacionId = ?
-            , @_idEncabPregId = ?
-            , @_iGradoId = ?
-            , @_iPreguntaId = ?
+       
+        $preguntasDB = DB::select('exec eval.SP_SEL_bancoPreguntas ?,?,?,?,?,?,?,?,?,?
         ', $params);
-
         $preguntas = (new BancoPreguntas())->procesarPreguntas($preguntasDB);
         return $preguntas;
     }

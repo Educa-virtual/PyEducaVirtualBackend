@@ -3,11 +3,13 @@
 namespace App\Services\ere;
 
 use App\Helpers\VerifyHash;
+use App\Models\ere\Evaluacion;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\acad\DocentesRepository;
 use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\grl\PersonasRepository;
 use App\Repositories\grl\YearsRepository;
+use App\Repositories\PreguntasRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Exception;
@@ -41,20 +43,56 @@ class AreasService
         $archivo->move(Storage::disk('public')->path($rutaDestino), $nombreArchivo);
     }
 
-    public static function obtenerCartillaRespuestas($evaluacion, $area)
+    public static function eliminarArchivoErePdf($evaluacionId, $areaId)
     {
-        $fechaInicio = new Carbon($evaluacion->dtEvaluacionFechaInicio);
-        //$rutaArchivo = "ere/evaluaciones/$evaluacion->evaluacionIdHashed/areas/$area->areaIdCifrado/examen.pdf";
+        $rutaArchivo = "ere/evaluaciones/$evaluacionId/areas/$areaId/examen.pdf";
+        if (Storage::disk('public')->exists($rutaArchivo)) {
+            Storage::disk('public')->delete($rutaArchivo);
+        } else {
+            throw new Exception('El archivo no existe');
+        }
+    }
+
+    public static function obtenerCartillaRespuestas($evaluacionId, $areaId)
+    {
         $rutaArchivo = "ere/evaluaciones/hoja-respuestas/Hoja respuestas.docx";
         if (!Storage::disk('public')->exists($rutaArchivo)) {
             throw new Exception('El archivo no existe');
         }
-        $data = [];
-        $data['contenido'] = Storage::disk('public')->get($rutaArchivo);
-        /*$data['nombreArchivo'] = ucwords(strtolower($area->cCursoNombre)) . '-' . $area->cGradoAbreviacion . '-'
-            . str_replace('Educación ', '', $area->cNivelTipoNombre) . '-' . $fechaInicio->year . '.pdf';*/
-        $data['nombreArchivo'] = 'Hoja respuestas.docx';
-        return $data;
+        return $rutaArchivo;
+    }
+
+    public static function obtenerAreasPorEvaluacion($evaluacionId, $iPersId)
+    {
+        $evaluacionIdDescifrado =  VerifyHash::decodesxId($evaluacionId);
+        if (empty($evaluacionIdDescifrado)) {
+            throw new Exception('El ID enviado no se pudo descifrar.');
+        }
+        $resultados = AreasRepository::obtenerAreasPorEvaluacion($evaluacionIdDescifrado, $iPersId, request()->header('icredentperfid'));
+
+        if ($resultados==null || count($resultados) == 0) {
+            throw new Exception('No hay áreas disponibles.');
+        }
+
+        foreach ($resultados as $fila) {
+            $fila->iCantidadMaximaPreguntas = Evaluacion::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId) ?? 20; //EvaluacionesRepository::selCantidadMaxPreguntas($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
+            $fila->iCantidadPreguntas = PreguntasRepository::obtenerCantidadPreguntasPorEvaluacion($evaluacionIdDescifrado, $fila->iCursosNivelGradId);
+            $fila->iEvaluacionId = $evaluacionIdDescifrado;
+            $fila->iCursosNivelGradId = VerifyHash::encodexId($fila->iCursosNivelGradId);
+            $fila->bTieneArchivo = AreasService::tieneArchivoErePdfSubido($evaluacionId, $fila->iCursosNivelGradId);
+            $fila->iEvaluacionIdHashed = $evaluacionId;
+        }
+        return $resultados;
+    }
+
+    public static function actualizarEstadoDescarga($evaluacionId, $areaId, $bDescarga)
+    {
+        $evaluacionIdDescifrado = VerifyHash::decodesxId($evaluacionId);
+        $areaIdDescifrado = VerifyHash::decodesxId($areaId);
+        if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
+            throw new Exception('El ID enviado no se pudo descifrar.');
+        }
+        AreasRepository::actualizarEstadoDescarga($evaluacionIdDescifrado, $areaIdDescifrado, $bDescarga);
     }
 
     public static function obtenerArchivoErePdf($evaluacion, $area)
@@ -74,8 +112,8 @@ class AreasService
     public static function generarMatrizCompetencias($evaluacionId, $areaId, $usuario)
     {
         date_default_timezone_set('America/Lima');
-        $evaluacionIdDescifrado = VerifyHash::decodes($evaluacionId);
-        $areaIdDescifrado = VerifyHash::decodes($areaId);
+        $evaluacionIdDescifrado = VerifyHash::decodesxId($evaluacionId);
+        $areaIdDescifrado = VerifyHash::decodesxId($areaId);
         if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
             throw new Exception('El ID enviado no se pudo descifrar.');
         }
@@ -96,7 +134,7 @@ class AreasService
             throw new Exception('No hay preguntas para generar la matriz.');
         }
         //Validar si es docente o director y si puede descargar el archivo
-        DB::statement("EXEC [ere].Sp_SEL_validarDescargaArchivoFinEvaluacionPdf ?, ?", [request()->header('icredentperfid'), $evaluacionIdDescifrado]);
+        //DB::statement("EXEC [ere].Sp_SEL_validarDescargaArchivoFinEvaluacionPdf ?, ?", [request()->header('icredentperfid'), $evaluacionIdDescifrado]);
         $data = [
             'year' => $year,
             'dataMatriz' => $dataMatriz,

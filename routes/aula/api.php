@@ -4,7 +4,8 @@ use App\Http\Controllers\aula\AulaVirtualController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\AcademicoController;
-use App\Http\Controllers\aula\AnuncioController;
+use App\Http\Controllers\aula\AnunciosController;
+use App\Http\Controllers\aula\CuestionariosController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
 use App\Http\Controllers\aula\NotificacionEstudianteController;
@@ -15,6 +16,10 @@ use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
 use App\Http\Controllers\aula\EstadisticasController;
+use App\Http\Controllers\aula\PreguntaAlternativasRespuestasController;
+use App\Http\Controllers\aula\PreguntasController;
+use App\Http\Controllers\aula\ReunionVirtualesController;
+use App\Http\Controllers\aula\TipoExperienciaAprendizajeController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -40,20 +45,24 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::get('obtenerEstudiantesMatricula', [AulaVirtualController::class, 'obtenerEstudiantesMatricula']);
             Route::delete('eliminarRptEstudiante', [AulaVirtualController::class, 'eliminarRptEstudiante']);
             Route::get('obtenerReptdocente', [AulaVirtualController::class, 'obtenerReptdocente']);
-
-
+            Route::get('listaEstudiantes', [ForosController::class, 'obtenerListaEstudiantes']);
         });
         Route::get('contenidoSemanasProgramacionActividades', [AulaVirtualController::class, 'contenidoSemanasProgramacionActividades']);
     });
 
     Route::group(['prefix' => 'matricula'], function () {
         Route::post('list', [MatriculaController::class, 'list']);
+        Route::post('registrar', [MatriculaController::class, 'registrar']);
     });
     Route::group(['prefix' => 'programacion-actividades'], function () {
         Route::post('list', [ProgramacionActividadesController::class, 'list']);
         Route::post('store', [ProgramacionActividadesController::class, 'store']);
     });
     Route::group(['prefix' => 'tareas'], function () {
+        Route::post('', [TareasController::class, 'guardarTareas']);
+        Route::put('{iTareaId}', [TareasController::class, 'actualizarTareasxiTareaId']);
+
+        ////
         Route::post('list', [TareasController::class, 'list']);
         Route::post('store', [TareasController::class, 'store']);
         Route::post('getTareasxiCursoId', [TareasController::class, 'getTareasxiCursoId']);
@@ -85,19 +94,23 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('habilitarCalificacion', [ResultadoController::class, 'habilitarCalificacion']);
         Route::get('obtenerReporteFinalNotas', [ResultadoController::class, 'obtenerReporteFinalNotas']);
         Route::get('reporteDeLogros', [ResultadoController::class, 'reporteDeLogros']);
-        Route::get('reporteDeLogroFinalXYear', [ResultadoController::class, 'reporteDeLogroFinalXYear']); 
+        Route::get('reporteDeLogroFinalXYear', [ResultadoController::class, 'reporteDeLogroFinalXYear']);
         Route::get('generarReporteDeLogrosAlcanzadosXYear', [ResultadoController::class, 'generarReporteDeLogrosAlcanzadosXYear']);
-        
     });
-    Route::group(['prefix' => 'Anuncio'], function (){
-        Route::post('guardarAnuncio', [AnuncioController::class, 'guardarAnuncio']);
-        Route::get('obtenerAnunciosXDocente', [AnuncioController::class, 'obtenerAnunciosXDocente']);
+    Route::group(['prefix' => 'anuncios'], function () {
+        Route::post('guardarAnuncios', [AnunciosController::class, 'guardarAnuncios']);
+        Route::post('listarAnuncios', [AnunciosController::class, 'listarAnuncios']);
+        Route::post('eliminarAnuncios', [AnunciosController::class, 'eliminarAnuncios']);
+        Route::post('fijarAnuncios', [AnunciosController::class, 'fijarAnuncios']);
     });
 
     Route::group(['prefix' => 'foros'], function () {
         Route::post('obtenerForoxiForoId', [ForosController::class, 'obtenerForoxiForoId']);
         Route::post('actualizarForo', [ForosController::class, 'actualizarForo']);
         Route::post('eliminarxiForoId', [ForosController::class, 'eliminarxiForoId']);
+        Route::post('/', [ForosController::class, 'guardarForos']); // Para crear
+        Route::post('obtenerReporteEstudiantesRetroalimentacion', [ForosController::class, 'obtenerReporteEstudiantesRetroalimentacion']); // Para crear
+
     });
 
     Route::group(['prefix' => 'notificacion_docente'], function () {
@@ -119,5 +132,31 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('/estadistica/grados-por-sede', [EstadisticasController::class, 'obtenerGradosPorSede']);
         Route::post('/estadistica/generar-reporte', [EstadisticasController::class, 'generarReporteNotas']);
     });
-
+    Route::group(['prefix' => 'reunion-virtuales'], function () {
+        Route::post('/', [ReunionVirtualesController::class, 'guardarReunionVirtuales']);
+        Route::put('/{iRVirtualId}', [ReunionVirtualesController::class, 'actualizarReunionVirtuales']);
+        Route::delete('/{iRVirtualId}', [ReunionVirtualesController::class, 'eliminarReunionVirtuales']);
+        Route::get('/{iRVirtualId}', [ReunionVirtualesController::class, 'obtenerReunionVirtualesxiRVirtualId']);
+    });
+    Route::prefix('cuestionarios')->group(function () {
+        Route::post('/', [CuestionariosController::class, 'guardarCuestionario']); // Para crear
+        Route::put('/{iCuestionarioId}', [CuestionariosController::class, 'actualizarCuestionario']); // Para actualizar
+        Route::delete('/{iCuestionarioId}', [CuestionariosController::class, 'eliminarCuestionario']); // Para eliminar
+        Route::get('/{iCuestionarioId}', [CuestionariosController::class, 'obtenerCuestionarioxiCuestionarioId']); // Para obtener un cuestionario específico
+    });
+    Route::prefix('preguntas')->group(function () {
+        Route::post('/', [PreguntasController::class, 'guardarPreguntas']); // Para crear
+        Route::put('/{iPregId}', [PreguntasController::class, 'actualizarPreguntasxiPregId']); // Para actualizar
+        Route::delete('/{iPregId}', [PreguntasController::class, 'eliminarPreguntaxiPregId']); // Para eliminar
+        Route::get('/cuestionario/{iCuestionarioId}', [PreguntasController::class, 'listarPreguntasxiCuestionarioId']); // Para obtener las preguntas de un cuestionario específico
+    });
+    Route::prefix('pregunta-alternativas-respuestas')->group(function () {
+        Route::get('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}', [PreguntaAlternativasRespuestasController::class, 'listarPreguntasxiCuestionarioIdxiEstudianteId']); // Para obtener las preguntas del cuestionario del estudiante
+        Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}', [PreguntaAlternativasRespuestasController::class, 'guardarPreguntasxiCuestionarioIdxiEstudianteId']); // Para guardar las preguntas del cuestionario del estudiante
+        Route::put('/cuestionario/{iCuestionarioId}/estudiante/{iEstudianteId}/finalizado', [PreguntaAlternativasRespuestasController::class, 'finalizarPreguntaAlternativasRespuestas']); // Para finalizar las preguntas del cuestionario del estudiante
+        Route::get('/cuestionario/{iCuestionarioId}/resultados', [PreguntaAlternativasRespuestasController::class, 'obtenerResultadosxiCuestionarioId']);
+    });
+    Route::prefix('tipo-experiencia-aprendizaje')->group(function () {
+        Route::get('/', [TipoExperienciaAprendizajeController::class, 'listarTipoExperienciaAprendizaje']); // Para obtener los tipos de experiencia de aprendizaje
+    });
 });

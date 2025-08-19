@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\api\acad;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Exception;
+use FontLib\Font;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class CalendarioAcademicosController extends Controller
 {
@@ -390,35 +392,28 @@ class CalendarioAcademicosController extends Controller
 
     public function addCalAcademico(Request $request)
     {
-        $solicitud = [
-            $request->json,
-            $request->_opcion
-        ];
-
-        $query = DB::select(
-            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-
-            $solicitud
-        );
-
         try {
+            $solicitud = [
+                $request->json,
+                $request->_opcion
+            ];
+    
+            $query = DB::select(
+                "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+                $solicitud
+            );
+    
             $response = [
                 'validated' => true,
-                'message' => 'se obtuvo la información',
+                'message' => 'Se obtuvo la información',
                 'data' => $query,
             ];
-
-            $estado = 201;
+    
+            return response()->json($response, 201);
+    
         } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-            $estado = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $estado);
     }
 
     public function searchAcademico(Request $request)
@@ -730,7 +725,7 @@ class CalendarioAcademicosController extends Controller
             $request->tabla, // NVARCHAR(128),   -- Nombre de la tabla principal
             $request->campo, //NVARCHAR(128),       -- Nombre del campo ID de la tabla principal
             $request->valorId, // BIGINT,              -- Valor del ID a eliminar
-            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)        
+            // $TablaHija = null //NVARCHAR(128) = NULL   -- Nombre de la tabla hija (opcional)
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
@@ -768,7 +763,7 @@ class CalendarioAcademicosController extends Controller
         //    $opcion = $request->_opcion;
 
         $solicitud = [
-            $request->iNivelTipoId, //NVARCHAR(128),       -- Nombre del esquema        
+            $request->iNivelTipoId, //NVARCHAR(128),       -- Nombre del esquema
         ];
 
         //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
@@ -832,7 +827,7 @@ class CalendarioAcademicosController extends Controller
 
             $data = DB::select(
                 'exec hor.SP_SEL_horarioIExiSedeIdxiYAcadIdxiGradoIdxiSeccionId
-                @_iSedeId=?, 
+                @_iSedeId=?,
                 @_iYAcadId=?,
                 @_iGradoId=?,
                 @_iSeccionId=?',
@@ -861,7 +856,7 @@ class CalendarioAcademicosController extends Controller
 
             $data = DB::select(
                 'exec hor.SP_UPD_horarioIEDetallexiHorarioIeDetalleIdxidDocCursoId
-                @_iHorarioIeDetalleId=?, 
+                @_iHorarioIeDetalleId=?,
                 @_idDocCursoId=?',
                 $parametros
             );
