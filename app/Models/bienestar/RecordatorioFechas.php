@@ -9,7 +9,7 @@ class RecordatorioFechas
     public static function selCumpleanios($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -32,7 +32,7 @@ class RecordatorioFechas
     public static function selCumpleaniosConfiguracion($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iPersId,
             $request->iYAcadId,
         ];
@@ -43,7 +43,7 @@ class RecordatorioFechas
     public static function updCumpleaniosConfiguracion($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iRecorPeriodoId,
             $request->iPersId,
             $request->iYAcadId,

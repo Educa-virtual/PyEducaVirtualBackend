@@ -9,7 +9,7 @@ class EncuestaBienestarResumen
     public static function verResumen($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iEncuPregId,
             $request->iTipoReporte,

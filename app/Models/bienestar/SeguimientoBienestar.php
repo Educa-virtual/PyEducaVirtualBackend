@@ -10,7 +10,7 @@ class SeguimientoBienestar
     public static function selSeguimientoParametros($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -20,7 +20,7 @@ class SeguimientoBienestar
     public static function selSeguimientos($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -38,7 +38,7 @@ class SeguimientoBienestar
     public static function selSeguimientosPersona($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
             $request->iPersId,
             $request->iTipoSeguimId,
@@ -58,7 +58,7 @@ class SeguimientoBienestar
     public static function selSeguimiento($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iSeguimId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -73,7 +73,7 @@ class SeguimientoBienestar
     public static function insSeguimiento($request)
     {
         $parametros = [
-            SeguimientoBienestar::formatearDatos($request->iCredEntPerfId, 'int'),
+            SeguimientoBienestar::formatearDatos($request->header('iCredEntPerfId'), 'int'),
             SeguimientoBienestar::formatearDatos($request->iYAcadId, 'int'),
             SeguimientoBienestar::formatearDatos($request->iPersId, 'int'),
             SeguimientoBienestar::formatearDatos($request->iTipoSeguimId, 'int'),
@@ -97,7 +97,7 @@ class SeguimientoBienestar
     public static function updSeguimiento($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iSeguimId,
             $request->iPersId,
             $request->iTipoSeguimId,
@@ -119,7 +119,7 @@ class SeguimientoBienestar
     public static function updSeguimientoArchivo($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iSeguimId,
             $request->cSeguimArchivo,
         ];
@@ -135,7 +135,7 @@ class SeguimientoBienestar
     public static function delSeguimiento($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iSeguimId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -145,7 +145,7 @@ class SeguimientoBienestar
     public static function selDatosPersona($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
             $request->iSedeId,
             $request->iTipoPers,
