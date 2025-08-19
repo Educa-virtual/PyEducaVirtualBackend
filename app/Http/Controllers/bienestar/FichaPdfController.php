@@ -4,13 +4,10 @@ namespace App\Http\Controllers\bienestar;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use Barryvdh\DomPDF\Facade\Pdf;
-
-
 use App\Http\Controllers\Controller;
-use App\Models\bienestar\FichaPdf;
+use App\Models\bienestar\Ficha;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // Para usar consultas SQL crudas
 use Illuminate\Support\Facades\Gate;
 
 class FichaPdfController extends Controller
@@ -30,81 +27,83 @@ class FichaPdfController extends Controller
             Gate::authorize('tiene-perfil', [$this->permitidos]);
 
             $iFichaDGId = $request->get('iFichaDGId');
+            $datos_ficha = Ficha::selFichaImpresion($request);
 
-            //---------------- Datos generales y de dirección------------
-            $datosGenerales = FichaPdf::selDatosGenerales($request);
-            $familiares = FichaPdf::selFamiliares($request);
-            $aspeconimico = FichaPdf::selEconomico($request);
+            /* DATOS GENERALES, DIRECCIÓN Y FAMILIA */
+            $datos_generales = json_decode($datos_ficha->datos_generales)[0] ?? [];
+            $familiares = json_decode($datos_ficha->familiares) ?? [];
+            $aspecto_economico = json_decode($datos_ficha->aspecto_economico)[0] ?? [];
 
-            // ---------IV ASPECTO DE LA VIVIENDA (DODE VIVE EL ESTUDIANTE----------------------------	
-            $aspvivienda = FichaPdf::selVivienda($request);
+            /* VIVIENDA */
+            $aspecto_vivienda = json_decode($datos_ficha->aspecto_vivienda)[0] ?? [];
+            $equipamiento = json_decode($datos_ficha->equipamiento);
 
-            // ----------EQUIPAMIENTO EN EL HOGAR--------------------------
-            $equipamiento = FichaPdf::selEquipamiento($request);
-            $alimentacionstd = FichaPdf::selAlimentacion($request);
-            $programas_alimentacion = FichaPdf::selProgramasAlimentacion($request);
+            /* ALIMENTACION */
+            $alimentacion = json_decode($datos_ficha->alimentacion)[0] ?? [];
+            $programas_alimentacion = json_decode($datos_ficha->programas_alimentacion)[0] ?? [];
 
-            //--------------VI. DISCAPACIDAD-------------------------------------
-            $tiene_discapacidad = FichaPdf::selTieneDiscapacidad($request);
-            $programas_discapacidad = FichaPdf::selProgramasDiscapacidad($request);
-            $discapacidades = FichaPdf::selDiscapacidades($request);
+            /* DISCAPACIDAD */
+            $tiene_discapacidad = json_decode($datos_ficha->tiene_discapacidad)[0] ?? [];
+            $programas_discapacidad = json_decode($datos_ficha->programas_discapacidad)[0] ?? [];
+            $discapacidades = json_decode($datos_ficha->discapacidades) ?? [];
 
-            // ---------------VII SALUD----------------------------------------
-            $ficha_salud = FichaPdf::selSalud($request);
-            $dolencias_salud = FichaPdf::selDolenciasSalud($request);
-            $seguros_salud = FichaPdf::selSeguros($request);
-            $dosis_vacunas = FichaPdf::selDosisVacunas($request);
+            /* SALUD */
+            $ficha_salud = json_decode($datos_ficha->ficha_salud)[0] ?? [];
+            $dolencias_salud = json_decode($datos_ficha->dolencias_salud) ?? [];
+            $seguros_salud = json_decode($datos_ficha->seguros_salud)[0] ?? [];
+            $dosis_vacunas = json_decode($datos_ficha->dosis_vacunas) ?? [];
 
-            // ------------VIII-RECREACION------------------
-            $recreacion = FichaPdf::selRecreacion($request);
+            /* RECREACION, CULTURA Y OTROS */
+            $recreacion = json_decode($datos_ficha->recreacion)[0] ?? [];
 
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
 
-        //-------------------------------------------------------------------
+        /* FORMATEAR DATOS PARA IMPRESION DE LA FICHA */
+
         $datos = [
             'direccion_domiciliaria' => [
-                'tipo_via' => $datosGenerales->cTipoViaNombre ?? $datosGenerales->cTipoViaOtro ?? '',
-                'nombre_via' => $datosGenerales->cFichaDGDireccionNombreVia ?? '',
-                'numero_puerta' => $datosGenerales->cFichaDGDireccionNroPuerta ?? '',
-                'block' => $datosGenerales->cFichaDGDireccionBlock ?? '',
-                'interior' => $datosGenerales->cFichaDGDireccionInterior ?? '',
-                'piso' => $datosGenerales->iFichaDGDireccionPiso ?? '',
-                'mz' => $datosGenerales->cFichaDGDireccionManzana ?? '',
-                'lote' => $datosGenerales->cFichaDGDireccionLote ?? '',
-                'km' => $datosGenerales->cFichaDGDireccionKm ?? '',
-                'departamento' => $datosGenerales->cDptoNombre ?? '',
-                'provincia' => $datosGenerales->cPrvnNombre ?? '',
-                'distrito' => $datosGenerales->cDsttNombre ?? '',
-                'referencia' => $datosGenerales->cFichaDGDireccionReferencia ?? ''
+                'tipo_via' => $datos_generales->cTipoViaNombre ?? $datos_generales->cTipoViaOtro ?? '',
+                'nombre_via' => $datos_generales->cFichaDGDireccionNombreVia ?? '',
+                'numero_puerta' => $datos_generales->cFichaDGDireccionNroPuerta ?? '',
+                'block' => $datos_generales->cFichaDGDireccionBlock ?? '',
+                'interior' => $datos_generales->cFichaDGDireccionInterior ?? '',
+                'piso' => $datos_generales->iFichaDGDireccionPiso ?? '',
+                'mz' => $datos_generales->cFichaDGDireccionManzana ?? '',
+                'lote' => $datos_generales->cFichaDGDireccionLote ?? '',
+                'km' => $datos_generales->cFichaDGDireccionKm ?? '',
+                'departamento' => $datos_generales->cDptoNombre ?? '',
+                'provincia' => $datos_generales->cPrvnNombre ?? '',
+                'distrito' => $datos_generales->cDsttNombre ?? '',
+                'referencia' => $datos_generales->cFichaDGDireccionReferencia ?? ''
             ],
 
             'estudiante' => [
-                'codigo_alumno' => $datosGenerales->cEstCodigo ?? '',
-                'apellido_paterno' => $datosGenerales->cEstPaterno ?? '',
-                'apellido_materno' => $datosGenerales->cEstMaterno ?? '',
-                'nombres' => $datosGenerales->cEstNombres ?? '',
-                'tipo_documento' => $datosGenerales->cTipoIdentSigla ?? '',
-                'documento' => $datosGenerales->cPersDocumento ?? '',
-                'fecha_nacimiento' => date('d/m/Y', strtotime($datosGenerales->dPersNacimiento ?? '')),
-                // 'sexo' => $datosGenerales->cPersSexo == 'M' ? 'Masculino' : 'Femenino',
-                'sexo' => isset($datosGenerales) && isset($datosGenerales->cPersSexo)
-                    ? ($datosGenerales->cPersSexo == 'M' ? 'MASCULINO' : 'FEMENINO')
+                'codigo_alumno' => $datos_generales->cEstCodigo ?? '',
+                'apellido_paterno' => $datos_generales->cEstPaterno ?? '',
+                'apellido_materno' => $datos_generales->cEstMaterno ?? '',
+                'nombres' => $datos_generales->cEstNombres ?? '',
+                'tipo_documento' => $datos_generales->cTipoIdentSigla ?? '',
+                'documento' => $datos_generales->cPersDocumento ?? '',
+                'fecha_nacimiento' => date('d/m/Y', strtotime($datos_generales->dPersNacimiento ?? '')),
+                // 'sexo' => $datos_generales->cPersSexo == 'M' ? 'Masculino' : 'Femenino',
+                'sexo' => isset($datos_generales) && isset($datos_generales->cPersSexo)
+                    ? ($datos_generales->cPersSexo == 'M' ? 'MASCULINO' : 'FEMENINO')
                     : 'No especificado',
-                'estado_civil' => $datosGenerales->cTipoEstCivilNombre ?? '',
-                'vive_padre' => $datosGenerales->bFamiliarPadreVive ?? '',
-                'vive_madre' => $datosGenerales->bFamiliarMadreVive ?? '',
-                'num_hijos' => $datosGenerales->iFichaDGNroHijos ?? '',
-                'tiene_hijos' => $datosGenerales->bFichaDGTieneHijos ?? '',
-                'num_telefono' => $datosGenerales->cEstTelefono ?? '',
+                'estado_civil' => $datos_generales->cTipoEstCivilNombre ?? '',
+                'vive_padre' => $datos_generales->bFamiliarPadreVive ?? '',
+                'vive_madre' => $datos_generales->bFamiliarMadreVive ?? '',
+                'num_hijos' => $datos_generales->iFichaDGNroHijos ?? '',
+                'tiene_hijos' => $datos_generales->bFichaDGTieneHijos ?? '',
+                'num_telefono' => $datos_generales->cEstTelefono ?? '',
             ],
 
             'nacimiento' => [
-                'pais' => $datosGenerales->cPaisNombre ?? '',
-                'departamento' => $datosGenerales->cUbigeoDpto ?? '',
-                'provincia' => $datosGenerales->cUbigeoProvincia ?? '',
-                'distrito' => $datosGenerales->cUbigeoDistrito ?? '',
+                'pais' => $datos_generales->cPaisNombre ?? '',
+                'departamento' => $datos_generales->cUbigeoDpto ?? '',
+                'provincia' => $datos_generales->cUbigeoProvincia ?? '',
+                'distrito' => $datos_generales->cUbigeoDistrito ?? '',
             ],
 
         ];
@@ -119,7 +118,7 @@ class FichaPdfController extends Controller
                 'apellido_paterno' => $familiar->cPersPaterno ?? '',
                 'apellido_materno' => $familiar->cPersMaterno ?? '',
                 'nombres' => $familiar->cPersNombre ?? '',
-                'fecha_nacimiento' => isset($familiar->dPersNacimiento) ? date('d-m-Y', strtotime($familiar->dPersNacimiento)) : '',
+                'fecha_nacimiento' => isset($familiar->dPersNacimiento) ? date('d/m/Y', strtotime($familiar->dPersNacimiento)) : '',
                 'edad' => $familiar->EdadFam ?? '',
                 'tipo_familiar' => $familiar->cTipoFamiliarDescripcion ?? '',
                 'estado_civil' => $familiar->cTipoEstCivilNombre ?? '',
@@ -137,30 +136,30 @@ class FichaPdfController extends Controller
         // dd($datos); // Verifica que contiene lo esperado
 
         $datos['aspecto_economico'] = [
-            'rango_ingresos' => $aspeconimico->cRangoSueldoDescripcion ?? '',
-            'rango_ingresos_apoderado' => $aspeconimico->cRangoSueldoDescripcionPersona ?? '',
-            'depende_economicamente_de' => $aspeconimico->cDepEcoDescripcion ?? '',
-            'tipo_apoyo_economico' => $aspeconimico->cTipoAEcoDescripcion ?? '',
-            'actividad_ingreso' => $aspeconimico->cIngresoEcoActividad ?? '',
-            'estudiante_trabaja' => $aspeconimico->bIngresoEcoTrabaja ?? '',
-            'apoderado_depende_de' => $aspeconimico->cIngresoEcoDependeDe ?? '',
-            'horas_trabajo' => $aspeconimico->iIngresoEcoTrabajoHoras ?? '',
-            'jornada_trabajo' => $aspeconimico->cJorTrabDescripcion ?? '',
+            'rango_ingresos' => $aspecto_economico->cRangoSueldoDescripcion ?? '',
+            'rango_ingresos_apoderado' => $aspecto_economico->cRangoSueldoDescripcionPersona ?? '',
+            'depende_economicamente_de' => $aspecto_economico->cDepEcoDescripcion ?? '',
+            'tipo_apoyo_economico' => $aspecto_economico->cTipoAEcoDescripcion ?? '',
+            'actividad_ingreso' => $aspecto_economico->cIngresoEcoActividad ?? '',
+            'estudiante_trabaja' => $aspecto_economico->bIngresoEcoTrabaja ?? '',
+            'apoderado_depende_de' => $aspecto_economico->cIngresoEcoDependeDe ?? '',
+            'horas_trabajo' => $aspecto_economico->iIngresoEcoTrabajoHoras ?? '',
+            'jornada_trabajo' => $aspecto_economico->cJorTrabDescripcion ?? '',
         ];
 
         $datos['aspecto_vivienda'] = [
-            'vivienda_es' => $aspvivienda->cTipoOcupaVivDescripcion ?? '',
-            'npisos' => $aspvivienda->iViviendaCarNroPisos ?? '',
-            'estado' => $aspvivienda->cEstadoVivDescripcion ?? '',
-            'mat_pred_pared' => $aspvivienda->cMatPreDescripcion ?? '',
-            'mat_piso' => $aspvivienda->cMatPisoVivDescripcion ?? '',
-            'mat_techo' => $aspvivienda->cMatTecVivDescripcion ?? '',
-            'tipo_vivienda' => $aspvivienda->cTipoVivDescripcion ?? '',
-            'nro_ambientes' => $aspvivienda->iViviendaCarNroAmbientes ?? '',
-            'nro_habitaciones' => $aspvivienda->iViviendaCarNroHabitaciones ?? '',
-            'tipo_servicio' => $aspvivienda->cTipoSumADescripcion ?? '',
-            'tipo_sshh' => $aspvivienda->cTipoSsHhDescripcion ?? '',
-            'tipo_alumbrado' => $aspvivienda->cTipoAlumDescripcion ?? '',
+            'vivienda_es' => $aspecto_vivienda->cTipoOcupaVivDescripcion ?? '',
+            'npisos' => $aspecto_vivienda->iViviendaCarNroPisos ?? '',
+            'estado' => $aspecto_vivienda->cEstadoVivDescripcion ?? '',
+            'mat_pred_pared' => $aspecto_vivienda->cMatPreDescripcion ?? '',
+            'mat_piso' => $aspecto_vivienda->cMatPisoVivDescripcion ?? '',
+            'mat_techo' => $aspecto_vivienda->cMatTecVivDescripcion ?? '',
+            'tipo_vivienda' => $aspecto_vivienda->cTipoVivDescripcion ?? '',
+            'nro_ambientes' => $aspecto_vivienda->iViviendaCarNroAmbientes ?? '',
+            'nro_habitaciones' => $aspecto_vivienda->iViviendaCarNroHabitaciones ?? '',
+            'tipo_servicio' => $aspecto_vivienda->cTipoSumADescripcion ?? '',
+            'tipo_sshh' => $aspecto_vivienda->cTipoSsHhDescripcion ?? '',
+            'tipo_alumbrado' => $aspecto_vivienda->cTipoAlumDescripcion ?? '',
         ];
 
         $datos['equipamiento'] = [];
@@ -171,18 +170,18 @@ class FichaPdfController extends Controller
         };
 
         $datos['alimentos_std'] = [
-            'lugar_desayuno' => $alimentacionstd->lugarDesayuno ?? '',
-            'lugar_almuerzo' => $alimentacionstd->lugarAlmuerzo ?? '',
-            'lugar_cena' => $alimentacionstd->lugarCena ?? '',
-            'tiene_dieta_especial' => $alimentacionstd->bDietaEspecial ?? '',
-            'dieta_especial' => $alimentacionstd->cDietaEspecialObs ?? '',
-            'tiene_intolerancia' => $alimentacionstd->bIntoleranciaAlim ?? '',
-            'intolerancia_alimenticia' => $alimentacionstd->cIntoleranciaAlimObs ?? '',
-            'toma_suplementos' => $alimentacionstd->bSumplementosAlim ?? '',
-            'suplemenetos_alimenticios' => $alimentacionstd->cSumplementosAlimObs ?? '',
-            'tiene_dificultades' => $alimentacionstd->bDificultadAlim ?? '',
-            'dificultades_alimenticias' => $alimentacionstd->cDificultadAlimObs ?? '',
-            'observaciones_alimenticias' => $alimentacionstd->cAlimObs ?? '',
+            'lugar_desayuno' => $alimentacion->lugarDesayuno ?? '',
+            'lugar_almuerzo' => $alimentacion->lugarAlmuerzo ?? '',
+            'lugar_cena' => $alimentacion->lugarCena ?? '',
+            'tiene_dieta_especial' => $alimentacion->bDietaEspecial ?? '',
+            'dieta_especial' => $alimentacion->cDietaEspecialObs ?? '',
+            'tiene_intolerancia' => $alimentacion->bIntoleranciaAlim ?? '',
+            'intolerancia_alimenticia' => $alimentacion->cIntoleranciaAlimObs ?? '',
+            'toma_suplementos' => $alimentacion->bSumplementosAlim ?? '',
+            'suplemenetos_alimenticios' => $alimentacion->cSumplementosAlimObs ?? '',
+            'tiene_dificultades' => $alimentacion->bDificultadAlim ?? '',
+            'dificultades_alimenticias' => $alimentacion->cDificultadAlimObs ?? '',
+            'observaciones_alimenticias' => $alimentacion->cAlimObs ?? '',
             'programas_alimentacion' => $programas_alimentacion->cProgAlimNombre ?? '',
         ];
 
@@ -222,7 +221,7 @@ class FichaPdfController extends Controller
             $datos['dosis_vacuna'][] = [
                 'pandemia' => $dosis->cPandemiaNombre,
                 'num_dosis' => $dosis->iPanDFichaNroDosis,
-                'fecha_dosis' => isset($dosis->dtPanDFichaDosis) ? date('d-m-Y', strtotime($dosis->dtPanDFichaDosis)) : '',
+                'fecha_dosis' => isset($dosis->dtPanDFichaDosis) ? date('d/m/Y', strtotime($dosis->dtPanDFichaDosis)) : '',
             ];
         }
 

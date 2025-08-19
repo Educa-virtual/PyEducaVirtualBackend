@@ -105,4 +105,15 @@ class Ficha
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne('EXEC obe.Sp_SEL_fichaReporte ' . $placeholders, $parametros);
     }
+
+    public static function selFichaImpresion($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iFichaDGId,
+            $request->iYAcadId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC obe.Sp_SEL_fichaImpresion $placeholders", $parametros);
+    }
 }
