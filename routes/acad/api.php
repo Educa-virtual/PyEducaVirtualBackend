@@ -3,6 +3,8 @@
 
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
+use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
+use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DocenteCursosController;
