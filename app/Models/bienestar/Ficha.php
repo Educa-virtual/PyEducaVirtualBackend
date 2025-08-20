@@ -28,6 +28,7 @@ class Ficha
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
+            $request->iFichaEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichas ' . $placeholders, $parametros);
