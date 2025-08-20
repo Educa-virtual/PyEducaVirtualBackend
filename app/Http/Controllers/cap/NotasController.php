@@ -102,7 +102,7 @@ class NotasController extends Controller
                     @_iCapacitacionId=?,
                     @_iNroNota=?,
                     @_cConclusion=?,
-                    @_iCredId=?,
+                    @_iCredId=?
                     ',
                 $parametros
             );
