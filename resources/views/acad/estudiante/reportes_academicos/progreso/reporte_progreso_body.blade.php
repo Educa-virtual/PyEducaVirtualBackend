@@ -16,7 +16,6 @@
             margin-right: 2cm;
         }
 
-        #tableDatosMatricula,
         #tableComentarioGeneral,
         #tableSituacionFinal {
             width: 65%;
@@ -45,52 +44,90 @@
         td {
             border: 1px solid black;
         }
+
+        div.cabecera span {
+            display: inline-block;
+        }
+
+        #tableDatosMatricula {
+            display: inline-block;
+        }
+
+        div.cabecera img {
+            display: block;
+            max-height: 140px;
+            /* controla alto uniforme */
+            max-width: 100%;
+            margin: 0 auto;
+            /* object-fit no es 100% fia4le en wkhtmltopdf antiguo, así que no lo uses */
+        }
     </style>
 
 
     <main>
-        <table class="table table-condensed" id="tableDatosMatricula">
-            <tbody>
-                <tr>
-                    <th style="width: 25%;">DRE:</th>
-                    <td>DRE MOQUEGUA</td>
-                    <th style="width: 15%;">UGEL:</th>
-                    <td>UGEL {{ $matricula->cUgelNombre }}</td>
-                </tr>
-                <tr>
-                    <th>Nivel:</th>
-                    <td>{{ str_replace('Educación ', '', $matricula->cNivelTipoNombre) }}</td>
-                    <th>Código Modular:</th>
-                    <td>{{ $matricula->cIieeCodigoModular }}</td>
-                </tr>
-                <tr>
-                    <th>Institución educativa:</th>
-                    <td colspan="3">{{ strtoupper($matricula->cIieeNombre) }}</td>
-                </tr>
-                <tr>
-                    <th>Grado:</th>
-                    <td>{{ $matricula->cGradoNombre }}</td>
-                    <th>Sección:</th>
-                    <td>{{ strtoupper($matricula->cGradoAbreviacion) }} {{ $matricula->cSeccionNombre }}</td>
-                </tr>
-                <tr>
-                    <th>Apellidos y nombres del estudiante:</th>
-                    <td colspan="3">{{ strtoupper($matricula->cPersPaterno) }} {{ strtoupper($matricula->cPersMaterno) }},
-                        {{ strtoupper($matricula->cPersNombre) }}</td>
-                </tr>
-                <tr>
-                    <th>Código del estudiante:</th>
-                    <td>{{ $matricula->cEstCodigo }}</td>
-                    <th>{{ $matricula->cTipoIdentSigla }}:</th>
-                    <td>{{ $matricula->cPersDocumento }}</td>
-                </tr>
-                <tr>
-                    <th>Apellidos y nombres del docente o tutor:</th>
-                    <td colspan="3"></td>
-                </tr>
-            </tbody>
-        </table>
-
+        <div class="cabecera" style="width: 100%">
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="width: 18%; border: 0px; padding: 5px">
+                            <img src="{{public_path('images/logo_IE/logo_minedu.png')}}" alt="Logo IE">
+                        </td>
+                        <td style="border: 0px">
+                            <table class="table table-condensed" id="tableDatosMatricula">
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 25%;">DRE:</th>
+                                        <td>DRE MOQUEGUA</td>
+                                        <th style="width: 15%;">UGEL:</th>
+                                        <td>UGEL {{ $matricula->cUgelNombre }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nivel:</th>
+                                        <td>{{ str_replace('Educación ', '', $matricula->cNivelTipoNombre) }}</td>
+                                        <th>Código Modular:</th>
+                                        <td>{{ $matricula->cIieeCodigoModular }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Institución educativa:</th>
+                                        <td colspan="3">{{ strtoupper($matricula->cIieeNombre) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Grado:</th>
+                                        <td>{{ $matricula->cGradoNombre }}</td>
+                                        <th>Sección:</th>
+                                        <td>{{ strtoupper($matricula->cGradoAbreviacion) }} {{ $matricula->cSeccionNombre }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Apellidos y nombres del estudiante:</th>
+                                        <td colspan="3">{{ strtoupper($matricula->cPersPaterno) }}
+                                            {{ strtoupper($matricula->cPersMaterno) }},
+                                            {{ strtoupper($matricula->cPersNombre) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Código del estudiante:</th>
+                                        <td>{{ $matricula->cEstCodigo }}</td>
+                                        <th>{{ $matricula->cTipoIdentSigla }}:</th>
+                                        <td>{{ $matricula->cPersDocumento }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Apellidos y nombres del docente o tutor:</th>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                        <td style="width: 18%; border: 0px; padding: 5px">
+                            @php
+                                if ($ie->cIieeLogo != null) {
+                                    echo '<img src="' . $ie->cIieeLogo . '" alt="Logo IE">';
+                                }
+                            @endphp
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <br><br>
 
         <table class="table table-condensed" id="tableAreasCurriculares">
