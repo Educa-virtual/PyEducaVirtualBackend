@@ -17,10 +17,15 @@
         }
 
         #tableDatosMatricula,
-        #tableComentarioGeneral {
+        #tableComentarioGeneral,
+        #tableSituacionFinal {
             width: 65%;
             margin-left: auto;
             margin-right: auto;
+        }
+
+        #tableSituacionFinal th {
+            background-color: #dae0e5;
         }
 
         #tableDatosMatricula th {
@@ -50,28 +55,28 @@
                     <th style="width: 25%;">DRE:</th>
                     <td>DRE MOQUEGUA</td>
                     <th style="width: 15%;">UGEL:</th>
-                    <td>UGEL Mariscal Nieto</td>
+                    <td>UGEL {{ $matricula->cUgelNombre }}</td>
                 </tr>
                 <tr>
                     <th>Nivel:</th>
-                    <td>{{ $matricula->cNivelTipoNombre }}</td>
+                    <td>{{ str_replace('Educación ', '', $matricula->cNivelTipoNombre) }}</td>
                     <th>Código Modular:</th>
                     <td>{{ $matricula->cIieeCodigoModular }}</td>
                 </tr>
                 <tr>
                     <th>Institución educativa:</th>
-                    <td colspan="3">{{ $matricula->cIieeNombre }}</td>
+                    <td colspan="3">{{ strtoupper($matricula->cIieeNombre) }}</td>
                 </tr>
                 <tr>
                     <th>Grado:</th>
                     <td>{{ $matricula->cGradoNombre }}</td>
                     <th>Sección:</th>
-                    <td>{{ $matricula->cGradoAbreviacion }} {{ $matricula->cSeccionNombre }}</td>
+                    <td>{{ strtoupper($matricula->cGradoAbreviacion) }} {{ $matricula->cSeccionNombre }}</td>
                 </tr>
                 <tr>
                     <th>Apellidos y nombres del estudiante:</th>
-                    <td colspan="3">{{ $matricula->cPersPaterno }} {{ $matricula->cPersMaterno }},
-                        {{ $matricula->cPersNombre }}</td>
+                    <td colspan="3">{{ strtoupper($matricula->cPersPaterno) }} {{ strtoupper($matricula->cPersMaterno) }},
+                        {{ strtoupper($matricula->cPersNombre) }}</td>
                 </tr>
                 <tr>
                     <th>Código del estudiante:</th>
@@ -81,7 +86,7 @@
                 </tr>
                 <tr>
                     <th>Apellidos y nombres del docente o tutor:</th>
-                    <td colspan="3">MELGAREJO MAMANI, MARIA LUPE</td>
+                    <td colspan="3"></td>
                 </tr>
             </tbody>
         </table>
@@ -128,16 +133,16 @@
                         $cantidadCompetencias = count($competencias);
                         $primeraFila = true;
                         if ($cantidadCompetencias == 0) {
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
+                            echo '<td></td>';
                             echo '</tr>';
                         } else {
                             foreach ($competencias as $competencia) {
@@ -200,7 +205,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td></td>
+                    <td>{{ $matricula->cMatrConclusionDescriptiva }}</td>
                 </tr>
             </tbody>
         </table>
@@ -222,6 +227,36 @@
                 </tr>
             </thead>
         </table>
+        <br><br>
+
+        <table class="table table-condensed" id="tableSituacionFinal">
+            <tbody>
+                <tr>
+                    <th style="width: 55%">Situación al finalizar el periodo lectivo</th>
+                    <td>{{ $matricula->cEscalaCalifNombre }} - {{ $matricula->cEscalaCalifDescripcion }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br><br><br>
+        <table style="width: 100%; text-align: center; margin-top: 50px;">
+            <tbody>
+                <tr>
+                    <td style="width: 50%; border: none;">
+                        <p>
+                            _________________________________
+                        </p>
+                        <strong>Firma del Docente o Tutor(a)</strong>
+                    </td>
+                    <td style="width: 50%; border: none;">
+                        <p>
+                            _________________________________
+                        </p>
+                        <strong>Firma y sello del Director(a)</strong>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
     </main>
 
 @endsection

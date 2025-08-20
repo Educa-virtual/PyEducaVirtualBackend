@@ -20,8 +20,7 @@ use App\Http\Controllers\ere\UgelesController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
-//, 'middleware' => ['auth:api', RefreshToken::class]
-Route::group(['prefix' => 'acad'], function () {
+Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
 
     Route::group(['prefix' => 'instituciones-educativas'], function () {
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);

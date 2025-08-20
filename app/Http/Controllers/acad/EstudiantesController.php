@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -16,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
 
 class EstudiantesController extends Controller
@@ -234,7 +237,8 @@ class EstudiantesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $parametros = [
             $request->iEstudianteId,
             $request->iPersId,
@@ -266,7 +270,8 @@ class EstudiantesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function show(Request $request){
+    public function show(Request $request)
+    {
         $parametros = [
             $request->iEstudianteId,
             $request->iPersId,
@@ -336,7 +341,7 @@ class EstudiantesController extends Controller
             $datos_hoja['codigo_modular'],
         ];
 
-        if( count($datos_hoja['estudiantes']) === 0 ) {
+        if (count($datos_hoja['estudiantes']) === 0) {
             return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
         }
 
@@ -353,10 +358,14 @@ class EstudiantesController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function generarReporteAcademicoProgreso(Request $request) {
-        $usuario = new User();//Auth::user();
-        //$request->header('iCredId')
-        $pdf = ReportesAcademicosService::generarReporteAcademicoProgreso($usuario, 6730);
-        return $pdf->download('Reporte-academico-' . date('Ymdhis') . '.pdf');
+    public function generarReporteAcademicoProgreso(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $pdf = ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $request->iYAcadId);
+            return $pdf->download('Reporte-academico-' . date('Ymdhis') . '.pdf');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 }

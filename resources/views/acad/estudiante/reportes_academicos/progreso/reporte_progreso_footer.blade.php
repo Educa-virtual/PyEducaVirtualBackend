@@ -17,7 +17,7 @@
     <table class="table table-borderless table-condensed table-sm py-2">
         <tr>
             <td width="20%" class="text-left"></td>
-            <td width="60%" class="text-center">IMPRESO POR AUTOR</td>
+            <td width="60%" class="text-center">IMPRESO POR {{$persona->cPersPaterno}} {{$persona->cPersMaterno}} {{$persona->cPersNombre}}</td>
             <td width="20%" class="text-right">IMPRESO EL {{ date('d/m/Y') }} A LAS {{ date('h:i') }}</td>
         </tr>
     </table>
