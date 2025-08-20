@@ -45,6 +45,6 @@ Route::group(['prefix' => 'cap'], function () {
   });
   Route::prefix('notas')->group(function () {
     Route::get('/{iCapacitacionId}', [NotasController::class, 'obtenerNotaEstudiantes']);
-    Route::put('/', [NotasController::class, 'calificarNotaEstudiantes']);
+    Route::post('/', [NotasController::class, 'calificarNotaEstudiantes']);
   });
 });
