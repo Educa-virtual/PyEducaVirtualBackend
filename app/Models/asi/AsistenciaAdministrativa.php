@@ -7,7 +7,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AsistenciaAdministrativa extends Model
-{
+{   
+    public static function buscarAlumnos(Request $request){
+        $datos = [
+            $request->iGradoId,
+            $request->iSeccionId,
+            $request->iSedeId,          
+            $request->iYAcadId,
+        ];
+        $data = DB::select("EXEC [asi].[SP_SEL_buscarAlumnos] ?,?,?,?",$datos);
+        return $data;
+    }
     public static function buscarHorarioInstitucion(Request $request){
         $datos = [
             $request->iSedeId,

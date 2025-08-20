@@ -13,5 +13,6 @@ Route::group(['prefix' => 'asi'], function () {
         Route::post('buscar-personal-ie', [AsistenciaController::class, 'buscarPersonalInstitucion']);
         Route::post('editar-grupos-ie', [AsistenciaController::class, 'editarGrupoInstitucion']);
         Route::post('guardar-persona-grupo', [AsistenciaController::class, 'guardarPersonalGrupo']);
+        Route::post('buscar-grado-seccion', [AsistenciaController::class, 'buscarAlumnos']);
     });
 });

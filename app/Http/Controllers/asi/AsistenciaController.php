@@ -29,7 +29,15 @@ class AsistenciaController extends Controller
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
-    
+    public function buscarAlumnos(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::buscarAlumnos($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
     public function guardarGrupo(Request $request){
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
