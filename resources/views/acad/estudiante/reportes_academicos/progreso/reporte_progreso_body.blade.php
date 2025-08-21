@@ -3,7 +3,7 @@
 @endphp
 
 @extends('layouts.pdf')
-
+@section('title', 'Reporte académico de progreso')
 @section('content')
     <style>
         @page {
@@ -41,6 +41,7 @@
         th,
         td {
             border: 1px solid black;
+            padding: 4px !important;
         }
 
         div.cabecera span {
@@ -150,23 +151,23 @@
         <table class="table table-condensed table-areas-curriculares">
             <thead>
                 <tr>
-                    <th rowspan="2">Area curricular</th>
-                    <th rowspan="2">Competencia</th>
+                    <th rowspan="2">Área curricular</th>
+                    <th rowspan="2" style="width: 25%">Competencia</th>
                     <th colspan="2">PRIMER PERIODO</th>
                     <th colspan="2">SEGUNDO PERIODO</th>
                     <th colspan="2">TERCER PERIODO</th>
                     <th colspan="2">CUARTO PERIODO</th>
-                    <th rowspan="2" style="width: 10%">NL alcanzado al finalizar el periodo lectivo</th>
+                    <th rowspan="2" style="width: 9%">NL alcanzado al finalizar el periodo lectivo</th>
                 </tr>
                 <tr>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
                 </tr>
             </thead>
             <tobdy>
@@ -224,7 +225,7 @@
                                             echo '<td class="text-center"><strong>' .
                                                 $resultadoCompetencia->cNivelLogro .
                                                 '</strong></td>'; // NL
-                                            echo '<td>' . $resultadoCompetencia->cDescripcion . '</td>'; // Conclusión descriptiva
+                                            echo '<td style="word-break: break-all; font-size: 10px;">' . $resultadoCompetencia->cDescripcion . '</td>'; // Conclusión descriptiva
                                         }
                                     } else {
                                         if ($i == 5) {
@@ -244,23 +245,23 @@
                             echo '<table class="table table-condensed table-areas-curriculares">
             <thead>
                 <tr>
-                    <th rowspan="2">Area curricular</th>
-                    <th rowspan="2">Competencia</th>
+                    <th rowspan="2">Área curricular</th>
+                    <th rowspan="2" style="width: 25%">Competencia</th>
                     <th colspan="2">PRIMER PERIODO</th>
                     <th colspan="2">SEGUNDO PERIODO</th>
                     <th colspan="2">TERCER PERIODO</th>
                     <th colspan="2">CUARTO PERIODO</th>
-                    <th rowspan="2" style="width: 10%">NL alcanzado al finalizar el periodo lectivo</th>
+                    <th rowspan="2" style="width: 9%">NL alcanzado al finalizar el periodo lectivo</th>
                 </tr>
                 <tr>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th>NL</th>
-                    <th>Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
+                    <th style="width: 3%">NL</th>
+                    <th style="width: 9%">Conclusión descriptiva</th>
                 </tr>
             </thead>
             <tobdy>';
@@ -299,7 +300,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ $matricula->cMatrConclusionDescriptiva }}</td>
+                    <td class="text-justify">{{ $matricula->cMatrConclusionDescriptiva }}</td>
                 </tr>
             </tbody>
         </table>
