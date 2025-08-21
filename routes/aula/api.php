@@ -98,10 +98,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::get('generarReporteDeLogrosAlcanzadosXYear', [ResultadoController::class, 'generarReporteDeLogrosAlcanzadosXYear']);
     });
     Route::group(['prefix' => 'anuncios'], function () {
-        Route::post('guardarAnuncios', [AnunciosController::class, 'guardarAnuncios']);
-        Route::post('listarAnuncios', [AnunciosController::class, 'listarAnuncios']);
-        Route::post('eliminarAnuncios', [AnunciosController::class, 'eliminarAnuncios']);
-        Route::post('fijarAnuncios', [AnunciosController::class, 'fijarAnuncios']);
+        Route::post('/', [AnunciosController::class, 'guardarAnuncios']);
+        Route::get('/', [AnunciosController::class, 'listarAnuncios']);
+        Route::delete('/{iAnuncioId}', [AnunciosController::class, 'eliminarAnuncios']);
+        Route::put('/{iAnuncioId}/fijar', [AnunciosController::class, 'fijarAnuncios']);
     });
 
     Route::group(['prefix' => 'foros'], function () {
