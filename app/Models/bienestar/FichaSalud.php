@@ -15,21 +15,6 @@ class FichaSalud
         return DB::select('EXEC obe.Sp_SEL_fichaSalud ' . $placeholders, $parametros);
     }
 
-    public static function insFichaSalud($request)
-    {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->bFichaDGAlergiaMedicamentos,
-            $request->cFichaDGAlergiaMedicamentos,
-            $request->bFichaDGAlergiaOtros,
-            $request->cFichaDGAlergiaOtros,
-            $request->jsonSeguros,
-            $request->jsonDolencias,
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_UPD_fichaSalud ' . $placeholders, $parametros);
-    }
-
     public static function updFichaSalud($request)
     {
         $parametros = [
