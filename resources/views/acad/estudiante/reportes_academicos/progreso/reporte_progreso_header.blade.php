@@ -1,6 +1,6 @@
 @extends('layouts.pdf')
 
-@section('title', 'RESULTADOS ERE')
+@section('title', 'Reporte académico de progreso')
 
 @section('content')
 

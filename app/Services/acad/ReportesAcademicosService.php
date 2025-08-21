@@ -14,12 +14,13 @@ class ReportesAcademicosService
     public static function generarReporteAcademicoProgreso($usuario, $iCredPerfIdEstudiante, $iYAcadId)
     {
         $pdf = App::make('snappy.pdf.wrapper');
-        $yearAcademico=YearAcademicosService::obtenerYearAcademico($iYAcadId);
+        $yearAcademico = YearAcademicosService::obtenerYearAcademico($iYAcadId);
         $persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
         $matricula = self::obtenerDetallesMatricula($iCredPerfIdEstudiante, $iYAcadId);
-        $ie = InstitucionesEducativasService::obtenerInstitucionEducativa($matricula->iIieeId); //
-        $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('matricula', 'ie'))->render();
+        $ie = InstitucionesEducativasService::obtenerInstitucionEducativa($matricula->iIieeId);
+        $tutor = DocentesCursosService::obtenerTutorSalonIe($iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);
         $headerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_header', compact('yearAcademico'))->render();
+        $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('matricula', 'ie', 'tutor'))->render();
         $footerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_footer', compact('persona'))->render();
         $pdf->loadHtml($htmlcontent)
             ->setPaper('a4', 'portrait')

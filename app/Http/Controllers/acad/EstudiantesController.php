@@ -368,4 +368,15 @@ class EstudiantesController extends Controller
             return FormatearMensajeHelper::error($ex);
         }
     }
+
+    public function existeMatriculaPorAnio($iYAcadId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $matricula = ReportesAcademicosService::obtenerDetallesMatricula($request->header('iCredEntPerfId'), $iYAcadId);
+            return FormatearMensajeHelper::ok("Si existe", ['existe' => $matricula != null]);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
 }

@@ -40,6 +40,9 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
                 //Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             });
         });
+        Route::group(['prefix' => 'matriculas'], function () {
+            Route::get('anio-academico/{iYAcadId}/existe', [EstudiantesController::class, 'existeMatriculaPorAnio']);
+        });
         Route::group(['prefix' => 'reportes-academicos'], function () {
             Route::get('progreso', [EstudiantesController::class, 'generarReporteAcademicoProgreso']);
         });

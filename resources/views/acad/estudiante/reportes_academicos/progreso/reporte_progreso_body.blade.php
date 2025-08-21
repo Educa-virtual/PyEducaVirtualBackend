@@ -4,8 +4,6 @@
 
 @extends('layouts.pdf')
 
-@section('title', 'RESULTADOS ERE')
-
 @section('content')
 
     <style>
@@ -33,6 +31,7 @@
         }
 
         #tableAreasCurriculares th,
+        .table-areas-curriculares th,
         #tableCompetenciasSinArea th,
         #tableInasistencias th,
         #tableComentarioGeneral th {
@@ -56,10 +55,12 @@
         div.cabecera img {
             display: block;
             max-height: 140px;
-            /* controla alto uniforme */
             max-width: 100%;
             margin: 0 auto;
-            /* object-fit no es 100% fia4le en wkhtmltopdf antiguo, así que no lo uses */
+        }
+
+        .page-break {
+            page-break-before: always;
         }
     </style>
 
@@ -70,7 +71,7 @@
                 <tbody>
                     <tr>
                         <td style="width: 18%; border: 0px; padding: 5px">
-                            <img src="{{public_path('images/logo_IE/logo_minedu.png')}}" alt="Logo IE">
+                            <img src="{{ public_path('images/logo_IE/Sello_Peru.png') }}" alt="Logo IE">
                         </td>
                         <td style="border: 0px">
                             <table class="table table-condensed" id="tableDatosMatricula">
@@ -79,30 +80,32 @@
                                         <th style="width: 25%;">DRE:</th>
                                         <td>DRE MOQUEGUA</td>
                                         <th style="width: 15%;">UGEL:</th>
-                                        <td>UGEL {{ $matricula->cUgelNombre }}</td>
+                                        <td>UGEL {{ mb_strtoupper($matricula->cUgelNombre) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Nivel:</th>
-                                        <td>{{ str_replace('Educación ', '', $matricula->cNivelTipoNombre) }}</td>
+                                        <td>{{ mb_strtoupper(str_replace('Educación ', '', $matricula->cNivelTipoNombre)) }}
+                                        </td>
                                         <th>Código Modular:</th>
                                         <td>{{ $matricula->cIieeCodigoModular }}</td>
                                     </tr>
                                     <tr>
                                         <th>Institución educativa:</th>
-                                        <td colspan="3">{{ strtoupper($matricula->cIieeNombre) }}</td>
+                                        <td colspan="3">{{ mb_strtoupper($matricula->cIieeNombre) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Grado:</th>
-                                        <td>{{ $matricula->cGradoNombre }}</td>
+                                        <td>{{ mb_strtoupper($matricula->cGradoNombre) }}</td>
                                         <th>Sección:</th>
-                                        <td>{{ strtoupper($matricula->cGradoAbreviacion) }} {{ $matricula->cSeccionNombre }}
+                                        <td>{{ mb_strtoupper($matricula->cGradoAbreviacion) }}
+                                            {{ $matricula->cSeccionNombre }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>Apellidos y nombres del estudiante:</th>
-                                        <td colspan="3">{{ strtoupper($matricula->cPersPaterno) }}
-                                            {{ strtoupper($matricula->cPersMaterno) }},
-                                            {{ strtoupper($matricula->cPersNombre) }}</td>
+                                        <td colspan="3">{{ mb_strtoupper($matricula->cPersPaterno) }}
+                                            {{ mb_strtoupper($matricula->cPersMaterno) }},
+                                            {{ mb_strtoupper($matricula->cPersNombre) }}</td>
                                     </tr>
                                     <tr>
                                         <th>Código del estudiante:</th>
@@ -112,7 +115,19 @@
                                     </tr>
                                     <tr>
                                         <th>Apellidos y nombres del docente o tutor:</th>
-                                        <td colspan="3"></td>
+                                        <td colspan="3">
+                                            @php
+                                                if ($tutor) {
+                                                    echo mb_strtoupper(
+                                                        $tutor->cPersPaterno .
+                                                            ' ' .
+                                                            $tutor->cPersMaterno .
+                                                            ', ' .
+                                                            $tutor->cPersNombre,
+                                                    );
+                                                }
+                                            @endphp
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -130,7 +145,7 @@
         </div>
         <br><br>
 
-        <table class="table table-condensed" id="tableAreasCurriculares">
+        <table class="table table-condensed table-areas-curriculares">
             <thead>
                 <tr>
                     <th rowspan="2">Area curricular</th>
@@ -158,8 +173,9 @@
                         $matricula->iSedeId,
                         $matricula->iNivelGradoId,
                     );
-
+                    $contador=0;
                     foreach ($cursos as $curso) {
+                        $contador++;
                         echo '<tr>';
                         echo '<td rowspan=' . $curso->iCantidadFilas . '>' . $curso->cCursoNombre . '</td>';
 
@@ -189,48 +205,85 @@
                                     $primeraFila = false;
                                 }
                                 echo '<td>' . $competencia->cCompetenciaNombre . '</td>';
-                                for ($i = 1; $i <= 4; $i++) {
-                                    $competencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
+                                for ($i = 1; $i <= 5; $i++) {
+                                    $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
                                         $matricula->iMatrId,
                                         $competencia->iCompetenciaId ?? 0,
                                         $curso->iIeCursoId,
                                         $i,
                                     );
-                                    if ($competencia) {
-                                        echo '<td>' . $competencia->cNivelLogro . '</td>'; // NL
-                                        echo '<td>' . $competencia->cDescripcion . '</td>'; // Conclusión descriptiva
+                                    if ($resultadoCompetencia) {
+                                        if ($i == 5) {
+                                            echo '<td class="text-center">' .
+                                                $resultadoCompetencia->cNivelLogro .
+                                                '</td>'; // NL
+                                        } else {
+                                            echo '<td class="text-center">' .
+                                                $resultadoCompetencia->cNivelLogro .
+                                                '</td>'; // NL
+                                            echo '<td>' . $resultadoCompetencia->cDescripcion . '</td>'; // Conclusión descriptiva
+                                        }
                                     } else {
-                                        echo '<td></td>'; // NL
-                                        echo '<td></td>'; // Conclusión descriptiva
+                                        if ($i == 5) {
+                                            echo '<td></td>'; // NL
+                                        } else {
+                                            echo '<td></td>'; // NL
+                                            echo '<td></td>'; // Conclusión descriptiva
+                                        }
                                     }
                                 }
-                                echo '<td></td>'; // NL alcanzado al finalizar el periodo lectivo
                                 echo '</tr>';
                             }
+                        }
+                        if ($contador==6) {
+                            echo '</tbody></table>';
+                            echo '<table class="table table-condensed table-areas-curriculares">
+            <thead>
+                <tr>
+                    <th rowspan="2">Area curricular</th>
+                    <th rowspan="2">Competencia</th>
+                    <th colspan="2">PRIMER PERIODO</th>
+                    <th colspan="2">SEGUNDO PERIODO</th>
+                    <th colspan="2">TERCER PERIODO</th>
+                    <th colspan="2">CUARTO PERIODO</th>
+                    <th rowspan="2" style="width: 10%">NL alcanzado al finalizar el periodo lectivo</th>
+                </tr>
+                <tr>
+                    <th>NL</th>
+                    <th>Conclusión descriptiva</th>
+                    <th>NL</th>
+                    <th>Conclusión descriptiva</th>
+                    <th>NL</th>
+                    <th>Conclusión descriptiva</th>
+                    <th>NL</th>
+                    <th>Conclusión descriptiva</th>
+                </tr>
+            </thead>
+            <tobdy>';
                         }
                     }
                 @endphp
             </tobdy>
         </table>
 
-        <br><br>
+        <!--<br><br>
 
-        <table class="table table-condensed" id="tableCompetenciasSinArea">
-            <thead>
-                <tr>
-                    <th>Competencias transversales/No asociada(s) a área(s)</th>
-                    <th style="width: 5%">NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th style="width: 5%">NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th style="width: 5%">NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th style="width: 5%">NL</th>
-                    <th>Conclusión descriptiva</th>
-                    <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
-                </tr>
-            </thead>
-        </table>
+            <table class="table table-condensed" id="tableCompetenciasSinArea">
+                <thead>
+                    <tr>
+                        <th>Competencias transversales/No asociada(s) a área(s)</th>
+                        <th style="width: 5%">NL</th>
+                        <th>Conclusión descriptiva</th>
+                        <th style="width: 5%">NL</th>
+                        <th>Conclusión descriptiva</th>
+                        <th style="width: 5%">NL</th>
+                        <th>Conclusión descriptiva</th>
+                        <th style="width: 5%">NL</th>
+                        <th>Conclusión descriptiva</th>
+                        <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
+                    </tr>
+                </thead>
+            </table>-->
 
         <br><br>
 
@@ -264,16 +317,16 @@
                 </tr>
             </thead>
         </table>
-        <br><br>
 
-        <table class="table table-condensed" id="tableSituacionFinal">
-            <tbody>
-                <tr>
-                    <th style="width: 55%">Situación al finalizar el periodo lectivo</th>
-                    <td>{{ $matricula->cEscalaCalifNombre }} - {{ $matricula->cEscalaCalifDescripcion }}</td>
-                </tr>
-            </tbody>
-        </table>
+
+        <!--<br><br><table class="table table-condensed" id="tableSituacionFinal">
+                            <tbody>
+                                <tr>
+                                    <th style="width: 55%">Situación al finalizar el periodo lectivo</th>
+                                    <td>{{ $matricula->cEscalaCalifNombre }} - {{ $matricula->cEscalaCalifDescripcion }}</td>
+                                </tr>
+                            </tbody>
+                        </table>-->
         <br><br><br>
         <table style="width: 100%; text-align: center; margin-top: 50px;">
             <tbody>
