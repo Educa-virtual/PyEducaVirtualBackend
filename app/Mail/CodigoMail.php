@@ -27,6 +27,7 @@ class CodigoMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: 'no-reply@yourdomain.com',
             subject: 'Codigo Mail',
         );
     }
@@ -37,7 +38,7 @@ class CodigoMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'name',
+            view: 'notificar',
         );
     }
 
