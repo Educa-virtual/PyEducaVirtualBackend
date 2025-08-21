@@ -2,6 +2,7 @@
 
 namespace App\Models\eval;
 
+use App\Helpers\VerifyHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +33,45 @@ class InstrumentoEvaluacion extends Model
             $data[$key]->criterios  = json_decode($criterios, true);
         }
 
+        return $data;
+    }
+    public function guardarInstrumentos($request){
+        $iDocenteId = VerifyHash::decodes($request["iDocenteId"]);
+        $idDocCursoId = $request->idDocCursoId;
+        $iCursoId = $request->iCursoId;
+        $cInstrumentoNombre = $request->cInstrumentoNombre;
+        $cInstrumentoDescripcion = $request->cInstrumentoDescripcion;
+        
+        $solicitud = [
+            $iDocenteId,
+            $idDocCursoId,
+            $iCursoId,
+            $cInstrumentoNombre,
+            $cInstrumentoDescripcion,
+        ];
+        $columnas = str_repeat('?,',count($solicitud)-1).'?';
+        $data = DB::select("EXEC [doc].[SP_INS_instrumentos_Evaluacion] ".$columnas, $solicitud);
+        return $data;
+    }
+    public function editarInstrumentos($request){
+        $iInstrumentoId = $request->iInstrumentoId;
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $idDocCursoId = $request->idDocCursoId;
+        $iCursoId = $request->iCursoId;
+        $cInstrumentoNombre = $request->cInstrumentoNombre;
+        $cInstrumentoDescripcion = $request->cInstrumentoDescripcion;
+        
+        $solicitud = [
+            $iInstrumentoId,
+            $iDocenteId,
+            $idDocCursoId,
+            $iCursoId,
+            $cInstrumentoNombre,
+            $cInstrumentoDescripcion,
+        ];
+
+        $columnas = str_repeat('?,',count($solicitud)-1).'?';
+        $data = DB::select("EXEC [doc].[SP_UPD_instrumentos_Evaluacion] ".$columnas, $solicitud);
         return $data;
     }
 }
