@@ -288,7 +288,8 @@ class EvaluacionesController extends Controller
         }
     }
 
-     public function obtenerReporteEstudiantesRetroalimentacion(Request $request){
+    public function obtenerReporteEstudiantesRetroalimentacion(Request $request)
+    {
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
             'iIeCursoId' => ['required'],
