@@ -29,7 +29,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
     });
 
     Route::group(['prefix' => 'estudiantes'], function () {
-        Route::group(['prefix' => 'calendario-academico'], function () {
+        Route::group(['prefix' => 'calendario-academico/anio/{iYAcadId}'], function () {
             Route::get('', [EstudiantesController::class, 'obtenerCalendario']);
         });
         Route::group(['prefix' => 'buzon-sugerencias'], function () {

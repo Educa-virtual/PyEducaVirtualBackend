@@ -6,9 +6,9 @@ use App\Models\acad\Matricula;
 
 class MatriculasService
 {
-    public static function obtenerDetallesMatriculaEstudiante($iCredEntPerfId)
+    public static function obtenerDetallesMatriculaEstudiante($iCredEntPerfId, $iYAcadId)
     {
-        return Matricula::selDetalleMatriculaEstudiante($iCredEntPerfId);
+        return Matricula::selDetalleMatriculaEstudiante($iCredEntPerfId, $iYAcadId);
     }
 
     public static function obtenerCursosMatricula($iMatrId)
