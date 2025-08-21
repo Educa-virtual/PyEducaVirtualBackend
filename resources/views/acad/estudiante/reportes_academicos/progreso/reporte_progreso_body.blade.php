@@ -5,7 +5,6 @@
 @extends('layouts.pdf')
 
 @section('content')
-
     <style>
         @page {
             margin-top: 4cm;
@@ -61,6 +60,9 @@
 
         .page-break {
             page-break-before: always;
+        }
+        .text-justify {
+            text-align: justify;
         }
     </style>
 
@@ -173,7 +175,8 @@
                         $matricula->iSedeId,
                         $matricula->iNivelGradoId,
                     );
-                    $contador=0;
+                    $contador = 0;
+                    $totalFilas=count($cursos);
                     foreach ($cursos as $curso) {
                         $contador++;
                         echo '<tr>';
@@ -204,7 +207,7 @@
                                 } else {
                                     $primeraFila = false;
                                 }
-                                echo '<td>' . $competencia->cCompetenciaNombre . '</td>';
+                                echo '<td class="text-justify">' . $competencia->cCompetenciaNombre . '</td>';
                                 for ($i = 1; $i <= 5; $i++) {
                                     $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
                                         $matricula->iMatrId,
@@ -214,13 +217,13 @@
                                     );
                                     if ($resultadoCompetencia) {
                                         if ($i == 5) {
-                                            echo '<td class="text-center">' .
+                                            echo '<td class="text-center"><strong>' .
                                                 $resultadoCompetencia->cNivelLogro .
-                                                '</td>'; // NL
+                                                '</strong></td>'; // NL
                                         } else {
-                                            echo '<td class="text-center">' .
+                                            echo '<td class="text-center"><strong>' .
                                                 $resultadoCompetencia->cNivelLogro .
-                                                '</td>'; // NL
+                                                '</strong></td>'; // NL
                                             echo '<td>' . $resultadoCompetencia->cDescripcion . '</td>'; // Conclusión descriptiva
                                         }
                                     } else {
@@ -235,8 +238,9 @@
                                 echo '</tr>';
                             }
                         }
-                        if ($contador==6) {
+                        if ($contador % 5 == 0 && $totalFilas>$contador) {
                             echo '</tbody></table>';
+                            echo '<div style="page-break-before: always;"></div>';
                             echo '<table class="table table-condensed table-areas-curriculares">
             <thead>
                 <tr>
@@ -268,22 +272,22 @@
 
         <!--<br><br>
 
-            <table class="table table-condensed" id="tableCompetenciasSinArea">
-                <thead>
-                    <tr>
-                        <th>Competencias transversales/No asociada(s) a área(s)</th>
-                        <th style="width: 5%">NL</th>
-                        <th>Conclusión descriptiva</th>
-                        <th style="width: 5%">NL</th>
-                        <th>Conclusión descriptiva</th>
-                        <th style="width: 5%">NL</th>
-                        <th>Conclusión descriptiva</th>
-                        <th style="width: 5%">NL</th>
-                        <th>Conclusión descriptiva</th>
-                        <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
-                    </tr>
-                </thead>
-            </table>-->
+                <table class="table table-condensed" id="tableCompetenciasSinArea">
+                    <thead>
+                        <tr>
+                            <th>Competencias transversales/No asociada(s) a área(s)</th>
+                            <th style="width: 5%">NL</th>
+                            <th>Conclusión descriptiva</th>
+                            <th style="width: 5%">NL</th>
+                            <th>Conclusión descriptiva</th>
+                            <th style="width: 5%">NL</th>
+                            <th>Conclusión descriptiva</th>
+                            <th style="width: 5%">NL</th>
+                            <th>Conclusión descriptiva</th>
+                            <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
+                        </tr>
+                    </thead>
+                </table>-->
 
         <br><br>
 
@@ -320,13 +324,13 @@
 
 
         <!--<br><br><table class="table table-condensed" id="tableSituacionFinal">
-                            <tbody>
-                                <tr>
-                                    <th style="width: 55%">Situación al finalizar el periodo lectivo</th>
-                                    <td>{{ $matricula->cEscalaCalifNombre }} - {{ $matricula->cEscalaCalifDescripcion }}</td>
-                                </tr>
-                            </tbody>
-                        </table>-->
+                                <tbody>
+                                    <tr>
+                                        <th style="width: 55%">Situación al finalizar el periodo lectivo</th>
+                                        <td>{{ $matricula->cEscalaCalifNombre }} - {{ $matricula->cEscalaCalifDescripcion }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>-->
         <br><br><br>
         <table style="width: 100%; text-align: center; margin-top: 50px;">
             <tbody>
@@ -348,5 +352,4 @@
         </table>
 
     </main>
-
 @endsection
