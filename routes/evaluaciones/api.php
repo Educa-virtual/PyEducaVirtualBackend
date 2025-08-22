@@ -133,5 +133,7 @@ Route::group(['prefix' => 'virtual'], function () {
 Route::group(['prefix' => 'evaluaciones-docente'], function () {
     Route::group(['prefix' => 'instrumentos'], function () {
         Route::post('guardar-instrumentos', [InstrumentosController::class, 'guardarInstrumentos']);
+        Route::post('editar-instrumentos', [InstrumentosController::class, 'editarInstrumentos']);
+        Route::post('eliminar-instrumentos', [InstrumentosController::class, 'eliminarInstrumentos']);
     });
 });

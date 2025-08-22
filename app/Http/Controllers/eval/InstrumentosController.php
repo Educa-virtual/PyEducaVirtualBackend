@@ -31,4 +31,15 @@ class InstrumentosController extends Controller
         }
         
     }
+    public function eliminarInstrumentos(Request $request){
+
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            $data = InstrumentoEvaluacion::eliminarInstrumentos($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+        
+    }
 }
