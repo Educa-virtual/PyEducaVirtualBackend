@@ -44,6 +44,12 @@
             padding: 4px !important;
         }
 
+        td.conclusion-descriptiva {
+            /*word-break: break-word;
+            hyphens: auto;*/
+            font-size: 10px;
+        }
+
         div.cabecera span {
             display: inline-block;
         }
@@ -225,7 +231,7 @@
                                             echo '<td class="text-center"><strong>' .
                                                 $resultadoCompetencia->cNivelLogro .
                                                 '</strong></td>'; // NL
-                                            echo '<td style="word-break: break-all; font-size: 10px;">' . $resultadoCompetencia->cDescripcion . '</td>'; // Conclusión descriptiva
+                                            echo '<td lang="es" class="conclusion-descriptiva">' . $resultadoCompetencia->cDescripcion . '</td>';
                                         }
                                     } else {
                                         if ($i == 5) {
