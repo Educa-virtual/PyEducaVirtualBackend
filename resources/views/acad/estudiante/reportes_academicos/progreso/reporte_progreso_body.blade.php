@@ -245,7 +245,7 @@
                                 echo '</tr>';
                             }
                         }
-                        if ($contador % 5 == 0 && $totalFilas>$contador) {
+                        if ($contador % 500 == 0 && $totalFilas>$contador) {
                             echo '</tbody></table>';
                             echo '<div style="page-break-before: always;"></div>';
                             echo '<table class="table table-condensed table-areas-curriculares">
