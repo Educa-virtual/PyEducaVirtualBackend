@@ -4,39 +4,63 @@ namespace App\Http\Controllers\enc;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\enc\InsertarCategoriaRequest;
-use App\Http\Requests\enc\RegistrarCategoriaRequest;
-use App\Services\enc\CategoriasService;
-use App\Services\enc\EncuestasService;
+use App\Models\enc\Encuesta;
 use Exception;
 use Illuminate\Http\Request;
 
 class EncuestaController extends Controller
 {
-    public function obtenerEncuestasPorCategoria($iCategoriaEncuestaId) {
+    public function listarEncuestas(Request $request) {
         try {
-            $data = EncuestasService::obtenerEncuestasPorCategoria($iCategoriaEncuestaId);
+            $data = Encuesta::selEncuestas($request);
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function eliminarEncuesta($iConfEncId) {
+    public function crearEncuesta(Request $request) {
         try {
-            EncuestasService::eliminarEncuesta($iConfEncId);
+            $data = Encuesta::selEncuestaParametros($request);
+            return FormatearMensajeHelper::ok('Configuración registrada correctamente');
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function verEncuesta(Request $request) {
+        try {
+            $data = Encuesta::obtenerEstudiantesParaFiltroEncuesta($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarEncuesta(Request $request) {
+        try {
+            $data = Encuesta::insEncuesta($request);
+            return FormatearMensajeHelper::ok('Configuración registrada correctamente');
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function borrarEncuesta(Request $request) {
+        try {
+            Encuesta::delEncuesta($request);
             return FormatearMensajeHelper::ok('Encuesta eliminada correctamente');
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function actualizarAccesosEncuesta($iConfEncId, Request $request) {
+    public function actualizarEncuesta(Request $request) {
         try {
-            EncuestasService::actualizarAccesosEncuesta($iConfEncId, $request);
+            Encuesta::updEncuesta($request);
             return FormatearMensajeHelper::ok('Se han actualizado los accesos de la encuesta');
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 }

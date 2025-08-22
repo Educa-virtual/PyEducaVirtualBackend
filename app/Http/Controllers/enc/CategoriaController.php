@@ -7,59 +7,59 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\enc\ActualizarCategoriaRequest;
 use App\Http\Requests\enc\InsertarCategoriaRequest;
 use App\Http\Requests\enc\RegistrarCategoriaRequest;
-use App\Services\enc\CategoriasService;
+use App\Models\enc\Categoria;
 use Exception;
 use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
 {
-    public function obtenerCategorias()
+    public function obtenerCategorias(Request $request)
     {
         try {
-            $data = CategoriasService::obtenerCategorias();
+            $data = Categoria::selCategorias($request);
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function obtenerDetallesCategoria($iCategoriaEncuestaId)
+    public function obtenerDetallesCategoria(Request $request)
     {
         try {
-            $data = CategoriasService::obtenerDetallesCategoria($iCategoriaEncuestaId);
+            $data = Categoria::selCategoria($request);
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
     public function registrarCategoria(RegistrarCategoriaRequest $request)
     {
         try {
-            $id=CategoriasService::registrarCategoria($request);
+            $id=Categoria::insCategoria($request);
             return FormatearMensajeHelper::ok('Categoría registrada correctamente', ['id' => $id]);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
     public function actualizarCategoria(ActualizarCategoriaRequest $request)
     {
         try {
-            CategoriasService::actualizarCategoria($request);
+            Categoria::updCategoria($request);
             return FormatearMensajeHelper::ok('Categoría actualizada correctamente');
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
     public function eliminarCategoria(Request $request)
     {
         try {
-            CategoriasService::eliminarCategoria($request);
+            Categoria::delCategoria($request);
             return FormatearMensajeHelper::ok('Categoría eliminada correctamente');
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 }

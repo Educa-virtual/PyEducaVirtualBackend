@@ -2,32 +2,71 @@
 
 namespace App\Models\enc;
 
+use App\Helpers\VerifyHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Categoria extends Model
 {
 
-    public static function insCategoria($params)
+    public static function selCategorias($request)
     {
-        $resultado= DB::selectOne("EXEC [enc].[Sp_INS_categorias] @cNombre=?, @cDescripcion=?, @bPuedeCrearEspDremo=?,
-        @bPuedeCrearEspUgel=?, @bPuedeCrearDirector=?, @cImagenUrl=?", $params);
-        return $resultado->id;
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC enc.Sp_SEL_categorias $placeholders", $parametros);
     }
 
-    public static function updCategoria($params)
+    public static function selCategoria($request)
     {
-        return DB::select("EXEC [enc].[Sp_UPD_categoria] @iCategoriaEncuestaId=?, @cNombre=?, @cDescripcion=?,
-        @bPuedeCrearEspDremo=?, @bPuedeCrearAccesoEspUgel=?, @bPuedeCrearDirector=?, @cImagenUrl=?", $params);
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iCatEncId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC enc.Sp_SEL_categoria $placeholders", $parametros);
     }
 
-    public static function delCategoria($params)
+    public static function insCategoria($request)
     {
-        return DB::select("EXEC [enc].[Sp_DEL_categoria] @iCategoriaEncuestaId=?", $params);
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->cCatEncNombre,
+            $request->cCatEncDescripcion,
+            $request->cCatEncImagenNombre,
+            $request->bCatEncPermisoDremo,
+            $request->bCatEncPermisoUgel,
+            $request->bCatEncPermisoDirector,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::insert("EXEC enc.Sp_INS_categoria $placeholders", $parametros);
     }
 
-    public static function selCategorias()
+    public static function updCategoria($request)
     {
-        return DB::select("EXEC [enc].[Sp_SEL_categoriasTotalEncuestas]");
+        $params = [
+            $request->header('iCredEntPerfId'),
+            $request->iCatEncId,
+            $request->cCatEncNombre,
+            $request->cCatEncDescripcion,
+            $request->cCatEncImagenNombre,
+            $request->bCatEncPermisoDremo,
+            $request->bCatEncPermisoUgel,
+            $request->bCatEncPermisoDirector,
+        ];
+        $placeholders = implode(',', array_fill(0, count($params), '?'));
+        return DB::update("EXEC enc.Sp_UPD_categoria $placeholders", $params);
+    }
+
+    public static function delCategoria($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iCatEncId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::delete("EXEC enc.Sp_DEL_categoria $placeholders", $parametros);
     }
 }
