@@ -11,6 +11,7 @@ use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
+use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\VacantesController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Middleware\RefreshToken;
+use App\Models\acad\Matricula;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
@@ -41,7 +43,11 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
             });
         });
         Route::group(['prefix' => 'matriculas'], function () {
-            Route::get('anio-academico/{iYAcadId}/existe', [EstudiantesController::class, 'existeMatriculaPorAnio']);
+            Route::group(['prefix' => 'anio-academico/{iYAcadId}'], function () {
+                Route::get('existe', [EstudiantesController::class, 'existeMatriculaPorAnio']);
+                Route::get('cursos', [MatriculaController::class, 'obtenerCursosPorMatricula']);
+                Route::get('cursos/{iIeCursoId}/resultados', [CursosController::class, 'obtenerResultadoParaGrafico']);
+            });
         });
         Route::group(['prefix' => 'reportes-academicos'], function () {
             Route::get('progreso', [EstudiantesController::class, 'generarReporteAcademicoProgreso']);

@@ -7,6 +7,7 @@ use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\acad\MatriculasService;
 use App\Services\acad\ReportesAcademicosService;
 use App\Services\FormatearExcelMatriculasService;
 use App\Services\LeerExcelService;
@@ -373,7 +374,7 @@ class EstudiantesController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $matricula = ReportesAcademicosService::obtenerDetallesMatricula($request->header('iCredEntPerfId'), $iYAcadId);
+            $matricula =  MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
             return FormatearMensajeHelper::ok("Si existe", ['existe' => $matricula != null]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
