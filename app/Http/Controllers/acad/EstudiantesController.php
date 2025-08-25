@@ -362,8 +362,8 @@ class EstudiantesController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $pdf = ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $request->iYAcadId);
-            return $pdf->download('Reporte-academico-' . date('Ymdhis') . '.pdf');
+            $outputPdf=ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $request->iYAcadId);
+            return response()->download($outputPdf)->deleteFileAfterSend(true);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
