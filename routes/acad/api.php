@@ -18,6 +18,8 @@ use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MantenimientoIeController;
+
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
 
@@ -98,5 +100,12 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('/{iContenidoSemId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxiContenidoSemId']);
         Route::get('/curso/{idDocCursoId}/year/{iYAcadId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxidDocCursoIdxiYAcadId']);
         Route::get('/{iContenidoSemId}/actividades', [ContenidoSemanasController::class, 'obtenerActividadesxiContenidoSemId']);
+    });
+    //Routes Mantenimiento
+    Route::group(['prefix' => 'mantenimiento-ie'], function () {
+        Route::get('/', [MantenimientoIeController::class, 'obtenerInstiucionEducativa']);
+        Route::post('/', [MantenimientoIeController::class, 'crearInstitucionEducativa']);
+        Route::put('/{id}', [MantenimientoIeController::class, 'actualizarInstitucionEducativa'])->where('id', '[0-9]+');
+        Route::delete('/{id}', [MantenimientoIeController::class, 'eliminarInstitucionEducativa'])->where('id', '[0-9]+');      
     });
 });
