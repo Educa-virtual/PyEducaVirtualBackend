@@ -13,29 +13,15 @@ use Illuminate\Support\Facades\Log;
 
 class FichaDiscapacidadController extends Controller
 {
-    private $perfiles_permitidos = [
+    private $registran = [
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
-        Perfil::DOCENTE,
-        Perfil::DIRECTOR_IE,
     ];
-
-    public function guardarFichaDiscapacidad(Request $request)
-    {
-        try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
-            $data = FichaDiscapacidad::insFichaDiscapacidad($request);
-            return FormatearMensajeHelper::ok('Se guardó la información', $data);
-        }
-        catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
 
     public function actualizarFichaDiscapacidad(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', [$this->perfiles_permitidos)];
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDiscapacidad::updFichaDiscapacidad($request);
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }
@@ -47,7 +33,7 @@ class FichaDiscapacidadController extends Controller
     public function verFichaDiscapacidad(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDiscapacidad::selfichaDiscapacidad($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
