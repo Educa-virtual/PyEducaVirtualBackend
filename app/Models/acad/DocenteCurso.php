@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 class DocenteCurso
 {
     public static function selTutorSalonIe($iYAcadId, $iSedeId, $iNivelGradoId, $iSeccionId) {
-        file_put_contents('D:\params.txt', $iYAcadId.', '.$iSedeId.', '.$iNivelGradoId.', '.$iSeccionId);
         return DB::selectOne('SELECT cPersPaterno, cPersMaterno, cPersNombre
 FROM acad.docente_cursos AS doccur
 INNER JOIN acad.ies_cursos AS iec ON iec.iIeCursoId=doccur.iIeCursoId

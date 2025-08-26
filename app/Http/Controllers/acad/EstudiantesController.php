@@ -361,13 +361,13 @@ class EstudiantesController extends Controller
 
     public function generarReporteAcademicoProgreso(Request $request)
     {
-        try {
+        //try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $outputPdf=ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $request->iYAcadId);
             return response()->download($outputPdf)->deleteFileAfterSend(true);
-        } catch (Exception $ex) {
+        /*} catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
-        }
+        }*/
     }
 
     public function existeMatriculaPorAnio($iYAcadId, Request $request)

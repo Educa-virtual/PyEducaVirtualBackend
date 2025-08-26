@@ -1,6 +1,8 @@
 @php
     use App\Services\acad\ReportesAcademicosService;
+    use App\Services\asi\AsistenciaGeneralService;
     use App\Helpers\ImagenABase64;
+    use Carbon\Carbon;
 @endphp
 
 @extends('layouts.pdf')
@@ -34,7 +36,6 @@
 
             @bottom-right {
                 content: element(pieDerecho);
-
             }
         }
 
@@ -300,22 +301,22 @@
 
     <!--<br><br>
 
-                                                        <table class="table table-condensed" id="tableCompetenciasSinArea">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Competencias transversales/No asociada(s) a área(s)</th>
-                                                                    <th style="width: 5%">NL</th>
-                                                                    <th>Conclusión descriptiva</th>
-                                                                    <th style="width: 5%">NL</th>
-                                                                    <th>Conclusión descriptiva</th>
-                                                                    <th style="width: 5%">NL</th>
-                                                                    <th>Conclusión descriptiva</th>
-                                                                    <th style="width: 5%">NL</th>
-                                                                    <th>Conclusión descriptiva</th>
-                                                                    <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
-                                                                </tr>
-                                                            </thead>
-                                                        </table>-->
+                                                                        <table class="table table-condensed" id="tableCompetenciasSinArea">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Competencias transversales/No asociada(s) a área(s)</th>
+                                                                                    <th style="width: 5%">NL</th>
+                                                                                    <th>Conclusión descriptiva</th>
+                                                                                    <th style="width: 5%">NL</th>
+                                                                                    <th>Conclusión descriptiva</th>
+                                                                                    <th style="width: 5%">NL</th>
+                                                                                    <th>Conclusión descriptiva</th>
+                                                                                    <th style="width: 5%">NL</th>
+                                                                                    <th>Conclusión descriptiva</th>
+                                                                                    <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                        </table>-->
 
     <br><br>
 
@@ -348,17 +349,70 @@
                 <th class="text-center">Injustificadas</th>
             </tr>
         </thead>
+        <tbody>
+            @php
+                $contador = 1;
+                foreach ($fechasInicioFin as $fecha) {
+                    $fechaInicio = new Carbon($fecha->dtPeriodoEvalAperInicio);
+                    $fechaFin = new Carbon($fecha->dtPeriodoEvalAperFin);
+
+                    echo '<tr>';
+                    echo '<td class="text-center">' . $fecha->cPeriodoEvalLetra . $contador . '</td>';
+                    echo '<td class="text-center">';
+                    $faltasJustificadas = AsistenciaGeneralService::obtenerCantidadRegistrosPorTipo(
+                        $matricula->iEstudianteId,
+                        $matricula->iYAcadId,
+                        $matricula->iSedeId,
+                        4,
+                        $fechaInicio->format('Ymd'),
+                        $fechaFin->format('Ymd'),
+                    );
+                    echo $faltasJustificadas->cantidad==0 ? '-' : $faltasJustificadas->cantidad;
+                    echo '</td>';
+
+                    echo '<td class="text-center">';
+                    $faltasInjustificadas = AsistenciaGeneralService::obtenerCantidadRegistrosPorTipo(
+                        $matricula->iEstudianteId,
+                        $matricula->iYAcadId,
+                        $matricula->iSedeId,
+                        3,
+                        $fechaInicio->format('Ymd'),
+                        $fechaFin->format('Ymd'),
+                    );
+                    echo $faltasInjustificadas->cantidad==0 ? '-' : $faltasInjustificadas->cantidad;
+                    echo '</td>';
+
+                    echo '<td class="text-center">';
+                    $tardanzasJustificadas = AsistenciaGeneralService::obtenerCantidadRegistrosPorTipo(
+                        $matricula->iEstudianteId,
+                        $matricula->iYAcadId,
+                        $matricula->iSedeId,
+                        9,
+                        $fechaInicio->format('Ymd'),
+                        $fechaFin->format('Ymd'),
+                    );
+                    echo $tardanzasJustificadas->cantidad==0 ? '-' : $tardanzasJustificadas->cantidad;
+                    echo '</td>';
+
+                    echo '<td class="text-center">';
+                    $tardanzasInjustificadas = AsistenciaGeneralService::obtenerCantidadRegistrosPorTipo(
+                        $matricula->iEstudianteId,
+                        $matricula->iYAcadId,
+                        $matricula->iSedeId,
+                        2,
+                        $fechaInicio->format('Ymd'),
+                        $fechaFin->format('Ymd'),
+                    );
+                    echo $tardanzasInjustificadas->cantidad==0 ? '-' : $tardanzasInjustificadas->cantidad;
+                    echo '</td>';
+                    echo '</tr>';
+                    $contador++;
+                }
+            @endphp
+
+        </tbody>
     </table>
 
-
-    <!--<br><br><table class="table table-condensed" id="tableSituacionFinal">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <th style="width: 55%">Situación al finalizar el periodo lectivo</th>
-                                                                                <td>{{ $matricula->cEscalaCalifNombre }} - {{ $matricula->cEscalaCalifDescripcion }}</td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>-->
     <br><br><br>
     <table style="width: 100%; text-align: center; margin-top: 50px;">
         <tbody>

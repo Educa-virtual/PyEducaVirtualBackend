@@ -7,8 +7,6 @@ use App\Models\acad\Matricula;
 use App\Models\eval\ResultadoCompetencia;
 use App\Repositories\grl\PersonasRepository;
 use Exception;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 use stdClass;
 
 class ReportesAcademicosService
@@ -20,8 +18,8 @@ class ReportesAcademicosService
         $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
         $ie = InstitucionesEducativasService::obtenerInstitucionEducativa($matricula->iIieeId);
         $tutor = DocentesCursosService::obtenerTutorSalonIe($iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);
-
-        $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('persona', 'matricula', 'ie', 'tutor', 'yearAcademico'))->render();
+        $fechasInicioFin=CalendariosAcademicosService::obtenerCalendarioFechasInicioFinSede($iYAcadId, $matricula->iSedeId);
+        $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('persona', 'matricula', 'ie', 'tutor', 'yearAcademico', 'fechasInicioFin'))->render();
         //$footerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_footer', compact('persona'))->render();
         //$fullHtml = $htmlcontent . $footerHtml;
         $archivoHtml = $usuario->iPersId . '_reporte_progreso.html';
