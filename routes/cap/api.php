@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\CodigoMail;
 use Illuminate\Support\Facades\Route;
 
-Route::group('enviar-correo', function(){
+Route::get('enviar-correo', function () {
   Mail::to('recipient@example.com')->send(new CodigoMail([
     'subject' => 'Test Email',
     'body' => 'This is a test email sent from the API.'
