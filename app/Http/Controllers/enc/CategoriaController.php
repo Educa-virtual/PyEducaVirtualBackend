@@ -13,31 +13,31 @@ use Illuminate\Http\Request;
 
 class CategoriaController extends Controller
 {
-    public function obtenerCategorias(Request $request)
+    public function listarCategorias(Request $request)
     {
         try {
             $data = Categoria::selCategorias($request);
-            return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function obtenerDetallesCategoria(Request $request)
+    public function verCategoria(Request $request)
     {
         try {
             $data = Categoria::selCategoria($request);
-            return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function registrarCategoria(RegistrarCategoriaRequest $request)
+    public function guardarCategoria(RegistrarCategoriaRequest $request)
     {
         try {
-            $id=Categoria::insCategoria($request);
-            return FormatearMensajeHelper::ok('Categoría registrada correctamente', ['id' => $id]);
+            $data = Categoria::insCategoria($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
@@ -46,18 +46,18 @@ class CategoriaController extends Controller
     public function actualizarCategoria(ActualizarCategoriaRequest $request)
     {
         try {
-            Categoria::updCategoria($request);
-            return FormatearMensajeHelper::ok('Categoría actualizada correctamente');
+            $data = Categoria::updCategoria($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function eliminarCategoria(Request $request)
+    public function borrarCategoria(Request $request)
     {
         try {
-            Categoria::delCategoria($request);
-            return FormatearMensajeHelper::ok('Categoría eliminada correctamente');
+            $data = Categoria::delCategoria($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }

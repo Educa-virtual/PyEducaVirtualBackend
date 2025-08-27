@@ -12,24 +12,17 @@ use App\Http\Controllers\enc\UgelController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
-    Route::post('listarTiposAcceso', [TipoAccesoController::class, 'obtenerTiposAcceso']);
-    Route::post('listarTiemposDuracion', [TiempoDuracionController::class, 'obtenerTiemposDuracion']);
-    
-    Route::post('listarCategorias', [CategoriaController::class, 'obtenerCategorias']);
-    Route::post('guardarCategoria', [CategoriaController::class, 'registrarCategoria']);
-    Route::post('verCategoria', [CategoriaController::class, 'obtenerDetallesCategoria']);
+    Route::post('listarCategorias', [CategoriaController::class, 'listarCategorias']);
+    Route::post('guardarCategoria', [CategoriaController::class, 'guardarCategoria']);
+    Route::post('verCategoria', [CategoriaController::class, 'verCategoria']);
     Route::post('actualizarCategoria', [CategoriaController::class, 'actualizarCategoria']);
-    Route::post('borrarCategoria', [CategoriaController::class, 'eliminarCategoria']);
-    
+    Route::post('borrarCategoria', [CategoriaController::class, 'borrarCategoria']);
+
+    Route::post('obtenerPoblacionObjetivo', [EncuestaController::class, 'obtenerPoblacionObjetivo']);
     Route::post('listarEncuestas', [EncuestaController::class, 'listarEncuestas']);
     Route::post('crearEncuesta', [EncuestaController::class, 'crearEncuesta']);
     Route::post('verEncuesta', [EncuestaController::class, 'verEncuesta']);
     Route::post('guardarEncuesta', [EncuestaController::class, 'guardarEncuesta']);
     Route::post('actualizarEncuesta', [EncuestaController::class, 'actualizarEncuesta']);
     Route::post('borrarEncuesta', [EncuestaController::class, 'borrarEncuesta']);
-
-    Route::post('filtrarEstudiantes', [EstudianteController::class, 'obtenerEstudiantesParaFiltroEncuesta']);
-    Route::post('filtrarDocentes', [DocenteController::class, 'obtenerDocentesParaFiltroEncuesta']);
-    Route::post('filtrarDirectores', [DirectorController::class, 'obtenerDirectoresParaFiltroEncuesta']);
-    Route::post('filtrarUgeles', [UgelController::class, 'obtenerUgelesParaFiltroEncuesta']);
 });

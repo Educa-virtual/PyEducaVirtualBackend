@@ -23,7 +23,8 @@ class Categoria extends Model
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iCatEncId,
+            $request->iYAcadId,
+            $request->iCateId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_SEL_categoria $placeholders", $parametros);
@@ -33,40 +34,40 @@ class Categoria extends Model
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->cCatEncNombre,
-            $request->cCatEncDescripcion,
-            $request->cCatEncImagenNombre,
-            $request->bCatEncPermisoDremo,
-            $request->bCatEncPermisoUgel,
-            $request->bCatEncPermisoDirector,
+            $request->cCateNombre,
+            $request->cCateDescripcion,
+            $request->cCateImagenNombre,
+            $request->bCatePermisoDremo,
+            $request->bCatePermisoUgel,
+            $request->bCatePermisoDirector,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert("EXEC enc.Sp_INS_categoria $placeholders", $parametros);
+        return DB::selectOne("EXEC enc.Sp_INS_categoria $placeholders", $parametros);
     }
 
     public static function updCategoria($request)
     {
         $params = [
             $request->header('iCredEntPerfId'),
-            $request->iCatEncId,
-            $request->cCatEncNombre,
-            $request->cCatEncDescripcion,
-            $request->cCatEncImagenNombre,
-            $request->bCatEncPermisoDremo,
-            $request->bCatEncPermisoUgel,
-            $request->bCatEncPermisoDirector,
+            $request->iCateId,
+            $request->cCateNombre,
+            $request->cCateDescripcion,
+            $request->cCateImagenNombre,
+            $request->bCatePermisoDremo,
+            $request->bCatePermisoUgel,
+            $request->bCatePermisoDirector,
         ];
         $placeholders = implode(',', array_fill(0, count($params), '?'));
-        return DB::update("EXEC enc.Sp_UPD_categoria $placeholders", $params);
+        return DB::selectOne("EXEC enc.Sp_UPD_categoria $placeholders", $params);
     }
 
     public static function delCategoria($request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iCatEncId,
+            $request->iCateId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::delete("EXEC enc.Sp_DEL_categoria $placeholders", $parametros);
+        return DB::selectOne("EXEC enc.Sp_DEL_categoria $placeholders", $parametros);
     }
 }
