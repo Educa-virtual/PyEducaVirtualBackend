@@ -12,17 +12,22 @@ use Illuminate\Support\Facades\Gate;
 
 class EncuestaBienestarPreguntaController extends Controller
 {
-    private $perfiles_permitidos = [
+    private array $administran = [
         Perfil::ESPECIALISTA_DREMO,
         Perfil::ESPECIALISTA_UGEL,
         Perfil::DIRECTOR_IE,
         Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
+    ];
+    private array $visualizan = [
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
     ];
 
     public function listarPreguntas(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [array_merge($this->administran, $this->visualizan)]);
             $data = EncuestaBienestarPregunta::selPreguntas($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
@@ -33,7 +38,7 @@ class EncuestaBienestarPreguntaController extends Controller
     public function verPregunta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::selPregunta($request);
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
@@ -44,7 +49,7 @@ class EncuestaBienestarPreguntaController extends Controller
     public function guardarPregunta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::insPregunta($request);
             return FormatearMensajeHelper::ok('se guardó la información', $data);
         } catch (Exception $e) {
@@ -55,7 +60,7 @@ class EncuestaBienestarPreguntaController extends Controller
     public function actualizarPregunta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::updPregunta($request);
             return FormatearMensajeHelper::ok('se actualizó la información', $data);
         } catch (Exception $e) {
@@ -66,7 +71,7 @@ class EncuestaBienestarPreguntaController extends Controller
     public function borrarPregunta(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::delPregunta($request);
             return FormatearMensajeHelper::ok('se eliminó la pregunta', $data);
         } catch (Exception $e) {

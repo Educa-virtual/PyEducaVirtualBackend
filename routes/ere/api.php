@@ -33,10 +33,13 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::get('areas', [AreasController::class, 'obtenerAreasPorEvaluacion']);
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
         Route::group(['prefix' => 'areas/{areaId}'], function () {
+            //Route::get('descargas/estado', [AreasController::class, 'obtenerEstadoDescarga']);
+            Route::patch('descargas/estado', [AreasController::class, 'actualizarEstadoDescarga']);
             Route::get('preguntas-reutilizables', [PreguntasController::class, 'obtenerPreguntasReutilizables']);
             Route::post('preguntas-reutilizables', [PreguntasController::class, 'asignarPreguntaAEvaluacion']);
             Route::post('archivo-preguntas', [AreasController::class, 'guardarArchivoPdf']);
             Route::get('archivo-preguntas', [AreasController::class, 'descargarArchivoPreguntas']);
+            Route::delete('archivo-preguntas', [AreasController::class, 'eliminarArchivoPreguntasPdf']);
             Route::get('matriz-competencias', [AreasController::class, 'generarMatrizCompetencias']);
             Route::get('cartilla-respuestas', [AreasController::class, 'descargarCartillaRespuestas']);
             Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
@@ -93,6 +96,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante', [ResultadosController::class, 'guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante']);
         Route::post('terminarExamenxiEstudianteId', [ResultadosController::class, 'terminarExamenxiEstudianteId']);
         Route::post('guardarRespuestas', [ResultadosController::class, 'guardarRespuestas']);
+       
     });
 
     Route::group(['prefix' => 'reportes'], function () {
@@ -213,6 +217,8 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
         Route::post('importarOffLine', [ImportarResultadosController::class, 'importarOffLine']);
     });
+    //route periodo/Evaluaciones
+    Route::get('evaluaciones/periodos-evaluacion', [App\Http\Controllers\eval\EvaluacionesController::class, 'obtenerPeriodosEvaluacion']);
 
     /*Route::group(['prefix' => 'nivel-logros'], function () {
         Route::get('', [NivelLogrosController::class, 'obtenerNivelLogros']);

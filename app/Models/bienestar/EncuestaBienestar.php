@@ -3,28 +3,41 @@
 namespace App\Models\bienestar;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EncuestaBienestar
 {
     public static function selEncuestas($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuestas $placeholders", $parametros);
+        try {
+            return DB::select("EXEC obe.Sp_SEL_encuestas $placeholders", $parametros);
+        } catch(\Exception $e) {
+            // Manejar error en caso de que no se devuelva ningún resultado
+            if (str_contains($e->getMessage(), 'contains no fields')) {
+                return [];
+            }
+            throw $e;
+        }
     }
 
     public static function selEncuestaParametros($request)
     {
-        return DB::select('EXEC obe.Sp_SEL_encuestaParametros');
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC obe.Sp_SEL_encuestaParametros $placeholders", $parametros);
     }
 
     public static function insEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->cEncuNombre,
             $request->cEncuDescripcion,
             $request->dEncuDesde,
@@ -41,7 +54,7 @@ class EncuestaBienestar
     public static function updEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->cEncuNombre,
             $request->cEncuDescripcion,
@@ -51,6 +64,7 @@ class EncuestaBienestar
             $request->jsonPoblacion,
             $request->jsonPermisos,
             $request->iYAcadId,
+            $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC obe.Sp_UPD_encuesta $placeholders", $parametros);
@@ -59,7 +73,7 @@ class EncuestaBienestar
     public static function updEncuestaEstado($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iEstado,
         ];
@@ -70,17 +84,17 @@ class EncuestaBienestar
     public static function selEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuesta $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_SEL_encuesta $placeholders", $parametros);
     }
 
     public static function delEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -90,12 +104,12 @@ class EncuestaBienestar
     public static function selPoblacionObjetivo($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
             $request->jsonPoblacion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC obe.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
+        return DB::selectOne("EXEC obe.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
     }
 
 

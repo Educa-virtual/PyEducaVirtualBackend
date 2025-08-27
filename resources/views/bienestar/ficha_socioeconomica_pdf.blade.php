@@ -149,11 +149,11 @@
     <div class="container">
         <table class="header-info">
             <tr>
-                <th>CODIGO DEL ESTUDIANTE</th>
+                <th>CÓDIGO DEL ESTUDIANTE:</th>
                 <td>{{ $estudiante['codigo_alumno'] ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <th>NÚMERO DE CELULAR</th>
+                <th>NÚMERO DE CELULAR:</th>
                 <td>{{ $estudiante['num_telefono'] ?? 'N/A' }}</td>
             </tr>
         </table>
@@ -211,7 +211,7 @@
 
         <!-- Sección : Dirección -->
         <div class="section">
-            <h3>DIRECCION DEL ESTUDIANTE</h3>
+            <h3>DIRECCIÓN DEL ESTUDIANTE</h3>
             <table>
                 <tr>
                     <th colspan="3">TIPO DE VÍA</th>
@@ -256,13 +256,13 @@
                     <th>¿VIVE SU PADRE?</th>
                     <th>¿VIVE SU MADRE?</th>
                     <th>¿TIENE HIJOS?</th>
-                    <th>¿CUANTOS HIJOS?</th>
+                    <th>¿CUÁNTOS HIJOS?</th>
                 </tr>
                 <tr>
-                    <td>{{ $direccion_domiciliaria['vive_padre'] ?? 'N/A' }}</td>
-                    <td>{{ $direccion_domiciliaria['vive_madre'] ?? 'N/A' }}</td>
-                    <td>{{ $direccion_domiciliaria['tiene_hijos'] ?? 'N/A' }}</td>
-                    <td>{{ $direccion_domiciliaria['num_hijos'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['vive_padre'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['vive_madre'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['tiene_hijos'] ?? 'N/A' }}</td>
+                    <td>{{ $estudiante['num_hijos'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -275,10 +275,10 @@
                         <th width="10%">TIPO DE FAMILIAR</th>
                         <th width="10%">DOCUMENTO</th>
                         <th width="35%">APELLIDOS Y NOMBRES</th>
-                        <th width="10%">GENERO</th>
+                        <th width="10%">GÉNERO</th>
                         <th width="5%">EDAD</th>
                         <th width="10%">VIVE CON EST.</th>
-                        <th width="10%">OCUPACION</th>
+                        <th width="10%">OCUPACIÓN</th>
                         <th width="10%">GRADO DE INST.</th>
                     </tr>
                     @foreach ($familiares as $familiar)
@@ -312,7 +312,7 @@
                     <td width="50%">{{ $aspecto_economico['rango_ingresos'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>ACTIVIDAD ECONOMICA DE SU FAMILIA</th>
+                    <th>ACTIVIDAD ECONÓMICA DE SU FAMILIA</th>
                     <td>{{ $aspecto_economico['actividad_ingreso'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
@@ -320,7 +320,7 @@
                     <td>{{ $aspecto_economico['estudiante_trabaja'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>APOYO ECONOMICO DE ESTUDIANTE</th>
+                    <th>APOYO ECONÓMICO DE ESTUDIANTE</th>
                     <td>{{ $aspecto_economico['tipo_apoyo_economico'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
@@ -332,10 +332,10 @@
                     <td>{{ $aspecto_economico['horas_trabajo'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>ACTIVIDAD ECONOMICA DEL APODERADO</th>
+                    <th>ACTIVIDAD ECONÓMICA DEL APODERADO</th>
                     <td>{{ $aspecto_economico['apoderado_depende_de'] ?? 'N/A' }}</td>
                 </tr>
-                    <th>¿DE QUIEN DEPENDE EL APODERADO?</th>
+                    <th>¿DE QUIÉN DEPENDE EL APODERADO?</th>
                     <td>{{ $aspecto_economico['depende_economicamente_de'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
@@ -476,7 +476,7 @@
         <div class="section">
             <h2>VI. DISCAPACIDAD</h2>
             
-            @if( !$programas_dispacidad['tiene_discapacidad'] )
+            @if( !$programas_discapacidad['tiene_discapacidad'] )
                 <h3>NO TIENE DISCAPACIDAD</h3>
             @else
                 <h3>AFILIACIÓN A PROGRAMAS</h3>
@@ -501,7 +501,7 @@
                     <th width="20%">DISCAPACIDAD</th>
                     <th width="80%">OBSERVACIONES</th>
                 </tr>
-                @foreach($pers_discapacidad as $index => $discapacidad)
+                @foreach($discapacidades as $index => $discapacidad)
                     <tr>
                         <td>{{ $discapacidad['nomb_discapacidad'] ?? 'N/A' }}</td>
                         <td>{{ $discapacidad['observaciones'] ?? 'N/A' }}</td>
@@ -540,7 +540,7 @@
                         <th width="20%">DOLENCIA</th>
                         <th width="80%">OBSERVACIONES</th>
                     </tr>
-                    @foreach($pers_salud as $index => $item)
+                    @foreach($dolencias_salud as $index => $item)
                     <tr>
                         <td>{{ $item['nomb_dolencia'] ?? 'N/A' }}</td>
                         <td>{{ $item['observaciones'] ?? 'N/A' }}</td>
@@ -608,11 +608,11 @@
                     <td width="80%">{{ $recreacion['pasatiempo'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>ACTIVIDADES ARTISTICAS</th>
+                    <th>ACTIVIDADES ARTÍSTICAS</th>
                     <td>{{ $recreacion['act_artistica'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>¿PERTENECE A CLUB ARTISTICO?</th>
+                    <th>¿PERTENECE A CLUB ARTÍSTICO?</th>
                     <td>{{ $recreacion['centro_artistico'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
@@ -630,11 +630,11 @@
                     <td width="50%">{{ $recreacion['consulta_psicologica'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>¿A QUIEN ACUDE CUANDO TIENE PROBLEMAS EMOCIONALES?</th>
+                    <th>¿A QUIÉN ACUDE CUANDO TIENE PROBLEMAS EMOCIONALES?</th>
                     <td>{{ $recreacion['problemas_emocionales'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>¿COMO ES LA RELACIÓN CON SU FAMILIA?</th>
+                    <th>¿CÓMO ES LA RELACIÓN CON SU FAMILIA?</th>
                     <td>{{ $recreacion['relacion_familiar'] ?? 'N/A' }}</td>
                 </tr>
             </table>

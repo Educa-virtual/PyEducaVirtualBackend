@@ -19,6 +19,10 @@ class InstitucionEducativaController extends Controller
         }
     }
 
+    public function obtenerIePorUgel($iUgelId) {
+
+    }
+
     public function obtenerSedesIe($iIieeId) {
         try {
             $sedes=DB::select('SELECT iSedeId, iIieeId, cSedeNombre, iEstado FROM acad.sedes WHERE iIieeId=?',[$iIieeId]);
