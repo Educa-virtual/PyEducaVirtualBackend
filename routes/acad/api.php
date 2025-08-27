@@ -4,6 +4,7 @@
 use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
+use App\Http\Controllers\acad\CalendarioAcademicosController;
 use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\acad\PeriodoEvaluacionesController;
 use App\Http\Controllers\acad\SilabosController;
+use App\Http\Controllers\acad\TurnosController;
 use App\Http\Controllers\api\acad\DistribucionBloqueController;
 use App\Http\Controllers\api\acad\FeriadoImportanteController;
 use App\Http\Controllers\api\acad\TipoFechaController;
@@ -122,8 +124,9 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'periodo-evaluaciones'], function () {
         Route::get('getPeriodoEvaluaciones/{iYearId?}', [PeriodoEvaluacionesController::class, 'getPeriodoEvaluaciones']);
         Route::post('processConfigCalendario', [PeriodoEvaluacionesController::class, 'processConfigCalendario']);
+        Route::get('/', [PeriodoEvaluacionesController::class, 'obtenerPeriodoEvaluaciones']);
     });
-    
+
     Route::prefix('detalle-matriculas')->group(function () {
         Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
     });
@@ -142,7 +145,13 @@ Route::group(['prefix' => 'acad'], function () {
     });
 
     Route::prefix('bandejaEntrante')->group(function () {
-        Route::post('bandeja-estudiante',[BandejaCotnroller::class,'bandejaEstudiante']);
+        Route::post('bandeja-estudiante', [BandejaCotnroller::class, 'bandejaEstudiante']);
     });
-
+    Route::group(['prefix' => 'calendario-academicos'], function () {
+        Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioAcademicosController::class, 'obtenerCalendarioAcademicosxiSedeIdxiYAcadId']);
+        Route::post('/', [CalendarioAcademicosController::class, 'guardarCalendarioAcademicos']);
+    });
+    Route::group(['prefix' => 'turnos'], function () {
+        Route::get('/', [TurnosController::class, 'obtenerTurnos']);
+    });
 });

@@ -10,35 +10,9 @@ use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 
-class PeriodoEvaluacionesController extends Controller
+class TurnosController extends Controller
 {
-    const schema = 'acad';
-
-    public function getPeriodoEvaluaciones(Request $request)
-    {
-        $query = DB::select("EXEC grl.SP_SEL_DesdeTablaOVista @nombreEsquema = :esquema, @nombreObjeto = :tabla, @campos = :campos, @condicionWhere = :where", [
-            'esquema' => self::schema,
-            'tabla' => 'periodo_evaluaciones',
-            'campos' => '*',
-            'where' => '1=1',
-
-        ]);
-
-        return ResponseHandler::success($query, 'Periodos de evaluación obtenidos correctamente.');
-    }
-
-    public function processConfigCalendario(Request $request)
-    {
-        $query = DB::select("EXEC acad.Sp_INS_generarDistribucionSemanasXiYearIdXiPerioEvalId @iPerioEvalId = :iPerioEvalId, @iYAcadId = :iYAcadId", [
-            'iPerioEvalId' => $request->input('iPerioEvalId'),
-            'iYAcadId' => $request->input('iYAcadId'),
-        ]);
-
-
-        return ResponseHandler::success($query, 'Calendario procesado correctamente.');
-    }
-
-    public function obtenerPeriodoEvaluaciones(Request $request)
+    public function obtenerTurnos(Request $request)
     {
         try {
             $fieldsToDecode = [
@@ -52,7 +26,7 @@ class PeriodoEvaluacionesController extends Controller
             ];
 
             $data = DB::select(
-                'exec acad.SP_SEL_periodoEvaluaciones
+                'exec acad.SP_SEL_turnos
                     @_iCredId=?',
                 $parametros
             );
