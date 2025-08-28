@@ -68,10 +68,20 @@ class Evaluacion extends Model
         return !empty($result) ? $result[0] : null;
     }
 
-     public static function selCantidadMaxPreguntas($iEvaluacionId, $iCursosNivelGradId)
+    public static function selCantidadMaxPreguntas($iEvaluacionId, $iCursosNivelGradId)
     {
         $cantidad = DB::selectOne("SELECT TOP 1 iExamenCantidadPreguntas AS cantidad FROM ere.examen_cursos WHERE iEvaluacionId=?
 	        AND iCursoNivelGradId=?", [$iEvaluacionId, $iCursosNivelGradId]);
         return $cantidad->cantidad;
+    }
+
+    public static function selEvaluacionesPorEstudiante($iEstudianteId)
+    {
+        return DB::select("EXEC ere.Sp_SEL_EvaluacionesPorEstudiante @iEstudianteId=?", [$iEstudianteId]);
+    }
+
+    public static function selResultadoEvaluacionEstudiante($iEvaluacionId, $iCursoId, $iEstudianteId)
+    {
+        return DB::selectOne("EXEC [ere].[Sp_SEL_resultadoEvaluacionEstudiante] @iEstudianteId=?, @iEvaluacionId=?, @iCursoId=?", [$iEstudianteId, $iEvaluacionId, $iCursoId]);
     }
 }
