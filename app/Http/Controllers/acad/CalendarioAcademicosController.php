@@ -75,6 +75,7 @@ class CalendarioAcademicosController extends Controller
 
     public function guardarCalendarioAcademicos(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'iYAcadId' => ['required'],
             'iSedeId' => ['required'],
@@ -111,6 +112,7 @@ class CalendarioAcademicosController extends Controller
                 $request->dtFaseFinRegular            ??  NULL,
                 $request->dtFaseInicioRecuperacion    ??  NULL,
                 $request->dtFaseFinRecuperacion       ??  NULL,
+                $request->iTurnoId                    ??  NULL,
                 $request->dtAperTurnoInicio           ??  NULL,
                 $request->dtAperTurnoFin              ??  NULL,
                 $request->jsonHorarios                ??  NULL,
@@ -131,12 +133,15 @@ class CalendarioAcademicosController extends Controller
                     @_dtFaseFinRegular=?, 
                     @_dtFaseInicioRecuperacion=?, 
                     @_dtFaseFinRecuperacion=?, 
+                    @_iTurnoId=?, 
                     @_dtAperTurnoInicio=?, 
                     @_dtAperTurnoFin=?,  
                     @_jsonHorarios=?,  
                     @_iCredId=?',
                 $parametros
             );
+
+
             if ($data[0]->iCalAcadId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],

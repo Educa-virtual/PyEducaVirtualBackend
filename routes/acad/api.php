@@ -133,6 +133,7 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'calendario-periodos-evaluaciones'], function () {
         Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioPeriodosEvaluacionesController::class, 'obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular']);
+        Route::post('/', [CalendarioPeriodosEvaluacionesController::class, 'guardarCalendarioPeriodosEvalaciones']);
     });
     Route::group(['prefix' => 'contenido-semanas'], function () {
         Route::post('', [ContenidoSemanasController::class, 'guardarContenidoSemanas']);

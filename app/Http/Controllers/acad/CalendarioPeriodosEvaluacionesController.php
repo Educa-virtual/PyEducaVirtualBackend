@@ -73,4 +73,68 @@ class CalendarioPeriodosEvaluacionesController extends Controller
             return new JsonResponse($response, $estado);
         }
     }
+
+    public function guardarCalendarioPeriodosEvalaciones(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'iYAcadId' => ['required'],
+            'iSedeId' => ['required'],
+        ], [
+            'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
+            'iSedeId.required' => 'No se encontró el identificador iSedeId',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iYAcadId',
+                'iSedeId',
+                'iPeriodoEvalId',
+                'iCredId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iYAcadId                    ??  NULL,
+                $request->iSedeId                     ??  NULL,
+                $request->iPeriodoEvalId              ??  NULL,
+                $request->jsonPeriodos                ??  NULL,
+
+                $request->iCredId                     ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec acad.SP_INS_calendarioPeriodosEvaluaciones 
+                    @_iYAcadId=?, 
+                    @_iSedeId=?, 
+                    @_iPeriodoEvalId=?, 
+                    @_jsonPeriodos=?, 
+                    @_iCredId=?',
+                $parametros
+            );
+
+            if ($data[0]->iPeriodoEvalAperId > 0) {
+                return new JsonResponse(
+                    ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
+                    Response::HTTP_OK
+                );
+            } else {
+                return new JsonResponse(
+                    ['validated' => false, 'message' => 'No se ha podido guardar', 'data' => null],
+                    Response::HTTP_OK
+                );
+            }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
