@@ -18,6 +18,7 @@ use App\Http\Controllers\evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
 use App\Http\Controllers\eval\EvaluacionPromediosController;
+use App\Http\Controllers\eval\InstrumentosController;
 use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
@@ -127,4 +128,12 @@ Route::group(['prefix' => 'virtual'], function () {
     Route::post('insertData', [ApiController::class, 'insertData']);
     Route::post('updateData', [ApiController::class, 'updateData']);
     Route::post('deleteData', [ApiController::class, 'deleteData']);
+});
+
+Route::group(['prefix' => 'evaluaciones-docente'], function () {
+    Route::group(['prefix' => 'instrumentos'], function () {
+        Route::post('guardar-instrumentos', [InstrumentosController::class, 'guardarInstrumentos']);
+        Route::post('editar-instrumentos', [InstrumentosController::class, 'editarInstrumentos']);
+        Route::post('eliminar-instrumentos', [InstrumentosController::class, 'eliminarInstrumentos']);
+    });
 });
