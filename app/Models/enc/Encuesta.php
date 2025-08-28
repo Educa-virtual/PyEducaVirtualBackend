@@ -28,8 +28,8 @@ class Encuesta extends Model
     public static function selEncuesta($request) {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iYAcadId,
             $request->iEncuId,
+            $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_SEL_encuesta $placeholders", $parametros);
@@ -38,14 +38,16 @@ class Encuesta extends Model
     public static function insEncuesta($request) {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iYAcadId,
             $request->cEncuNombre,
-            $request->iCateId,
             $request->cEncuSubtitulo,
+            $request->cEncuDescripcion,
             $request->dEncuInicio,
             $request->dEncuFin,
+            $request->iCateId,
             $request->iTiempoDurId,
-            $request->cEncuDescripcion,
+            $request->jsonPoblacion,
+            $request->jsonAccesos,
+            $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_INS_encuesta $placeholders", $parametros);
@@ -86,5 +88,16 @@ class Encuesta extends Model
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
+    }
+
+    public static function updEncuestaEstado($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+            $request->iEncuId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC enc.Sp_UPD_encuestaEstado $placeholders", $parametros);
     }
 }
