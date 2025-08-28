@@ -19,7 +19,7 @@ use App\Http\Controllers\ere\UgelesController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MantenimientoIeController;
-
+use App\Http\Controllers\ApiController;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
 
@@ -106,6 +106,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::get('/', [MantenimientoIeController::class, 'obtenerInstiucionEducativa']);
         Route::post('/', [MantenimientoIeController::class, 'crearInstitucionEducativa']);
         Route::put('/{id}', [MantenimientoIeController::class, 'actualizarInstitucionEducativa'])->where('id', '[0-9]+');
-        Route::delete('/{id}', [MantenimientoIeController::class, 'eliminarInstitucionEducativa'])->where('id', '[0-9]+');      
+        Route::delete('/{id}', [MantenimientoIeController::class, 'eliminarInstitucionEducativa'])->where('id', '[0-9]+');    
+        Route::post('getData', [ApiController::class, 'getData']);  
     });
 });

@@ -20,7 +20,7 @@ class MantenimientoIeService
      */
     public function crear(array $parametros): array
     {
-        return DB::select('EXEC acad.SP_MantenimientoIE_Crear ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+        return DB::select('EXEC acad.SP_MantenimientoIE_Crear ?,?,?,?,?,?,?,?,?,?,?', $parametros);
     }
 
     /**

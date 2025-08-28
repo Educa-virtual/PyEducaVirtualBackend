@@ -72,7 +72,7 @@ class MantenimientoIeController extends Controller
             $request->iNivelTipoId,
             $request->iUgelId,
             $request->iSesionId,
-            $request->iSedeId
+            //$request->iSedeId
         ];
 
         try {
