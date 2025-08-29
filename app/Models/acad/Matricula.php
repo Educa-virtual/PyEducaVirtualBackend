@@ -120,7 +120,6 @@ class Matricula
     }
 
     public static function selDetalleMatriculaEstudiante($iCredEntPerfId, $iYAcadId)
-    public static function selDetalleMatriculaEstudiante($iCredEntPerfId, $iYAcadId)
     {
         return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iCredEntPerfId=?, @iYAcadId=?", [$iCredEntPerfId, $iYAcadId]);
     }
