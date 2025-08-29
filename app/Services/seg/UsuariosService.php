@@ -4,6 +4,7 @@ namespace App\Services\seg;
 
 use App\Helpers\VerifyHash;
 use App\Http\Requests\seg\CambiarContrasenaRequest;
+use App\Models\grl\Persona;
 use App\Models\seg\Usuario;
 use Carbon\Carbon;
 use Exception;
@@ -44,18 +45,45 @@ class UsuariosService
 
     public static function registrarUsuario($request, $iCredId)
     {
-        // Validar los datos de entrada
         $request->validate([
             'data' => 'required|array',
-            'data.cPersSexo' => 'required',
             'data.cPersNombre' => 'required'
         ]);
         $item = $request->data;
         $iPersId = null;
         $mensaje = '';
+        $iTipoPersId = ((int)$item['iTipoIdentId'] == 2) ? 2 : 1;
 
-        if (empty($item["iPersId"])) {
-            $iTipoPersId = ((int)$item['iTipoIdentId'] == 2) ? 2 : 1;
+        $persona = Persona::selPersonaPorDocumento($item['cPersDocumento']);
+        if ($persona) {
+            //Actualizar persona
+            $parametros = [
+                $persona->iPersId,
+                $item['cPersDocumento'],
+                $item['cPersPaterno'],
+                isset($item['cPersMaterno']) ? $item['cPersMaterno'] : '',
+                $item['cPersNombre'],
+                isset($item['cPersSexo']) ? $item['cPersSexo']: "M",
+                isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
+                isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
+                NULL,
+                $item['cPersRazonSocialNombre'] ?? '',
+                '',
+                '',
+                $item['cPersDomicilio'],
+                isset($iCredId) ? $iCredId : null,
+                null,
+                isset($item['iNacionId']) ? $item['iNacionId'] : null,
+                isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
+                isset($item['iDptoId']) ? (trim($item['iDptoId']) ?: null) : null,
+                isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
+                isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
+                isset($iTipoPersId) ? $iTipoPersId : null,
+                $item['iTipoIdentId']
+            ];
+            Usuario::updPersonas($parametros);
+            $iPersId = $persona->iPersId;
+        } else {
             $parametros = [
                 isset($iTipoPersId) ? $iTipoPersId : null,
                 $item['iTipoIdentId'],
@@ -63,14 +91,14 @@ class UsuariosService
                 $item['cPersPaterno'],
                 isset($item['cPersMaterno']) ? $item['cPersMaterno'] : null,
                 $item['cPersNombre'],
-                $item['cPersSexo'],
-                isset($item['cPersCorreo']) ? $item['cPersCorreo'] : null,
-                isset($item['cPersCelular']) ? $item['cPersCelular'] : null,
-                isset($item['cPersFotografia']) ? (trim($item['cPersFotografia']) ?: null) : null,
-                isset($item['cPersTelefono']) ? $item['cPersTelefono'] : null,
-                isset($item['cPersDireccion']) ? $item['cPersDireccion'] : null,
-                isset($item['cPersReferencia']) ? $item['cPersReferencia'] : null,
-                isset($item['cPersDomicilio']) ? (trim($item['cPersDomicilio']) ?: null) : null,
+                isset($item['cPersSexo']) ? $item['cPersSexo']: "M",
+                isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
+                isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
+                NULL,
+                $item['cPersRazonSocialNombre'] ?? '',
+                '',
+                '',
+                $item['cPersDomicilio'],
                 isset($iCredId) ? $iCredId : null,
                 isset($item['iNacionId']) ? $item['iNacionId'] : null,
                 isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
@@ -78,25 +106,26 @@ class UsuariosService
                 isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
                 isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
             ];
-
             $data = Usuario::insPersonas($parametros);
             $iPersId = !empty($data) ? $data[0]->iPersId : null;
+        }
+        Usuario::insCredenciales($iPersId, $iCredId);
+        $mensaje = 'Se ha registrado el usuario';
 
+        $persona = Usuario::selUsuarioPorIdPersona($iPersId);
+        return [
+            'data' => $persona,
+            'mensaje' => $mensaje
+        ];
+        /*if (empty($item["iPersId"])) {
             if ($iPersId) {
-                Usuario::insCredenciales($iPersId, $iCredId);
-                $mensaje = 'Se ha registrado el usuario';
             } else {
                 throw new Exception('Error al registrar el personal');
             }
         } else {
             $iPersId = $item["iPersId"];
             $mensaje = 'El usuario ya se encuentra registrado';
-        }
-        $persona = Usuario::selUsuarioPorIdPersona($iPersId);
-        return [
-            'data' => $persona,
-            'mensaje' => $mensaje
-        ];
+        }*/
     }
 
     public static function cambiarEstadoUsuario($parametros)
@@ -143,7 +172,8 @@ class UsuariosService
         Usuario::updReseteoClaveCredencialesXiCredId($parametros);
     }
 
-    public static function actualizarContrasenaUsuario($usuario, CambiarContrasenaRequest $request) {
+    public static function actualizarContrasenaUsuario($usuario, CambiarContrasenaRequest $request)
+    {
         $parametros = [
             $usuario->iCredId,
             $usuario->iPersId,

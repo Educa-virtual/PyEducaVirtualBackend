@@ -10,7 +10,7 @@ class EncuestaBienestar
     public static function selEncuestas($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -28,7 +28,7 @@ class EncuestaBienestar
     public static function selEncuestaParametros($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC obe.Sp_SEL_encuestaParametros $placeholders", $parametros);
@@ -37,7 +37,7 @@ class EncuestaBienestar
     public static function insEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->cEncuNombre,
             $request->cEncuDescripcion,
             $request->dEncuDesde,
@@ -54,7 +54,7 @@ class EncuestaBienestar
     public static function updEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->cEncuNombre,
             $request->cEncuDescripcion,
@@ -73,7 +73,7 @@ class EncuestaBienestar
     public static function updEncuestaEstado($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iEstado,
         ];
@@ -84,7 +84,7 @@ class EncuestaBienestar
     public static function selEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -94,7 +94,7 @@ class EncuestaBienestar
     public static function delEncuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -104,7 +104,7 @@ class EncuestaBienestar
     public static function selPoblacionObjetivo($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iYAcadId,
             $request->jsonPoblacion,
         ];

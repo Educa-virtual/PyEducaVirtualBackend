@@ -4,7 +4,9 @@ namespace App\Http\Controllers\acad;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Models\acad\CompetenciaCurso;
 use App\Models\acad\Matricula;
+use App\Services\acad\MatriculasService;
 use App\Services\ParseSqlErrorService;
 use Carbon\Carbon;
 use Exception;
@@ -28,7 +30,7 @@ class MatriculaController extends Controller
     /**
      * Busca grados, secciones y turnos configurados en el año para el colegio
      * @param Request $request con los parametros
-     * @return JsonResponse { {is_validated, status_message, data}, status_code } 
+     * @return JsonResponse { {is_validated, status_message, data}, status_code }
      */
     public function searchGradoSeccionTurnoConf(Request $request)
     {
@@ -110,8 +112,7 @@ class MatriculaController extends Controller
         try {
             $data = Matricula::selMatricula($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -126,6 +127,17 @@ class MatriculaController extends Controller
         try {
             $data = Matricula::delMatriculaPorId($request);
             return FormatearMensajeHelper::ok('Se eliminó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function obtenerCursosPorMatricula($iYAcadId, Request $request)
+    {
+        try {
+            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
+            $cursos = CompetenciaCurso::selCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId);
+            return FormatearMensajeHelper::ok('Se eliminó la información', $cursos);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
