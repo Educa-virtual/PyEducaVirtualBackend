@@ -30,7 +30,7 @@ class MantenimientoIeController extends Controller
             $request->iUgelId,
             $request->termino_busqueda,
             $request->pagina ?? 1,
-            $request->registros_por_pagina ?? 20,
+            $request->registros_por_pagina ?? 10000,
             $request->sedes ?? null,
             0
         ];
