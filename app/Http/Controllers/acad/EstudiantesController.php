@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\acad;
 
-use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Enums\Perfil;
-use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\acad\MatriculasService;
 use App\Services\acad\ReportesAcademicosService;
 use App\Services\acad\FechasImportantesService;
 use App\Services\acad\MatriculasService;
@@ -26,7 +23,6 @@ use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 use Illuminate\Support\Facades\Gate;
@@ -250,8 +246,6 @@ class EstudiantesController extends Controller
      */
     public function index(Request $request)
     {
-    public function index(Request $request)
-    {
         $parametros = [
             $request->iEstudianteId,
             $request->iPersId,
@@ -283,8 +277,6 @@ class EstudiantesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function show(Request $request)
-    {
     public function show(Request $request)
     {
         $parametros = [
@@ -358,7 +350,7 @@ class EstudiantesController extends Controller
             $datos_hoja['codigo_modular'],
         ];
 
-        if (count($datos_hoja['estudiantes']) === 0) {
+
         if (count($datos_hoja['estudiantes']) === 0) {
             return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
         }
