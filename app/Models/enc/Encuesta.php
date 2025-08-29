@@ -44,7 +44,7 @@ class Encuesta extends Model
             $request->dEncuInicio,
             $request->dEncuFin,
             $request->iCateId,
-            $request->iTiempoDurId,
+            $request->iTiemDurId,
             $request->jsonPoblacion,
             $request->jsonAccesos,
             $request->iYAcadId,
@@ -58,13 +58,15 @@ class Encuesta extends Model
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->cEncuNombre,
-            $request->iYAcadId,
-            $request->iCateId,
             $request->cEncuSubtitulo,
+            $request->cEncuDescripcion,
             $request->dEncuInicio,
             $request->dEncuFin,
-            $request->iTiempoDurId,
-            $request->cEncuDescripcion,
+            $request->iCateId,
+            $request->iTiemDurId,
+            $request->jsonPoblacion,
+            $request->jsonAccesos,
+            $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_UPD_encuesta $placeholders", $parametros);
