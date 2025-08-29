@@ -9,6 +9,7 @@ use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
+use App\Http\Controllers\acad\FechasImportantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\acad\MatriculaController;
@@ -23,13 +24,16 @@ use App\Models\acad\Matricula;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::class]], function () {
-
+    Route::get('fechas-importantes/tipos', [FechasImportantesController::class, 'obtenerTiposFechas']);
     Route::group(['prefix' => 'instituciones-educativas'], function () {
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
         Route::get('{iIieeId}/sedes', [InstitucionEducativaController::class, 'obtenerSedesIe']);
     });
 
     Route::group(['prefix' => 'estudiantes'], function () {
+        Route::group(['prefix' => 'calendario-academico/anio/{iYAcadId}'], function () {
+            Route::get('', [EstudiantesController::class, 'obtenerCalendario']);
+        });
         Route::group(['prefix' => 'buzon-sugerencias'], function () {
             Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerencias']);

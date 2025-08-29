@@ -123,4 +123,8 @@ class Matricula
     {
         return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iCredEntPerfId=?, @iYAcadId=?", [$iCredEntPerfId, $iYAcadId]);
     }
+
+    public static function selCursosMatricula($iMatrId) {
+        return DB::select("EXEC [acad].[SP_SEL_cursosMatricula] @iMatrId=?", [$iMatrId]);
+    }
 }
