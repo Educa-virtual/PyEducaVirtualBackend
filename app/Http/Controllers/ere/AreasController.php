@@ -15,6 +15,7 @@ use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\grl\PersonasRepository;
 use App\Repositories\grl\YearsRepository;
 use App\Repositories\PreguntasRepository;
+use App\Services\acad\EstudiantesService;
 use App\Services\ere\AreasService;
 use App\Services\FechaHoraService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -243,6 +244,19 @@ class AreasController extends Controller
             Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ADMINISTRADOR_DREMO]]);
             $resultados = AreasService::obtenerAreasPorEvaluacion($evaluacionId, Auth::user()->iPersId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $resultados);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerAreasPorEvaluacionEstudiante($evaluacionId)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $usuario = Auth::user();
+            $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
+            $data = AreasService::obtenerAreasPorEvaluacionEstudiante($evaluacionId, $estudiante->iEstudianteId);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

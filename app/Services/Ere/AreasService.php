@@ -3,6 +3,7 @@
 namespace App\Services\ere;
 
 use App\Helpers\VerifyHash;
+use App\Models\acad\Area;
 use App\Models\ere\Evaluacion;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\acad\DocentesRepository;
@@ -24,6 +25,10 @@ class AreasService
     {
         return file_exists(public_path("ere/evaluaciones/$iEvaluacionid/areas/$iCursosNivelGradId/examen.pdf"));
     }*/
+
+    public static function obtenerAreasPorEvaluacionEstudiante($iEvaluacionId, $iEstudianteId) {
+        return Area::selAreasPorEvaluacionEstudiante($iEvaluacionId, $iEstudianteId);
+    }
 
     public static function tieneArchivoErePdfSubido($iEvaluacionId, $iCursosNivelGradId)
     {
@@ -70,7 +75,7 @@ class AreasService
         }
         $resultados = AreasRepository::obtenerAreasPorEvaluacion($evaluacionIdDescifrado, $iPersId, request()->header('icredentperfid'));
 
-        if ($resultados==null || count($resultados) == 0) {
+        if ($resultados == null || count($resultados) == 0) {
             throw new Exception('No hay áreas disponibles.');
         }
 

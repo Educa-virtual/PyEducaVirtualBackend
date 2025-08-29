@@ -12,7 +12,10 @@ use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\VerifyHash;
 use App\Models\ere\Evaluacion;
+use App\Services\acad\EstudiantesService;
+use App\Services\ere\EvaluacionesService;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class EvaluacionController extends Controller
 {
@@ -41,10 +44,6 @@ class EvaluacionController extends Controller
             return FormatearMensajeHelper::error($ex);
         }
     }
-
-
-
-
 
     private function decodeValue($value)
     {
@@ -288,6 +287,31 @@ class EvaluacionController extends Controller
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 500
             );
+        }
+    }
+
+    public function obtenerEvaluacionesPorEstudiante()
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $usuario = Auth::user();
+            $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
+            $data = EvaluacionesService::obtenerEvaluacionesPorEstudiante($estudiante->iEstudianteId);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerResultadoEvaluacionEstudiante($evaluacionId, $iCursoId) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $usuario = Auth::user();
+            $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
+            $data = EvaluacionesService::obtenerResultadoEvaluacionEstudiante($evaluacionId, $iCursoId, $estudiante->iEstudianteId);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }
