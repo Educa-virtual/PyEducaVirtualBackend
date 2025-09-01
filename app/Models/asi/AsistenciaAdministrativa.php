@@ -8,14 +8,61 @@ use Illuminate\Support\Facades\DB;
 
 class AsistenciaAdministrativa extends Model
 {   
-    public static function buscarAlumnos(Request $request){
+    public static function guardarAsistenciaEstudiante(Request $request){
         $datos = [
-            $request->iGradoId,
+            $request->iEstudianteId,
+            $request->dtAsistencia,
+            $request->iTipoAsiId,
             $request->iSeccionId,
-            $request->iSedeId,          
+            $request->iSedeId,
+            $request->iYAcadId,
+            $request->iNivelGradoId,
+            $request->idAsistencia ?? NULL,
+            $request->iMatrId ?? NULL,
+        ];
+        $enviados = str_repeat('?,',count($datos)-1).'?';
+        $data = DB::select("EXEC asi.Sp_INS_asistencia_general_estudiante ".$enviados,$datos);
+        return $data;
+    }
+    public static function guardarAsistenciaGeneral(Request $request){
+        $datos = [
+            $request->asistencia,
+            $request->dtAsistencia,
+            $request->iSedeId,
             $request->iYAcadId,
         ];
-        $data = DB::select("EXEC [asi].[SP_SEL_buscarAlumnos] ?,?,?,?",$datos);
+        $enviados = str_repeat('?,',count($datos)-1).'?';
+        $data = DB::select("EXEC asi.Sp_INS_asistencia_general ".$enviados,$datos);
+        return $data;
+    }
+    public static function buscarAlumnos(Request $request){
+        $datos = [
+            $request->opcion,
+            $request->iGradoId ?? NULL,
+            $request->iSeccionId ?? NULL,
+            $request->iSedeId,          
+            $request->iYAcadId,
+            $request->cEstCodigo ?? NULL,
+            $request->cPersDocumento ?? NULL,
+            $request->dtAsistencia,
+        ];
+        $enviados = str_repeat('?,',count($datos)-1).'?';
+        $data = DB::select("EXEC [asi].[SP_SEL_buscarAlumnos] ".$enviados,$datos);
+        return $data;
+    }
+    public static function buscarAsisnteciaGeneral(Request $request){
+        $datos = [
+            $request->opcion,
+            $request->iGradoId ?? NULL,
+            $request->iSeccionId ?? NULL,
+            $request->iSedeId,
+            $request->iYAcadId,
+            $request->mes,
+            $request->cPersDocumento ?? NULL,
+            $request->cEstCodigo ?? NULL,
+        ];
+        $enviados = str_repeat('?,',count($datos)-1).'?';
+        $data = DB::select("EXEC [asi].[Sp_SEL_asistencia_general] ".$enviados,$datos);
         return $data;
     }
     public static function buscarHorarioInstitucion(Request $request){
@@ -34,9 +81,6 @@ class AsistenciaAdministrativa extends Model
             $request->iConfHorarioId,
             $request->tConfHorarioEntTur,
             $request->tConfHorarioSalTur,
-            // $request->grupoPersonal,
-            // $request->dtFechaIncio,
-            // $request->dtFechaFin,
         ];
         $enviados = str_repeat('?,',count($datos)-1).'?';
         $data = DB::select("EXEC [asi].[Sp_INS_grupos] ".$enviados, $datos);

@@ -29,10 +29,37 @@ class AsistenciaController extends Controller
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
+    public function guardarAsistenciaEstudiante(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarAsistenciaEstudiante($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function guardarAsistenciaGeneral(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarAsistenciaGeneral($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
     public function buscarAlumnos(Request $request){
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AsistenciaAdministrativa::buscarAlumnos($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function buscarAsisnteciaGeneral(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::buscarAsisnteciaGeneral($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
