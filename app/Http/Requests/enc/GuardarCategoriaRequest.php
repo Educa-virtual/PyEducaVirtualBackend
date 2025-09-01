@@ -5,12 +5,11 @@ namespace App\Http\Requests\enc;
 use App\Http\Requests\GeneralFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ActualizarCategoriaRequest extends GeneralFormRequest
+class RegistrarCategoriaRequest extends GeneralFormRequest
 {
     public function rules(): array
     {
         return [
-            'iCateId' => 'required|integer',
             'cCateNombre' => 'required|string|max:150',
             'cCateDescripcion' => 'nullable|string|max:500',
             'cCateImagenNombre' => 'nullable|string|max:150',
@@ -23,7 +22,6 @@ class ActualizarCategoriaRequest extends GeneralFormRequest
     public function attributes(): array
     {
         return [
-            'iCateId' => 'ID de categoría',
             'cCateNombre' => 'Nombre',
             'cCateDescripcion' => 'Descripción',
             'cCateImagenNombre' => 'Imagen',
