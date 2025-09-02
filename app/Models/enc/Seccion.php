@@ -41,7 +41,6 @@ class Seccion extends Model
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iSeccionId,
-            $request->iEncuId,
             $request->iSeccionOrden,
             $request->cSeccionTitulo,
             $request->cSeccionDescripcion,

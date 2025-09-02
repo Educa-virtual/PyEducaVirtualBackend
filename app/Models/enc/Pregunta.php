@@ -31,7 +31,7 @@ class Pregunta extends Model
             $request->header('iCredEntPerfId'),
             $request->iSeccionId,
             $request->iTipoPregId,
-            $request->cPregOrden,
+            $request->iPregOrden,
             $request->cPregContenido,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -44,7 +44,7 @@ class Pregunta extends Model
             $request->iPregId,
             $request->iSeccionId,
             $request->iTipoPregId,
-            $request->cPregOrden,
+            $request->iPregOrden,
             $request->cPregContenido,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
