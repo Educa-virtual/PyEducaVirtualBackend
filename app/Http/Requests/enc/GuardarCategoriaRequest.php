@@ -5,7 +5,7 @@ namespace App\Http\Requests\enc;
 use App\Http\Requests\GeneralFormRequest;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegistrarCategoriaRequest extends GeneralFormRequest
+class GuardarCategoriaRequest extends GeneralFormRequest
 {
     public function rules(): array
     {

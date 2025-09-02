@@ -6,7 +6,7 @@ use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\enc\ActualizarCategoriaRequest;
-use App\Http\Requests\enc\RegistrarCategoriaRequest;
+use App\Http\Requests\enc\GuardarCategoriaRequest;
 use App\Models\enc\Categoria;
 use Exception;
 use Illuminate\Http\Request;
@@ -66,10 +66,10 @@ class CategoriaController extends Controller
         }
     }
 
-    public function guardarCategoria(RegistrarCategoriaRequest $request)
+    public function guardarCategoria(GuardarCategoriaRequest $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
 
             // Subir archivo
             if( $request->hasFile('archivo') ) {
@@ -90,7 +90,7 @@ class CategoriaController extends Controller
     public function actualizarCategoria(ActualizarCategoriaRequest $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
 
             // Subir archivo
             if( $request->hasFile('archivo') ) {
@@ -111,7 +111,7 @@ class CategoriaController extends Controller
     public function borrarCategoria(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
             $data = Categoria::delCategoria($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
