@@ -145,10 +145,6 @@ class InstructoresController extends Controller
                 $request->merge(['iPersId' => $persona[0]->iPersId]);
                 $request->merge(['dPersNacimiento' => null]);
                 $request->merge(['cPersFotografia' => null]);
-                $request->merge(['cPersDomicilio' => $request->cPersDireccion]);
-                $datosPersonales = new PersonasController();
-                $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
-                $request->merge(['iPersId' => $persona[0]->iPersId]);
             } else {
                 return response()->json([
                     'validated' => false,
@@ -156,6 +152,9 @@ class InstructoresController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
+        $request->merge(['cPersDomicilio' => $request->cPersDireccion]);
+        $datosPersonales = new PersonasController();
+        $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
 
         try {
             $fieldsToDecode = [
@@ -257,7 +256,7 @@ class InstructoresController extends Controller
     public function actualizarInstructores(Request $request, $iInstId)
     {
         $request->merge(['iInstId' => $iInstId]);
-         
+
         $validator = Validator::make($request->all(), [
             'cOpcion' => ['required'],
             'iInstId' => ['required'],
@@ -296,7 +295,7 @@ class InstructoresController extends Controller
                 $request->cPersDireccion    ??  NULL,
                 $request->iCredId           ??  NULL
             ];
-           
+
             $data = DB::select(
                 'exec cap.SP_UPD_instructores
                     @_cOpcion=?,    
@@ -307,7 +306,7 @@ class InstructoresController extends Controller
                     @_iCredId=?',
                 $parametros
             );
-         
+
             if ($data[0]->iInstId > 0) {
                 $message = 'Se ha actualizado exitosamente';
                 return new JsonResponse(

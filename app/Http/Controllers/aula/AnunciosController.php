@@ -16,23 +16,23 @@ class AnunciosController extends Controller
     {
         try {
             $fieldsToDecode = [
-                'iCursosNivelGradId',
+                'iCapacitacionId',
                 'idDocCursoId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-            
+
             $parametros = [
-                $request->iCursosNivelGradId          ??  NULL,
+                $request->iCapacitacionId          ??  NULL,
                 $request->idDocCursoId                ??  NULL,
                 $request->cTitulo                     ??  NULL,
                 $request->cContenido                  ??  NULL,
                 $request->iCredId                     ??  NULL
             ];
-            
+
             $data = DB::select(
                 'exec aula.SP_INS_anuncios 
-                    @_iCursosNivelGradId=?, 
+                    @_iCapacitacionId=?, 
                     @_idDocCursoId=?, 
                     @_cTitulo=?, 
                     @_cContenido=?, 
@@ -63,20 +63,20 @@ class AnunciosController extends Controller
         try {
             $fieldsToDecode = [
                 'iAnuncioId',
-                'iCursosNivelGradId',
+                'iCapacitacionId',
                 'idDocCursoId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iCursosNivelGradId          ??  NULL,
+                $request->iCapacitacionId          ??  NULL,
                 $request->idDocCursoId                ??  NULL,
                 $request->iCredId                     ??  NULL
             ];
 
             $data = DB::select(
                 'exec aula.SP_SEL_anuncios 
-                    @_iCursosNivelGradId=?, 
+                    @_iCapacitacionId=?, 
                     @_idDocCursoId=?, 
                     @_iCredId=?',
                 $parametros
@@ -169,5 +169,4 @@ class AnunciosController extends Controller
             );
         }
     }
-    
 }

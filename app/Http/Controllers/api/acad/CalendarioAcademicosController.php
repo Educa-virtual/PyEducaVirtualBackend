@@ -364,13 +364,13 @@ class CalendarioAcademicosController extends Controller
             $request->json,
             $request->_opcion
         ];
-
+        try {
         $query = DB::select(
             "EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?", //actualizado
             $solicitud
         );
 
-        try {
+      
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
@@ -379,12 +379,7 @@ class CalendarioAcademicosController extends Controller
 
             $estado = 201;
         } catch (Exception $e) {
-            $response = [
-                'validated' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ];
-            $estado = 500;
+            return FormatearMensajeHelper::error($e);
         }
 
         return new JsonResponse($response, $estado);
