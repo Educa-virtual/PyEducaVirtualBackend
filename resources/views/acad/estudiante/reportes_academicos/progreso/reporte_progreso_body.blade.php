@@ -101,6 +101,18 @@
         table.sin-borde th {
             border: none;
         }
+
+        /*td[rowspan] {
+            position: relative;
+        }
+
+        td[rowspan]::after {
+            content: "";
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-bottom: 1px solid black;
+        }*/
     </style>
 
     <div id="pie-izquierdo">IMP. POR {{ $persona->cPersPaterno }} {{ $persona->cPersMaterno }}, {{ $persona->cPersNombre }}
@@ -213,13 +225,13 @@
             </tr>
             <tr>
                 <th style="width: 3%" class="text-center">NL</th>
-                <th style="width: 9%" class="text-center">Conclusión descriptiva</th>
+                <th style="width: 10%" class="text-center">Conclusión descriptiva</th>
                 <th style="width: 3%" class="text-center">NL</th>
-                <th style="width: 9%" class="text-center">Conclusión descriptiva</th>
+                <th style="width: 10%" class="text-center">Conclusión descriptiva</th>
                 <th style="width: 3%" class="text-center">NL</th>
-                <th style="width: 9%" class="text-center">Conclusión descriptiva</th>
+                <th style="width: 10%" class="text-center">Conclusión descriptiva</th>
                 <th style="width: 3%" class="text-center">NL</th>
-                <th style="width: 9%" class="text-center">Conclusión descriptiva</th>
+                <th style="width: 10%" class="text-center">Conclusión descriptiva</th>
             </tr>
         </thead>
         <tobdy>
@@ -301,22 +313,22 @@
 
     <!--<br><br>
 
-                                                                        <table class="table table-condensed" id="tableCompetenciasSinArea">
-                                                                            <thead>
-                                                                                <tr>
-                                                                                    <th>Competencias transversales/No asociada(s) a área(s)</th>
-                                                                                    <th style="width: 5%">NL</th>
-                                                                                    <th>Conclusión descriptiva</th>
-                                                                                    <th style="width: 5%">NL</th>
-                                                                                    <th>Conclusión descriptiva</th>
-                                                                                    <th style="width: 5%">NL</th>
-                                                                                    <th>Conclusión descriptiva</th>
-                                                                                    <th style="width: 5%">NL</th>
-                                                                                    <th>Conclusión descriptiva</th>
-                                                                                    <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
-                                                                                </tr>
-                                                                            </thead>
-                                                                        </table>-->
+                                                                                <table class="table table-condensed" id="tableCompetenciasSinArea">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Competencias transversales/No asociada(s) a área(s)</th>
+                                                                                            <th style="width: 5%">NL</th>
+                                                                                            <th>Conclusión descriptiva</th>
+                                                                                            <th style="width: 5%">NL</th>
+                                                                                            <th>Conclusión descriptiva</th>
+                                                                                            <th style="width: 5%">NL</th>
+                                                                                            <th>Conclusión descriptiva</th>
+                                                                                            <th style="width: 5%">NL</th>
+                                                                                            <th>Conclusión descriptiva</th>
+                                                                                            <th style="width: 5%">NL alcanzado al finalizar el periodo lectivo</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                </table>-->
 
     <br><br>
 
@@ -367,7 +379,7 @@
                         $fechaInicio->format('Ymd'),
                         $fechaFin->format('Ymd'),
                     );
-                    echo $faltasJustificadas->cantidad==0 ? '-' : $faltasJustificadas->cantidad;
+                    echo $faltasJustificadas->cantidad == 0 ? '-' : $faltasJustificadas->cantidad;
                     echo '</td>';
 
                     echo '<td class="text-center">';
@@ -379,7 +391,7 @@
                         $fechaInicio->format('Ymd'),
                         $fechaFin->format('Ymd'),
                     );
-                    echo $faltasInjustificadas->cantidad==0 ? '-' : $faltasInjustificadas->cantidad;
+                    echo $faltasInjustificadas->cantidad == 0 ? '-' : $faltasInjustificadas->cantidad;
                     echo '</td>';
 
                     echo '<td class="text-center">';
@@ -391,7 +403,7 @@
                         $fechaInicio->format('Ymd'),
                         $fechaFin->format('Ymd'),
                     );
-                    echo $tardanzasJustificadas->cantidad==0 ? '-' : $tardanzasJustificadas->cantidad;
+                    echo $tardanzasJustificadas->cantidad == 0 ? '-' : $tardanzasJustificadas->cantidad;
                     echo '</td>';
 
                     echo '<td class="text-center">';
@@ -403,7 +415,7 @@
                         $fechaInicio->format('Ymd'),
                         $fechaFin->format('Ymd'),
                     );
-                    echo $tardanzasInjustificadas->cantidad==0 ? '-' : $tardanzasInjustificadas->cantidad;
+                    echo $tardanzasInjustificadas->cantidad == 0 ? '-' : $tardanzasInjustificadas->cantidad;
                     echo '</td>';
                     echo '</tr>';
                     $contador++;
