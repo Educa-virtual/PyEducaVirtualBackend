@@ -33,6 +33,8 @@ class Pregunta extends Model
             $request->iTipoPregId,
             $request->iPregOrden,
             $request->cPregContenido,
+            $request->cPregAdicional,
+            $request->jsonAlternativas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_INS_pregunta $placeholders", $parametros);
@@ -46,6 +48,8 @@ class Pregunta extends Model
             $request->iTipoPregId,
             $request->iPregOrden,
             $request->cPregContenido,
+            $request->cPregAdicional,
+            $request->jsonAlternativas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_UPD_pregunta $placeholders", $parametros);
