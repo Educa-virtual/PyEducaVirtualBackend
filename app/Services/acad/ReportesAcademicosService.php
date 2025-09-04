@@ -18,7 +18,7 @@ class ReportesAcademicosService
         $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
         $ie = InstitucionesEducativasService::obtenerInstitucionEducativa($matricula->iIieeId);
         $tutor = DocentesCursosService::obtenerTutorSalonIe($iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);
-        $fechasInicioFin=CalendariosAcademicosService::obtenerCalendarioFechasInicioFinSede($iYAcadId, $matricula->iSedeId);
+        $fechasInicioFin = CalendariosAcademicosService::obtenerCalendarioFechasInicioFinSede($iYAcadId, $matricula->iSedeId);
         $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('persona', 'matricula', 'ie', 'tutor', 'yearAcademico', 'fechasInicioFin'))->render();
         //$footerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_footer', compact('persona'))->render();
         //$fullHtml = $htmlcontent . $footerHtml;
@@ -36,6 +36,37 @@ class ReportesAcademicosService
         }
         unlink($inputHtml);
         return $outputPdf;
+    }
+
+    public static function obtenerReporteAcademicoProgreso($iCredPerfIdEstudiante, $iYAcadId)
+    {
+        //$yearAcademico = YearAcademicosService::obtenerYearAcademico($iYAcadId);
+        //$persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
+        $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
+        $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId);
+        foreach ($cursos as $curso) {
+            $curso->competencias = ReportesAcademicosService::obtenerCompetenciasPorCurso(
+                $curso->iNivelTipoId,
+                $curso->iCursoId,
+            );
+            foreach ($curso->competencias as $competencia) {
+                $competencia->notas=[];
+                for ($i = 1; $i <= 5; $i++) {
+                    $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
+                        $matricula->iMatrId,
+                        $competencia->iCompetenciaId ?? 0,
+                        $curso->iIeCursoId,
+                        $i,
+                    );
+                    if ($resultadoCompetencia) {
+                        array_push($competencia->notas, $resultadoCompetencia->cNivelLogro);
+                    } else {
+                        array_push($competencia->notas, '-');
+                    }
+                }
+            }
+        }
+        return $cursos;
     }
 
     public static function obtenerCursosPorIe($iSedeId, $iNivelGradoId)
@@ -67,11 +98,11 @@ class ReportesAcademicosService
             for ($i = 1; $i <= 5; $i++) {
                 $resultado = ResultadoCompetencia::selResultadosPorCompetencia($matricula->iMatrId, $competencia->iCompetenciaId, $iIeCursoId, $i);
                 if ($resultado) {
-                    array_push($fila->periodos, $i==5 ? 'Nota final' : ('Periodo '.$i));
+                    array_push($fila->periodos, $i == 5 ? 'Nota final' : ('Periodo ' . $i));
                     array_push($fila->resultado, $resultado->iResultado);
                 }
             }
-            array_push($data,$fila);
+            array_push($data, $fila);
         }
         return $data;
     }
