@@ -149,20 +149,25 @@
     <div class="container">
         <table class="header-info">
             <tr>
-                <th>CÓDIGO DEL ESTUDIANTE:</th>
-                <td>{{ $estudiante['codigo_alumno'] ?? 'N/A' }}</td>
+                @if($ficha_estudiante)
+                    <th>CÓDIGO DEL ESTUDIANTE:</th>
+                    <td>{{ $persona['codigo_alumno'] ?? 'N/A' }}</td>
+                @else
+                    <th>DOCUMENTO DE IDENTIDAD:</th>
+                    <td>{{ $persona['tipo_documento'] ?? 'N/A' }} {{ $persona['documento'] ?? '' }}</td>
+                @endif
             </tr>
             <tr>
                 <th>NÚMERO DE CELULAR:</th>
-                <td>{{ $estudiante['num_telefono'] ?? 'N/A' }}</td>
+                <td>{{ $persona['num_telefono'] ?? 'N/A' }}</td>
             </tr>
         </table>
 
         <h1 class="title">FICHA SOCIOECONÓMICA - DECLARACIÓN JURADA</h1>
 
-        <h2>I. DATOS GENERALES DEL ESTUDIANTE</h2>
+        <h2>I. DATOS GENERALES</h2>
 
-        <!-- Datos del Estudiante -->
+        <!-- Datos Personales -->
         <div class="section">
             <h3>DATOS PERSONALES</h3>
             <table>
@@ -172,9 +177,9 @@
                     <th colspan="2" width="50%">NOMBRES</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['apellido_paterno'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['apellido_materno'] ?? 'N/A' }}</td>
-                    <td colspan="2">{{ $estudiante['nombres'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['apellido_paterno'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['apellido_materno'] ?? 'N/A' }}</td>
+                    <td colspan="2">{{ $persona['nombres'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>TIPO DE DOCUMENTO</th>
@@ -183,10 +188,10 @@
                     <th>SEXO</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['tipo_documento'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['documento'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['fecha_nacimiento'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['sexo'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['tipo_documento'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['documento'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['fecha_nacimiento'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['sexo'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -211,7 +216,7 @@
 
         <!-- Sección : Dirección -->
         <div class="section">
-            <h3>DIRECCIÓN DEL ESTUDIANTE</h3>
+            <h3>DIRECCIÓN</h3>
             <table>
                 <tr>
                     <th colspan="3">TIPO DE VÍA</th>
@@ -259,10 +264,10 @@
                     <th>¿CUÁNTOS HIJOS?</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['vive_padre'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['vive_madre'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['tiene_hijos'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['num_hijos'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['vive_padre'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['vive_madre'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['tiene_hijos'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['num_hijos'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -316,30 +321,30 @@
                     <td>{{ $aspecto_economico['actividad_ingreso'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>¿EL ESTUDIANTE TRABAJA?</th>
-                    <td>{{ $aspecto_economico['estudiante_trabaja'] ?? 'N/A' }}</td>
+                    <th>{{ $ficha_estudiante ? '¿EL APODERADO TRABAJA?' : '¿EL(A) JEFE DE FAMILIA TRABAJA?' }}</th>
+                    <td>{{ $aspecto_economico['apoderado_jefe_trabaja'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>APOYO ECONÓMICO DE ESTUDIANTE</th>
+                    <th>APOYO ECONÓMICO DE {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['tipo_apoyo_economico'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>INGRESO MENSUAL DEL APODERADO</th>
+                    <th>INGRESO MENSUAL DEL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['rango_ingresos_apoderado'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>HORAS TRABAJADAS POR APODERADO</th>
+                    <th>HORAS TRABAJADAS POR {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['horas_trabajo'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>ACTIVIDAD ECONÓMICA DEL APODERADO</th>
+                    <th>ACTIVIDAD ECONÓMICA DEL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['apoderado_depende_de'] ?? 'N/A' }}</td>
                 </tr>
-                    <th>¿DE QUIÉN DEPENDE EL APODERADO?</th>
+                    <th>¿DE QUIÉN DEPENDE EL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}?</th>
                     <td>{{ $aspecto_economico['depende_economicamente_de'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>JORNADA LABORAL DEL APODERADO</th>
+                    <th>JORNADA LABORAL DEL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['jornada_trabajo'] ?? 'N/A' }}</td>
                 </tr>
             </table>
@@ -347,7 +352,7 @@
 
         <!-- Sección 4: Aspectos de la Vivienda -->
         <div class="section">
-            <h2>IV. ASPECTOS DE LA VIVIENDA (DONDE RESIDE EL ESTUDIANTE)</h2>
+            <h2>IV. ASPECTOS DE LA VIVIENDA DONDE RESIDE</h2>
             
             <table>
                 <tr>
@@ -419,7 +424,7 @@
         
         <!-- Sección 5: Alimentación -->
         <div class="section">
-            <h2>V. ALIMENTACIÓN DEL ESTUDIANTE</h2>
+            <h2>V. ALIMENTACIÓN</h2>
             
             <h3>LUGARES DE ALIMENTACIÓN DURANTE LA SEMANA</h3>
             <table>
@@ -653,7 +658,11 @@
         <!-- Firmas -->
         <div class="signature-section section">
             <div class="signature-box">
-                <p>Firma del Estudiante</p>
+                @if($ficha_estudiante)
+                    <p>Firma del Apoderado</p>
+                @else
+                    <p>Firma</p>
+                @endif
                 <div class="signature-line"></div>
             </div>
             <div class="signature-box">

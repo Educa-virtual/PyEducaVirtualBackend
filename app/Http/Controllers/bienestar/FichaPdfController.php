@@ -33,6 +33,7 @@ class FichaPdfController extends Controller
             $iFichaDGId = $request->get('iFichaDGId');
             $datos_ficha = Ficha::selFichaImpresion($request);
 
+            $ficha_estudiante = $datos_ficha->es_estudiante_apoderado == 1 ? true : false;
             /* DATOS GENERALES, DIRECCIÓN Y FAMILIA */
             $datos_generales = json_decode($datos_ficha->datos_generales)[0] ?? [];
             $familiares = json_decode($datos_ficha->familiares) ?? [];
@@ -67,6 +68,8 @@ class FichaPdfController extends Controller
         /* FORMATEAR DATOS PARA IMPRESION DE LA FICHA */
 
         $datos = [
+            'ficha_estudiante' => $ficha_estudiante,
+
             'direccion_domiciliaria' => [
                 'tipo_via' => $datos_generales->cTipoViaNombre ?? $datos_generales->cTipoViaOtro ?? '',
                 'nombre_via' => $datos_generales->cFichaDGDireccionNombreVia ?? '',
@@ -83,7 +86,7 @@ class FichaPdfController extends Controller
                 'referencia' => $datos_generales->cFichaDGDireccionReferencia ?? ''
             ],
 
-            'estudiante' => [
+            'persona' => [
                 'codigo_alumno' => $datos_generales->cEstCodigo ?? '',
                 'apellido_paterno' => $datos_generales->cEstPaterno ?? '',
                 'apellido_materno' => $datos_generales->cEstMaterno ?? '',
@@ -145,7 +148,7 @@ class FichaPdfController extends Controller
             'depende_economicamente_de' => $aspecto_economico->cDepEcoDescripcion ?? '',
             'tipo_apoyo_economico' => $aspecto_economico->cTipoAEcoDescripcion ?? '',
             'actividad_ingreso' => $aspecto_economico->cIngresoEcoActividad ?? '',
-            'estudiante_trabaja' => $aspecto_economico->bIngresoEcoTrabaja ?? '',
+            'apoderado_jefe_trabaja' => $aspecto_economico->bIngresoEcoTrabaja ?? '',
             'apoderado_depende_de' => $aspecto_economico->cIngresoEcoDependeDe ?? '',
             'horas_trabajo' => $aspecto_economico->iIngresoEcoTrabajoHoras ?? '',
             'jornada_trabajo' => $aspecto_economico->cJorTrabDescripcion ?? '',
