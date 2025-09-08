@@ -29,6 +29,8 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
     Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
+        Route::get('estudiante/areas', [AreasController::class, 'obtenerAreasPorEvaluacionEstudiante']);
+        Route::get('estudiante/areas/{iAreaId}/resultado', [EvaluacionController::class, 'obtenerResultadoEvaluacionEstudiante']);
         //Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
         Route::get('areas', [AreasController::class, 'obtenerAreasPorEvaluacion']);
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
@@ -143,6 +145,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
     Route::group(['prefix' => 'Evaluaciones'], function () {
+        Route::get('estudiante', [EvaluacionController::class, 'obtenerEvaluacionesPorEstudiante']);
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
         Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);

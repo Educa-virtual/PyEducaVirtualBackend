@@ -14,5 +14,6 @@ enum Perfil: int
     case ADMINISTRADOR_DREMO = 214;
     case AUXILIAR = 252;
     case APODERADO = 90;
+    case ASISTENTE_SOCIAL = 100;
 }
 

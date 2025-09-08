@@ -2,8 +2,17 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Helpers\FormatearMensajeHelper;
+use App\Enums\Perfil;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Services\acad\ReportesAcademicosService;
+use App\Services\acad\FechasImportantesService;
+use App\Services\acad\MatriculasService;
+use App\Services\acad\TiposActividadService;
+use App\Services\acad\YearAcademicosService;
+use App\Services\aula\ProgramacionActividadesService;
 use App\Services\FormatearExcelMatriculasService;
 use App\Services\LeerExcelService;
 use App\Services\FormatearExcelPadresService;
@@ -13,7 +22,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
+use Illuminate\Support\Facades\Gate;
 
 class EstudiantesController extends Controller
 {
@@ -139,7 +151,8 @@ class EstudiantesController extends Controller
 
         try {
             $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            
+
+
             $data = DB::select('EXEC acad.Sp_SEL_estudiante_persona ?', [$data[0]->iEstudianteId]);
 
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
@@ -231,7 +244,8 @@ class EstudiantesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $parametros = [
             $request->iEstudianteId,
             $request->iPersId,
@@ -263,7 +277,8 @@ class EstudiantesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function show(Request $request){
+    public function show(Request $request)
+    {
         $parametros = [
             $request->iEstudianteId,
             $request->iPersId,
@@ -285,7 +300,8 @@ class EstudiantesController extends Controller
     public function importarEstudiantesPadresExcel(Request $request)
     {
         $datos_hojas = LeerExcelService::leer($request);
-        
+
+
         $datos_hoja = FormatearExcelPadresService::formatear($datos_hojas);
 
         $parametros = [
@@ -309,7 +325,8 @@ class EstudiantesController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-        
+
+
         return new JsonResponse($response, $codeResponse);
     }
 
@@ -333,7 +350,8 @@ class EstudiantesController extends Controller
             $datos_hoja['codigo_modular'],
         ];
 
-        if( count($datos_hoja['estudiantes']) === 0 ) {
+
+        if (count($datos_hoja['estudiantes']) === 0) {
             return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
         }
 
@@ -348,5 +366,48 @@ class EstudiantesController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
+    }
+
+    public function generarReporteAcademicoProgreso(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $outputPdf=ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $request->iYAcadId);
+            return response()->download($outputPdf)->deleteFileAfterSend(true);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function existeMatriculaPorAnio($iYAcadId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $matricula =  MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
+            return FormatearMensajeHelper::ok("Si existe", ['existe' => $matricula != null]);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerCalendario($iYAcadId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
+            $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
+            $tiposActividad = TiposActividadService::obtenerTiposActividad();
+            $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
+
+            $calendario = ProgramacionActividadesService::obtenerCalendarioAcademicoEstudiante($matricula);
+            return FormatearMensajeHelper::ok('Se obtuvo el calendario académico', [
+                'calendario' => $calendario,
+                'cursos' => $cursos,
+                'tiposActividad' => $tiposActividad,
+                'anioAcademico' => $anioAcademico
+            ]);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 }
