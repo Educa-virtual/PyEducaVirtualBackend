@@ -18,6 +18,10 @@ class FichaPdfController extends Controller
         Perfil::DIRECTOR_IE,
         Perfil::SUBDIRECTOR_IE,
         Perfil::ASISTENTE_SOCIAL,
+        Perfil::DOCENTE,
+        Perfil::DIRECTOR_IE,
+        Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
     ];
 
     public function descargarFicha(Request $request)
