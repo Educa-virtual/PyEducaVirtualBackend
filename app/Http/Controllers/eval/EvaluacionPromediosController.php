@@ -12,17 +12,16 @@ use Illuminate\Support\Facades\Validator;
 
 class EvaluacionPromediosController extends Controller
 {
-    public function guardarConclusionxiEvaluacionIdxiEstudianteId(Request $request){
-        
+    public function guardarConclusionxiEvaluacionIdxiEstudianteId(Request $request)
+    {
+
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
             'iEvaluacionId' => ['required'],
             'iEstudianteId' => ['required'],
-            'cConclusionDescriptiva' => ['required'],
         ], [
             'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
             'iEstudianteId.required' => 'No se encontró el identificador iEstudianteId',
-            'cConclusionDescriptiva.required' => 'No se encontró la conclusión descriptiva',
         ]);
 
         if ($validator->fails()) {
@@ -44,6 +43,7 @@ class EvaluacionPromediosController extends Controller
                 $request->iEvaluacionId                ?? NULL,
                 $request->iEstudianteId                ?? NULL,
                 $request->cConclusionDescriptiva       ?? NULL,
+                $request->nEvalPromNota                ?? NULL,
                 $request->iCredId                      ?? NULL
             ];
 
@@ -52,6 +52,7 @@ class EvaluacionPromediosController extends Controller
                     @_iEvaluacionId=?,
                     @_iEstudianteId=?,
                     @_cConclusionDescriptiva=?,
+                    @_nEvalPromNota=?,
                     @_iCredId=?',
                 $parametros
             );
@@ -73,6 +74,5 @@ class EvaluacionPromediosController extends Controller
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
-        
     }
 }

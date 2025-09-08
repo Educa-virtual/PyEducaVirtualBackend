@@ -18,4 +18,7 @@ Route::group(['prefix' => 'asi'], function () {
         Route::post('guardar-asistencia', [AsistenciaController::class, 'guardarAsistenciaEstudiante']);
         Route::post('guardar-asistencia-aula', [AsistenciaController::class, 'guardarAsistenciaGeneral']);
     });
+    Route::group(['prefix' => 'asistencia'], function () {
+        Route::post('descargar-justificacion', [AsistenciaController::class, 'descargarJustificacion']); 
+    });
 });

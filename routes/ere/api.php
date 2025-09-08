@@ -98,6 +98,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante', [ResultadosController::class, 'guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante']);
         Route::post('terminarExamenxiEstudianteId', [ResultadosController::class, 'terminarExamenxiEstudianteId']);
         Route::post('guardarRespuestas', [ResultadosController::class, 'guardarRespuestas']);
+       
     });
 
     Route::group(['prefix' => 'reportes'], function () {
@@ -219,6 +220,8 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::get('obtenerUgeles', [UgelesController::class, 'obtenerUgeles']);
         Route::post('importarOffLine', [ImportarResultadosController::class, 'importarOffLine']);
     });
+    //route periodo/Evaluaciones
+    Route::get('evaluaciones/periodos-evaluacion', [App\Http\Controllers\eval\EvaluacionesController::class, 'obtenerPeriodosEvaluacion']);
 
     /*Route::group(['prefix' => 'nivel-logros'], function () {
         Route::get('', [NivelLogrosController::class, 'obtenerNivelLogros']);
