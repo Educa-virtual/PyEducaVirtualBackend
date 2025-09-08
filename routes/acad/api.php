@@ -54,7 +54,8 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
             });
         });
         Route::group(['prefix' => 'reportes-academicos'], function () {
-            Route::get('progreso', [EstudiantesController::class, 'generarReporteAcademicoProgreso']);
+            Route::get('progreso/{iYAcadId}/pdf', [EstudiantesController::class, 'generarReporteAcademicoProgreso']);
+            Route::get('progreso/{iYAcadId}', [EstudiantesController::class, 'obtenerReporteAcademicoProgreso']);
         });
         Route::post('obtenerCursosXEstudianteAnioSemestre', [EstudiantesController::class, 'obtenerCursosXEstudianteAnioSemestre']);
     });
