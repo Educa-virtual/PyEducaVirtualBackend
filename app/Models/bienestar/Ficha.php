@@ -102,6 +102,8 @@ class Ficha
             $request->iSedeId,
             $request->iTipoSectorId,
             $request->iZonaId,
+            $request->iTipoPersId,
+            $request->iCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne('EXEC obe.Sp_SEL_fichaReporte ' . $placeholders, $parametros);
