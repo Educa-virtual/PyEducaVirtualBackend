@@ -13,17 +13,15 @@ use Illuminate\Support\Facades\Gate;
 
 class FichaGeneralController extends Controller
 {
-    private $perfiles_permitidos = [
+    private $registran = [
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
-        Perfil::DOCENTE,
-        Perfil::DIRECTOR_IE,
     ];
 
     public function verFichaGeneral(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaGeneral::selfichaGeneral($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -35,7 +33,7 @@ class FichaGeneralController extends Controller
     public function actualizarFichaGeneral(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaGeneral::updFichaGeneral($request);
             return FormatearMensajeHelper::ok('Se actualizo la información', $data);
         }

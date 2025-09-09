@@ -9,8 +9,17 @@ class EncuestaBienestarRespuesta
     public static function selRespuestas($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
+            $request->iNivelTipoId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
+            $request->iUgelId,
+            $request->iDsttId,
+            $request->iIieeId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->cPersSexo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC obe.Sp_SEL_encuestaRespuestas $placeholders", $parametros);
@@ -19,7 +28,7 @@ class EncuestaBienestarRespuesta
     public static function insRespuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->jsonPreguntas,
         ];
@@ -30,7 +39,7 @@ class EncuestaBienestarRespuesta
     public static function updRespuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->jsonPreguntas,
         ];
@@ -41,7 +50,7 @@ class EncuestaBienestarRespuesta
     public static function selRespuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iMatrId,
         ];
@@ -52,7 +61,7 @@ class EncuestaBienestarRespuesta
     public static function delRespuesta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -62,7 +71,7 @@ class EncuestaBienestarRespuesta
     public static function selRespuestasDetalle($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iMatrId,
         ];

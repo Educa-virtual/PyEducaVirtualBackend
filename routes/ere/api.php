@@ -26,10 +26,10 @@ use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 //$this->middleware('auth:api');
 Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::class]], function () {
-    Route::get('evaluaciones/anios', [EvaluacionesController::class, 'obtenerAniosEvaluaciones']);
+    Route::get('evaluaciones/anios/{anio}/estudiante', [EvaluacionesController::class, 'obtenerEvaluacionesEstudiantePorAnio']);
     Route::group(['prefix' => 'evaluaciones/{evaluacionId}'], function () {
         Route::get('', [EvaluacionesController::class, 'obtenerEvaluacion']);
-        //Route::get('especialistas/{personaId}/perfiles/{perfilId}/areas', [EspecialistasDremoController::class, 'obtenerAreasPorEvaluacionyEspecialista']);
+        Route::get('estudiante/resultados', [EvaluacionesController::class, 'obtenerResultadosEstudiantePorEvaluacion']);
         Route::get('areas', [AreasController::class, 'obtenerAreasPorEvaluacion']);
         Route::patch('areas/estado', [AreasController::class, 'actualizarLiberacionAreasPorEvaluacion']);
         Route::group(['prefix' => 'areas/{areaId}'], function () {
@@ -143,6 +143,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
     Route::group(['prefix' => 'Evaluaciones'], function () {
+        //Route::get('estudiante', [EvaluacionController::class, 'obtenerEvaluacionesPorEstudiante']);
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
         Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
@@ -202,8 +203,8 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
         //Eliminar una pregunta de una evaluación.
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
-         //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
-         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
+        //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+        Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
 
         // Gestionar exclusion de estudiantes en evaluaciones ERE
         Route::post('listarExclusiones', [EvaluacionExclusionesController::class, 'listarExclusiones']);

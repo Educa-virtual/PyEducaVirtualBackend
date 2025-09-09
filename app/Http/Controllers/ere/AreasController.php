@@ -15,6 +15,7 @@ use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\grl\PersonasRepository;
 use App\Repositories\grl\YearsRepository;
 use App\Repositories\PreguntasRepository;
+use App\Services\acad\EstudiantesService;
 use App\Services\ere\AreasService;
 use App\Services\FechaHoraService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -227,16 +228,6 @@ class AreasController extends Controller
         }
     }
 
-    /*public function actualizarLiberacionAreasPorEvaluacion($evaluacionId)
-    {
-        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
-        if (empty($evaluacionIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
-        }
-        AreasRepository::liberarAreasPorEvaluacion($evaluacionIdDescifrado[0]);
-        return response()->json(['status' => 'Success', 'message' => 'Se han liberado las áreas de la evaluación especificada.'], Response::HTTP_OK);
-    }*/
-
     public function obtenerAreasPorEvaluacion($evaluacionId)
     {
         try {
@@ -248,16 +239,18 @@ class AreasController extends Controller
         }
     }
 
-    /*public function obtenerEstadoDescarga($evaluacionId, $areaId) {
+    public function obtenerAreasPorEvaluacionEstudiante($evaluacionId)
+    {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
-            $data = AreasService::obtenerEstadoDescarga($evaluacionId, $areaId);
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $usuario = Auth::user();
+            $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
+            $data = AreasService::obtenerAreasPorEvaluacionEstudiante($evaluacionId, $estudiante->iEstudianteId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
-        }
-        catch (Exception $ex) {
+        } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
-    }*/
+    }
 
     public function actualizarEstadoDescarga($evaluacionId, $areaId, Request $request)
     {
