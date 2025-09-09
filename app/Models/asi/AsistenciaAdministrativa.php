@@ -5,10 +5,20 @@ namespace App\Models\asi;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AsistenciaAdministrativa extends Model
 {   
     public static function guardarAsistenciaEstudiante(Request $request){
+        $iPersId = $request->iPersId;
+        $archivos = $request->file('archivos');
+        $ruta = 'justificaciones/'.$iPersId;
+
+        if ($archivos) {
+            $documento = Storage::disk('public')->put($ruta,$archivos);
+            $asistencia['justificar'] = $ruta.'/'.basename($documento);
+        }
+
         $datos = [
             $request->iEstudianteId,
             $request->dtAsistencia,
@@ -25,12 +35,25 @@ class AsistenciaAdministrativa extends Model
         return $data;
     }
     public static function guardarAsistenciaGeneral(Request $request){
+        
+        $asistencia = json_decode($request->asistencia,true);
+        $iPersId = $request->iPersId;
+        $archivos = $request->file('archivos');
+        $ruta = 'justificaciones/'.$iPersId;
+        if ($archivos) {
+            foreach ($archivos as $index => $archivo) {
+                $documento = Storage::disk('public')->put($ruta,$archivo);
+                $asistencia[$index]['justificar'] = $ruta.'/'.basename($documento);
+            }
+        }
+     
         $datos = [
-            $request->asistencia,
+            json_encode($asistencia),
             $request->dtAsistencia,
             $request->iSedeId,
             $request->iYAcadId,
         ];
+        
         $enviados = str_repeat('?,',count($datos)-1).'?';
         $data = DB::select("EXEC asi.Sp_INS_asistencia_general ".$enviados,$datos);
         return $data;

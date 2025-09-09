@@ -791,15 +791,14 @@ class AsistenciaController extends Controller
         return $pdf;
     }
     public function descargarJustificacion(Request $request){
-        $iDocenteId = $this->decodificar($request->iDocenteId);
+        //$iDocenteId = $this->decodificar($request->iDocenteId);
         $cJustificar = $request->cJustificar;
-        $rutaArchivo = "justificaciones/".$iDocenteId."/".$cJustificar;
         
-        if (!Storage::disk('public')->exists($rutaArchivo)) {
+        if (!Storage::disk('public')->exists($cJustificar)) {
             throw new Exception('El archivo no existe');
         }
         
-        $archivo = Storage::disk('public')->get($rutaArchivo);
+        $archivo = Storage::disk('public')->get($cJustificar);
         return $archivo;
         
     }
