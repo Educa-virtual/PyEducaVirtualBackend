@@ -75,13 +75,13 @@ class Evaluacion extends Model
         return $cantidad->cantidad;
     }
 
-    public static function selEvaluacionesPorEstudiante($iEstudianteId)
+    public static function selEvaluacionesEstudiantePorAnio($iEstudianteId, $anio)
     {
-        return DB::select("EXEC ere.Sp_SEL_EvaluacionesPorEstudiante @iEstudianteId=?", [$iEstudianteId]);
+        return DB::select("EXEC ere.Sp_SEL_EvaluacionesEstudiantePorAnio @iEstudianteId=?, @anioEvaluacion=?", [$iEstudianteId, $anio]);
     }
 
-    public static function selResultadoEvaluacionEstudiante($iEvaluacionId, $iCursoId, $iEstudianteId)
+    public static function selResultadoEvaluacionEstudiante($iEstudianteId, $iEvaluacionId)
     {
-        return DB::selectOne("EXEC [ere].[Sp_SEL_resultadoEvaluacionEstudiante] @iEstudianteId=?, @iEvaluacionId=?, @iCursoId=?", [$iEstudianteId, $iEvaluacionId, $iCursoId]);
+        return DB::select("EXEC [ere].[Sp_SEL_resultadoEvaluacionEstudiante] @iEstudianteId=?, @iEvaluacionId=?", [$iEstudianteId, $iEvaluacionId]);
     }
 }

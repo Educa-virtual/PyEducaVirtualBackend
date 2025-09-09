@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use Illuminate\Support\Facades\Log;
 
@@ -15,13 +16,17 @@ use App\Models\ere\Evaluacion;
 use App\Repositories\acad\AreasRepository;
 use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\PreguntasRepository;
+use App\Services\acad\EstudiantesService;
 use App\Services\ere\AreasService;
+use App\Services\ere\EvaluacionesService;
 use App\Services\ere\preguntas\ExportarPreguntasPorAreaWordService;
 use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\ValidatedData;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use PhpParser\Node\Stmt\TryCatch;
 
 class EvaluacionesController extends ApiController
@@ -1067,6 +1072,31 @@ class EvaluacionesController extends ApiController
                 'message' => $e->getMessage(),
                 'data' => []
             ], 500);
+        }
+    }
+
+    public function obtenerResultadosEstudiantePorEvaluacion($evaluacionId) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $usuario = Auth::user();
+            $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
+            $data = EvaluacionesService::obtenerResultadosEstudiantePorEvaluacion($evaluacionId, $estudiante->iEstudianteId);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerEvaluacionesEstudiantePorAnio($anio)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $usuario = Auth::user();
+            $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
+            $data = EvaluacionesService::obtenerEvaluacionesEstudiantePorAnio($estudiante->iEstudianteId, $anio);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }

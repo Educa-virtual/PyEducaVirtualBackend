@@ -228,16 +228,6 @@ class AreasController extends Controller
         }
     }
 
-    /*public function actualizarLiberacionAreasPorEvaluacion($evaluacionId)
-    {
-        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
-        if (empty($evaluacionIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
-        }
-        AreasRepository::liberarAreasPorEvaluacion($evaluacionIdDescifrado[0]);
-        return response()->json(['status' => 'Success', 'message' => 'Se han liberado las áreas de la evaluación especificada.'], Response::HTTP_OK);
-    }*/
-
     public function obtenerAreasPorEvaluacion($evaluacionId)
     {
         try {
@@ -261,17 +251,6 @@ class AreasController extends Controller
             return FormatearMensajeHelper::error($ex);
         }
     }
-
-    /*public function obtenerEstadoDescarga($evaluacionId, $areaId) {
-        try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
-            $data = AreasService::obtenerEstadoDescarga($evaluacionId, $areaId);
-            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
-        }
-        catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
-        }
-    }*/
 
     public function actualizarEstadoDescarga($evaluacionId, $areaId, Request $request)
     {
