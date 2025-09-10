@@ -12,6 +12,7 @@ class Encuesta extends Model
             $request->header('iCredEntPerfId'),
             $request->iYAcadId,
             $request->iCateId,
+            $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC enc.Sp_SEL_encuestas $placeholders", $parametros);
@@ -96,8 +97,8 @@ class Encuesta extends Model
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iYAcadId,
             $request->iEncuId,
+            $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_UPD_encuestaEstado $placeholders", $parametros);

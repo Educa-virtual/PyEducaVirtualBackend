@@ -41,9 +41,9 @@ class CategoriaController extends Controller
             $data = Categoria::selCategorias($request);
             foreach( $data as $key => $value) {
                 if($value->cCateImagenNombre) {
-                    $data[$key]->cCateImagenNombre = asset(Storage::url("encuestas/categorias/$value->cCateImagenNombre"));
+                    $data[$key]->cCateImagenUrl = asset(Storage::url("encuestas/categorias/$value->cCateImagenNombre"));
                 } else {
-                    $data[$key]->cCateImagenNombre = asset("cursos/images/no-image.jpg");
+                    $data[$key]->cCateImagenUrl = asset("cursos/images/no-image.jpg");
                 }
             }
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
@@ -58,7 +58,7 @@ class CategoriaController extends Controller
             Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
             $data = Categoria::selCategoria($request);
             if($data->cCateImagenNombre) {
-                $data->cCateImagenNombre = asset(Storage::url("encuestas/categorias/$data->cCateImagenNombre"));
+                $data->cCateImagenUrl = asset(Storage::url("encuestas/categorias/$data->cCateImagenNombre"));
             }
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
