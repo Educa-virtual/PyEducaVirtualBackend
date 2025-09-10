@@ -10,9 +10,9 @@ use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
-class CalendarioPeriodosEvaluacionesController extends Controller
+class CalendarioAcademicosController extends Controller
 {
-    public function obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular(Request $request, $iYAcadId, $iSedeId)
+    public function obtenerCalendarioAcademicosxiSedeIdxiYAcadId(Request $request, $iYAcadId, $iSedeId)
     {
         $request->merge([
             'iYAcadId' => $iYAcadId,
@@ -38,7 +38,6 @@ class CalendarioPeriodosEvaluacionesController extends Controller
             'iYAcadId',
             'iSedeId',
             'iCredId',
-            'iPeriodoEvalAperId'
         ];
 
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -51,7 +50,7 @@ class CalendarioPeriodosEvaluacionesController extends Controller
 
         try {
             $data = DB::select(
-                'EXEC [acad].[Sp_SEL_obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular] 
+                'EXEC [acad].[Sp_SEL_calendarioAcademicosxiYAcadIdxiSedeId] 
                     @_iYAcadId=?,
                     @_iSedeId=?,
                     @_iCredId=?',
@@ -74,8 +73,9 @@ class CalendarioPeriodosEvaluacionesController extends Controller
         }
     }
 
-    public function guardarCalendarioPeriodosEvalaciones(Request $request)
+    public function guardarCalendarioAcademicos(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'iYAcadId' => ['required'],
             'iSedeId' => ['required'],
@@ -95,7 +95,6 @@ class CalendarioPeriodosEvaluacionesController extends Controller
             $fieldsToDecode = [
                 'iYAcadId',
                 'iSedeId',
-                'iPeriodoEvalId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -103,23 +102,47 @@ class CalendarioPeriodosEvaluacionesController extends Controller
             $parametros = [
                 $request->iYAcadId                    ??  NULL,
                 $request->iSedeId                     ??  NULL,
-                $request->iPeriodoEvalId              ??  NULL,
-                $request->jsonPeriodos                ??  NULL,
+
+                $request->dtCalAcadInicio             ??  NULL,
+                $request->dtCalAcadFin                ??  NULL,
+                $request->dtCalAcadMatriculaInicio    ??  NULL,
+                $request->dtCalAcadMatriculaFin       ??  NULL,
+                $request->dtCalAcadMatriculaResagados ??  NULL,
+                $request->dtFaseInicioRegular         ??  NULL,
+                $request->dtFaseFinRegular            ??  NULL,
+                $request->dtFaseInicioRecuperacion    ??  NULL,
+                $request->dtFaseFinRecuperacion       ??  NULL,
+                $request->iTurnoId                    ??  NULL,
+                $request->dtAperTurnoInicio           ??  NULL,
+                $request->dtAperTurnoFin              ??  NULL,
+                $request->jsonHorarios                ??  NULL,
 
                 $request->iCredId                     ??  NULL
             ];
 
             $data = DB::select(
-                'exec acad.SP_INS_calendarioPeriodosEvaluaciones 
+                'exec acad.SP_INS_calendarioAcademicos 
                     @_iYAcadId=?, 
                     @_iSedeId=?, 
-                    @_iPeriodoEvalId=?, 
-                    @_jsonPeriodos=?, 
+                    @_dtCalAcadInicio=?, 
+                    @_dtCalAcadFin=?, 
+                    @_dtCalAcadMatriculaInicio=?, 
+                    @_dtCalAcadMatriculaFin=?, 
+                    @_dtCalAcadMatriculaResagados=?, 
+                    @_dtFaseInicioRegular=?, 
+                    @_dtFaseFinRegular=?, 
+                    @_dtFaseInicioRecuperacion=?, 
+                    @_dtFaseFinRecuperacion=?, 
+                    @_iTurnoId=?, 
+                    @_dtAperTurnoInicio=?, 
+                    @_dtAperTurnoFin=?,  
+                    @_jsonHorarios=?,  
                     @_iCredId=?',
                 $parametros
             );
 
-            if ($data[0]->iPeriodoEvalAperId > 0) {
+
+            if ($data[0]->iCalAcadId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
                     Response::HTTP_OK

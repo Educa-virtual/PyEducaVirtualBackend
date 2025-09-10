@@ -16,20 +16,22 @@ class ReunionVirtualesController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'cRVirtualTema' => ['required'],
-            'dtRVirtualInicio' => ['required', 'date'],
-            'dtRVirtualFin' => ['required', 'date', 'after:dtRVirtualInicio'],
+            'dtRVirtualInicio' => ['required'],
+            'dtRVirtualFin' => ['required'],
             'cRVirtualUrlJoin' => ['required', 'url'],
-            'iProgActId' => ['required']
+            'iContenidoSemId' => ['required'],
+            'iActTipoId' => ['required'],
+            'iYAcadId' => ['required'],
+
         ], [
             'cRVirtualTema.required' => 'No ingresó tema de la reunión virtual',
             'dtRVirtualInicio.required' => 'La fecha y hora de inicio es obligatoria',
-            'dtRVirtualInicio.date' => 'La fecha de inicio no es válida.',
             'dtRVirtualFin.required' => 'La fecha y hora de fin es obligatoria',
-            'dtRVirtualFin.date' => 'La fecha de fin no es válida.',
-            'dtRVirtualFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio.',
             'cRVirtualUrlJoin.required' => 'No ingresó la URL de la reunión virtual',
             'cRVirtualUrlJoin.url' => 'La URL de la reunión virtual no es válida.',
-            'iProgActId.required' => 'No se encontró el identificador iProgActId',
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+            'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
+            'iYAcadId.required' => 'No se encontró el identificador del año académico',
 
         ]);
 
@@ -42,8 +44,12 @@ class ReunionVirtualesController extends Controller
 
         try {
             $fieldsToDecode = [
-                'iProgActId',
+                'iContenidoSemId',
+                'iActTipoId',
+                'idDocCursoId',
                 'iCredId',
+                'iCapacitacionId',
+                'iYAcadId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
@@ -51,7 +57,11 @@ class ReunionVirtualesController extends Controller
                 $request->dtRVirtualInicio            ??  NULL,
                 $request->dtRVirtualFin               ??  NULL,
                 $request->cRVirtualUrlJoin            ??  NULL,
-                $request->iProgActId                  ??  NULL,
+                $request->iContenidoSemId             ??  NULL,
+                $request->iActTipoId                  ??  NULL,
+                $request->idDocCursoId                ??  NULL,
+                $request->iCapacitacionId             ??  NULL,
+                $request->iYAcadId                    ??  NULL,
                 $request->iCredId                     ??  NULL
             ];
 
@@ -61,7 +71,11 @@ class ReunionVirtualesController extends Controller
                     @_dtRVirtualInicio=?, 
                     @_dtRVirtualFin=?, 
                     @_cRVirtualUrlJoin=?, 
-                    @_iProgActId=?, 
+                    @_iContenidoSemId=?,
+                    @_iActTipoId=?,
+                    @_idDocCursoId=?,
+                    @_iCapacitacionId=?,
+                    @_iYAcadId=?,
                     @_iCredId=?',
                 $parametros
             );
@@ -91,17 +105,14 @@ class ReunionVirtualesController extends Controller
         $validator = Validator::make($request->all(), [
             'iRVirtualId' => ['required'],
             'cRVirtualTema' => ['required'],
-            'dtRVirtualInicio' => ['required', 'date'],
-            'dtRVirtualFin' => ['required', 'date', 'after:dtRVirtualInicio'],
+            'dtRVirtualInicio' => ['required'],
+            'dtRVirtualFin' => ['required'],
             'cRVirtualUrlJoin' => ['required', 'url'],
         ], [
             'iRVirtualId.required' => 'No se encontró el identificador iRVirtualId',
             'cRVirtualTema.required' => 'No ingresó tema de la reunión virtual',
             'dtRVirtualInicio.required' => 'La fecha y hora de inicio es obligatoria',
-            'dtRVirtualInicio.date' => 'La fecha de inicio no es válida.',
             'dtRVirtualFin.required' => 'La fecha y hora de fin es obligatoria',
-            'dtRVirtualFin.date' => 'La fecha de fin no es válida.',
-            'dtRVirtualFin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio.',
             'cRVirtualUrlJoin.required' => 'No ingresó la URL de la reunión virtual',
             'cRVirtualUrlJoin.url' => 'La URL de la reunión virtual no es válida.',
 
@@ -130,7 +141,7 @@ class ReunionVirtualesController extends Controller
             ];
 
             $data = DB::select(
-                'exec aula.SP_UPD_reunionVirtuales 
+                'exec aula.SP_UPD_reunionVirtualesxiRVirtualId 
                     @_iRVirtualId=?, 
                     @_cRVirtualTema=?, 
                     @_dtRVirtualInicio=?, 
@@ -226,7 +237,7 @@ class ReunionVirtualesController extends Controller
                 'errors' => $validator->errors()
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-        
+
         try {
             $fieldsToDecode = [
                 'iRVirtualId',
@@ -247,7 +258,7 @@ class ReunionVirtualesController extends Controller
                 $parametros
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-            
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
                 Response::HTTP_OK

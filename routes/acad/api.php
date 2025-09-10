@@ -1,8 +1,10 @@
 
 <?php
 
+use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
+use App\Http\Controllers\acad\CalendarioAcademicosController;
 use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
@@ -13,7 +15,12 @@ use App\Http\Controllers\acad\FechasImportantesController;
 use App\Http\Controllers\acad\GradosController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\acad\MatriculaController;
+use App\Http\Controllers\acad\PeriodoEvaluacionesController;
 use App\Http\Controllers\acad\SilabosController;
+use App\Http\Controllers\acad\TurnosController;
+use App\Http\Controllers\api\acad\DistribucionBloqueController;
+use App\Http\Controllers\api\acad\FeriadoImportanteController;
+use App\Http\Controllers\api\acad\TipoFechaController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\VacantesController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
@@ -112,6 +119,30 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('importar_silabos', [DocenteCursosController::class, 'importarSilabos']);
         Route::post('detalle_curricular', [AsistenciaController::class, 'obtenerDetallesCurricular']);
     });
+    Route::group(['prefix' => 'tipos-fechas'], function () {
+        Route::get('getTiposFechas', [TipoFechaController::class, 'getTiposFechas']);
+    });
+
+    Route::group(['prefix' => 'feriados-importantes'], function () {
+        Route::get('getFechasImportantes/{iYAcadId?}/{iSedeId?}', [FeriadoImportanteController::class, 'getFechasImportantes']);
+        Route::get('getDependenciaFechas/{iFechaImpId?}', [FeriadoImportanteController::class, 'getDependenciaFechas']);
+        Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
+        Route::put('updFechasImportantes', [FeriadoImportanteController::class, 'updFechasImportantes']);
+        Route::delete('deleteFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'deleteFechasImportantes']);
+    });
+
+    Route::group(['prefix' => 'distribucion-bloques'], function () {
+        Route::get('getDistribucionBloques/{iYearId}/{iDistribucionBloqueId?}', [DistribucionBloqueController::class, 'getDistribucionBloques']);
+        Route::post('insDistribucionBloques', [DistribucionBloqueController::class, 'insDistribucionBloques']);
+        Route::put('updDistribucionBloques', [DistribucionBloqueController::class, 'updDistribucionBloques']);
+        Route::delete('deleteDistribucionBloques/{iDistribucionBloqueId}', [DistribucionBloqueController::class, 'deleteDistribucionBloques']);
+    });
+
+    Route::group(['prefix' => 'periodo-evaluaciones'], function () {
+        Route::get('getPeriodoEvaluaciones/{iYearId?}', [PeriodoEvaluacionesController::class, 'getPeriodoEvaluaciones']);
+        Route::post('processConfigCalendario', [PeriodoEvaluacionesController::class, 'processConfigCalendario']);
+        Route::get('/', [PeriodoEvaluacionesController::class, 'obtenerPeriodoEvaluaciones']);
+    });
 
     Route::prefix('detalle-matriculas')->group(function () {
         Route::put('/{iDetMatrId}', [DetalleMatriculasController::class, 'guardarConclusionDescriptiva']); // Para actualizar
@@ -119,6 +150,7 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'calendario-periodos-evaluaciones'], function () {
         Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioPeriodosEvaluacionesController::class, 'obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular']);
+        Route::post('/', [CalendarioPeriodosEvaluacionesController::class, 'guardarCalendarioPeriodosEvalaciones']);
     });
     Route::group(['prefix' => 'contenido-semanas'], function () {
         Route::post('', [ContenidoSemanasController::class, 'guardarContenidoSemanas']);
@@ -126,6 +158,18 @@ Route::group(['prefix' => 'acad'], function () {
         Route::delete('/{iContenidoSemId}', [ContenidoSemanasController::class, 'eliminarContenidoSemanas']);
         Route::get('/{iContenidoSemId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxiContenidoSemId']);
         Route::get('/curso/{idDocCursoId}/year/{iYAcadId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxidDocCursoIdxiYAcadId']);
+        Route::get('/capacitacion/{iCapacitacionId}/year/{iYAcadId}', [ContenidoSemanasController::class, 'obtenerContenidoSemanasxiCapacitacionIdxiYAcadId']);
         Route::get('/{iContenidoSemId}/actividades', [ContenidoSemanasController::class, 'obtenerActividadesxiContenidoSemId']);
+    });
+
+    Route::prefix('bandejaEntrante')->group(function () {
+        Route::post('bandeja-estudiante', [BandejaCotnroller::class, 'bandejaEstudiante']);
+    });
+    Route::group(['prefix' => 'calendario-academicos'], function () {
+        Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioAcademicosController::class, 'obtenerCalendarioAcademicosxiSedeIdxiYAcadId']);
+        Route::post('/', [CalendarioAcademicosController::class, 'guardarCalendarioAcademicos']);
+    });
+    Route::group(['prefix' => 'turnos'], function () {
+        Route::get('/', [TurnosController::class, 'obtenerTurnos']);
     });
 });

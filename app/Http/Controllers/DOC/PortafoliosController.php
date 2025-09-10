@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\doc;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
@@ -18,13 +20,9 @@ class PortafoliosController extends Controller
     }
 
     public function obtenerPortafolios(Request $request)
-    {
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-
+    {   
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+       
         $request['iYAcadId'] = is_null($request->iYAcadId)
             ? null
             : (is_numeric($request->iYAcadId)
@@ -48,25 +46,20 @@ class PortafoliosController extends Controller
                     ,p.cPortafolioFichasDidacticas
                     ,p.cPortafolioSesionesAprendizaje
                     ,p.iPortafolioId
-                    
-                    FROM doc.portafolios AS p 
-
-                    WHERE p.iDocenteId = '" . $request->iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
+                FROM doc.portafolios AS p 
+                WHERE p.iDocenteId = '" . $iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
             ");
 
             $reglamento = DB::select("
                 SELECT 
-                    ie.cIieeUrlReglamentoInterno
-                    FROM seg.credenciales AS c 
-                    INNER JOIN seg.credenciales_entidades AS ce ON ce.iCredId = c.iCredId
-                    INNER JOIN acad.sedes AS s ON s.iSedeId = ce.iSedeId
-                    INNER JOIN acad.institucion_educativas AS ie ON ie.iIieeId = s.iIieeId
-                    WHERE c.iCredId = '" . $request->iCredId . "'
+                ie.cIieeUrlReglamentoInterno
+                FROM acad.institucion_educativas AS ie
+                WHERE ie.iIieeId = '" . $request->iIieeId . "'
             ");
 
             $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data, 'reglamento' => $reglamento];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }

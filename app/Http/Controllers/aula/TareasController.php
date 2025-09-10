@@ -23,29 +23,23 @@ class TareasController extends Controller
             'cTareaDescripcion' => ['required', 'string'],
             'dtTareaInicio' => ['required'],
             'dtTareaFin' => ['required'],
-
             'iContenidoSemId' => ['required'],
             'iActTipoId' => ['required'],
-            'idDocCursoId' => ['required'],
+            'iYAcadId' => ['required'],
+
         ], [
-            'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
+            'iDocenteId.required' => 'No se encontró el identificador de la persona',
 
             'cTareaTitulo.required' => 'Debe ingresar el título',
             'cTareaTitulo.string' => 'El título debe ser una cadena de texto',
             'cTareaTitulo.max' => 'El título no debe exceder los 150 caracteres',
-
             'cTareaDescripcion.required' => 'Debe ingresar la descripción',
             'cTareaDescripcion.string' => 'La descripción debe ser una cadena de texto',
-
             'dtTareaInicio.required' => 'Debe ingresar la fecha de inicio',
-
-
             'dtTareaFin.required' => 'Debe ingresar la fecha de fin',
-
-
             'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
             'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
-            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+            'iYAcadId.required' => 'No se encontró el identificador del año académico',
         ]);
 
 
@@ -62,22 +56,26 @@ class TareasController extends Controller
                 'iContenidoSemId',
                 'iActTipoId',
                 'idDocCursoId',
-                'iCredId'
+                'iCredId',
+                'iCapacitacionId',
+                'iYAcadId',
 
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iDocenteId                      ?? NULL,
-                $request->cTareaTitulo                    ?? NULL,
-                $request->cTareaDescripcion               ?? NULL,
-                $request->cTareaArchivoAdjunto            ?? NULL,
-                $request->bTareaEsGrupal                  ?? NULL,
-                $request->dtTareaInicio                   ?? NULL,
-                $request->dtTareaFin                      ?? NULL,
+                $request->iDocenteId                     ?? NULL,
+                $request->cTareaTitulo                   ?? NULL,
+                $request->cTareaDescripcion              ?? NULL,
+                $request->cTareaArchivoAdjunto           ?? NULL,
+                $request->bTareaEsGrupal                 ?? NULL,
+                $request->dtTareaInicio                  ?? NULL,
+                $request->dtTareaFin                     ?? NULL,
                 $request->iContenidoSemId                ?? NULL,
                 $request->iActTipoId                     ?? NULL,
                 $request->idDocCursoId                   ?? NULL,
+                $request->iCapacitacionId                ?? NULL,
+                $request->iYAcadId                       ?? NULL,
 
                 $request->iCredId                        ?? NULL
             ];
@@ -94,6 +92,8 @@ class TareasController extends Controller
                     @_iContenidoSemId=?,
                     @_iActTipoId=?,
                     @_idDocCursoId=?,
+                    @_iCapacitacionId=?,
+                    @_iYAcadId=?,
                     @_iCredId=?',
                 $parametros
             );
