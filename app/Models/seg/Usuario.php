@@ -23,7 +23,15 @@ class Usuario extends Model
 
     public static function selUsuarioPorIdPersona($iPersId)
     {
-         return DB::selectOne('EXEC [seg].[SP_SEL_usuarios] @iPersId=?', [$iPersId]);
+        return DB::selectOne('EXEC [seg].[SP_SEL_usuarios] @iPersId=?', [$iPersId]);
+    }
+
+    public static function selUsuarioPorCredencial($cCredUsuario)
+    {
+        return DB::selectOne("SELECT TOP 1 per.iPersId, cred.iCredId,cPersCorreo, per.cPersNombre, per.cPersPaterno, per.cPersMaterno
+        FROM grl.personas AS per
+        INNER JOIN seg.credenciales AS cred ON cred.iPersId=per.iPersId
+        WHERE cred.cCredUsuario=?", [$cCredUsuario]);
     }
 
     public static function updFechaVigenciaCuenta($iCredId, $dtCredCaduca)

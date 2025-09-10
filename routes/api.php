@@ -67,8 +67,8 @@ Route::group(['middleware' => ['auth:api', RefreshToken::class]], function () {
 });
 
 
-Route::post('/verificar', [MailController::class, 'index']);
-Route::post('/verificar_codigo', [MailController::class, 'comparar']);
+//Route::post('/verificar', [MailController::class, 'index']);
+//Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 
 Route::group(['prefix' => 'administrador'], function () {
@@ -408,9 +408,9 @@ Route::group(['prefix' => 'acad'], function () {
 
 Route::get('/imprimir', PersonaController::class);
 
-Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
-Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
-Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+//Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
+//Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
+//Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
 
 Route::group(['prefix' => 'grl'], function () {
     Route::get('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
@@ -456,4 +456,4 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
 });
 
 
-Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+//Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);

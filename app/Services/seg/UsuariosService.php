@@ -4,11 +4,16 @@ namespace App\Services\seg;
 
 use App\Helpers\VerifyHash;
 use App\Http\Requests\seg\CambiarContrasenaRequest;
+use App\Mail\RecuperarPasswordMail;
 use App\Models\grl\Persona;
+use App\Models\seg\PasswordReset;
 use App\Models\seg\Usuario;
 use Carbon\Carbon;
 use Exception;
+use Faker\Calculator\Ean;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class UsuariosService
@@ -63,7 +68,7 @@ class UsuariosService
                 $item['cPersPaterno'],
                 isset($item['cPersMaterno']) ? $item['cPersMaterno'] : '',
                 $item['cPersNombre'],
-                isset($item['cPersSexo']) ? $item['cPersSexo']: "M",
+                isset($item['cPersSexo']) ? $item['cPersSexo'] : "M",
                 isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
                 isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
                 NULL,
@@ -91,7 +96,7 @@ class UsuariosService
                 $item['cPersPaterno'],
                 isset($item['cPersMaterno']) ? $item['cPersMaterno'] : null,
                 $item['cPersNombre'],
-                isset($item['cPersSexo']) ? $item['cPersSexo']: "M",
+                isset($item['cPersSexo']) ? $item['cPersSexo'] : "M",
                 isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
                 isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
                 NULL,
@@ -117,15 +122,6 @@ class UsuariosService
             'data' => $persona,
             'mensaje' => $mensaje
         ];
-        /*if (empty($item["iPersId"])) {
-            if ($iPersId) {
-            } else {
-                throw new Exception('Error al registrar el personal');
-            }
-        } else {
-            $iPersId = $item["iPersId"];
-            $mensaje = 'El usuario ya se encuentra registrado';
-        }*/
     }
 
     public static function cambiarEstadoUsuario($parametros)
