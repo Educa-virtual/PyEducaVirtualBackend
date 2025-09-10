@@ -29,6 +29,8 @@ class Ficha
             $request->iTipoSectorId,
             $request->iZonaId,
             $request->iFichaEstado,
+            $request->iTipoPersId,
+            $request->iCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichas ' . $placeholders, $parametros);
