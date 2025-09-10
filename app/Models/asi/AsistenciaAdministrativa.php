@@ -16,7 +16,7 @@ class AsistenciaAdministrativa extends Model
 
         if ($archivos) {
             $documento = Storage::disk('public')->put($ruta,$archivos);
-            $asistencia['justificar'] = $ruta.'/'.basename($documento);
+            $asistencia = $ruta.'/'.basename($documento);
         }
 
         $datos = [
@@ -29,7 +29,9 @@ class AsistenciaAdministrativa extends Model
             $request->iNivelGradoId,
             $request->idAsistencia ?? NULL,
             $request->iMatrId ?? NULL,
+            $asistencia ?? NULL,
         ];
+        
         $enviados = str_repeat('?,',count($datos)-1).'?';
         $data = DB::select("EXEC asi.Sp_INS_asistencia_general_estudiante ".$enviados,$datos);
         return $data;
