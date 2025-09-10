@@ -368,12 +368,23 @@ class EstudiantesController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function generarReporteAcademicoProgreso(Request $request)
+    public function generarReporteAcademicoProgreso($iYAcadId, Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $outputPdf=ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $request->iYAcadId);
+            $outputPdf = ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $iYAcadId);
             return response()->download($outputPdf)->deleteFileAfterSend(true);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerReporteAcademicoProgreso($iYAcadId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($request->header('iCredEntPerfId'), $iYAcadId);
+            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

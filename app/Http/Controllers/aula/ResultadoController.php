@@ -27,10 +27,8 @@ class ResultadoController extends Controller
     public function obtenerResultados(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'idDocCursoId' => ['required'],
             'iEstudianteId' => ['required'],
         ], [
-            'idDocCursoId.required' => 'No se encontró el identificador del curso',
             'iEstudianteId.required' => 'No se encontró el identificador del estudiante',
         ]);
 
@@ -44,17 +42,19 @@ class ResultadoController extends Controller
         $fieldsToDecode = [
             'idDocCursoId',
             'iEstudianteId',
+            'iCapacitacionId',
         ];
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         try {
             $params = [
                 $request->idDocCursoId      ??  NULL,
+                $request->iCapacitacionId   ??  NULL,
                 $request->iEstudianteId     ??  NULL
             ];
 
 
-            $data = DB::select('EXEC aula.Sp_SEL_obtenerResultadosxidDocCursoIdxiEstudianteId ?,?', $params);
+            $data = DB::select('EXEC aula.Sp_SEL_obtenerResultadosxidDocCursoIdxiEstudianteId ?,?,?', $params);
 
             $foro = json_decode($data[0]->foro, true);
             $tarea = json_decode($data[0]->tarea, true);

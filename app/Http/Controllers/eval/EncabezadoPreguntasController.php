@@ -17,15 +17,11 @@ class EncabezadoPreguntasController extends Controller
         $validator = Validator::make($request->all(), [
             'iEvaluacionId' => ['required'],
             'iDocenteId' => ['required'],
-            'iCursoId' => ['required'],
-            'iNivelCicloId' => ['required'],
             'cEncabPregTitulo' => ['required'],
             'cEncabPregContenido' => ['required']
         ], [
             'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
-            'iCursoId.required' => 'No se encontró el identificador iCursoId',
-            'iNivelCicloId.required' => 'No se encontró el identificador iNivelCicloId',
             'cEncabPregTitulo.required' => 'Debe ingresar el título',
             'cEncabPregContenido.required' => 'Debe ingresar la descripción',
         ]);
@@ -350,7 +346,7 @@ class EncabezadoPreguntasController extends Controller
         }
     }
 
-     public function eliminarBancoEncabezadoPreguntasxidEncabPregId(Request $request, $idEncabPregId)
+    public function eliminarBancoEncabezadoPreguntasxidEncabPregId(Request $request, $idEncabPregId)
     {
         $request->merge(['idEncabPregId' => $idEncabPregId]);
 

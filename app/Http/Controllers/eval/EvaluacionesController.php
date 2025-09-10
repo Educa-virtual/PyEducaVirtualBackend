@@ -61,26 +61,23 @@ class EvaluacionesController extends Controller
             'iDocenteId' => ['required'],
             'cEvaluacionTitulo' => ['required', 'max:250'],
             'cEvaluacionDescripcion' => ['required'],
-            'dtEvaluacionInicio'     => ['required', 'date'],
-            'dtEvaluacionFin'        => ['required', 'date', 'after:dtEvaluacionInicio'],
+            'dtEvaluacionInicio'     => ['required'],
+            'dtEvaluacionFin'        => ['required'],
 
             'iContenidoSemId' => ['required'],
             'iActTipoId' => ['required'],
-            'idDocCursoId' => ['required'],
+            'iYAcadId' => ['required'],
         ], [
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
             'cEvaluacionTitulo.required' => 'No se encontró el identificador cEvaluacionTitulo',
             'cEvaluacionTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cEvaluacionDescripcion.required' => 'No se encontró una descripción',
             'dtEvaluacionInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtEvaluacionInicio.date'         => 'La fecha de inicio no es válida.',
             'dtEvaluacionFin.required'        => 'La fecha y hora de fin es obligatoria',
-            'dtEvaluacionFin.date'            => 'La fecha de fin no es válida.',
-            'dtEvaluacionFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
 
             'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
             'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
-            'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
+            'iYAcadId.required' => 'No se encontró el identificador del año académico',
         ]);
 
         if ($validator->fails()) {
@@ -101,6 +98,8 @@ class EvaluacionesController extends Controller
                 'iActTipoId',
                 'idDocCursoId',
                 'iCredId',
+                'iCapacitacionId',
+                'iYAcadId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
@@ -115,6 +114,8 @@ class EvaluacionesController extends Controller
                 $request->iContenidoSemId           ?? NULL,
                 $request->iActTipoId                ?? NULL,
                 $request->idDocCursoId              ?? NULL,
+                $request->iCapacitacionId           ?? NULL,
+                $request->iYAcadId                  ?? NULL,
 
                 $request->iCredId                   ?? NULL
             ];
@@ -131,6 +132,8 @@ class EvaluacionesController extends Controller
                     @_iContenidoSemId=?,
                     @_iActTipoId=?,
                     @_idDocCursoId=?,
+                    @_iCapacitacionId=?,
+                    @_iYAcadId=?,
                     @_iCredId=?',
                 $parametros
             );
@@ -288,7 +291,8 @@ class EvaluacionesController extends Controller
         }
     }
 
-     public function obtenerReporteEstudiantesRetroalimentacion(Request $request){
+    public function obtenerReporteEstudiantesRetroalimentacion(Request $request)
+    {
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
             'iIeCursoId' => ['required'],
@@ -426,5 +430,4 @@ class EvaluacionesController extends Controller
             );
         }
     }
-
 }

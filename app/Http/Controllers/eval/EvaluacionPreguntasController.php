@@ -19,15 +19,11 @@ class EvaluacionPreguntasController extends Controller
             'iEvaluacionId' => ['required'],
             'iDocenteId' => ['required'],
             'iTipoPregId' => ['required'],
-            'iCursoId' => ['required'],
-            'iNivelCicloId' => ['required'],
             'cEvalPregPregunta' => ['required']
         ], [
             'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
             'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
-            'iCursoId.required' => 'No se encontró el identificador iCursoId',
-            'iNivelCicloId.required' => 'No se encontró el identificador iNivelCicloId',
             'cEvalPregPregunta.required' => 'Debe ingresar el enunciado de la pregunta',
         ]);
 
