@@ -454,6 +454,12 @@
                     <th width="20%">PROGRAMAS DE ALIMENTACIÓN</th>
                     <td width="80%">{{ $alimentos_std['programas_alimentacion'] ?? 'N/A' }}</td>
                 </tr>
+                @if( $alimentos_std['alergias_alimenticias'] )
+                <tr>
+                    <th>ALERGIAS ALIMENTICIAS</th>
+                    <td>{{ $alimentos_std['alergias_alimenticias'] ?? 'N/A' }}</td>
+                </tr>
+                @endif
                 <tr>
                     <th>DIETA ESPECIAL</th>
                     <td>{{ $alimentos_std['dieta_especial'] ?? 'N/A' }}</td>

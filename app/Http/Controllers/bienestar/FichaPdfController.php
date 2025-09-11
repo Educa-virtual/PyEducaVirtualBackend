@@ -190,6 +190,8 @@ class FichaPdfController extends Controller
             'dificultades_alimenticias' => $alimentacion->cDificultadAlimObs ?? '',
             'observaciones_alimenticias' => $alimentacion->cAlimObs ?? '',
             'programas_alimentacion' => $programas_alimentacion->cProgAlimNombre ?? '',
+            'alergias_alimenticias' => $alimentacion->cFichaDGAlergiaAlimentos ?? '',
+
         ];
 
         $datos['programas_discapacidad'] = [
