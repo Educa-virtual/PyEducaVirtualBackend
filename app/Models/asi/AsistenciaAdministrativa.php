@@ -20,6 +20,7 @@ class AsistenciaAdministrativa extends Model
         }
 
         $datos = [
+            $request->opcion ?? NULL,
             $request->iEstudianteId,
             $request->dtAsistencia,
             $request->iTipoAsiId,
@@ -31,7 +32,6 @@ class AsistenciaAdministrativa extends Model
             $request->iMatrId ?? NULL,
             $asistencia ?? NULL,
         ];
-        
         $enviados = str_repeat('?,',count($datos)-1).'?';
         $data = DB::select("EXEC asi.Sp_INS_asistencia_general_estudiante ".$enviados,$datos);
         return $data;
