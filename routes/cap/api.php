@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\cap\CapacitacionesController;
+use App\Http\Controllers\cap\CertificadoController;
 use App\Http\Controllers\cap\InscripcionesController;
 use App\Http\Controllers\cap\InstructoresController;
 use App\Http\Controllers\cap\NivelPedagogicosController;
@@ -56,5 +57,8 @@ Route::group(['prefix' => 'cap'], function () {
   Route::prefix('notas')->group(function () {
     Route::get('/{iCapacitacionId}', [NotasController::class, 'obtenerNotaEstudiantes']);
     Route::post('/', [NotasController::class, 'calificarNotaEstudiantes']);
+  });
+  Route::prefix('certificado')->group(function () {
+    Route::get('/{iCapacitacionId}/persona/{iPersId}/pdf', [CertificadoController::class, 'downloadPdf']);
   });
 });
