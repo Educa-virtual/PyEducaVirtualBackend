@@ -6,6 +6,9 @@ use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
+use App\Helpers\VerifyHash;
+use Illuminate\Http\Response;
 
 class PeriodoEvaluacionesController extends Controller
 {
@@ -31,6 +34,40 @@ class PeriodoEvaluacionesController extends Controller
             'iYAcadId' => $request->input('iYAcadId'),
         ]);
 
+
         return ResponseHandler::success($query, 'Calendario procesado correctamente.');
+    }
+
+    public function obtenerPeriodoEvaluaciones(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iCredId',
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iCredId                   ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec acad.SP_SEL_periodoEvaluaciones
+                    @_iCredId=?',
+                $parametros
+            );
+
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 }

@@ -89,6 +89,11 @@ class Usuario extends Model
         return DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
     }
 
+    public static function updPersonas($parametros)
+    {
+        return DB::select('execute grl.Sp_UPD_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+    }
+
     public static function insCredenciales($iPersId, $iCredId)
     {
         DB::statement('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
