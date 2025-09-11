@@ -94,8 +94,10 @@ class AnunciosController extends Controller
         }
     }
 
-    public function eliminarAnuncios(Request $request)
+    public function eliminarAnuncios($iAnuncioId, Request $request)
     {
+        $request->merge(['iAnuncioId' => $iAnuncioId]);
+
         try {
             $fieldsToDecode = [
                 'iAnuncioId',
