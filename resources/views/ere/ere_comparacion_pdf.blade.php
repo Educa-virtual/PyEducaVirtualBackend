@@ -19,7 +19,7 @@
     <thead>
         <tr>
             <th class="align-middle bg-light text-left" width="9%">EVALUACIÓN 1:</th>
-            <td class="align-middle text-left">{{ $filtros->evaluacion1 ?? '' }}</td>
+            <td class="align-middle text-left">{{ $filtros->evaluacion ?? '' }}</td>
             <th class="align-middle bg-light text-left" width="9%">EVALUACIÓN 2:</th>
             <td class="align-middle text-left">{{ $filtros->evaluacion2 ?? '' }}</td>
         </tr>
