@@ -2,6 +2,7 @@
 
 namespace App\Services\seg;
 
+use App\Helpers\ProteccionCorreoHelper;
 use App\Http\Requests\seg\CambiarContrasenaRequest;
 use App\Mail\seg\PasswordCambiadoMail;
 use App\Mail\seg\RecuperarPasswordMail;
@@ -18,7 +19,7 @@ class PasswordRecoveryService
 {
     public static function enviarCodigoRecuperacion(Request $request)
     {
-        self::restringirEnvios($request);
+        ProteccionCorreoHelper::validarEnvioPorIp($request->ip());
         $usuario = Usuario::selUsuarioPorCredencial($request->cCredUsuario);
         if ($usuario && !empty($usuario->cPersCorreo)) {
             PasswordReset::updAnularTokensUsuario($usuario->iCredId);
@@ -29,14 +30,6 @@ class PasswordRecoveryService
         } else {
             throw new Exception('El usuario no existe o no tiene un correo asociado');
         }
-    }
-
-    private static function restringirEnvios(Request $request) {
-        $ipKey = 'pr_requests:' . $request->ip();
-        if (RateLimiter::tooManyAttempts($ipKey, 10)) {
-            throw new Exception('Demasiadas solicitudes desde esta IP. Intenta más tarde.');
-        }
-        RateLimiter::hit($ipKey, 180); // ventana 180s
     }
 
     private static function enmascararCorreo($correo)
@@ -58,7 +51,7 @@ class PasswordRecoveryService
 
     public static function validarCodigoRecuperacion(Request $request)
     {
-        self::restringirEnvios($request);
+        ProteccionCorreoHelper::validarEnvioPorIp($request->ip());
         $request->validate([
             'cCredUsuario' => 'required',
             'token' => 'required|digits:6'
@@ -87,7 +80,7 @@ class PasswordRecoveryService
 
     public static function resetPassword(CambiarContrasenaRequest $request)
     {
-        self::restringirEnvios($request);
+        ProteccionCorreoHelper::validarEnvioPorIp($request->ip());
         $usuario = Usuario::selUsuarioPorCredencial($request->cCredUsuario);
         if (!$usuario) {
             throw new Exception('El usuario no existe o el código no es valido');

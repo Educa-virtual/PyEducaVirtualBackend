@@ -2,8 +2,10 @@
 
 namespace App\Services\seg;
 
+use App\Helpers\ProteccionCorreoHelper;
 use App\Helpers\VerifyHash;
 use App\Http\Requests\seg\CambiarContrasenaRequest;
+use App\Http\Requests\seg\SolicitarRegistroUsuarioRequest;
 use App\Mail\RecuperarPasswordMail;
 use App\Models\grl\Persona;
 use App\Models\seg\PasswordReset;
@@ -177,5 +179,10 @@ class UsuariosService
             $request->contrasenaNueva
         ];
         Usuario::updCredenciasUpdatePassword($parametros);
+    }
+
+    public static function solicitarRegistroUsuario(SolicitarRegistroUsuarioRequest $request)
+    {
+        ProteccionCorreoHelper::validarEnvioPorIp($request->ip());
     }
 }

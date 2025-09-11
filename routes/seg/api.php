@@ -51,6 +51,7 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
         });
         Route::get('', [UsuarioController::class, 'obtenerListaUsuarios']);
         Route::post('', [UsuarioController::class, 'registrarUsuario']);
+        Route::post('solicitud', [UsuarioController::class, 'solicitarRegistroUsuario'])->withoutMiddleware('auth:api');
     });
     Route::group(['prefix' => 'personas'], function () {
         Route::get('', [PersonaController::class, 'buscarPersona']);
