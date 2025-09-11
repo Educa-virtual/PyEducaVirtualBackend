@@ -18,9 +18,15 @@ use App\Http\Controllers\evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
 use App\Http\Controllers\eval\EvaluacionPromediosController;
+use App\Http\Controllers\eval\InstrumentosController;
 use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
+    Route::get('lista-estudiantes', [EvaluacionController::class, 'generarListaEstudiantesSedeSeccionGrado']);
+    Route::get('competenciasXCursoIdXCurricula', [EvaluacionController::class, 'competenciasXCursoIdXCurricula']);
+    Route::post('insertarResultadoXcompetencias', [EvaluacionController::class, 'insertarResultadoXcompetencias']);
+    Route::post('actualizarResultadoXperiodoDetMatricula', [EvaluacionController::class, 'actualizarResultadoXperiodoDetMatricula']);
+ 
     Route::group(['prefix' => 'tipo-preguntas'], function () {
         Route::get('obtenerTipoPreguntas', [TipoPreguntaController::class, 'obtenerTipoPreguntas']);
     });
@@ -60,6 +66,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
             Route::post('calificarLogrosRubrica', [EvaluacionEstudiantesController::class, 'calificarLogrosRubrica']);
             Route::post('guardarRespuestaxiEstudianteId', [EvaluacionEstudiantesController::class, 'guardarRespuestaxiEstudianteId']);
         });
+       
+    
     });
 
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
@@ -120,4 +128,12 @@ Route::group(['prefix' => 'virtual'], function () {
     Route::post('insertData', [ApiController::class, 'insertData']);
     Route::post('updateData', [ApiController::class, 'updateData']);
     Route::post('deleteData', [ApiController::class, 'deleteData']);
+});
+
+Route::group(['prefix' => 'evaluaciones-docente'], function () {
+    Route::group(['prefix' => 'instrumentos'], function () {
+        Route::post('guardar-instrumentos', [InstrumentosController::class, 'guardarInstrumentos']);
+        Route::post('editar-instrumentos', [InstrumentosController::class, 'editarInstrumentos']);
+        Route::post('eliminar-instrumentos', [InstrumentosController::class, 'eliminarInstrumentos']);
+    });
 });
