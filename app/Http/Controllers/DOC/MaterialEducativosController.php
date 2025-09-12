@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\doc;
 
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -85,7 +86,7 @@ class MaterialEducativosController extends Controller
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -109,7 +110,7 @@ class MaterialEducativosController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -133,7 +134,7 @@ class MaterialEducativosController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -143,12 +144,14 @@ class MaterialEducativosController extends Controller
 
     public function delete(Request $request)
     {
-        $resp = new MaterialEducativosController();
-        $parametros = $resp->validate($request);
+
+        $parametros = [
+            $request->opcion,
+            $request->iMatEducativoId
+        ];
 
         try {
-            $data = DB::select('exec doc.Sp_DEL_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec doc.Sp_DEL_materialEducativoDocentes ?,?', $parametros);
                 
             if ($data[0]->iMatEducativoId > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se eliminó la información exitosamente.'];
@@ -157,7 +160,7 @@ class MaterialEducativosController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }

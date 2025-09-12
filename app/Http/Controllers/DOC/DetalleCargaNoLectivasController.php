@@ -115,10 +115,9 @@ class DetalleCargaNoLectivasController extends Controller
     {
         $resp = new DetalleCargaNoLectivasController();
         $parametros = $resp->validate($request);
-
         try {
             $data = DB::select('exec doc.Sp_UPD_detalleCargaNoLectivas
-                ?,?,?,?,?,?,?,?', $parametros);
+                ?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iDetCargaNoLectId > 0) {
 
