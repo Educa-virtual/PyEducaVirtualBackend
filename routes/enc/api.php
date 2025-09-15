@@ -3,6 +3,7 @@
 use App\Http\Controllers\enc\CategoriaController;
 use App\Http\Controllers\enc\EncuestaController;
 use App\Http\Controllers\enc\PreguntaController;
+use App\Http\Controllers\enc\RespuestaController;
 use App\Http\Controllers\enc\SeccionController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,4 +34,8 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('guardarPregunta', [PreguntaController::class, 'guardarPregunta']);
     Route::post('actualizarPregunta', [PreguntaController::class, 'actualizarPregunta']);
     Route::post('borrarPregunta', [PreguntaController::class, 'borrarPregunta']);
+
+    Route::post('listarRespuestas', [RespuestaController::class, 'listarRespuestas']);
+    Route::post('guardarRespuestas', [RespuestaController::class, 'guardarRespuestas']);
+    Route::post('actualizarRespuestas', [RespuestaController::class, 'actualizarRespuestas']);
 });
