@@ -20,6 +20,7 @@ use App\Http\Controllers\aula\PreguntaAlternativasRespuestasController;
 use App\Http\Controllers\aula\PreguntasController;
 use App\Http\Controllers\aula\ReunionVirtualesController;
 use App\Http\Controllers\aula\TipoExperienciaAprendizajeController;
+use App\Http\Controllers\aula\TipoPreguntasController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -158,5 +159,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     });
     Route::prefix('tipo-experiencia-aprendizaje')->group(function () {
         Route::get('/', [TipoExperienciaAprendizajeController::class, 'listarTipoExperienciaAprendizaje']); // Para obtener los tipos de experiencia de aprendizaje
+    });
+    Route::prefix('tipo-preguntas')->group(function () {
+        Route::get('/', [TipoPreguntasController::class, 'listarTipoPreguntas']); // Para obtener los tipos de preguntas
     });
 });

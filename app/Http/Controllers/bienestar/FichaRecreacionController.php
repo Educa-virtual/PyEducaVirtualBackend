@@ -15,6 +15,10 @@ class FichaRecreacionController extends Controller
     private $registran = [
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
+        Perfil::DOCENTE,
+        Perfil::DIRECTOR_IE,
+        Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
     ];
 
     public function actualizarFichaRecreacion(Request $request)
