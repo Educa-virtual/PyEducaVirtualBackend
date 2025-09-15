@@ -1,13 +1,24 @@
 <?php
 
 use App\Http\Controllers\cap\CapacitacionesController;
+use App\Http\Controllers\cap\CertificadoController;
 use App\Http\Controllers\cap\InscripcionesController;
 use App\Http\Controllers\cap\InstructoresController;
 use App\Http\Controllers\cap\NivelPedagogicosController;
 use App\Http\Controllers\cap\NotasController;
 use App\Http\Controllers\cap\TipoCapacitacionesController;
 use App\Http\Controllers\cap\TipoPublicosController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CodigoMail;
 use Illuminate\Support\Facades\Route;
+
+Route::get('enviar-correo', function () {
+  Mail::to('recipient@example.com')->send(new CodigoMail([
+    'subject' => 'Test Email',
+    'body' => 'This is a test email sent from the API.'
+  ]));
+  return response()->json(['message' => 'Email sent successfully']);
+})->name('enviar-correo');
 
 Route::group(['prefix' => 'cap'], function () {
   Route::group(['prefix' => 'tipo-capacitaciones'], function () {
@@ -46,5 +57,8 @@ Route::group(['prefix' => 'cap'], function () {
   Route::prefix('notas')->group(function () {
     Route::get('/{iCapacitacionId}', [NotasController::class, 'obtenerNotaEstudiantes']);
     Route::post('/', [NotasController::class, 'calificarNotaEstudiantes']);
+  });
+  Route::prefix('certificado')->group(function () {
+    Route::get('/{iCapacitacionId}/persona/{iPersId}/pdf', [CertificadoController::class, 'downloadPdf']);
   });
 });

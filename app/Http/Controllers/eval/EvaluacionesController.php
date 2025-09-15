@@ -165,18 +165,15 @@ class EvaluacionesController extends Controller
             'iEvaluacionId' => ['required'],
             'cEvaluacionTitulo' => ['required', 'max:250'],
             'cEvaluacionDescripcion' => ['required'],
-            'dtEvaluacionInicio'     => ['required', 'date'],
-            'dtEvaluacionFin'        => ['required', 'date', 'after:dtEvaluacionInicio'],
+            'dtEvaluacionInicio'     => ['required'],
+            'dtEvaluacionFin'        => ['required'],
         ], [
             'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
             'cEvaluacionTitulo.required' => 'No se encontró el identificador cEvaluacionTitulo',
             'cEvaluacionTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cEvaluacionDescripcion.required' => 'No se encontró una descripción',
             'dtEvaluacionInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtEvaluacionInicio.date'         => 'La fecha de inicio no es válida.',
             'dtEvaluacionFin.required'        => 'La fecha y hora de fin es obligatoria',
-            'dtEvaluacionFin.date'            => 'La fecha de fin no es válida.',
-            'dtEvaluacionFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
         ]);
 
         if ($validator->fails()) {
