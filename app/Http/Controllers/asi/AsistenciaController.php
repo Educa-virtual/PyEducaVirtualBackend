@@ -791,7 +791,6 @@ class AsistenciaController extends Controller
         return $pdf;
     }
     public function descargarJustificacion(Request $request){
-        //$iDocenteId = $this->decodificar($request->iDocenteId);
         $cJustificar = $request->cJustificar;
         
         if (!Storage::disk('public')->exists($cJustificar)) {
