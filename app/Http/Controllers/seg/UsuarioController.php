@@ -5,6 +5,7 @@ namespace App\Http\Controllers\seg;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Requests\seg\LoginUsuarioRequest;
+use App\Http\Requests\seg\SolicitarRegistroUsuarioRequest;
 use App\Models\seg\Usuario;
 use App\Models\User;
 use App\Services\seg\UsuariosService;
@@ -112,16 +113,6 @@ class UsuarioController
             return FormatearMensajeHelper::ok('Se ha asignado el perfil', null, Response::HTTP_CREATED);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
-        }
-    }
-
-    public function solicitarRegistroUsuario(Request $request)
-    {
-        try {
-            $resultado = UsuariosService::solicitarRegistroUsuario($request);
-            return FormatearMensajeHelper::ok($resultado['mensaje'], $resultado['data']);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
         }
     }
 }

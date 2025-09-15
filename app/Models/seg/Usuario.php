@@ -73,6 +73,14 @@ class Usuario extends Model
 
     public static function insPerfilUgel($iCredId, $request)
     {
+        $params=[
+            $request->iUgelId,
+            $request->iEntId,
+            $request->iPerfilId,
+            $iCredId,
+            $request->iCursosNivelGradId
+        ];
+        file_put_contents('D:\ugel.txt', print_r($params, true));
         DB::statement("EXEC [seg].[SP_INS_PerfilUgel] @iUgelId=?, @iEntId=?, @iPerfilId=?, @iCredId=?, @iCursosNivelGradId=?", [
             $request->iUgelId,
             $request->iEntId,

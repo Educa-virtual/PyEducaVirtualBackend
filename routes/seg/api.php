@@ -10,6 +10,7 @@ use App\Http\Controllers\seg\DatabaseController;
 use App\Http\Controllers\seg\ModuloAdministrativoController;
 use App\Http\Controllers\seg\PasswordRecoveryController;
 use App\Http\Controllers\seg\PerfilController;
+use App\Http\Controllers\seg\SolicitudRegistroUsuarioController;
 use App\Http\Controllers\seg\UsuarioController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
@@ -40,7 +41,10 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
             Route::post('codigo-recuperacion/validar', [PasswordRecoveryController::class, 'validarCodigoRecuperacion'])->withoutMiddleware('auth:api');
             Route::post('reset-password', [PasswordRecoveryController::class, 'resetPassword'])->withoutMiddleware('auth:api');
         });
-
+        Route::group(['prefix' => 'solicitudes-registro'], function () {
+            Route::post('', [SolicitudRegistroUsuarioController::class, 'registrarSolicitud'])->withoutMiddleware('auth:api');
+            Route::get('', [SolicitudRegistroUsuarioController::class, 'obtenerListaSolicitudes']);
+        });
         Route::group(['prefix' => '{iCredId}'], function () {
             Route::get('perfiles', [UsuarioController::class, 'obtenerPerfilesUsuario']);
             Route::post('perfiles', [UsuarioController::class, 'agregarPerfilUsuario']);
@@ -51,7 +55,6 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
         });
         Route::get('', [UsuarioController::class, 'obtenerListaUsuarios']);
         Route::post('', [UsuarioController::class, 'registrarUsuario']);
-        Route::post('solicitud', [UsuarioController::class, 'solicitarRegistroUsuario'])->withoutMiddleware('auth:api');
     });
     Route::group(['prefix' => 'personas'], function () {
         Route::get('', [PersonaController::class, 'buscarPersona']);

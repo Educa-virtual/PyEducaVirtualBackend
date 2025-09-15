@@ -10,23 +10,24 @@ class SolicitarRegistroUsuarioRequest  extends GeneralFormRequest
     public function rules(): array
     {
         return [
-            'documento' => 'required',
-            'nombres' => 'required',
-            'nombres' => 'required',
-            'codigoModular' => 'required',
-            'cargo' => 'required',
-            'correo' => 'required|email'
+            'cDocumento' => 'required',
+            'cCodigoModular' => 'required',
+            'cCargo' => 'required',
+            'cCorreo' => 'required|email',
+            'cNombres' => 'required',
+            'cApellidos' => 'required'
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'documento' => 'Documento',
-            'nombre' => 'Nombre',
-            'codigoModular' => 'Código Modular',
-            'cargo' => 'Cargo',
-            'correo' => 'Correo electrónico',
+            'cDocumento' => 'Documento',
+            'cCodigoModular' => 'Código Modular',
+            'cCargo' => 'Cargo',
+            'cCorreo' => 'Correo electrónico',
+            'cNombres' => 'Nombres',
+            'cApellidos' => 'Apellidos'
         ];
     }
 }
