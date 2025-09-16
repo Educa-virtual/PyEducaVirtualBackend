@@ -20,8 +20,7 @@ class ReportesAcademicosService
         $tutor = DocentesCursosService::obtenerTutorSalonIe($iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);
         $fechasInicioFin = CalendariosAcademicosService::obtenerCalendarioFechasInicioFinSede($iYAcadId, $matricula->iSedeId);
         $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('persona', 'matricula', 'ie', 'tutor', 'yearAcademico', 'fechasInicioFin'))->render();
-        //$footerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_footer', compact('persona'))->render();
-        //$fullHtml = $htmlcontent . $footerHtml;
+
         $archivoHtml = $usuario->iPersId . '_reporte_progreso.html';
         $tempPath = storage_path('app\\' . $archivoHtml);
         file_put_contents($tempPath, $htmlcontent);
@@ -43,7 +42,7 @@ class ReportesAcademicosService
         //$yearAcademico = YearAcademicosService::obtenerYearAcademico($iYAcadId);
         //$persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
         $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
-        $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId);
+        $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId, $iYAcadId);
         foreach ($cursos as $curso) {
             $curso->competencias = ReportesAcademicosService::obtenerCompetenciasPorCurso(
                 $curso->iNivelTipoId,
@@ -69,9 +68,9 @@ class ReportesAcademicosService
         return $cursos;
     }
 
-    public static function obtenerCursosPorIe($iSedeId, $iNivelGradoId)
+    public static function obtenerCursosPorIe($iSedeId, $iNivelGradoId, $iYAcadId)
     {
-        return CompetenciaCurso::selCursosPorIe($iSedeId, $iNivelGradoId);
+        return CompetenciaCurso::selCursosPorIe($iSedeId, $iNivelGradoId, $iYAcadId);
     }
 
     public static function obtenerCompetenciasPorCurso($iNivelTipoId, $iCursoId)
@@ -98,8 +97,8 @@ class ReportesAcademicosService
             for ($i = 1; $i <= 5; $i++) {
                 $resultado = ResultadoCompetencia::selResultadosPorCompetencia($matricula->iMatrId, $competencia->iCompetenciaId, $iIeCursoId, $i);
                 if ($resultado) {
-                    array_push($fila->periodos, $i == 5 ? 'Nota final' : ('Periodo ' . $i));
-                    array_push($fila->resultado, $resultado->iResultado);
+                    array_push($fila->periodos, $i == 5 ? 'Calificativo' : ('Periodo ' . $i));
+                    array_push($fila->resultado, $resultado->cNivelLogro);
                 }
             }
             array_push($data, $fila);
