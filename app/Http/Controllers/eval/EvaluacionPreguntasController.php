@@ -62,6 +62,7 @@ class EvaluacionPreguntasController extends Controller
                 $request->idEncabPregId               ??  NULL,
                 $request->cEvalPregPregunta           ??  NULL,
                 $request->cEvalPregTextoAyuda         ??  NULL,
+                $request->bArgumentar                 ??  NULL,
                 $request->jsonAlternativas            ??  NULL,
                 $request->iCredId                     ??  NULL
             ];
@@ -76,6 +77,7 @@ class EvaluacionPreguntasController extends Controller
                     @_idEncabPregId=?,   
                     @_cEvalPregPregunta=?,   
                     @_cEvalPregTextoAyuda=?,   
+                    @_bArgumentar=?,
                     @_jsonAlternativas=?,   
                     @_iCredId=?',
                 $parametros
@@ -441,12 +443,21 @@ class EvaluacionPreguntasController extends Controller
                             $letra = $alt['cBancoAltLetra'] ?? '';
                             $desc  = $alt['cBancoAltDescripcion'] ?? '';
                             $htmlAlt = "<span>$letra) $desc</span>";
-
-                            if (!empty($alt['cAlternativaImagen'])) {
-                                $htmlAlt .= "<br>[Imagen]";
-                            }
-
                             Html::addHtml($section, $htmlAlt, false, false);
+                            if (!empty($alt['cAlternativaImagen'])) {
+                                // Construir ruta absoluta al archivo en storage/public o public/
+                                $rutaImagen = public_path($alt['cAlternativaImagen']);
+
+                                if (file_exists($rutaImagen)) {
+                                    $section->addImage($rutaImagen, [
+                                        'width' => 50,
+                                        'height' => 50,
+                                        'alignment' => 'left'
+                                    ]);
+                                } else {
+                                    $section->addText("[Imagen no encontrada: {$alt['cAlternativaImagen']}]");
+                                }
+                            }
                         }
                     }
 
@@ -483,12 +494,21 @@ class EvaluacionPreguntasController extends Controller
                         $letra = $alt['cBancoAltLetra'] ?? '';
                         $desc  = $alt['cBancoAltDescripcion'] ?? '';
                         $htmlAlt = "<span>$letra) $desc</span>";
-
-                        if (!empty($alt['cAlternativaImagen'])) {
-                            $htmlAlt .= "<br>[Imagen]";
-                        }
-
                         Html::addHtml($section, $htmlAlt, false, false);
+                        if (!empty($alt['cAlternativaImagen'])) {
+                            // Construir ruta absoluta al archivo en storage/public o public/
+                            $rutaImagen = public_path($alt['cAlternativaImagen']);
+
+                            if (file_exists($rutaImagen)) {
+                                $section->addImage($rutaImagen, [
+                                    'width' => 50,
+                                    'height' => 50,
+                                    'alignment' => 'left'
+                                ]);
+                            } else {
+                                $section->addText("[Imagen no encontrada: {$alt['cAlternativaImagen']}]");
+                            }
+                        }
                     }
                 }
 
