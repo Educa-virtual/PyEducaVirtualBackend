@@ -28,10 +28,11 @@ class AsistenciaAdministrativa extends Model
             $request->iSedeId,
             $request->iYAcadId,
             $request->iNivelGradoId,
-            $request->idAsistencia ?? NULL,
+            $request->idAsistencia == 'null' ? NULL : $request->idAsistencia,
             $request->iMatrId ?? NULL,
             $asistencia ?? NULL,
         ];
+       
         $enviados = str_repeat('?,',count($datos)-1).'?';
         $data = DB::select("EXEC asi.Sp_INS_asistencia_general_estudiante ".$enviados,$datos);
         return $data;

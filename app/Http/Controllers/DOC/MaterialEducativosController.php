@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\doc;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
@@ -77,13 +78,15 @@ class MaterialEducativosController extends Controller
 
     public function list(Request $request)
     {
-        $resp = new MaterialEducativosController();
-        $parametros = $resp->validate($request);
-
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $parametros = [
+            $request->opcion,
+            $request->iCursosNivelGradId,
+            $iDocenteId,
+        ];
+        
         try {
-            $data = DB::select('exec doc.Sp_SEL_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
+            $data = DB::select('exec doc.Sp_SEL_materialEducativoDocentes ?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (Exception $e) {
@@ -152,8 +155,7 @@ class MaterialEducativosController extends Controller
 
         try {
             $data = DB::select('exec doc.Sp_DEL_materialEducativoDocentes ?,?', $parametros);
-                
-            if ($data[0]->iMatEducativoId > 0) {
+            if ($data[0]->resultado > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se eliminó la información exitosamente.'];
                 $codeResponse = 200;
             } else {
