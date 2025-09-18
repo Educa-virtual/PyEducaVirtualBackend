@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\ere;
 
+use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Services\Ere\ResultadosService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Gate;
 
 class ResultadosController extends Controller
 {
@@ -152,6 +155,20 @@ class ResultadosController extends Controller
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 500
             );
+        }
+    }
+
+    public function descargarHojaDesarrolloEstudiante() {
+
+    }
+
+    public function guardarHojaDesarrolloEstudiante(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
+            $data = ResultadosService::obtenerSugerencias($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }

@@ -96,7 +96,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante', [ResultadosController::class, 'guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante']);
         Route::post('terminarExamenxiEstudianteId', [ResultadosController::class, 'terminarExamenxiEstudianteId']);
         Route::post('guardarRespuestas', [ResultadosController::class, 'guardarRespuestas']);
-       
+       Route::post('estudiante/hoja-desarrollo', [ResultadosController::class, 'guardarHojaDesarrolloEstudiante']);
     });
 
     Route::group(['prefix' => 'reportes'], function () {
