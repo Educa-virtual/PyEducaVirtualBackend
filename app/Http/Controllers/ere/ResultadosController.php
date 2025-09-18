@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ere;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Ere\GuardarHojaDesarrolloEstudianteRequest;
 use App\Services\Ere\ResultadosService;
 use Exception;
 use Illuminate\Http\Request;
@@ -162,11 +163,11 @@ class ResultadosController extends Controller
 
     }
 
-    public function guardarHojaDesarrolloEstudiante(Request $request) {
+    public function guardarHojaDesarrolloEstudiante(GuardarHojaDesarrolloEstudianteRequest $request) {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
-            $data = ResultadosService::obtenerSugerencias($request);
-            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+            ResultadosService::guardarHojaDesarrolloEstudiante($request);
+            return FormatearMensajeHelper::ok('Se ha guardado el archivo del estudiante');
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
