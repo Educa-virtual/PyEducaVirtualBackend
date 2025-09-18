@@ -14,7 +14,7 @@ use Illuminate\Http\Response;
 
 class CredencialesController extends Controller
 {
-    public function  obtenerUsuario(Request $request)
+    public function obtenerUsuario(Request $request)
     {
         try {
             $data = DB::select("
@@ -52,33 +52,7 @@ class CredencialesController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function  verificarUsuario(Request $request)
-    {
-        try {
-            $data = DB::select("
-                SELECT
-                    MAX(c.iCredId) AS iCredId
-                    FROM seg.credenciales AS c
-                    INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
-                    WHERE c.cCredUsuario = '" . $request->cUsuario . "' AND pc.cPersConNombre = '" . $request->cCorreo . "' AND c.cCredTokenPassword ='" . $request->cCredTokenPassword . "'  AND pc.iTipoConId = 1
-            ");
-
-            if ($data[0]->iCredId > 0) {
-                $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => null];
-                $codeResponse = 200;
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido obtener la información.'];
-                $codeResponse = 500;
-            }
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
-        }
-
-        return new JsonResponse($response, $codeResponse);
-    }
-
-    public function  actualizarUsuario(Request $request)
+    public function actualizarUsuario(Request $request)
     {
         try {
             $data = DB::select("
@@ -105,4 +79,32 @@ class CredencialesController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
+    public function verificarUsuario(Request $request)
+    {
+        try {
+            $data = DB::select("
+                SELECT
+                    MAX(c.iCredId) AS iCredId
+                    FROM seg.credenciales AS c
+                    INNER JOIN grl.personas_contactos AS pc ON pc.iPersId = c.iPersId
+                    WHERE c.cCredUsuario = '" . $request->cUsuario . "' AND pc.cPersConNombre = '" . $request->cCorreo . "' AND c.cCredTokenPassword ='" . $request->cCredTokenPassword . "'  AND pc.iTipoConId = 1
+            ");
+
+            if ($data[0]->iCredId > 0) {
+                $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => null];
+                $codeResponse = 200;
+            } else {
+                $response = ['validated' => false, 'mensaje' => 'No se ha podido obtener la información.'];
+                $codeResponse = 500;
+            }
+        } catch (\Exception $e) {
+            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
+            $codeResponse = 500;
+        }
+
+        return new JsonResponse($response, $codeResponse);
+    }
+
+
 }

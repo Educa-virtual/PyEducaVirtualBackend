@@ -58,7 +58,6 @@ class CuadernosCampoController extends Controller
 					,cc.cCuadernoDescripcion
 					,cc.cCuadernoUrl
 					,cc.iCuadernoId
-					
 					FROM acad.cursos AS acur
 					INNER JOIN acad.cursos_niveles_grados   AS acunig   ON acunig.iCursoId=acur.iCursoId
 					INNER JOIN acad.nivel_grados            AS angr     ON angr.iNivelGradoId=acunig.iNivelGradoId
@@ -70,7 +69,6 @@ class CuadernosCampoController extends Controller
 					LEFT JOIN acad.silabos					AS asil     ON asil.idDocCursoId=adocu.idDocCursoId AND asil.iSemAcadId=asema.iSemAcadId AND asil.iYAcadId=asema.iYAcadId
 					LEFT JOIN doc.cuadernos_campo AS cc ON cc.iSilaboId = asil.iSilaboId 
 					WHERE asil.iSilaboId = '".$request->iSilaboId."'
-					
             ");
             if($data[0]->iCuadernoId > 0){
                 $query = DB::update("
