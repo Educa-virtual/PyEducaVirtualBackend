@@ -26,7 +26,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     Route::get('competenciasXCursoIdXCurricula', [EvaluacionController::class, 'competenciasXCursoIdXCurricula']);
     Route::post('insertarResultadoXcompetencias', [EvaluacionController::class, 'insertarResultadoXcompetencias']);
     Route::post('actualizarResultadoXperiodoDetMatricula', [EvaluacionController::class, 'actualizarResultadoXperiodoDetMatricula']);
- 
+
     Route::group(['prefix' => 'tipo-preguntas'], function () {
         Route::get('obtenerTipoPreguntas', [TipoPreguntaController::class, 'obtenerTipoPreguntas']);
     });
@@ -66,8 +66,6 @@ Route::group(['prefix' => 'evaluaciones',], function () {
             Route::post('calificarLogrosRubrica', [EvaluacionEstudiantesController::class, 'calificarLogrosRubrica']);
             Route::post('guardarRespuestaxiEstudianteId', [EvaluacionEstudiantesController::class, 'guardarRespuestaxiEstudianteId']);
         });
-       
-    
     });
 
     Route::group(['prefix' => 'instrumento-evaluaciones'], function () {
@@ -113,7 +111,7 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::put('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'actualizarEvaluacionPreguntasxiEvalPregId']); // Para actualizar x iEvalPregId
         Route::delete('/{iEvalPregId}', [EvaluacionPreguntasController::class, 'eliminarEvaluacionPreguntasxiEvalPregId']); // Para eliminar x iEvalPregId
         Route::get('/{iEvaluacionId}/estudiante/{iEstudianteId}', [EvaluacionPreguntasController::class, 'obtenerEvaluacionPreguntasxiEvaluacionIdxiEstudianteId']); // Para eliminar
-
+        Route::get('/generarWordxiEvaluacionId/{iEvaluacionId}/{iCredId}', [EvaluacionPreguntasController::class, 'generarWordxiEvaluacionId']);
     });
     Route::group(['prefix' => 'evaluacion-respuestas'], function () {
         Route::post('handleCrudOperation', [EvaluacionRespuestasController::class, 'handleCrudOperation']);
