@@ -9,6 +9,13 @@ use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Shared\Html;
+use PhpOffice\PhpWord\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpWord\SimpleType\Jc;
 
 
 class EvaluacionPreguntasController extends Controller
@@ -55,6 +62,7 @@ class EvaluacionPreguntasController extends Controller
                 $request->idEncabPregId               ??  NULL,
                 $request->cEvalPregPregunta           ??  NULL,
                 $request->cEvalPregTextoAyuda         ??  NULL,
+                $request->bArgumentar                 ??  NULL,
                 $request->jsonAlternativas            ??  NULL,
                 $request->iCredId                     ??  NULL
             ];
@@ -69,6 +77,7 @@ class EvaluacionPreguntasController extends Controller
                     @_idEncabPregId=?,   
                     @_cEvalPregPregunta=?,   
                     @_cEvalPregTextoAyuda=?,   
+                    @_bArgumentar=?,
                     @_jsonAlternativas=?,   
                     @_iCredId=?',
                 $parametros
@@ -297,5 +306,222 @@ class EvaluacionPreguntasController extends Controller
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
+    }
+
+    public function generarWordxiEvaluacionId(Request $request, $iEvaluacionId, $iCredId)
+    {
+        $request->merge([
+            'iEvaluacionId' => $iEvaluacionId,
+            'iCredId' => $iCredId,
+        ]);
+
+        try {
+            $fieldsToDecode = ['iEvaluacionId', 'iCredId'];
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [$request->iEvaluacionId ?? NULL, $request->iCredId ?? NULL];
+
+            $data = DB::select(
+                'exec eval.SP_SEL_evaluacionPreguntasxiEvaluacionId @_iEvaluacionId=?, @_iCredId=?',
+                $parametros
+            );
+
+            if (empty($data)) {
+                return response()->json(['error' => 'No se encontraron preguntas'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => substr($e->errorInfo[2] ?? '', 54)], 404);
+        }
+
+        $area_grado_nivel = DB::select("
+        SELECT TOP 1 c.cCursoNombre,
+        CONCAT(g.cGradoAbreviacion,' de ',nt.cNivelTipoNombre) AS cNivel
+        FROM eval.evaluaciones AS e
+        INNER JOIN aula.programacion_actividades AS pa ON pa.iProgActId = e.iProgActId
+        INNER JOIN acad.docente_cursos AS dc ON dc.idDocCursoId = pa.idDocCursoId
+        INNER JOIN acad.ies_cursos AS ic ON ic.iIeCursoId = dc.iIeCursoId
+        INNER JOIN acad.cursos_niveles_grados AS cng ON cng.iCursosNivelGradId = ic.iCursosNivelGradId
+        INNER JOIN acad.cursos AS c ON c.iCursoId = cng.iCursoId
+        INNER JOIN acad.nivel_grados AS ng ON ng.iNivelGradoId = cng.iNivelGradoId
+        INNER JOIN acad.grados AS g ON g.iGradoId = ng.iGradoId
+        INNER JOIN acad.nivel_ciclos AS nc ON nc.iNivelCicloId = ng.iNivelCicloId
+        INNER JOIN acad.nivel_tipos AS nt ON nt.iNivelTipoId = nc.iNivelTipoId
+        WHERE e.iEvaluacionId = ?", [$request->iEvaluacionId]);
+
+        $area = count($area_grado_nivel) ? $area_grado_nivel[0]->cCursoNombre : '-';
+        $nivel = count($area_grado_nivel) ? $area_grado_nivel[0]->cNivel : '-';
+
+        // 🔹 Instrucciones
+        $instrucciones = [
+            "A continuación, te presentamos preguntas que debes responder correctamente. La respuesta correcta se encuentra en una de las alternativas planteadas (si es que hubiera). Para ello:",
+            "• LEE CADA PREGUNTA CON MUCHA ATENCIÓN.",
+            "• RECUERDA LEER TODO LO QUE OBSERVAS, SUBRAYA, MARCA O SUMILLA, TODO LO QUE CONSIDERES NECESARIO.",
+            "• SI ES NECESARIO, VUELVE A LEER LA PREGUNTA.",
+            "• PIENSA BIEN ANTES DE MARCAR UNA RESPUESTA.",
+            "• SOLAMENTE DEBES MARCAR UNA ALTERNATIVA POR CADA PREGUNTA.",
+            "• MARCA TUS RESPUESTAS EN LA HOJA DE RESPUESTAS."
+        ];
+
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection([
+            'marginTop' => 1000,
+            'marginBottom' => 1000,
+            'marginLeft' => 1000,
+            'marginRight' => 1000,
+        ]);
+
+        // 🔹 Carátula
+        $section->addImage(public_path('images/logo-dremo.png'), [
+            'width' => 150,
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER
+        ]);
+        $section->addTextBreak(1);
+
+        $section->addText('──────────────────────────────', ['color' => 'FF0000'], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addText("Año: " . date('Y'), ['size' => 10], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addTextBreak(1);
+
+        $section->addText('PREGUNTAS DE EVALUACIÓN ' . $area, ['bold' => true, 'size' => 28, 'color' => 'FF0000'], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addTextBreak(1);
+
+        $section->addText($nivel, ['size' => 16], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addTextBreak(3);
+
+        $section->addText('INDICACIONES', ['bold' => true, 'size' => 20, 'color' => 'FF0000'], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addTextBreak(1);
+
+        foreach ($instrucciones as $linea) {
+            $section->addText($linea, ['size' => 12], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH]);
+        }
+
+        // 🔹 Salto de página antes de las preguntas
+        $section->addPageBreak();
+
+        // 🔹 Preguntas
+        $contadorPregunta = 1;
+        foreach ($data as $index => $pregunta) {
+            // 🔹 Si la pregunta pertenece a un encabezado
+            if (!empty($pregunta->idEncabPregId)) {
+                // Título del encabezado (opcional)
+                if (!empty($pregunta->cEncabPregTitulo)) {
+                    $section->addText("PREGUNTA MÚLTIPLE: {$pregunta->cEncabPregTitulo}", ['bold' => true, 'size' => 14]);
+                }
+
+                // Obtenemos las preguntas anidadas en jsonPreguntas
+                $preguntasEncab = json_decode($pregunta->jsonPreguntas ?? '[]', true);
+
+                foreach ($preguntasEncab as $p) {
+                    $contenido = $p['cEvalPregPregunta'] ?? '';
+                    $contenido = preg_replace('/<img(.*?)>/i', '<img$1 />', $contenido);
+
+                    Html::addHtml($section, "<strong>Pregunta $contadorPregunta:</strong> $contenido", false, false);
+
+                    if (!empty($p['cEvalPregTextoAyuda'])) {
+                        $section->addText(
+                            $p['cEvalPregTextoAyuda'],
+                            ['size' => 10, 'color' => '007BFF'],
+                            [
+                                'borderSize' => 6,
+                                'borderColor' => '007BFF', // azul
+                                'bgColor' => 'D9EDF7',     // fondo azul claro
+                                'spaceAfter' => 200,
+                                'spaceBefore' => 200,
+                                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
+                                'valign' => 'center',
+                            ]
+                        );
+                    }
+
+                    // Alternativas
+                    if (!empty($p['iTipoPregId']) && in_array($p['iTipoPregId'], [1, 2])) {
+                        $alternativas = $p['jsonAlternativas'] ?? [];
+
+                        if (is_string($alternativas)) {
+                            $alternativas = json_decode($alternativas, true);
+                        }
+                        foreach ($alternativas as $alt) {
+                            $letra = $alt['cBancoAltLetra'] ?? '';
+                            $desc  = $alt['cBancoAltDescripcion'] ?? '';
+                            $htmlAlt = "<span>$letra) $desc</span>";
+                            Html::addHtml($section, $htmlAlt, false, false);
+                            if (!empty($alt['cAlternativaImagen'])) {
+                                // Construir ruta absoluta al archivo en storage/public o public/
+                                $rutaImagen = public_path($alt['cAlternativaImagen']);
+
+                                if (file_exists($rutaImagen)) {
+                                    $section->addImage($rutaImagen, [
+                                        'width' => 50,
+                                        'height' => 50,
+                                        'alignment' => 'left'
+                                    ]);
+                                } else {
+                                    $section->addText("[Imagen no encontrada: {$alt['cAlternativaImagen']}]");
+                                }
+                            }
+                        }
+                    }
+
+                    $section->addTextBreak(1);
+                    $contadorPregunta++;
+                }
+            } else {
+                // 🔹 Pregunta normal (sin encabezado)
+                $contenido = $pregunta->cEvalPregPregunta ?? '';
+                $contenido = preg_replace('/<img(.*?)>/i', '<img$1 />', $contenido);
+
+                Html::addHtml($section, "<strong>Pregunta $contadorPregunta:</strong> $contenido", false, false);
+
+                if (!empty($pregunta->cEvalPregTextoAyuda)) {
+                    $section->addText(
+                        $pregunta->cEvalPregTextoAyuda,
+                        ['size' => 10, 'color' => '007BFF'],
+                        [
+                            'borderSize' => 6,
+                            'borderColor' => '007BFF', // azul
+                            'bgColor' => 'D9EDF7',     // fondo azul claro
+                            'spaceAfter' => 200,
+                            'spaceBefore' => 200,
+                            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
+                            'valign' => 'center',
+                        ]
+                    );
+                }
+
+                // Alternativas
+                if (!empty($pregunta->iTipoPregId) && in_array($pregunta->iTipoPregId, [1, 2])) {
+                    $alternativas = json_decode($pregunta->jsonAlternativas ?? '[]', true);
+                    foreach ($alternativas as $alt) {
+                        $letra = $alt['cBancoAltLetra'] ?? '';
+                        $desc  = $alt['cBancoAltDescripcion'] ?? '';
+                        $htmlAlt = "<span>$letra) $desc</span>";
+                        Html::addHtml($section, $htmlAlt, false, false);
+                        if (!empty($alt['cAlternativaImagen'])) {
+                            // Construir ruta absoluta al archivo en storage/public o public/
+                            $rutaImagen = public_path($alt['cAlternativaImagen']);
+
+                            if (file_exists($rutaImagen)) {
+                                $section->addImage($rutaImagen, [
+                                    'width' => 50,
+                                    'height' => 50,
+                                    'alignment' => 'left'
+                                ]);
+                            } else {
+                                $section->addText("[Imagen no encontrada: {$alt['cAlternativaImagen']}]");
+                            }
+                        }
+                    }
+                }
+
+                $section->addTextBreak(1);
+                $contadorPregunta++;
+            }
+        }
+
+        // 🔹 Guardar y descargar
+        $tempFile = tempnam(sys_get_temp_dir(), 'word');
+        $writer = IOFactory::createWriter($phpWord, 'Word2007');
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, 'preguntas.docx')->deleteFileAfterSend(true);
     }
 }

@@ -32,6 +32,25 @@ class DocenteCursosController extends Controller
         return $archivo;
     }
 
+    public function guardarPortafolioDocumento(Request $request){
+        $iPersId = VerifyHash::decodes($request->iPersId);
+        $documento = $request->file('archivo');
+        $tipoPortafolio = $request->tipoPortafolio;
+        $folder = $tipoPortafolio.'/'.$iPersId;      
+        $generado = Storage::disk('public')->putFile($folder,$documento);
+        $ruta = $folder.'/'.basename($generado);
+         try {
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $ruta],
+                200
+            );
+        } catch (Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                500
+            );
+        }
+    }
     public function guardarProgramacionCurricular(Request $request){
         $iPersId = VerifyHash::decodes($request->iPersId);
         $documento = $request->file('archivo');
@@ -57,14 +76,14 @@ class DocenteCursosController extends Controller
         ];
         
         $convertir = json_encode($folder);
-
+      
         $parametros = [
             $request->idDocCursoId,
-            $request->iSilaboId,
+            $request->iSilaboId == 'null' ? null : $request->iSilaboId,
             $request->iYAcadId,
             $convertir,
         ];
-
+        
         try {
             $data = DB::select('exec acad.Sp_UPD_programacionCurricular ?,?,?,?', $parametros);
             $datos = [

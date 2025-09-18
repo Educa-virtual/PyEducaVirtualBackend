@@ -64,7 +64,7 @@ class User extends Authenticatable implements JWTSubject
     public static function login(LoginUsuarioRequest $request)
     {
         $usuario = DB::selectOne('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?', [$request->user, $request->pass]);
-        self::codificarContactos($usuario);
+        //self::codificarContactos($usuario);
         self::obtenerOtrosDatos($usuario);
         self::encriptarIds($usuario);
         return [
