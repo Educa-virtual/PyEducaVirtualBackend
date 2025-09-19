@@ -211,7 +211,9 @@ class AreasController extends Controller
         try {
             ob_end_clean(); //Sin esto, al descargar el archivo, Word muestra un mensaje de error al abrirlo
             $ruta = AreasService::obtenerCartillaRespuestas($evaluacionId, $areaId);
-            return Storage::disk('public')->download($ruta, "Hoja respuestas.docx");
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk=Storage::disk('public');
+            return $disk->download($ruta, "Hoja respuestas.docx");
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

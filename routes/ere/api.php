@@ -96,9 +96,12 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante', [ResultadosController::class, 'guardarResultadosxiEstudianteIdxiResultadoRptaEstudiante']);
         Route::post('terminarExamenxiEstudianteId', [ResultadosController::class, 'terminarExamenxiEstudianteId']);
         Route::post('guardarRespuestas', [ResultadosController::class, 'guardarRespuestas']);
-       Route::post('estudiante/hoja-desarrollo', [ResultadosController::class, 'guardarHojaDesarrolloEstudiante']);
+        Route::group(['prefix' => 'evaluaciones/{iEvaluacionId}/areas/{iCursosNivelGradId}/estudiantes/{iEstudianteId}/hoja-desarrollo'], function () {
+            Route::post('', [ResultadosController::class, 'guardarHojaDesarrolloEstudiante']);
+            Route::get('', [ResultadosController::class, 'descargarHojaDesarrolloEstudiante']);
+            Route::delete('', [ResultadosController::class, 'eliminarHojaDesarrolloEstudiante']);
+        });
     });
-
     Route::group(['prefix' => 'reportes'], function () {
         // Obtener reporte de resultados de evaluaciones
         Route::post('obtenerEvaluacionesCursosIes', [ReporteEvaluacionesController::class, 'obtenerEvaluacionesCursosIes']);

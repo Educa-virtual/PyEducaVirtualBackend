@@ -5,7 +5,9 @@ namespace App\Http\Controllers\ere;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Ere\DescargarHojaDesarrolloEstudianteRequest;
 use App\Http\Requests\Ere\GuardarHojaDesarrolloEstudianteRequest;
+use App\Http\Requests\Ere\HojaDesarrolloEstudianteRequest;
 use App\Services\Ere\ResultadosService;
 use Exception;
 use Illuminate\Http\Request;
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class ResultadosController extends Controller
 {
@@ -159,15 +162,37 @@ class ResultadosController extends Controller
         }
     }
 
-    public function descargarHojaDesarrolloEstudiante() {
-
+    public function descargarHojaDesarrolloEstudiante(HojaDesarrolloEstudianteRequest $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
+            ob_end_clean(); //Sin esto, al descargar el archivo, se muestra un mensaje de error al abrirlo
+            $ruta = ResultadosService::obtenerHojaDesarrolloEstudiante($request);
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = Storage::disk('public');
+            return $disk->download($ruta);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 
-    public function guardarHojaDesarrolloEstudiante(GuardarHojaDesarrolloEstudianteRequest $request) {
+    public function guardarHojaDesarrolloEstudiante(GuardarHojaDesarrolloEstudianteRequest $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
             ResultadosService::guardarHojaDesarrolloEstudiante($request);
             return FormatearMensajeHelper::ok('Se ha guardado el archivo del estudiante');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function eliminarHojaDesarrolloEstudiante(HojaDesarrolloEstudianteRequest $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
+            ResultadosService::eliminarHojaDesarrolloEstudiante($request);
+            return FormatearMensajeHelper::ok('Se ha eliminado el archivo del estudiante');
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
