@@ -261,13 +261,17 @@
                     <th>¿VIVE SU PADRE?</th>
                     <th>¿VIVE SU MADRE?</th>
                     <th>¿TIENE HIJOS?</th>
-                    <th>¿CUÁNTOS HIJOS?</th>
+                    @if( $ficha_estudiante )
+                        <th>¿VIVE CON PADRES?</th>
+                    @endif
                 </tr>
                 <tr>
                     <td>{{ $persona['vive_padre'] ?? 'N/A' }}</td>
                     <td>{{ $persona['vive_madre'] ?? 'N/A' }}</td>
                     <td>{{ $persona['tiene_hijos'] ?? 'N/A' }}</td>
-                    <td>{{ $persona['num_hijos'] ?? 'N/A' }}</td>
+                    @if( $ficha_estudiante )
+                        <td>{{ $persona['vive_con_padres'] ?? 'N/A' }}</td>
+                    @endif
                 </tr>
             </table>
         </div>
@@ -280,11 +284,11 @@
                         <th width="10%">TIPO DE FAMILIAR</th>
                         <th width="10%">DOCUMENTO</th>
                         <th width="35%">APELLIDOS Y NOMBRES</th>
-                        <th width="10%">GÉNERO</th>
+                        <th width="10%">GÉNERO (M/F)</th>
                         <th width="5%">EDAD</th>
                         <th width="10%">VIVE CON EST.</th>
                         <th width="10%">OCUPACIÓN</th>
-                        <th width="10%">GRADO DE INST.</th>
+                        <th width="10%">CELULAR</th>
                     </tr>
                     @foreach ($familiares as $familiar)
                         <tr>
@@ -295,7 +299,7 @@
                             <td width="5%">{{ $familiar['edad'] ?? 'N/A' }}</td>
                             <td width="10%">{{ $familiar['comparte_vivienda'] ?? 'N/A' }}</td>
                             <td width="10%">{{ $familiar['ocupacion'] ?? 'N/A' }}</td>
-                            <td width="10%">{{ $familiar['grado_instruccion'] ?? 'N/A' }}</td>
+                            <td width="10%">{{ $familiar['celular'] ?? 'N/A' }}</td>
                         </tr>
                     @endforeach
                 </table>
@@ -488,7 +492,7 @@
             <h2>VI. DISCAPACIDAD</h2>
             
             @if( !$programas_discapacidad['tiene_discapacidad'] )
-                <h3>NO TIENE DISCAPACIDAD</h3>
+                <h3>NO REGISTRA DISCAPACIDAD</h3>
             @else
                 <h3>AFILIACIÓN A PROGRAMAS</h3>
                 <table>
@@ -510,7 +514,7 @@
             <table>
                 <tr>
                     <th width="20%">DISCAPACIDAD</th>
-                    <th width="80%">OBSERVACIONES</th>
+                    <th width="80%">INFORMACIÓN ADICIONAL</th>
                 </tr>
                 @foreach($discapacidades as $index => $discapacidad)
                     <tr>
@@ -629,6 +633,14 @@
                 <tr>
                     <th>RELIGIÓN</th>
                     <td>{{ $recreacion['religion'] ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <th>LENGUA MATERNA</th>
+                    <td>{{ $recreacion['lengua_materna'] ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <th>ETNIA</th>
+                    <td>{{ $recreacion['etnia'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>

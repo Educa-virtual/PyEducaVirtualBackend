@@ -103,7 +103,8 @@ class FichaPdfController extends Controller
                 'vive_madre' => $datos_generales->bFamiliarMadreVive ?? '',
                 'num_hijos' => $datos_generales->iFichaDGNroHijos ?? '',
                 'tiene_hijos' => $datos_generales->bFichaDGTieneHijos ?? '',
-                'num_telefono' => $datos_generales->cEstTelefono ?? '',
+                'vive_con_padres' => $datos_generales->bFamiliarPadresVivenJuntos ?? '',
+                'num_telefono' => $datos_generales->cPersTelefono ?? '',
             ],
 
             'nacimiento' => [
@@ -138,6 +139,7 @@ class FichaPdfController extends Controller
                 'tipo_documento' => $familiar->cTipoIdentSigla ?? '',
                 'documento' => $familiar->cPersDocumento ?? '',
                 'sexo' => $familiar->cPersSexo ?? '',
+                'celular' => $familiar->cFamiliarNroCelular ?? '',
             ];
         }
         // dd($datos); // Verifica que contiene lo esperado
@@ -247,6 +249,8 @@ class FichaPdfController extends Controller
             'liga_deportiva' => $recreacion->cFichaDGPerteneceLigaDeportiva ?? '',
             'centro_artistico' => $recreacion->cFichaDGPerteneceCentroArtistico ?? '',
             'consulta_psicologica' => $recreacion->cFichaDGAsistioConsultaPsicologica ?? '',
+            'lengua_materna' => $recreacion->cLenguaNombre ?? '',
+            'etnia' => $recreacion->cEtniaNombre ?? '',
         ];
 
         //  dd($datos); // Verifica que contiene lo esperado
