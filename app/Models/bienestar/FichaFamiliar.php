@@ -68,6 +68,7 @@ class FichaFamiliar
             $request->iDptoId,
             $request->iPrvnId,
             $request->iDsttId,
+            $request->cFamiliarTelefonoCelular,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_INS_fichaFamiliar ' . $placeholders, $parametros);
@@ -116,6 +117,7 @@ class FichaFamiliar
             $request->iDptoId,
             $request->iPrvnId,
             $request->iDsttId,
+            $request->cFamiliarTelefonoCelular,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaFamiliar ' . $placeholders, $parametros);

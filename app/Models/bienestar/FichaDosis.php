@@ -16,7 +16,7 @@ class FichaDosis
         return DB::select('EXEC obe.Sp_SEL_fichasDosis ' . $placeholders, $parametros);
     }
 
-    public static function verFichaDosis($request)
+    public static function selFichaDosis($request)
     {
         $parametros = [
             $request->iPanDFichaId,

@@ -37,6 +37,7 @@ class FichaGeneral
             $request->iFichaDGNroHijos,
             $request->cTipoViaOtro,
             $request->cReligionOtro,
+            $request->bFamiliarPadresVivenMismaCasa,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaGeneral ' . $placeholders, $parametros);
