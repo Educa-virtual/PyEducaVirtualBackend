@@ -10,6 +10,7 @@ class FichaEconomico
     {
         $parametros = [
             $request->iFichaDGId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichaEconomico ' . $placeholders, $parametros);
@@ -31,6 +32,7 @@ class FichaEconomico
             $request->iDepEcoId,
             $request->iTipoAEcoId,
             $request->iJorTrabId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaEconomico ' . $placeholders, $parametros);

@@ -44,6 +44,7 @@ class FichaFamiliarSaveRequest extends FormRequest
             'iOcupacionId' => 'nullable|integer',
             'iGradoInstId' => 'nullable|integer',
             'iTipoIeEstId' => 'nullable|integer',
+            'cFamiliarNroCelular' => 'nullable|string|max:150',
         ];
     }
 
@@ -80,6 +81,7 @@ class FichaFamiliarSaveRequest extends FormRequest
             'iOcupacionId' => 'ocupacion',
             'iGradoInstId' => 'grado',
             'iTipoIeEstId' => 'tipo de i.e.',
+            'cFamiliarNroCelular' => 'celular',
         ];
     }
 }

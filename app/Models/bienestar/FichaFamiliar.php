@@ -12,6 +12,7 @@ class FichaFamiliar
             $request->iFichaDGId,
             $request->iPersId,
             $request->iFamiliarId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichasFamiliaresPersonas ' . $placeholders, $parametros);
@@ -69,6 +70,7 @@ class FichaFamiliar
             $request->iPrvnId,
             $request->iDsttId,
             $request->cFamiliarTelefonoCelular,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_INS_fichaFamiliar ' . $placeholders, $parametros);
@@ -118,6 +120,7 @@ class FichaFamiliar
             $request->iPrvnId,
             $request->iDsttId,
             $request->cFamiliarTelefonoCelular,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaFamiliar ' . $placeholders, $parametros);
@@ -127,6 +130,7 @@ class FichaFamiliar
     {
         $parametros = [
             $request->iFamiliarId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichaFamiliar ' . $placeholders, $parametros);
@@ -136,6 +140,7 @@ class FichaFamiliar
     {
         $parametros = [
             $request->iFamiliarId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_DEL_fichaFamiliar ' . $placeholders, $parametros);
