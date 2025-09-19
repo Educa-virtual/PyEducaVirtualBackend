@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Storage;
 
 class DocenteCursosController extends Controller
 {
@@ -18,6 +19,87 @@ class DocenteCursosController extends Controller
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
+
+    public function descargarArchivos(Request $request){
+        $archivo = $request->archivo;
+        
+        if (!Storage::disk('public')->exists($archivo)) {
+            throw new Exception('El archivo no existe');
+        }
+        
+        $archivo = Storage::disk('public')->get($archivo);
+        return $archivo;
+    }
+
+    public function guardarPortafolioDocumento(Request $request){
+        $iPersId = VerifyHash::decodes($request->iPersId);
+        $documento = $request->file('archivo');
+        $tipoPortafolio = $request->tipoPortafolio;
+        $folder = $tipoPortafolio.'/'.$iPersId;      
+        $generado = Storage::disk('public')->putFile($folder,$documento);
+        $ruta = $folder.'/'.basename($generado);
+         try {
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $ruta],
+                200
+            );
+        } catch (Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                500
+            );
+        }
+    }
+    public function guardarProgramacionCurricular(Request $request){
+        $iPersId = VerifyHash::decodes($request->iPersId);
+        $documento = $request->file('archivo');
+        $nombre = $documento->getClientOriginalName();
+        $extension = $documento->getClientOriginalExtension();
+        $peso = $documento->getSize();
+        $folder = 'programacionCurricular/'.$iPersId;
+        $portafolio = $request->portafolio;
+        
+        if ($documento) {
+            $generado = Storage::disk('public')->put($folder,$documento);
+            $ruta = $folder.'/'.basename($generado);
+        }
+
+        $folder = [
+            [
+            "portafolio" => $portafolio, 
+            "nombre" => $nombre,
+            "ruta" => $ruta,
+            "extension" => $extension,
+            "peso" => $peso,
+            ]
+        ];
+        
+        $convertir = json_encode($folder);
+      
+        $parametros = [
+            $request->idDocCursoId,
+            $request->iSilaboId == 'null' ? null : $request->iSilaboId,
+            $request->iYAcadId,
+            $convertir,
+        ];
+        
+        try {
+            $data = DB::select('exec acad.Sp_UPD_programacionCurricular ?,?,?,?', $parametros);
+            $datos = [
+                "estado" => $data[0]->resultado,
+                "documento" => $convertir,
+            ];
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $datos],
+                200
+            );
+        } catch (Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                500
+            );
+        }
     }
 
     private function decodeValue($value)

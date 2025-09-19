@@ -22,18 +22,9 @@ class PortafoliosController extends Controller
     public function obtenerPortafolios(Request $request)
     {   
         $iDocenteId = VerifyHash::decodes($request->iDocenteId);
-       
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
-
-        $request['iCredId'] = is_null($request->iCredId)
-            ? null
-            : (is_numeric($request->iCredId)
-                ? $request->iCredId
-                : ($this->hashids->decode($request->iCredId)[0] ?? null));
+        $iYAcadId = $request->iYAcadId;
+        $iCredId = $request->iCredId;
+        $iIieeId = $request->iIieeId;
 
         try {
             $data = DB::select("
@@ -47,14 +38,14 @@ class PortafoliosController extends Controller
                     ,p.cPortafolioSesionesAprendizaje
                     ,p.iPortafolioId
                 FROM doc.portafolios AS p 
-                WHERE p.iDocenteId = '" . $iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
+                WHERE p.iDocenteId = '" . $iDocenteId . "' AND p.iYAcadId = '" . $iYAcadId . "'
             ");
 
             $reglamento = DB::select("
                 SELECT 
                 ie.cIieeUrlReglamentoInterno
                 FROM acad.institucion_educativas AS ie
-                WHERE ie.iIieeId = '" . $request->iIieeId . "'
+                WHERE ie.iIieeId = '" . $iIieeId . "'
             ");
 
             $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data, 'reglamento' => $reglamento];
@@ -69,33 +60,22 @@ class PortafoliosController extends Controller
 
     public function guardarItinerario(Request $request)
     {
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
-
+        $request['iDocenteId'] = VerifyHash::decodes($request->iDocenteId);
+        $request['iYAcadId'] = $request->iYAcadId;
+       
         try {
             $data = DB::select("
                 SELECT 
-                    p.cPortafolioFichaPermanencia
-                    ,p.cPortafolioPerfilEgreso
-                    ,p.cPortafolioPlanEstudios
-                    ,p.cPortafolioItinerario
-                    ,p.cPortafolioProgramaCurricular
-                    ,p.cPortafolioFichasDidacticas
-                    ,p.cPortafolioSesionesAprendizaje
-                    ,p.iPortafolioId
-                    
-                    FROM doc.portafolios AS p 
-
-                    WHERE p.iDocenteId = '" . $request->iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
+                p.cPortafolioFichaPermanencia
+                ,p.cPortafolioPerfilEgreso
+                ,p.cPortafolioPlanEstudios
+                ,p.cPortafolioItinerario
+                ,p.cPortafolioProgramaCurricular
+                ,p.cPortafolioFichasDidacticas
+                ,p.cPortafolioSesionesAprendizaje
+                ,p.iPortafolioId
+                FROM doc.portafolios AS p 
+                WHERE p.iDocenteId = '" . $request->iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
             ");
 
             if (count($data) > 0) {
@@ -112,7 +92,7 @@ class PortafoliosController extends Controller
             }
             $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.', 'query' => $query];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }

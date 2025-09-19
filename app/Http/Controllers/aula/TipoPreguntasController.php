@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\enc;
+namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class TipoPreguntasController extends Controller
             ];
 
             $data = DB::select(
-                'exec enc.SP_SEL_tipoPreguntas 
+                'exec aula.SP_SEL_tipoPreguntas 
                     @_iCredId=?',
                 $parametros
             );

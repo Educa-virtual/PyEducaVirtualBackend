@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\doc;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -76,16 +78,18 @@ class MaterialEducativosController extends Controller
 
     public function list(Request $request)
     {
-        $resp = new MaterialEducativosController();
-        $parametros = $resp->validate($request);
-
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $parametros = [
+            $request->opcion,
+            $request->iCursosNivelGradId,
+            $iDocenteId,
+        ];
+        
         try {
-            $data = DB::select('exec doc.Sp_SEL_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
+            $data = DB::select('exec doc.Sp_SEL_materialEducativoDocentes ?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -109,7 +113,7 @@ class MaterialEducativosController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -119,12 +123,20 @@ class MaterialEducativosController extends Controller
 
     public function update(Request $request)
     {
-        $resp = new MaterialEducativosController();
-        $parametros = $resp->validate($request);
+        $parametros = [
+            $request->opcion,
+            $request->iMatEducativoId              ?? NULL,
+            $request->cMatEducativoTitulo          ?? NULL,
+            $request->cMatEducativoDescripcion     ?? NULL,
+            $request->cMatEducativoUrl             ?? NULL,
+            $request->iCredId
+        ];
+
+        $enviar = str_repeat('?,',count($parametros)-1).'?';
+        $tabla = 'exec doc.Sp_UPD_materialEducativoDocentes '.$enviar;
 
         try {
-            $data = DB::select('exec doc.Sp_UPD_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select($tabla, $parametros);
                 
             if ($data[0]->iMatEducativoId > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se actualizó la información exitosamente.'];
@@ -133,7 +145,7 @@ class MaterialEducativosController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -143,21 +155,22 @@ class MaterialEducativosController extends Controller
 
     public function delete(Request $request)
     {
-        $resp = new MaterialEducativosController();
-        $parametros = $resp->validate($request);
+
+        $parametros = [
+            $request->opcion,
+            $request->iMatEducativoId
+        ];
 
         try {
-            $data = DB::select('exec doc.Sp_DEL_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                
-            if ($data[0]->iMatEducativoId > 0) {
+            $data = DB::select('exec doc.Sp_DEL_materialEducativoDocentes ?,?', $parametros);
+            if ($data[0]->resultado > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se eliminó la información exitosamente.'];
                 $codeResponse = 200;
             } else {
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
