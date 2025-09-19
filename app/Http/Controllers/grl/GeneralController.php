@@ -71,4 +71,36 @@ class GeneralController extends Controller
             ], 404);
         }
     }
+
+    public function subirSvgPizarra(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'file' => 'required|mimetypes:image/svg+xml,text/plain,text/xml,application/xml,application/octet-stream,application/pdf,image/jpeg,image/png'
+            ],
+            [
+                'file.required' => 'Es necesario que cargue un archivo',
+                'file.mimetypes' => 'El archivo debe ser PDF, JPEG, PNG o SVG válido.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return new JsonResponse(['validated' => false, 'message' => $validator->errors(), 'data' => []], 422);
+        }
+
+        if ($request->hasFile('file')) {
+
+            $file = $request->file('file');
+            $ext = $file->getClientOriginalExtension() ?: 'svg';
+            $filename = uniqid('pizarra_') . '.' . $ext;
+
+            $path = $file->storeAs($request->nameFile, $filename, ['disk' => 'file']);
+
+            return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $path], 200);
+            return response()->json($path);
+        } else {
+            return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);
+        }
+    }
 }
