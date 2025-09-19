@@ -23,10 +23,10 @@ class ResultadosService
 
     public static function guardarHojaDesarrolloEstudiante(GuardarHojaDesarrolloEstudianteRequest $request)
     {
+        self::eliminarHojaDesarrolloEstudiante($request->iEvaluacionId, $request->iCursosNivelGradId, $request->iEstudianteId);
         $archivo = $request->file('archivo');
-        $nombreArchivo = 'hoja-desarrollo.pdf';
         $rutaDestino = self::obtenerRutaHojaDesarrolloEstudiante($request->iEvaluacionId, $request->iCursosNivelGradId, $request->iEstudianteId);
-
+        $nombreArchivo = $archivo->getClientOriginalName();
         if (!Storage::disk('public')->exists($rutaDestino)) {
             Storage::disk('public')->makeDirectory($rutaDestino);
         }
@@ -43,13 +43,10 @@ class ResultadosService
         return $archivos[0];
     }
 
-    public static function eliminarHojaDesarrolloEstudiante(HojaDesarrolloEstudianteRequest $request)
+    public static function eliminarHojaDesarrolloEstudiante($iEvaluacionId, $iCursosNivelGradId, $iEstudianteId)
     {
-        $rutaDirectorio = self::obtenerRutaHojaDesarrolloEstudiante($request->iEvaluacionId, $request->iCursosNivelGradId, $request->iEstudianteId);
+        $rutaDirectorio = self::obtenerRutaHojaDesarrolloEstudiante($iEvaluacionId, $iCursosNivelGradId, $iEstudianteId);
         $archivos = Storage::disk('public')->files($rutaDirectorio);
-        if (empty($archivos)) {
-            throw new Exception('El archivo no existe');
-        }
         foreach ($archivos as $archivo) {
             Storage::disk('public')->delete($archivo);
         }

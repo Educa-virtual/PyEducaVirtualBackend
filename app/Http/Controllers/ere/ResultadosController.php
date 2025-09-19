@@ -191,7 +191,7 @@ class ResultadosController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
-            ResultadosService::eliminarHojaDesarrolloEstudiante($request);
+            ResultadosService::eliminarHojaDesarrolloEstudiante($request->iEvaluacionId, $request->iCursosNivelGradId, $request->iEstudianteId);
             return FormatearMensajeHelper::ok('Se ha eliminado el archivo del estudiante');
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
