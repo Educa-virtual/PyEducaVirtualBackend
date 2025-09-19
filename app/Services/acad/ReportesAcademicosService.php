@@ -39,10 +39,10 @@ class ReportesAcademicosService
 
     public static function obtenerReporteAcademicoProgreso($iCredPerfIdEstudiante, $iYAcadId)
     {
-        //$yearAcademico = YearAcademicosService::obtenerYearAcademico($iYAcadId);
-        //$persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
         $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
-        $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId, $iYAcadId);
+        /*Se obtienen los cursos por IE debido a que, si solo se obtiene los cursos a los que esta matriculado el alumno, la libreta podria salir con cantidad
+        de cursos distinta por alumno*/
+        $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $iYAcadId, $matricula->iNivelGradoId);
         foreach ($cursos as $curso) {
             $curso->competencias = ReportesAcademicosService::obtenerCompetenciasPorCurso(
                 $curso->iNivelTipoId,
@@ -54,7 +54,7 @@ class ReportesAcademicosService
                     $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
                         $matricula->iMatrId,
                         $competencia->iCompetenciaId ?? 0,
-                        $curso->iIeCursoId,
+                        $curso->iCursosNivelGradId,
                         $i,
                     );
                     if ($resultadoCompetencia) {
@@ -68,9 +68,9 @@ class ReportesAcademicosService
         return $cursos;
     }
 
-    public static function obtenerCursosPorIe($iSedeId, $iNivelGradoId, $iYAcadId)
+    public static function obtenerCursosPorIe($iSedeId, $iYAcadId, $iNivelGradoId)
     {
-        return CompetenciaCurso::selCursosPorIe($iSedeId, $iNivelGradoId, $iYAcadId);
+        return CompetenciaCurso::selCursosPorIe($iSedeId, $iYAcadId, $iNivelGradoId);
     }
 
     public static function obtenerCompetenciasPorCurso($iNivelTipoId, $iCursoId)
@@ -78,9 +78,9 @@ class ReportesAcademicosService
         return CompetenciaCurso::selCompetenciasPorCurso($iNivelTipoId, $iCursoId);
     }
 
-    public static function obtenerResultadosPorCompetencia($iMatrId, $iCompetenciaId, $iIeCursoId, $iPeriodoId)
+    public static function obtenerResultadosPorCompetencia($iMatrId, $iCompetenciaId, $iCursosNivelGradId, $iPeriodoId)
     {
-        return ResultadoCompetencia::selResultadosPorCompetencia($iMatrId, $iCompetenciaId, $iIeCursoId, $iPeriodoId);
+        return ResultadoCompetencia::selResultadosPorCompetencia($iMatrId, $iCompetenciaId, $iCursosNivelGradId, $iPeriodoId);
     }
 
     public static function obtenerResultadoParaGrafico($iCredPerfIdEstudiante, $iYAcadId, $iIeCursoId)
@@ -95,7 +95,7 @@ class ReportesAcademicosService
             $fila->periodos = [];
             $fila->resultado = [];
             for ($i = 1; $i <= 5; $i++) {
-                $resultado = ResultadoCompetencia::selResultadosPorCompetencia($matricula->iMatrId, $competencia->iCompetenciaId, $iIeCursoId, $i);
+                $resultado = ResultadoCompetencia::selResultadosPorCompetencia($matricula->iMatrId, $competencia->iCompetenciaId, $curso->iCursosNivelGradId, $i);
                 if ($resultado) {
                     array_push($fila->periodos, $i == 5 ? 'Calificativo' : ('Periodo ' . $i));
                     array_push($fila->resultado, $resultado->cNivelLogro);

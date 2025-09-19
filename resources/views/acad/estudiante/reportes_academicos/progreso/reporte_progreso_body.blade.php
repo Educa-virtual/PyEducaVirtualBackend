@@ -236,7 +236,7 @@
         </thead>
         <tobdy>
             @php
-                $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iYAcadId);
+                $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iYAcadId, $matricula->iNivelGradoId);
                 $contador = 0;
                 $totalFilas = count($cursos);
                 foreach ($cursos as $curso) {
@@ -278,7 +278,7 @@
                                 $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
                                     $matricula->iMatrId,
                                     $competencia->iCompetenciaId ?? 0,
-                                    $curso->iIeCursoId,
+                                    $curso->iCursosNivelGradId,
                                     $i,
                                 );
                                 if ($resultadoCompetencia) {

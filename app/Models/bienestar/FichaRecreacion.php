@@ -33,6 +33,11 @@ class FichaRecreacion
             $request->jsonTransportes,
             $request->jsonPasatiempos,
             $request->jsonProblemas,
+            $request->iLenguaId,
+            $request->cLenguaOtro,
+            $request->iEtniaId,
+            $request->cEtniaOtro,
+            $request->jsonLenguas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaRecreacion ' . $placeholders, $parametros);
