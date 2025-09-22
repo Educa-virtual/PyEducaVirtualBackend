@@ -11,10 +11,10 @@ use stdClass;
 
 class ReportesAcademicosService
 {
-    public static function generarReporteAcademicoProgreso($usuario, $iCredPerfIdEstudiante, $iYAcadId)
+    public static function generarReporteAcademicoProgreso($iPersId, $iCredPerfIdEstudiante, $iYAcadId)
     {
         $yearAcademico = YearAcademicosService::obtenerYearAcademico($iYAcadId);
-        $persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
+        $persona = PersonasRepository::obtenerPersonaPorId($iPersId);
         $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
         $ie = InstitucionesEducativasService::obtenerInstitucionEducativa($matricula->iIieeId);
         $tutor = DocentesCursosService::obtenerTutorSalonIe($iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);
@@ -22,13 +22,13 @@ class ReportesAcademicosService
         $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('persona', 'matricula', 'ie', 'tutor', 'yearAcademico', 'fechasInicioFin'))->render();
         //$footerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_footer', compact('persona'))->render();
         //$fullHtml = $htmlcontent . $footerHtml;
-        $archivoHtml = $usuario->iPersId . '_reporte_progreso.html';
+        $archivoHtml = $iPersId . '_reporte_progreso.html';
         $tempPath = storage_path('app\\' . $archivoHtml);
         file_put_contents($tempPath, $htmlcontent);
 
         $exePath   = env('WEASYPRINT_PATH');
         $inputHtml = storage_path('app\\' . $archivoHtml);
-        $outputPdf = storage_path('app\\' . $usuario->iPersId . '_reporte_progreso.pdf');
+        $outputPdf = storage_path('app\\' . $iPersId . '_reporte_progreso.pdf');
         $cmd = "\"{$exePath}\" \"{$inputHtml}\" \"{$outputPdf}\"";
         $output = shell_exec($cmd . ' 2>&1');
         if (!file_exists($outputPdf)) {
