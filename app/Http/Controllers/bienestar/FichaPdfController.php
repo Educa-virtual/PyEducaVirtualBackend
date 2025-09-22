@@ -251,6 +251,8 @@ class FichaPdfController extends Controller
             'consulta_psicologica' => $recreacion->cFichaDGAsistioConsultaPsicologica ?? '',
             'lengua_materna' => $recreacion->cLenguaNombre ?? '',
             'etnia' => $recreacion->cEtniaNombre ?? '',
+            'club_interes' => $recreacion->cFichaDGPerteneceClubInteres ?? '',
+            'cargo_ie' => $recreacion->cFichaDGOcupaCargoIE ?? '',
         ];
 
         //  dd($datos); // Verifica que contiene lo esperado

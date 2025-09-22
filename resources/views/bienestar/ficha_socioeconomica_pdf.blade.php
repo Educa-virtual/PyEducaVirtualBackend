@@ -616,7 +616,7 @@
         </div>
 
         <div class="section">
-            <h3>CULTURA Y RECREACIÓN</h3>
+            <h3>SOCIOCULTURAL</h3>
             <table>
                 <tr>
                     <th width="20%">PASATIEMPOS</th>
@@ -630,6 +630,16 @@
                     <th>¿PERTENECE A CLUB ARTÍSTICO?</th>
                     <td>{{ $recreacion['centro_artistico'] ?? 'N/A' }}</td>
                 </tr>
+                <tr>
+                    <th>¿PERTENECE A ALGÚN CLUB O GRUPO DE INTERÉS?</th>
+                    <td>{{ $recreacion['club_interes'] ?? 'N/A' }}</td>
+                </tr>
+                @if( $ficha_estudiante )
+                    <tr>
+                        <th>¿EL ESTUDIANTE OCUPA ALGÚN CARGO EN LA I.E.?</th>
+                        <td>{{ $recreacion['cargo_ie'] ?? 'N/A' }}</td>
+                    </tr>
+                @endif
                 <tr>
                     <th>RELIGIÓN</th>
                     <td>{{ $recreacion['religion'] ?? 'N/A' }}</td>
