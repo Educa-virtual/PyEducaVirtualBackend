@@ -6,14 +6,42 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Resumen de configuración para grados y secciones </title>
 </head>
+
 <style>
-    @page {
-            font-size: 1em;
+   @page {
+    size: A4 landscape;   /* tamaño de página */
+    font-size: 1em; /* margen de impresión */
     }
     body {
-        /*margin: 3cm 2cm 2cm; vertical*/
-        margin: 3.5cm 0.5cm 0.5cm;
+       margin: 4cm 2cm 2cm; /* arriba derecha abajo izquierda */
+       
     }
+    
+    footer{
+        position: fixed;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        height: 20px;
+        text-align: center;
+        font-size: 9pt;
+        color: #555;
+    }
+    .footer-left {
+            float: left;
+            margin-left: 40px;
+        }
+
+        .footer-center {
+            /* display: inline-block; */
+            width: 30%;   
+        }
+
+        .footer-right {
+            float: right;
+            margin-right: 40px;
+        }
+    
    
     div{
         font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -66,26 +94,18 @@
        
      
     }
-    footer{
-        position: fixed;
-        height: 2cm;
-        bottom: 0;
-        left: 0cm;
-        right: 0cm;
-        text-align: center;
-        line-height: 35px;
-    }
+   
     .table-flotante-izquierda {
-        margin-top:2px;
+        margin-top:30px;
         width: 45%; /* Ajusta el ancho de las tablas */
        /*  float: left; Permite que las tablas estén una al lado de la otra */
-        margin-right: 10px; /* Espacio entre las tablas */
+        margin-right: 10px; /* Espacio entre las tablas  right*/
         border-spacing: 5px;
         border-collapse: collapse;
     }
     .table-flotante-derecha {
         border: 1px solid black; /* Bordes externos */
-        margin-top:2px;
+        margin-top:30px;
         width: 45%; /* Ajusta el ancho de las tablas */
         float: right; /*Permite que las tablas estén una al lado de la otra */
         margin-left: 10px; /* Espacio entre las tablas */
@@ -115,7 +135,7 @@
         left: 0cm;
         right: 0cm;
         text-align: right;
-        line-height: -2px;
+        line-height: -5px;
  }
     .logo-izquierda {
         position: fixed;
@@ -124,7 +144,7 @@
         left: 0cm;
         right: 0cm;
         text-align: left;
-        line-height: -2px;
+        line-height: -5px;
     }
     .titulo{
         margin-top: 50px; /* Deja espacio para la cabecera */
@@ -182,18 +202,23 @@
     
     <header>
         <div  class="header-titulo" style="text-align: center;">
-        "Año del Bicentenario, de la consolidación de nuestra Independencia, y de la conmemoración de las heroicas batallas de
-        Junín y Ayacucho"
+      
+    
         </div>
     
-        <div class="logo-izquierda">
-            <img src="{{$logoInsignia}} " style="height: 60px;">
-        </div>
         <div class="logo-derecha">
-            <img src="{{$logoVirtual}} " style="height: 50px;">
+            @if($logoInsignia == 0)
+                <img src="{{$logoVirtual}} " style="height: 50px;">
+               
+            @else
+                <img src="{{ $logoInsignia }}" style="height: 70px;">
+            @endif
         </div>
-      
-        <div class="titulo">RESUMEN DE CONFIGURACIÓN PARA GRADOS Y SECCIONES</div>    
+        <div class="logo-izquierda">
+            <img src="{{ public_path('images/logo-dremo.png') }}" style="height: 50px;">
+        </div>
+      <br/>
+        <div class="titulo">RESUMEN DE CONFIGURACIÓN PARA GRADOS Y SECCIONES </div> <br/> 
         <table>
         <tr>
                 <th style="border:1px  solid black;margin:0;padding:5px; text-align:left;">Codigo Modular:</th>
@@ -213,8 +238,13 @@
                 <td style="border:1px  solid black;margin:0;padding:5px;">{{$cNivelTipoNombre}} </td>
         </tr>
         </table>
+    
+        
     </header>
+    
+    
   
+    
     <main>
      
     <div class="marca-agua">
@@ -276,70 +306,53 @@
         
         
         </table>
-    </div><br/>
-    <table>
-    <tr><th colspan="9" class="cabecera-table"> Resumen de horas lectivas</th></tr>
-    <tr>
-        <th colspan="3" class="cabecera-table"> Detalle de área Curricular</th>
-        <th rowspan="2" class="cabecera-table"> Total de secciones</th>
-        <th rowspan="2" class="cabecera-table"> Horas acumuladas</th>
-        <th colspan="3" class="cabecera-table"> Horas lectivas asignadas por modalidad</th>
-        <th rowspan="2" class="cabecera-table"> Horas pendientes a asignar</th>
-    </tr>
-        <tr>
-            <th class="cabecera-table" style="padding:5px;">N°</th>
-            <th class="cabecera-table">Descripción</th>
-            <th class="cabecera-table"> Hrs</th>
-      
-            <th class="cabecera-table"> Presencial</th>
-            <th class="cabecera-table"> Semi-presencial</th>
-            <th class="cabecera-table"> Distancia</th>
-           
+    </div>
          
-          
-        </tr>
-        <?php $contador = 1; ?>
-        @foreach ($r_horas as $list)
+        <br/>
+    <div class="card">
+    <div class="card-header">Resumen de horas asignadas de la I.E.</div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Área curricular</th>
+                        @foreach ($lista_grados as $grado)
+                            <th>Grado {{ $grado['cGradoNombre'] }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($tablaPivot as $i => $fila)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $fila['cursoNombre'] }}</td>
+                            @foreach ($lista_grados as $grado)
+                                <td align="center">
+                                    <span class="ml-2 font-medium">
+                                        {{ $fila['asig_' . $grado['iGradoId']] ?? 0 }}
+                                        de
+                                        {{ $fila['grado_' . $grado['iGradoId']] ?? 0 }}
+                                    </span>
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
   
-        <tr>
-            <td style="border: 1px solid black; padding: 5px; text-align:center">{{ $contador ++}}</td>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px; text-align:left">{{$list['cCursoNombre']}} </th>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px;">{{$list['nCursoTotalHoras']}} </td>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px;">{{$list['registrados']}} </td>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px;">{{$list['total_horas']}} </td>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px;">{{$list['suma_1']}} </td>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px;">{{$list['suma_2']}} </td>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px;">{{$list['suma_3']}} </td>
-            <td style="text-align:center;border:1px solid black;margin:0;padding:5px;">
-            <?php 
-            $total_horas = isset($list['total_horas']) ? (float)$list['total_horas'] : 0;
-            $suma_1 = isset($list['suma_1']) ? (float)$list['suma_1'] : 0;
-            $suma_2 = isset($list['suma_2']) ? (float)$list['suma_2'] : 0;
-            $suma_3 = isset($list['suma_3']) ? (float)$list['suma_3'] : 0;
-            
-            $resultado= $total_horas - $suma_1 - $suma_2 - $suma_3;
-            ?>    
-            {{ $resultado }} </td>
-                
-                
-            </tr>
-        @endforeach
-
-      
-    
-    </table>
-   
     </main>
-    
-    <script type="text/php">
-        if ( isset($pdf) ) {
-            $pdf->page_script('
-                $font = $fontMetrics->get_font("Verdana, Geneva, Tahoma, sans-serif", "normal");
-                $pdf->text(70, 570, "Página $PAGE_NUM de $PAGE_COUNT", $font, 10);
-                $pdf->text(370, 570, "Autor:{{$cPersNombreLargo}}", $font, 10);
-                $pdf->text(670, 570, date("Y-m-d H:m:s"), $font, 10);
-            ');
-        }
-    </script>
+
+    <footer>
+    <span class="footer-left">Página 1 de 1   </span>
+        <span class="footer-center">Autor: {{ $cPersNombreLargo ?? 'Sin autor' }}</span>
+        <span class="footer-right">{{ now()->format('Y-m-d H:i:s') }}</span>
+    </footer>
 </body>
+
+
+
+
 </html>

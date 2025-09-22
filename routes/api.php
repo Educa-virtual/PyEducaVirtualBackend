@@ -209,6 +209,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']);
         Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']);
         Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']);
+        Route::post('reportePDFResumenVacantes', [GestionInstitucionalController::class, 'reportePDFResumenVacantes']);
+
         Route::post('obtenerInformacionEstudianteDNI', [GestionInstitucionalController::class, 'obtenerInformacionEstudianteDNI']);
         Route::post('obtenerCredencialesSede', [GestionInstitucionalController::class, 'obtenerCredencialesSede']);
         Route::post('importarDocente_IE', [GestionInstitucionalController::class, 'importarDocente_IE']);
