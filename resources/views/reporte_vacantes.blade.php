@@ -247,8 +247,8 @@
                         <th>N°</th>
                         <th>Nivel de grado</th>
                         <th>Sección</th>
-                        <th>Vacanate regular</th>
-                        <th>Vacanate NEE</th>
+                        <th>Vacante regular</th>
+                        <th>Vacante NEE</th>
                         <th>Estado</th>
                         <th>Total Vacantes</th>
 
