@@ -19,6 +19,7 @@ Route::group(['prefix' => 'grl'], function () {
   Route::group(['prefix' => 'personas'], function () {
     Route::post('list', [PersonasController::class, 'list']);
     Route::patch('datos-personales', [PersonasController::class, 'actualizarDatosPersonales'])->middleware('auth:api');
+    Route::post('foto-perfil', [PersonasController::class, 'actualizarFotoPerfil'])->middleware('auth:api');
     Route::get('obtenerPersonasxiPersId', [PersonasController::class, 'obtenerPersonasxiPersId']);
     Route::post('guardarPersonasxDatosPersonales', [PersonasController::class, 'guardarPersonasxDatosPersonales']);
   });

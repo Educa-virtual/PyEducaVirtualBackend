@@ -11,15 +11,14 @@ class CambiarContrasenaRequest extends GeneralFormRequest
     {
         /*
             Mínimo 8 caracteres
-            Al menos una letra mayúscula
-            Al menos una letra minúscula
+            Al menos una letra mayúscula o letra minúscula
             Al menos un número
         */
         return [
             'contrasenaNueva' => [
                 'nullable',
                 'min:8',
-                'regex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/',
+                'regex: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/',
             ],
         ];
     }
