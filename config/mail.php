@@ -49,6 +49,19 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        'mailer_noreply' => [
+            'transport' => env('MAIL_MAILER', 'smtp'),
+            'host' => env('MAIL_HOST'),
+            'port' => env('MAIL_PORT'),
+            'encryption' => env('MAIL_ENCRYPTION'),
+            'username' => env('MAIL_NOREPLY_USERNAME'),
+            'password' => env('MAIL_NOREPLY_PASSWORD'),
+            'from' => [
+                'address' => env('MAIL_NOREPLY_FROM_ADDRESS'),
+                'name' => env('MAIL_NOREPLY_NAME'),
+            ],
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

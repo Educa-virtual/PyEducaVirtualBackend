@@ -119,6 +119,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('importar_silabos', [DocenteCursosController::class, 'importarSilabos']);
         Route::post('detalle_curricular', [AsistenciaController::class, 'obtenerDetallesCurricular']);
         Route::post('guardar_programacion', [DocenteCursosController::class, 'guardarProgramacionCurricular']);
+        Route::post('guardar_portafolio_documento', [DocenteCursosController::class, 'guardarPortafolioDocumento']);
         Route::post('decargar-documento', [DocenteCursosController::class, 'descargarArchivos']);
     });
     Route::group(['prefix' => 'tipos-fechas'], function () {

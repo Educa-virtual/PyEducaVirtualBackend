@@ -26,7 +26,7 @@ class TipoPreguntasController extends Controller
             ];
 
             $data = DB::select(
-                'exec enc.SP_SEL_tipoPreguntas 
+                'exec aula.SP_SEL_tipoPreguntas 
                     @_iCredId=?',
                 $parametros
             );

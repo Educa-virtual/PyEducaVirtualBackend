@@ -60,31 +60,22 @@ class PortafoliosController extends Controller
 
     public function guardarItinerario(Request $request)
     {
-        $request['iDocenteId'] = is_null($request->iDocenteId)
-            ? null
-            : (is_numeric($request->iDocenteId)
-                ? $request->iDocenteId
-                : ($this->hashids->decode($request->iDocenteId)[0] ?? null));
-
-        $request['iYAcadId'] = is_null($request->iYAcadId)
-            ? null
-            : (is_numeric($request->iYAcadId)
-                ? $request->iYAcadId
-                : ($this->hashids->decode($request->iYAcadId)[0] ?? null));
-
+        $request['iDocenteId'] = VerifyHash::decodes($request->iDocenteId);
+        $request['iYAcadId'] = $request->iYAcadId;
+       
         try {
             $data = DB::select("
                 SELECT 
-                    p.cPortafolioFichaPermanencia
-                    ,p.cPortafolioPerfilEgreso
-                    ,p.cPortafolioPlanEstudios
-                    ,p.cPortafolioItinerario
-                    ,p.cPortafolioProgramaCurricular
-                    ,p.cPortafolioFichasDidacticas
-                    ,p.cPortafolioSesionesAprendizaje
-                    ,p.iPortafolioId
-                    FROM doc.portafolios AS p 
-                    WHERE p.iDocenteId = '" . $request->iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
+                p.cPortafolioFichaPermanencia
+                ,p.cPortafolioPerfilEgreso
+                ,p.cPortafolioPlanEstudios
+                ,p.cPortafolioItinerario
+                ,p.cPortafolioProgramaCurricular
+                ,p.cPortafolioFichasDidacticas
+                ,p.cPortafolioSesionesAprendizaje
+                ,p.iPortafolioId
+                FROM doc.portafolios AS p 
+                WHERE p.iDocenteId = '" . $request->iDocenteId . "' AND p.iYAcadId = '" . $request->iYAcadId . "'
             ");
 
             if (count($data) > 0) {

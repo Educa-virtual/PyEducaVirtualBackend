@@ -18,6 +18,7 @@ Route::group(['prefix' => 'grl'], function () {
   Route::get('prioridades', [PrioridadController::class, 'obtenerPrioridades']);
   Route::group(['prefix' => 'personas'], function () {
     Route::post('list', [PersonasController::class, 'list']);
+    Route::patch('datos-personales', [PersonasController::class, 'actualizarDatosPersonales'])->middleware('auth:api');
     Route::get('obtenerPersonasxiPersId', [PersonasController::class, 'obtenerPersonasxiPersId']);
     Route::post('guardarPersonasxDatosPersonales', [PersonasController::class, 'guardarPersonasxDatosPersonales']);
   });
@@ -40,5 +41,5 @@ Route::group(['prefix' => 'grl'], function () {
     Route::delete('deleteYears/{iYearId}', [YearController::class, 'deleteYears']);
   });
 
-  
+
 });

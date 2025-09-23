@@ -10,14 +10,15 @@ use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaBienestarController;
 use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
-use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
+use App\Http\Controllers\bienestar\FichaDiscapacidadDetalleController;
+use App\Http\Controllers\bienestar\FichaDosisController;
+use App\Http\Controllers\bienestar\FichaEconomicoController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
 use App\Http\Controllers\bienestar\RecordarioFechasController;
 use App\Http\Controllers\bienestar\SeguimientoBienestarController;
-use App\Http\Controllers\FichaDosisController;
 use App\Http\Middleware\RefreshToken;
 
 Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function () {
@@ -75,6 +76,13 @@ Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function (
     Route::post('guardarDosis', [FichaDosisController::class, 'guardarDosis']);
     Route::post('actualizarDosis', [FichaDosisController::class, 'actualizarDosis']);
     Route::post('borrarDosis', [FichaDosisController::class, 'borrarDosis']);
+
+    Route::post('listarDiscapacidadesDetalle', [FichaDiscapacidadDetalleController::class, 'listarDiscapacidadesDetalle']);
+    Route::post('verDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'verDiscapacidadDetalle']);
+    Route::post('guardarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'guardarDiscapacidadDetalle']);
+    Route::post('actualizarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'actualizarDiscapacidadDetalle']);
+    Route::post('borrarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'borrarDiscapacidadDetalle']);
+    Route::post('descargarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'descargarDiscapacidadDetalle']);
 
     /* Recordatorios de cumpleaños */
     Route::get('verRecordatorioPeriodos', [RecordarioFechasController::class, 'verRecordatorioPeriodos']);

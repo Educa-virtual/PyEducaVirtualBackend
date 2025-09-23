@@ -10,6 +10,7 @@ class FichaSalud
     {
         $parametros = [
             $request->iFichaDGId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichaSalud ' . $placeholders, $parametros);
@@ -25,6 +26,7 @@ class FichaSalud
             $request->cFichaDGAlergiaOtros,
             $request->jsonSeguros,
             $request->jsonDolencias,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaSalud ' . $placeholders, $parametros);

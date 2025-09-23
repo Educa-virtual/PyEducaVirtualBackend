@@ -123,12 +123,20 @@ class MaterialEducativosController extends Controller
 
     public function update(Request $request)
     {
-        $resp = new MaterialEducativosController();
-        $parametros = $resp->validate($request);
+        $parametros = [
+            $request->opcion,
+            $request->iMatEducativoId              ?? NULL,
+            $request->cMatEducativoTitulo          ?? NULL,
+            $request->cMatEducativoDescripcion     ?? NULL,
+            $request->cMatEducativoUrl             ?? NULL,
+            $request->iCredId
+        ];
+
+        $enviar = str_repeat('?,',count($parametros)-1).'?';
+        $tabla = 'exec doc.Sp_UPD_materialEducativoDocentes '.$enviar;
 
         try {
-            $data = DB::select('exec doc.Sp_UPD_materialEducativoDocentes
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select($tabla, $parametros);
                 
             if ($data[0]->iMatEducativoId > 0) {
                 $response = ['validated' => true, 'mensaje' => 'Se actualizó la información exitosamente.'];

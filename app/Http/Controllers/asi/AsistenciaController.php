@@ -354,7 +354,9 @@ class AsistenciaController extends Controller
         $iYAcadId = $this->decodificar($request["iYAcadId"]);
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
         $iSeccionId = $this->decodificar($request["iSeccionId"]);
+        $idDocCursoId = $this->decodificar($request["idDocCursoId"]);
         $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
+        $iSedeId = $this->decodificar($request["iSedeId"]);
         $archivos = $request->file('archivos');
 
         $asistencia = json_decode($request->asistencia_json,true);
@@ -375,13 +377,14 @@ class AsistenciaController extends Controller
             $iNivelGradoId ?? NULL,
             $iDocenteId,
             $request->iGradoId ?? NULL,
-            $request->inicio ?? NULL,
-            $request->fin ?? NULL,
+            $idDocCursoId ?? NULL,
+            $iSedeId
         ];
-      
-        $query = DB::select("execute asi.Sp_INS_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
-        
+
+        $enviar = str_repeat('?,',count($solicitud)-1).'?';
+        $tabla = 'execute asi.Sp_INS_control_asistencias '.$enviar;
         try {
+            $query = DB::select($tabla, $solicitud);
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',

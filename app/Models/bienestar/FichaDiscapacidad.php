@@ -3,6 +3,7 @@
 namespace App\Models\bienestar;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FichaDiscapacidad
 {
@@ -10,6 +11,7 @@ class FichaDiscapacidad
     {
         $parametros = [
             $request->iFichaDGId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichaDiscapacidad ' . $placeholders, $parametros);
@@ -25,7 +27,7 @@ class FichaDiscapacidad
             $request->cFichaDGCodigoOMAPED,
             $request->bOtroProgramaDiscapacidad,
             $request->cOtroProgramaDiscapacidad,
-            $request->jsonDiscapacidades,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ' . $placeholders, $parametros);
