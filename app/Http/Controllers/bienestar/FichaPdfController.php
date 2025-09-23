@@ -41,7 +41,6 @@ class FichaPdfController extends Controller
 
             /* VIVIENDA */
             $aspecto_vivienda = json_decode($datos_ficha->aspecto_vivienda)[0] ?? [];
-            $equipamiento = json_decode($datos_ficha->equipamiento);
 
             /* ALIMENTACION */
             $alimentacion = json_decode($datos_ficha->alimentacion)[0] ?? [];
@@ -105,6 +104,7 @@ class FichaPdfController extends Controller
                 'tiene_hijos' => $datos_generales->bFichaDGTieneHijos ?? '',
                 'vive_con_padres' => $datos_generales->bFamiliarPadresVivenJuntos ?? '',
                 'num_telefono' => $datos_generales->cPersTelefono ?? '',
+                'correo' => $datos_generales->cPersCorreo ?? '',
             ],
 
             'nacimiento' => [
@@ -169,14 +169,8 @@ class FichaPdfController extends Controller
             'tipo_servicio' => $aspecto_vivienda->cTipoSumADescripcion ?? '',
             'tipo_sshh' => $aspecto_vivienda->cTipoSsHhDescripcion ?? '',
             'tipo_alumbrado' => $aspecto_vivienda->cTipoAlumDescripcion ?? '',
+            'elementos_hogar' => $aspecto_vivienda->cEleParaVivDescripcion ?? '',
         ];
-
-        $datos['equipamiento'] = [];
-        foreach ($equipamiento as $equipos) {
-            $datos['equipamiento'][] = [
-                'electrodm_hogar' => $equipos->cEleParaVivDescripcion ?? '',
-            ];
-        };
 
         $datos['alimentos_std'] = [
             'lugar_desayuno' => $alimentacion->lugarDesayuno ?? '',
@@ -251,6 +245,8 @@ class FichaPdfController extends Controller
             'consulta_psicologica' => $recreacion->cFichaDGAsistioConsultaPsicologica ?? '',
             'lengua_materna' => $recreacion->cLenguaNombre ?? '',
             'etnia' => $recreacion->cEtniaNombre ?? '',
+            'club_interes' => $recreacion->cFichaDGPerteneceClubInteres ?? '',
+            'cargo_ie' => $recreacion->cFichaDGOcupaCargoIE ?? '',
         ];
 
         //  dd($datos); // Verifica que contiene lo esperado

@@ -39,6 +39,8 @@ class FichaRecreacion
             $request->iEtniaId,
             $request->cEtniaOtro,
             $request->header('iCredEntPerfId'),
+            $request->cFichaDGPerteneceClubInteres,
+            $request->cFichaDGOcupaCargoIE,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaRecreacion ' . $placeholders, $parametros);

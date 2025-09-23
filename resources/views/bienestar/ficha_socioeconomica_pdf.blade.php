@@ -147,22 +147,7 @@
 
 <body>
     <div class="container">
-        <table class="header-info">
-            <tr>
-                @if($ficha_estudiante)
-                    <th>CÓDIGO DEL ESTUDIANTE:</th>
-                    <td>{{ $persona['codigo_alumno'] ?? 'N/A' }}</td>
-                @else
-                    <th>DOCUMENTO DE IDENTIDAD:</th>
-                    <td>{{ $persona['tipo_documento'] ?? 'N/A' }} {{ $persona['documento'] ?? '' }}</td>
-                @endif
-            </tr>
-            <tr>
-                <th>NÚMERO DE CELULAR:</th>
-                <td>{{ $persona['num_telefono'] ?? 'N/A' }}</td>
-            </tr>
-        </table>
-
+        
         <h1 class="title">FICHA SOCIOECONÓMICA - DECLARACIÓN JURADA</h1>
 
         <h2>I. DATOS GENERALES</h2>
@@ -195,6 +180,18 @@
                 </tr>
             </table>
         </div>
+
+        <h3>DATOS DE CONTACTO</h3>
+        <table>
+            <tr>
+                <th width="25%">TELÉFONO</th>
+                <th width="75%">CORREO ELECTRÓNICO</th>
+            </tr>
+            <tr>
+                <td>{{ $persona['num_telefono'] ?? 'N/A' }}</td>
+                <td>{{ $persona['correo'] ?? 'N/A' }}</td>
+            </tr>
+        </table>
 
         <div class="section">
             <h3>LUGAR DE NACIMIENTO</h3>
@@ -399,31 +396,13 @@
                     <td>{{ $aspecto_vivienda['tipo_sshh'] ?? 'N/A' }}</td>
                     <td>{{ $aspecto_vivienda['tipo_alumbrado'] ?? 'N/A' }}</td>
                 </tr>
+                <tr>
+                    <th colspan="3">ELEMENTOS EN SU HOGAR</th>
+                </tr>
+                <tr>
+                    <td colspan="3">{{ $aspecto_vivienda['elementos_hogar'] ?? 'N/A' }}</td>
+                </tr>
             </table>
-        </div>
-
-        <div class="section">
-            <h3>ELEMENTOS EN SU HOGAR</h3>
-            @if( isset($equipamiento) && count($equipamiento) > 0 )
-                <table>
-                    <tr>
-                        <th width="10%">ITEM</th>
-                        <th width="90%">ELEMENTO</th>
-                    </tr>
-                    @foreach ($equipamiento as $equipos)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $equipos['electrodm_hogar'] ?? 'N/A' }}</td>
-                        </tr>
-                    @endforeach
-                </table>
-            @else
-                <table>
-                    <tr>
-                        <td colspan="2" class="empty-data">NO REGISTRÓ SI TIENE ELEMENTOS EN EL HOGAR</td>
-                    </tr>
-                </table>
-            @endif
         </div>
         
         <!-- Sección 5: Alimentación -->
@@ -616,7 +595,7 @@
         </div>
 
         <div class="section">
-            <h3>CULTURA Y RECREACIÓN</h3>
+            <h3>SOCIOCULTURAL</h3>
             <table>
                 <tr>
                     <th width="20%">PASATIEMPOS</th>
@@ -630,6 +609,16 @@
                     <th>¿PERTENECE A CLUB ARTÍSTICO?</th>
                     <td>{{ $recreacion['centro_artistico'] ?? 'N/A' }}</td>
                 </tr>
+                <tr>
+                    <th>¿PERTENECE A ALGÚN CLUB O GRUPO DE INTERÉS?</th>
+                    <td>{{ $recreacion['club_interes'] ?? 'N/A' }}</td>
+                </tr>
+                @if( $ficha_estudiante )
+                    <tr>
+                        <th>¿EL ESTUDIANTE OCUPA ALGÚN CARGO EN LA I.E.?</th>
+                        <td>{{ $recreacion['cargo_ie'] ?? 'N/A' }}</td>
+                    </tr>
+                @endif
                 <tr>
                     <th>RELIGIÓN</th>
                     <td>{{ $recreacion['religion'] ?? 'N/A' }}</td>
