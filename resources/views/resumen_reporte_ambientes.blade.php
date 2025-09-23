@@ -221,9 +221,9 @@
         <div class="titulo">RESUMEN DE CONFIGURACIÓN PARA GRADOS Y SECCIONES </div> <br/> 
         <table>
         <tr>
-                <th style="border:1px  solid black;margin:0;padding:5px; text-align:left;">Codigo Modular:</th>
+                <th style="border:1px  solid black;margin:0;padding:5px; text-align:left;">Código Modular:</th>
                 <td style="border:1px  solid black;margin:0;padding:5px;">{{$cIieeCodigoModular}} </td>
-                <th style="border:1px  solid black;margin:0;padding:5px; text-align:left;">Institucion Educativa:</th>
+                <th style="border:1px  solid black;margin:0;padding:5px; text-align:left;">Institución Educativa:</th>
                 <td style="border:1px  solid black;margin:0;padding:5px;">{{$cIieeNombre}} </td>
                 <th style=" border:1px solid black;margin:0;padding:5px; text-align:left;">Fase:</th>
                 <td style="border:1px  solid black;margin:0;padding:5px;">{{$cNivelNombre}} </td>
