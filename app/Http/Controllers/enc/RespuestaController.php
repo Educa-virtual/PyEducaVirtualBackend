@@ -26,7 +26,7 @@ class RespuestaController extends Controller
     /**
      * Muestra las respuestas de una persona
      */
-    public function verRespuesta(Request $request)
+    public function verRespuestas(Request $request)
     {
         try {
             $data = Respuesta::selRespuesta($request);
