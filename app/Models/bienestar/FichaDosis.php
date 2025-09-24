@@ -11,6 +11,7 @@ class FichaDosis
         $parametros = [
             $request->iFichaDGId,
             $request->iPandemiaId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichasDosis ' . $placeholders, $parametros);
@@ -32,6 +33,7 @@ class FichaDosis
             $request->iPandemiaId,
             $request->iPanDFichaNroDosis,
             $request->dtPanDFichaDosis,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::insert('EXEC obe.Sp_INS_fichaDosis ' . $placeholders, $parametros);
@@ -45,6 +47,7 @@ class FichaDosis
             $request->iPandemiaId,
             $request->iPanDFichaNroDosis,
             $request->dtPanDFichaDosis,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update('EXEC obe.Sp_UPD_fichaDosis ' . $placeholders, $parametros);
@@ -54,6 +57,7 @@ class FichaDosis
     {
         $parametros = [
             $request->iPanDFichaId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::delete('EXEC obe.Sp_DEL_fichaDosis ' . $placeholders, $parametros);

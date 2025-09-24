@@ -10,6 +10,7 @@ class FichaRecreacion
     {
         $parametros = [
             $request->iFichaDGId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichaRecreacion ' . $placeholders, $parametros);
@@ -37,7 +38,10 @@ class FichaRecreacion
             $request->cLenguaOtro,
             $request->iEtniaId,
             $request->cEtniaOtro,
-            $request->jsonLenguas,
+            $request->header('iCredEntPerfId'),
+            $request->cFichaDGPerteneceClubInteres,
+            $request->cFichaDGOcupaCargoIE,
+            $request->cTipoFamiliarOtro,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaRecreacion ' . $placeholders, $parametros);

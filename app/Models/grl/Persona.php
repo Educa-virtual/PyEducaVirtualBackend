@@ -18,4 +18,8 @@ class Persona extends Model
         return DB::update("UPDATE grl.personas SET cPersTelefono=?, cPersCorreo=?, cPersDomicilio=?, dtPersActualizado=GETDATE()
         WHERE iPersId=?", [$request->cPersTelefono, $request->cPersCorreo, $request->cPersDomicilio, $iPersId]);
     }
+
+    public static function updFotoPerfil($iPersId, $foto) {
+        DB::update("UPDATE grl.personas SET cPersFotografia=?, dtPersActualizado=GETDATE() WHERE iPersId=?", [$foto, $iPersId]);
+    }
 }

@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Helpers\VerifyHash;
 use App\Http\Requests\seg\LoginUsuarioRequest;
 use App\Models\seg\Credencial;
+use App\Services\grl\PersonasService;
 use Exception;
 use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -65,6 +66,7 @@ class User extends Authenticatable implements JWTSubject
     {
         $usuario = DB::selectOne('EXECUTE seg.Sp_SEL_credencialesXcCredUsuarioXcClave ?,?', [$request->user, $request->pass]);
         //self::codificarContactos($usuario);
+        $usuario->cPersFotografia='storage/'.PersonasService::obtenerRutaFotoPerfil($usuario->iPersId).'/'.$usuario->cPersFotografia;
         self::obtenerOtrosDatos($usuario);
         self::encriptarIds($usuario);
         return [
