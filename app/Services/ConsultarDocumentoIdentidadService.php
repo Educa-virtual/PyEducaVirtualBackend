@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\grl\PersonasService;
 use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 
@@ -111,9 +112,11 @@ class ConsultarDocumentoIdentidadService
                     'status' => 404,
                 ];
             }
+            $respuestaFormateada = $this->formatearRespuestaDni($respuesta->data);
+            PersonasService::actualizarPersonaConDataApi($respuestaFormateada);
             return [
                 'message' => 'Se obtuvo la información',
-                'data' => $this->formatearRespuestaDni($respuesta->data),
+                'data' => $respuestaFormateada,
                 'status' => $respuesta->status,
             ];
         }
@@ -248,8 +251,8 @@ class ConsultarDocumentoIdentidadService
                 FROM grl.distritos d
                     INNER JOIN grl.provincias p ON p.iPrvnId = d.iPrvnId
                 WHERE cDsttCodigoINEI = ?', [trim($respuesta->ubigeo_sunat)]);
-            
-            $estado_civil = DB::select('SELECT tec.iTipoEstCivId 
+
+            $estado_civil = DB::select('SELECT tec.iTipoEstCivId
                 FROM grl.tipos_estados_civiles tec
                 WHERE UPPER(cTipoEstCivilReniec) LIKE UPPER(?)', [trim($respuesta->estado_civil)]);
         } catch (\Exception $e) {
