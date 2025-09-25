@@ -39,4 +39,5 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('verRespuestas', [RespuestaController::class, 'verRespuestas']);
     Route::post('guardarRespuestas', [RespuestaController::class, 'guardarRespuestas']);
     Route::post('actualizarRespuestas', [RespuestaController::class, 'actualizarRespuestas']);
+    Route::post('imprimirRespuestas', [RespuestaController::class, 'imprimirRespuestas']);
 });

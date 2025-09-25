@@ -74,6 +74,17 @@ class Respuesta
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iPersId,
+            $request->iNivelTipoId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
+            $request->iUgelId,
+            $request->iDsttId,
+            $request->iIieeId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->cPersSexo,
+            $request->iPerfilId,
+            $request->iCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectResultSets("EXEC enc.Sp_SEL_respuestasDetalle $placeholders", $parametros);

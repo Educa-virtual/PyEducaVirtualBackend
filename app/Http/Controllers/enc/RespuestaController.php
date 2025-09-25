@@ -64,6 +64,7 @@ class RespuestaController extends Controller
             $encuesta = $data[0][0];
             $preguntas = $data[1];
             $respuestas = $data[2]; 
+            $filtros = $data[3][0];
 
             foreach ( $respuestas as $respuesta) {
                 $respuesta->respuestas = json_decode($respuesta->respuestas);
@@ -74,7 +75,7 @@ class RespuestaController extends Controller
             while (ob_get_level() > 0) {
                 ob_end_clean();
             }
-            return view('encuestas.respuestas_excel', compact('encuesta', 'preguntas', 'respuestas', 'nro_preguntas'));
+            return view('enc.respuestas_excel', compact('encuesta', 'preguntas', 'respuestas', 'nro_preguntas', 'filtros'));
 
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

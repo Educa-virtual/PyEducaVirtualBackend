@@ -33,24 +33,101 @@ $hoja1->mergeCells('A1:B1');
 $hoja1->setCellValue('A1', 'DATOS DE LA ENCUESTA');
 
 $hoja1->setCellValue('A5', 'FECHA DE INICIO:')
-    ->setCellValue('B5', $encuesta->dEncuDesde);
+    ->setCellValue('B5', $encuesta->dEncuInicio);
 
 $hoja1->setCellValue('A6', 'FECHA DE CIERRE:')
-    ->setCellValue('B6', $encuesta->dEncuHasta);
+    ->setCellValue('B6', $encuesta->dEncuFin);
 
-$hoja1->setCellValue('A7', 'ENCUESTA:')
-    ->setCellValue('B7', $encuesta->cEncuNombre);
+$hoja1->setCellValue('A7', 'CATEGORÍA:')
+    ->setCellValue('B7', $encuesta->cCateNombre);
 
-$hoja1->setCellValue('A8', 'CATEGORÍA:')
-    ->setCellValue('B8', $encuesta->cEncuCateNombre);
+$hoja1->setCellValue('A8', 'NOMBRE:')
+    ->setCellValue('B8', $encuesta->cEncuNombre);
 
-$hoja1->setCellValue('A9', 'CREADA POR:')
-    ->setCellValue('B9', $encuesta->cCreador);
+$hoja1->setCellValue('A9', 'SUBTITULO:')
+    ->setCellValue('B9', $encuesta->cEncuSubtitulo);
 
-$hoja1->getStyle('A1:A9')
+$hoja1->setCellValue('A10', 'DESCRIPCIÓN:')
+    ->setCellValue('B10', $encuesta->cEncuDescripcion);
+
+$hoja1->setCellValue('A11', 'CREADA POR:')
+    ->setCellValue('B11', $encuesta->cCreador);
+
+$hoja1->mergeCells('A12:B12');
+$hoja1->setCellValue('A12', 'FILTROS APLICADOS');
+
+$pos_inicial = 12;
+
+if($filtros->persona) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'PERSONA:')
+        ->setCellValue('B'.$pos_inicial, $filtros->persona);
+}
+
+if($filtros->nivel_tipo) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'NIVEL EDUCATIVO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->nivel_tipo);
+}
+
+if($filtros->tipo_sector) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'TIPO DE SECTOR:')
+        ->setCellValue('B'.$pos_inicial, $filtros->tipo_sector);
+}
+
+if($filtros->zona) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'ZONA:')
+        ->setCellValue('B'.$pos_inicial, $filtros->zona);
+}
+
+if($filtros->ugel) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'UGEL:')
+        ->setCellValue('B'.$pos_inicial, $filtros->ugel);
+}
+
+if($filtros->distrito) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'DISTRITO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->distrito);
+}
+
+if($filtros->ie) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'I.E.:')
+        ->setCellValue('B'.$pos_inicial, $filtros->ie);
+}
+
+if($filtros->grado) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'GRADO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->grado);
+}
+
+if($filtros->seccion) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'SECCION:')
+        ->setCellValue('B'.$pos_inicial, $filtros->seccion);
+}
+
+if($filtros->curso) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'CURSO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->curso);
+}
+
+if($filtros->genero) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'GENERO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->genero);
+}
+
+$hoja1->getStyle('A1:A'.$pos_inicial)
     ->getFont()
     ->setBold(true);
-$hoja1->getStyle('A5:A9')
+$hoja1->getStyle('A5:A'.$pos_inicial)
     ->getFill()
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
@@ -60,11 +137,23 @@ $hoja1->getStyle('A1:B1')
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
     ->setARGB($header_color);
+$hoja1->getStyle('A12:B12')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+$hoja1->getStyle('A12:B12')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+    ->setVertical(Alignment::VERTICAL_CENTER);
 $hoja1->getStyle('A1:B1')
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_CENTER)
     ->setVertical(Alignment::VERTICAL_CENTER);
 $hoja1->getStyle('A1:B1')
+    ->getFont()
+    ->setSize(14);
+$hoja1->getStyle('A12:B12')
     ->getFont()
     ->setSize(14);
 
@@ -73,35 +162,37 @@ $hoja1->getStyle('A1:B1')
  */
 
 $hoja2->setCellValue('A1', 'NRO')
-    ->setCellValue('B1', 'TIPO')
-    ->setCellValue('C1', 'PREGUNTA')
-    ->setCellValue('D1', 'INFO ADICIONAL')
-    ->setCellValue('E1', 'ALTERNATIVAS')
+    ->setCellValue('B1', 'SECCIÓN')
+    ->setCellValue('C1', 'TIPO')
+    ->setCellValue('D1', 'PREGUNTA')
+    ->setCellValue('E1', 'INFO ADICIONAL')
+    ->setCellValue('F1', 'ALTERNATIVAS')
     ;
 
-$hoja2->getStyle('A1:E1')
+$hoja2->getStyle('A1:F1')
     ->getFont()
     ->setBold(true);
-$hoja2->getStyle('A1:E1')
+$hoja2->getStyle('A1:F1')
     ->getFill()
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
     ->setARGB($header_color);
-$hoja2->getStyle('A1:E1')
+$hoja2->getStyle('A1:F1')
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_CENTER)
     ->setVertical(Alignment::VERTICAL_CENTER);
-$hoja2->getStyle('C:E')
+$hoja2->getStyle('C:F')
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_LEFT)
     ->setWrapText(true);
 
 foreach( $preguntas as $key => $pregunta ) {
     $hoja2->setCellValue('A' . ($key + 2), $key + 1)
-        ->setCellValue('B' . ($key + 2), $pregunta?->cEncuPregTipo)
-        ->setCellValue('C' . ($key + 2), $pregunta?->cEncuPregContenido)
-        ->setCellValue('D' . ($key + 2), $pregunta?->cEncuPregAdicional)
-        ->setCellValue('E' . ($key + 2), $pregunta?->alternativas);
+        ->setCellValue('B' . ($key + 2), $pregunta?->cSeccionTitulo)
+        ->setCellValue('C' . ($key + 2), $pregunta?->cTipoPregNombre)
+        ->setCellValue('D' . ($key + 2), $pregunta?->cPregContenido)
+        ->setCellValue('E' . ($key + 2), $pregunta?->cPregAdicional)
+        ->setCellValue('F' . ($key + 2), $pregunta?->alternativas);
 }
 
 /**
@@ -113,11 +204,11 @@ $hoja3->setCellValue('A1', 'ITEM')
     ->setCellValue('C1', 'I.E.')
     ->setCellValue('D1', 'GRADO')
     ->setCellValue('E1', 'SECCION')
-    ->setCellValue('F1', 'ESTUDIANTE');
+    ->setCellValue('F1', 'PERSONA');
 
 foreach($preguntas as $key => $pregunta) {
     $columnaLetra = Coordinate::stringFromColumnIndex(7 + $key);
-    $hoja3->setCellValue($columnaLetra . '1', $pregunta?->cEncuPregContenido);
+    $hoja3->setCellValue($columnaLetra . '1', $pregunta?->cPregContenido);
 }
 
 $hoja3->getStyle('A1:' . $columnaLetra . '1')
@@ -128,11 +219,11 @@ $hoja3->getStyle('A1:' . $columnaLetra . '1')
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
     ->setARGB($header_color);
-$hoja3->getStyle('A1:E1')
+$hoja3->getStyle('A1:F1')
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_CENTER)
     ->setVertical(Alignment::VERTICAL_CENTER);
-$hoja3->getStyle('E:E')
+$hoja3->getStyle('F:F')
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_LEFT)
     ->setWrapText(true);
@@ -149,7 +240,7 @@ foreach( $respuestas as $key => $respuesta ) {
 
     foreach ($respuesta->respuestas as $value) {
         $columnaLetra = Coordinate::stringFromColumnIndex(6 + $indice);
-        $hoja3->setCellValue($columnaLetra . ($key + 2), $value->cEncuRptaContenido);
+        $hoja3->setCellValue($columnaLetra . ($key + 2), $value->cRespContenido);
         $indice++;
     }
 }
