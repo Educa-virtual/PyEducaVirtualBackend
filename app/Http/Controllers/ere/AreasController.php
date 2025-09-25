@@ -259,7 +259,8 @@ class AreasController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
             AreasService::actualizarEstadoDescarga($evaluacionId, $areaId, $request->bDescarga);
-            return FormatearMensajeHelper::ok('Se ha actualizado el estado de la descarga');
+            $mensaje = 'Las descargas ahora están ' .($request->bDescarga ? 'activadas' : 'desactivadas');
+            return FormatearMensajeHelper::ok($mensaje);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
