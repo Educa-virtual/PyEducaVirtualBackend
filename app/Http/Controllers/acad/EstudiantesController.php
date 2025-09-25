@@ -7,7 +7,6 @@ use App\Enums\Perfil;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\acad\ReportesAcademicosService;
 use App\Services\acad\FechasImportantesService;
 use App\Services\acad\MatriculasService;
 use App\Services\acad\TiposActividadService;
@@ -366,28 +365,6 @@ class EstudiantesController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
-    }
-
-    public function generarReporteAcademicoProgreso($iYAcadId, Request $request)
-    {
-        try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $outputPdf = ReportesAcademicosService::generarReporteAcademicoProgreso(Auth::user(), $request->header('iCredEntPerfId'), $iYAcadId);
-            return response()->download($outputPdf)->deleteFileAfterSend(true);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
-        }
-    }
-
-    public function obtenerReporteAcademicoProgreso($iYAcadId, Request $request)
-    {
-        try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($request->header('iCredEntPerfId'), $iYAcadId);
-            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
-        }
     }
 
     public function existeMatriculaPorAnio($iYAcadId, Request $request)

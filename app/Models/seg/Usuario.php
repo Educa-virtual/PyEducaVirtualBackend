@@ -73,7 +73,7 @@ class Usuario extends Model
 
     public static function insPerfilUgel($iCredId, $request)
     {
-        $params=[
+        $params = [
             $request->iUgelId,
             $request->iEntId,
             $request->iPerfilId,
@@ -117,5 +117,12 @@ class Usuario extends Model
     public static function updCredenciasUpdatePassword($parametros)
     {
         DB::statement("execute seg.Sp_UPD_credenciasxUpdatePassword @_iCredId=?, @_iPersId=?, @_contraseniaActual=?, @_contraseniaNueva=?", $parametros);
+    }
+
+    public static function selDetallesCredencialEntidad($iCredEntPerfId)
+    {
+        return DB::selectOne("SELECT * FROM seg.credenciales_entidades_perfiles AS cep
+INNER JOIN seg.credenciales_entidades AS ce ON ce.iCredEntId=cep.iCredEntId
+WHERE iCredEntPerfId=?", [$iCredEntPerfId]);
     }
 }
