@@ -11,6 +11,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Response;
+use App\Helpers\VerifyHash;
 
 class EvaluacionEstudiantesController extends ApiController
 {
@@ -92,58 +95,72 @@ class EvaluacionEstudiantesController extends ApiController
 
     public function guardarRespuestaxiEstudianteId(Request $request)
     {
-        $data = DB::select("
-                SELECT 1 FROM eval.evaluaciones
-                WHERE iEvaluacionId = ? 
-                AND (iEstado = 10 OR (iEstado = 2 AND dtEvaluacionFin < GETDATE()))
-            ", [$request->iEvaluacionId]);
+        $validator = Validator::make($request->all(), [
+            'iEstudianteId' => ['required'],
+            'iEvalPregId' => ['required'],
+            'iEvaluacionId' => ['required'],
+        ], [
+            'iEstudianteId.required' => 'No se encontró el identificador del estudiante',
+            'iEvalPregId.required' => 'No se encontró el identificador de la pregunta',
+            'iEvaluacionId.required' => 'No se encontró el identificador de la evaluación',
 
-        if (!empty($data)) {
-            $response = ['validated' => false, 'mensaje' => 'La evaluación ya ha finalizado'];
-            $codeResponse = 500;
-        } else {
-            $evaluacion_respuestas = DB::select(
-                "
-        SELECT MAX(iEvalRptaId) as iEvalRptaId
-        FROM eval.evaluacion_respuestas
-        WHERE iEstudianteId = '" . $request->iEstudianteId . "' AND iEvalPregId = '" . $request->iEvalPregId . "'
-        "
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iEstudianteId',
+                'iEvalPregId',
+                'iEvaluacionId',
+                'iCredId'
+            ];
+
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iEstudianteId        ??  NULL,
+                $request->iEvalPregId          ??  NULL,
+                $request->iEvaluacionId        ??  NULL,
+                $request->jEvalRptaEstudiante  ??  NULL,
+                $request->cEvalRptaPizarraUrl  ??  NULL,
+                $request->iCredId              ??  NULL
+            ];
+            $data = DB::select(
+                'exec eval.SP_INS_evaluacionRespuestasCalificacionxiEstudianteId
+                    @_iEstudianteId=?,
+                    @_iEvalPregId=?,
+                    @_iEvaluacionId=?,
+                    @_jEvalRptaEstudiante=?,
+                    @_cEvalRptaPizarraUrl=?,
+                    @_iCredId=?',
+                $parametros
             );
 
-            if ($evaluacion_respuestas[0]->iEvalRptaId > 0) {
-                // Actualizar respuesta existente
-                $rpta = DB::update(
-                    "
-            UPDATE eval.evaluacion_respuestas
-            SET jEvalRptaEstudiante = '" . $request->jEvalRptaEstudiante . "'
-            WHERE iEvalRptaId = '" . $evaluacion_respuestas[0]->iEvalRptaId . "'
-            "
+            if ($data[0]->iEvalRptaId > 0) {
+                $message = 'Se ha guardado correctamente';
+                return new JsonResponse(
+                    ['validated' => true, 'message' => $message, 'data' => $data],
+                    Response::HTTP_OK
                 );
-
-                if ($rpta) {
-                    $response = ['validated' => true, 'mensaje' => 'Se actualizó la respuesta.'];
-                    $codeResponse = 200;
-                } else {
-                    $response = ['validated' => false, 'mensaje' => 'No se pudo actualizar la respuesta.'];
-                    $codeResponse = 500;
-                }
             } else {
-                // Insertar nueva respuesta
-
-                $data = DB::select(
-                    'exec eval.Sp_INS_evaluacionRespuestasCalificacionxiEstudianteId ?,?,?',
-                    [$request->iEstudianteId, $request->iEvalPregId, $request->jEvalRptaEstudiante]
+                $message = 'No se ha podido guardar, recargue la página.';
+                return new JsonResponse(
+                    ['validated' => false, 'message' => $message, 'data' => []],
+                    Response::HTTP_OK
                 );
-
-                if ($data[0]->iEvalRptaId) {
-                    $response = ['validated' => true, 'mensaje' => 'Se guardó la respuesta.'];
-                    $codeResponse = 200; // Código para creación exitosa
-                } else {
-                    $response = ['validated' => false, 'mensaje' => 'No se pudo guardar la respuesta.'];
-                    $codeResponse = 500;
-                }
             }
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
-        return new JsonResponse($response, $codeResponse);
     }
 }

@@ -69,9 +69,8 @@ class CargaNoLectivasController extends Controller
             $request->iSesionId             ?? NULL,
             $request->dtCreado              ?? NULL,
             $request->dtActualizado         ?? NULL,
-
-            $request->iCredId
-
+            $request->iCredId,
+            $request->iSedeId
         ];
 
         return $parametros;
@@ -84,7 +83,7 @@ class CargaNoLectivasController extends Controller
 
         try {
             $data = DB::select('exec doc.Sp_SEL_cargaNoLectivas
-                ?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;

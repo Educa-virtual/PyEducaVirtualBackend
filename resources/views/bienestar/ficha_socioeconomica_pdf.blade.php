@@ -147,22 +147,12 @@
 
 <body>
     <div class="container">
-        <table class="header-info">
-            <tr>
-                <th>CÓDIGO DEL ESTUDIANTE:</th>
-                <td>{{ $estudiante['codigo_alumno'] ?? 'N/A' }}</td>
-            </tr>
-            <tr>
-                <th>NÚMERO DE CELULAR:</th>
-                <td>{{ $estudiante['num_telefono'] ?? 'N/A' }}</td>
-            </tr>
-        </table>
-
+        
         <h1 class="title">FICHA SOCIOECONÓMICA - DECLARACIÓN JURADA</h1>
 
-        <h2>I. DATOS GENERALES DEL ESTUDIANTE</h2>
+        <h2>I. DATOS GENERALES</h2>
 
-        <!-- Datos del Estudiante -->
+        <!-- Datos Personales -->
         <div class="section">
             <h3>DATOS PERSONALES</h3>
             <table>
@@ -172,9 +162,9 @@
                     <th colspan="2" width="50%">NOMBRES</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['apellido_paterno'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['apellido_materno'] ?? 'N/A' }}</td>
-                    <td colspan="2">{{ $estudiante['nombres'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['apellido_paterno'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['apellido_materno'] ?? 'N/A' }}</td>
+                    <td colspan="2">{{ $persona['nombres'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>TIPO DE DOCUMENTO</th>
@@ -183,13 +173,25 @@
                     <th>SEXO</th>
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['tipo_documento'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['documento'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['fecha_nacimiento'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['sexo'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['tipo_documento'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['documento'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['fecha_nacimiento'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['sexo'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
+
+        <h3>DATOS DE CONTACTO</h3>
+        <table>
+            <tr>
+                <th width="25%">TELÉFONO</th>
+                <th width="75%">CORREO ELECTRÓNICO</th>
+            </tr>
+            <tr>
+                <td>{{ $persona['num_telefono'] ?? 'N/A' }}</td>
+                <td>{{ $persona['correo'] ?? 'N/A' }}</td>
+            </tr>
+        </table>
 
         <div class="section">
             <h3>LUGAR DE NACIMIENTO</h3>
@@ -211,7 +213,7 @@
 
         <!-- Sección : Dirección -->
         <div class="section">
-            <h3>DIRECCIÓN DEL ESTUDIANTE</h3>
+            <h3>DIRECCIÓN</h3>
             <table>
                 <tr>
                     <th colspan="3">TIPO DE VÍA</th>
@@ -256,13 +258,17 @@
                     <th>¿VIVE SU PADRE?</th>
                     <th>¿VIVE SU MADRE?</th>
                     <th>¿TIENE HIJOS?</th>
-                    <th>¿CUÁNTOS HIJOS?</th>
+                    @if( $ficha_estudiante )
+                        <th>¿VIVE CON PADRES?</th>
+                    @endif
                 </tr>
                 <tr>
-                    <td>{{ $estudiante['vive_padre'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['vive_madre'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['tiene_hijos'] ?? 'N/A' }}</td>
-                    <td>{{ $estudiante['num_hijos'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['vive_padre'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['vive_madre'] ?? 'N/A' }}</td>
+                    <td>{{ $persona['tiene_hijos'] ?? 'N/A' }}</td>
+                    @if( $ficha_estudiante )
+                        <td>{{ $persona['vive_con_padres'] ?? 'N/A' }}</td>
+                    @endif
                 </tr>
             </table>
         </div>
@@ -275,11 +281,11 @@
                         <th width="10%">TIPO DE FAMILIAR</th>
                         <th width="10%">DOCUMENTO</th>
                         <th width="35%">APELLIDOS Y NOMBRES</th>
-                        <th width="10%">GÉNERO</th>
+                        <th width="10%">GÉNERO (M/F)</th>
                         <th width="5%">EDAD</th>
                         <th width="10%">VIVE CON EST.</th>
                         <th width="10%">OCUPACIÓN</th>
-                        <th width="10%">GRADO DE INST.</th>
+                        <th width="10%">CELULAR</th>
                     </tr>
                     @foreach ($familiares as $familiar)
                         <tr>
@@ -290,7 +296,7 @@
                             <td width="5%">{{ $familiar['edad'] ?? 'N/A' }}</td>
                             <td width="10%">{{ $familiar['comparte_vivienda'] ?? 'N/A' }}</td>
                             <td width="10%">{{ $familiar['ocupacion'] ?? 'N/A' }}</td>
-                            <td width="10%">{{ $familiar['grado_instruccion'] ?? 'N/A' }}</td>
+                            <td width="10%">{{ $familiar['celular'] ?? 'N/A' }}</td>
                         </tr>
                     @endforeach
                 </table>
@@ -316,30 +322,30 @@
                     <td>{{ $aspecto_economico['actividad_ingreso'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>¿EL ESTUDIANTE TRABAJA?</th>
-                    <td>{{ $aspecto_economico['estudiante_trabaja'] ?? 'N/A' }}</td>
+                    <th>{{ $ficha_estudiante ? '¿EL APODERADO TRABAJA?' : '¿EL(A) JEFE DE FAMILIA TRABAJA?' }}</th>
+                    <td>{{ $aspecto_economico['apoderado_jefe_trabaja'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>APOYO ECONÓMICO DE ESTUDIANTE</th>
+                    <th>APOYO ECONÓMICO DE {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['tipo_apoyo_economico'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>INGRESO MENSUAL DEL APODERADO</th>
+                    <th>INGRESO MENSUAL DEL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['rango_ingresos_apoderado'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>HORAS TRABAJADAS POR APODERADO</th>
+                    <th>HORAS TRABAJADAS POR {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['horas_trabajo'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>ACTIVIDAD ECONÓMICA DEL APODERADO</th>
+                    <th>ACTIVIDAD ECONÓMICA DEL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['apoderado_depende_de'] ?? 'N/A' }}</td>
                 </tr>
-                    <th>¿DE QUIÉN DEPENDE EL APODERADO?</th>
+                    <th>¿DE QUIÉN DEPENDE EL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}?</th>
                     <td>{{ $aspecto_economico['depende_economicamente_de'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
-                    <th>JORNADA LABORAL DEL APODERADO</th>
+                    <th>JORNADA LABORAL DEL {{ $ficha_estudiante ? 'APODERADO' : 'JEFE DE FAMILIA' }}</th>
                     <td>{{ $aspecto_economico['jornada_trabajo'] ?? 'N/A' }}</td>
                 </tr>
             </table>
@@ -347,7 +353,7 @@
 
         <!-- Sección 4: Aspectos de la Vivienda -->
         <div class="section">
-            <h2>IV. ASPECTOS DE LA VIVIENDA (DONDE RESIDE EL ESTUDIANTE)</h2>
+            <h2>IV. ASPECTOS DE LA VIVIENDA DONDE RESIDE</h2>
             
             <table>
                 <tr>
@@ -390,36 +396,18 @@
                     <td>{{ $aspecto_vivienda['tipo_sshh'] ?? 'N/A' }}</td>
                     <td>{{ $aspecto_vivienda['tipo_alumbrado'] ?? 'N/A' }}</td>
                 </tr>
+                <tr>
+                    <th colspan="3">ELEMENTOS EN SU HOGAR</th>
+                </tr>
+                <tr>
+                    <td colspan="3">{{ $aspecto_vivienda['elementos_hogar'] ?? 'N/A' }}</td>
+                </tr>
             </table>
-        </div>
-
-        <div class="section">
-            <h3>ELEMENTOS EN SU HOGAR</h3>
-            @if( isset($equipamiento) && count($equipamiento) > 0 )
-                <table>
-                    <tr>
-                        <th width="10%">ITEM</th>
-                        <th width="90%">ELEMENTO</th>
-                    </tr>
-                    @foreach ($equipamiento as $equipos)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $equipos['electrodm_hogar'] ?? 'N/A' }}</td>
-                        </tr>
-                    @endforeach
-                </table>
-            @else
-                <table>
-                    <tr>
-                        <td colspan="2" class="empty-data">NO REGISTRÓ SI TIENE ELEMENTOS EN EL HOGAR</td>
-                    </tr>
-                </table>
-            @endif
         </div>
         
         <!-- Sección 5: Alimentación -->
         <div class="section">
-            <h2>V. ALIMENTACIÓN DEL ESTUDIANTE</h2>
+            <h2>V. ALIMENTACIÓN</h2>
             
             <h3>LUGARES DE ALIMENTACIÓN DURANTE LA SEMANA</h3>
             <table>
@@ -449,6 +437,12 @@
                     <th width="20%">PROGRAMAS DE ALIMENTACIÓN</th>
                     <td width="80%">{{ $alimentos_std['programas_alimentacion'] ?? 'N/A' }}</td>
                 </tr>
+                @if( $alimentos_std['alergias_alimenticias'] )
+                <tr>
+                    <th>ALERGIAS ALIMENTICIAS</th>
+                    <td>{{ $alimentos_std['alergias_alimenticias'] ?? 'N/A' }}</td>
+                </tr>
+                @endif
                 <tr>
                     <th>DIETA ESPECIAL</th>
                     <td>{{ $alimentos_std['dieta_especial'] ?? 'N/A' }}</td>
@@ -477,7 +471,7 @@
             <h2>VI. DISCAPACIDAD</h2>
             
             @if( !$programas_discapacidad['tiene_discapacidad'] )
-                <h3>NO TIENE DISCAPACIDAD</h3>
+                <h3>NO REGISTRA DISCAPACIDAD</h3>
             @else
                 <h3>AFILIACIÓN A PROGRAMAS</h3>
                 <table>
@@ -499,7 +493,7 @@
             <table>
                 <tr>
                     <th width="20%">DISCAPACIDAD</th>
-                    <th width="80%">OBSERVACIONES</th>
+                    <th width="80%">INFORMACIÓN ADICIONAL</th>
                 </tr>
                 @foreach($discapacidades as $index => $discapacidad)
                     <tr>
@@ -601,7 +595,7 @@
         </div>
 
         <div class="section">
-            <h3>CULTURA Y RECREACIÓN</h3>
+            <h3>SOCIOCULTURAL</h3>
             <table>
                 <tr>
                     <th width="20%">PASATIEMPOS</th>
@@ -616,8 +610,26 @@
                     <td>{{ $recreacion['centro_artistico'] ?? 'N/A' }}</td>
                 </tr>
                 <tr>
+                    <th>¿PERTENECE A ALGÚN CLUB O GRUPO DE INTERÉS?</th>
+                    <td>{{ $recreacion['club_interes'] ?? 'N/A' }}</td>
+                </tr>
+                @if( $ficha_estudiante )
+                    <tr>
+                        <th>¿EL ESTUDIANTE OCUPA ALGÚN CARGO EN LA I.E.?</th>
+                        <td>{{ $recreacion['cargo_ie'] ?? 'N/A' }}</td>
+                    </tr>
+                @endif
+                <tr>
                     <th>RELIGIÓN</th>
                     <td>{{ $recreacion['religion'] ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <th>LENGUA MATERNA</th>
+                    <td>{{ $recreacion['lengua_materna'] ?? 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <th>ETNIA</th>
+                    <td>{{ $recreacion['etnia'] ?? 'N/A' }}</td>
                 </tr>
             </table>
         </div>
@@ -653,7 +665,11 @@
         <!-- Firmas -->
         <div class="signature-section section">
             <div class="signature-box">
-                <p>Firma del Estudiante</p>
+                @if($ficha_estudiante)
+                    <p>Firma del Apoderado</p>
+                @else
+                    <p>Firma</p>
+                @endif
                 <div class="signature-line"></div>
             </div>
             <div class="signature-box">

@@ -10,36 +10,10 @@ class FichaAlimentacion
     {
         $parametros = [
             $request->iFichaDGId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_SEL_fichaAlimentacion ' . $placeholders, $parametros);
-    }
-
-    public static function insfichaAlimentacion($request)
-    {
-        $parametros = [
-            $request->iFichaDGId,
-            $request->iLugarAlimIdDesayuno,
-            $request->cLugarAlimDesayuno,
-            $request->iLugarAlimIdAlmuerzo,
-            $request->cLugarAlimAlmuerzo,
-            $request->iLugarAlimIdCena,
-            $request->cLugarAlimCena,
-            $request->bDietaEspecial,
-            $request->cDietaEspecialObs,
-            $request->bFichaDGAlergiaAlimentos,
-            $request->cFichaDGAlergiaAlimentos,
-            $request->bIntoleranciaAlim,
-            $request->cIntoleranciaAlimObs,
-            $request->bSumplementosAlim,
-            $request->cSumplementosAlimObs,
-            $request->bDificultadAlim,
-            $request->cDificultadAlimObs,
-            $request->cAlimObs,
-            $request->jsonProgramas,
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_INS_fichaAlimentacion ' . $placeholders, $parametros);
     }
 
     public static function updfichaAlimentacion($request)
@@ -65,6 +39,7 @@ class FichaAlimentacion
             $request->cDificultadAlimObs,
             $request->cAlimObs,
             $request->jsonProgramas,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaAlimentacion ' . $placeholders, $parametros);

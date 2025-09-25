@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Services\acad\ReportesAcademicosService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class CursosController extends Controller
 {
@@ -86,5 +92,16 @@ class CursosController extends Controller
         }
 
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos', 'data' => $data], Response::HTTP_OK);
+    }
+
+    public function obtenerResultadoParaGrafico($iYAcadId, $iIeCursoId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]); //$iCredPerfIdEstudiante, $iYAcadId, $iIeCursoId
+            $data =  ReportesAcademicosService::obtenerResultadoParaGrafico($request->header('iCredEntPerfId'), $iYAcadId, $iIeCursoId);
+            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 }

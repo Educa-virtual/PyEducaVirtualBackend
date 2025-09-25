@@ -47,15 +47,11 @@ class PersonaController extends Controller
 
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::ADMINISTRADOR_DREMO]]);
-            $resultado = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento ?,?', $parametros);
+            /*$resultado = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento ?,?', $parametros);
             $cantidadResultados = count($resultado);
             if ($cantidadResultados == 0) {
                 // No está registrado, consultar en servicio web
-                $consultarDocumentoService = new ConsultarDocumentoIdentidadService();
-                $dataServicio = $consultarDocumentoService->buscar($request->iTipoIdentId, $request->cPersDocumento);
-                $data = $dataServicio['data'];
-                $mensaje = $dataServicio['message'];
-                $status = $dataServicio['status'];
+
             } elseif ($cantidadResultados > 1) {
                 $data = null;
                 $mensaje = 'El documento de identidad está duplicado';
@@ -64,7 +60,12 @@ class PersonaController extends Controller
                 $data = $resultado[0];
                 $mensaje = 'El usuario ya está registrado';
                 $status = 200;
-            }
+            }*/
+            $consultarDocumentoService = new ConsultarDocumentoIdentidadService();
+            $dataServicio = $consultarDocumentoService->buscar($request->iTipoIdentId, $request->cPersDocumento);
+            $data = $dataServicio['data'];
+            $mensaje = $dataServicio['message'];
+            $status = $dataServicio['status'];
             return FormatearMensajeHelper::ok($mensaje, $data, $status);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

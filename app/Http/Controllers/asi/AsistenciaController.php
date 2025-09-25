@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\asi;
 
+use App\Enums\Perfil;
+use Illuminate\Support\Facades\Gate;
 use App\Helpers\ResponseHandler;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use App\Models\asi\AsistenciaAdministrativa;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +15,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\FormatearMensajeHelper;
+use Illuminate\Support\Facades\Storage;
 
 class AsistenciaController extends Controller
 {
@@ -25,27 +30,137 @@ class AsistenciaController extends Controller
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
-    
+    public function guardarAsistenciaEstudiante(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarAsistenciaEstudiante($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function guardarAsistenciaGeneral(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarAsistenciaGeneral($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function buscarAlumnos(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::buscarAlumnos($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function buscarAsisnteciaGeneral(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::buscarAsisnteciaGeneral($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function guardarGrupo(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarHorarioInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function guardarPersonalGrupo(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::guardarPersonalInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function ActualizarGrupo(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::actualizarHorarioInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function buscarPersonalInstitucion(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::buscarPersonalInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
     public function verificarGrupoAsistencia(Request $request){
   
         $iSedeId = $request["iSedeId"];
-      
+
         if(empty($iSedeId)){
             $mensaje = "No se envio datos de la institucion";
             return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
         }
-    
-        $query = 'EXEC asi.Sp_SEL_asistenciaGrupos ?';  
+
+        $enviar = [
+            $iSedeId,
+        ];
+
+        $query = 'EXEC asi.Sp_SEL_asistenciaGrupos ?';
+
         try {
-           
-            //$data = DB::select($query, [$iSedeId]);
-            return ResponseHandler::success([1]);
+            $data = DB::select($query, $enviar);
+            return ResponseHandler::success($data);
         } catch (Exception $e) {
             return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
         }
 
     }
 
+    public function verificarHorarioAsistencia(Request $request){
+  
+        $iSedeId = $request["iSedeId"];
+        $iYAcadId = $request["iYAcadId"];
+
+        if(empty($iSedeId)){
+            $mensaje = "No se envio datos de la institucion";
+            return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
+        }
+
+        $enviar = [
+            $iSedeId,
+            $iYAcadId,
+        ];
+
+        $query = 'EXEC asi.Sp_SEL_asistenciaGruposHorarios ?,?';
+
+        try {
+            $data = DB::select($query, $enviar);
+            return ResponseHandler::success($data);
+        } catch (Exception $e) {
+            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+        }
+
+    }
+
+    public function buscarHorarioInstitucion(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AsistenciaAdministrativa::buscarHorarioInstitucion($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
     // Decodifica los id enviados por el frontend
     private function decodificar($id){
         return is_null($id) ? null : (is_numeric($id) ? $id : ($this->hashids->decode($id)[0] ?? null));
@@ -103,7 +218,7 @@ class AsistenciaController extends Controller
             $iSedeId        ?? NULL,
             $iIieeId        ?? NULL,
         ];
-
+        
         $query = 'EXEC acad.Sp_SEL_buscar_cursos_horario '.str_repeat('?,',count($solicitud)-1).'?';
         try {
             $data = DB::select($query, $solicitud);
@@ -116,6 +231,7 @@ class AsistenciaController extends Controller
     }
     public function obtenerAsistencia(Request $request){
         // Se Decodifica los id hasheados que son enviados por el frontend
+        $idDocCursoId = $request["idDocCursoId"];
         $iGradoId = $request["iGradoId"];
         $iIieeId = $request["iIieeId"];
         $iSedeId = $request["iSedeId"];
@@ -134,6 +250,7 @@ class AsistenciaController extends Controller
             $iSeccionId ?? NULL,
             $iNivelGradoId ?? NULL,
             $iDocenteId ?? NULL,
+            $idDocCursoId ?? NULL,
         ];
 
         $query = "execute asi.Sp_SEL_fechas_asistencia ".str_repeat('?,',count($solicitud)-1)."?";
@@ -183,10 +300,8 @@ class AsistenciaController extends Controller
             $request->inicio ?? NULL,
             $request->fin ?? NULL,
         ];
-
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
         $query = DB::select($consulta, $solicitud);
-  
         try{
             $response = [
                 'validated' => true, 
@@ -239,25 +354,37 @@ class AsistenciaController extends Controller
         $iYAcadId = $this->decodificar($request["iYAcadId"]);
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
         $iSeccionId = $this->decodificar($request["iSeccionId"]);
+        $idDocCursoId = $this->decodificar($request["idDocCursoId"]);
         $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
-        
+        $iSedeId = $this->decodificar($request["iSedeId"]);
+        $archivos = $request->file('archivos');
+
+        $asistencia = json_decode($request->asistencia_json,true);
+        $ruta = 'justificaciones/'.$iDocenteId;
+        if ($archivos) {
+            foreach ($archivos as $index => $archivo) {
+                    $documento = Storage::disk('public')->put($ruta,$archivo);
+                    $asistencia[$index]['justificacion'] = basename($documento);
+            }
+        }
         $solicitud = [
             $request->opcion,
             $iCursoId,
             $request->dtCtrlAsistencia ?? NULL,
-            $request->asistencia_json ?? NULL,
+            json_encode($asistencia) ?? NULL,
             $iSeccionId,
             $iYAcadId,
             $iNivelGradoId ?? NULL,
             $iDocenteId,
             $request->iGradoId ?? NULL,
-            $request->inicio ?? NULL,
-            $request->fin ?? NULL,
+            $idDocCursoId ?? NULL,
+            $iSedeId
         ];
-        
-        $query = DB::select("execute asi.Sp_INS_control_asistencias ?,?,?,?,?,?,?,?,?,?,?", $solicitud);
-        
+
+        $enviar = str_repeat('?,',count($solicitud)-1).'?';
+        $tabla = 'execute asi.Sp_INS_control_asistencias '.$enviar;
         try {
+            $query = DB::select($tabla, $solicitud);
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
@@ -373,8 +500,12 @@ class AsistenciaController extends Controller
 
         $json_institucion = json_decode($query[0]->institucion,true);
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -440,9 +571,7 @@ class AsistenciaController extends Controller
         ];
         
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
-
         $query = DB::select($consulta, $solicitud);
-    
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $dias       = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
@@ -466,8 +595,13 @@ class AsistenciaController extends Controller
         $json_asistencia = json_decode($query[0]->asistencia,true);
         
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
+        
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -624,8 +758,13 @@ class AsistenciaController extends Controller
         $json_institucion = json_decode($query[0]->institucion,true);
 
         $logo = $json_institucion[0]["cIieeLogo"];
-        $verLogo = explode(",",$logo);
-        $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        if(!empty($logo)){
+            $verLogo = explode(",",$logo);
+            $base64Image = str_replace(["\r", "\n"], '', $verLogo[1]);
+        }else{
+            $base64Image = "";
+        }
+
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -654,6 +793,16 @@ class AsistenciaController extends Controller
             ->stream('reporte_asistencia.pdf');
         return $pdf;
     }
-
+    public function descargarJustificacion(Request $request){
+        $cJustificar = $request->cJustificar;
+        
+        if (!Storage::disk('public')->exists($cJustificar)) {
+            throw new Exception('El archivo no existe');
+        }
+        
+        $archivo = Storage::disk('public')->get($cJustificar);
+        return $archivo;
+        
+    }
 }
 

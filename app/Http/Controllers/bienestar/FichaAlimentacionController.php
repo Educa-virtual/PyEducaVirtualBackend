@@ -13,29 +13,19 @@ use Illuminate\Support\Facades\Gate;
 
 class FichaAlimentacionController extends Controller
 {
-    private $perfiles_permitidos = [
+    private $registran = [
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
         Perfil::DOCENTE,
         Perfil::DIRECTOR_IE,
+        Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
     ];
-
-    public function guardarFichaAlimentacion(FichaAlimentacionSaveRequest $request)
-    {
-        try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
-            $data = FichaAlimentacion::updfichaAlimentacion($request);
-            return FormatearMensajeHelper::ok('Se guardó la información', $data);
-        }
-        catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
 
     public function actualizarFichaAlimentacion(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaAlimentacion::updfichaAlimentacion($request);
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }
@@ -47,7 +37,7 @@ class FichaAlimentacionController extends Controller
     public function verFichaAlimentacion(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaAlimentacion::selfichaAlimentacion($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\grl;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\AuditoriaConsultas;
 use Illuminate\Http\Request;
@@ -10,7 +11,11 @@ use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Requests\grl\ActualizarFotoPerfilRequest;
+use App\Services\grl\PersonasService;
+use Exception;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class PersonasController extends Controller
@@ -21,6 +26,28 @@ class PersonasController extends Controller
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
+    }
+
+    public function actualizarDatosPersonales(Request $request)
+    {
+        try {
+            $usuario = Auth::user();
+            PersonasService::actualizarDatosPersonales($usuario->iPersId, $request);
+            return FormatearMensajeHelper::ok('Se han actualizado sus datos');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function actualizarFotoPerfil(ActualizarFotoPerfilRequest $request)
+    {
+        try {
+            $usuario = Auth::user();
+            $urlFoto = PersonasService::actualizarFotoPerfil($usuario->iPersId, $request);
+            return FormatearMensajeHelper::ok('Se ha actualizado su foto de perfil', ['urlFoto' => $urlFoto]);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 
     public function list(Request $request)
@@ -96,8 +123,8 @@ class PersonasController extends Controller
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_SEL_personasxiPersId ?", $parametros);
-
+            $data = DB::selectOne("execute grl.Sp_SEL_personasxiPersId ?", $parametros);
+            $data->cPersFotografia='storage/'.PersonasService::obtenerRutaFotoPerfil($data->iPersId).'/'.$data->cPersFotografia;
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -195,7 +222,6 @@ class PersonasController extends Controller
         try {
             $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?", $parametros);
             return $data;
-            
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;

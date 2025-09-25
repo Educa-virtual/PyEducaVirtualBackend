@@ -295,16 +295,20 @@ class GestionInstitucionalController extends Controller
         $r_horas = $request->r_horas;
         $perfil = $request->perfil;
         $configuracion = $request->configuracion;
+        $lista_grados = $request->lista_grados;
+        $tablaPivot = $request->tablaPivot;
 
 
         $cTipoSectorNombre = $perfil["cTipoSectorNombre"];
         $cPersNombreLargo = $perfil["cPersNombreLargo"];
+        $cEntNombreLargo = $perfil["cEntNombreLargo"];
         $cPersDocumento = $perfil["cPersDocumento"];
         $cPerfilNombre = $perfil["cPerfilNombre"];
         $cNivelTipoNombre = $perfil["cNivelTipoNombre"];
         $cNivelNombre = $perfil["cNivelNombre"];
         $cIieeNombre = $perfil["cIieeNombre"];
         $cIieeCodigoModular = $perfil["cIieeCodigoModular"];
+        $insignia = $perfil["cIieeLogo"] ?? 0;
 
         $cYAcadNombre = $configuracion[0]["cYAcadNombre"];
         // $cEstadoConfigNombre = $perfil["cEstadoConfigNombre"];
@@ -328,13 +332,13 @@ class GestionInstitucionalController extends Controller
         }
 
 
-        $imagePath = public_path('images\logo_IE\dremo.jpg');
+        $imagePath = public_path('images\logo-dremo.png');
         $imageData = base64_encode(file_get_contents($imagePath));
         $region = 'data:image/jpeg;base64,' . $imageData;
 
-        $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
-        $imageData = base64_encode(file_get_contents($imagePath));
-        $insignia = 'data:image/jpeg;base64,' . $imageData;
+       // $imagePath = $request->insignia;
+        //$imageData = base64_encode(file_get_contents($imagePath));
+      //  $insignia = $request->insignia; //'data:image/jpeg;base64,' . $imageData;
 
         $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
@@ -361,17 +365,116 @@ class GestionInstitucionalController extends Controller
             "cYAcadNombre" => $cYAcadNombre,
             "cPersNombreLargo" =>$cPersNombreLargo,
             "cNivelTipoNombre" =>$cNivelTipoNombre,
+            "lista_grados" =>$lista_grados,
+            "tablaPivot" =>$tablaPivot,
+            "cEntNombreLargo" => $cEntNombreLargo,
             // "cPerfilNombre" =>$cPerfilNombre,
             // "cPersDocumento" =>$cPersDocumento,
             // "cPersNombreLargo" =>$cPersNombreLargo,
             // "cTipoSectorNombre" =>$cTipoSectorNombre,
 
         ];
-//portrait landscape
-        $pdf = Pdf::loadView('resumen_reporte_ambientes_primaria', $respuesta)
-            ->setPaper('a4', 'landscape')
-            ->stream('reporte.pdf');
-        return $pdf;
+        //portrait landscape
+        $pdf = Pdf::setOptions([
+            'isRemoteEnabled' => true,
+            'chroot' => public_path(),
+        ])
+        ->loadView('resumen_reporte_ambientes', $respuesta)
+        ->setPaper('a4', 'landscape');
+        
+        return $pdf->stream('reporte.pdf');
+   
+    }
+
+    public function reportePDFResumenVacantes(Request $request){
+           // Decodificar JSON a un arreglo asociativo
+           $vacantes = $request->vacantes;
+           $perfil = $request->perfil;
+   
+           $cTipoSectorNombre = $perfil["cTipoSectorNombre"];
+           $cPersNombreLargo = $perfil["cPersNombreLargo"];
+           $cEntNombreLargo = $perfil["cEntNombreLargo"];
+           $cPersDocumento = $perfil["cPersDocumento"];
+           $cPerfilNombre = $perfil["cPerfilNombre"];
+           $cNivelTipoNombre = $perfil["cNivelTipoNombre"];
+           $cNivelNombre = $perfil["cNivelNombre"];
+           $cIieeNombre = $perfil["cIieeNombre"];
+           $cIieeCodigoModular = $perfil["cIieeCodigoModular"];
+           $insignia = $perfil["cIieeLogo"] ?? 0;
+   
+           $cYAcadNombre = $request->anio_actual;
+            
+    
+           $imagePath = public_path('images\logo-dremo.png');
+           $imageData = base64_encode(file_get_contents($imagePath));
+           $region = 'data:image/jpeg;base64,' . $imageData;
+   
+          // $imagePath = $request->insignia;
+           //$imageData = base64_encode(file_get_contents($imagePath));
+         //  $insignia = $request->insignia; //'data:image/jpeg;base64,' . $imageData;
+   
+           $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
+           $imageData = base64_encode(file_get_contents($imagePath));
+           $virtual = 'data:image/jpeg;base64,' . $imageData;
+   
+   
+           $respuesta = [
+               "totalHorasPendientes" => $request->totalHorasPendientes,
+               "vacantes" => $vacantes,
+               "fecha" => date("F j, Y, g:i a"),
+        
+               "contador" => 1,
+               "imageLogo" => $region,// Ruta absoluta
+               "logoVirtual" => $virtual,// Ruta absoluta
+               "logoInsignia" => $insignia,// Ruta absoluta
+           
+               "cIieeCodigoModular" => $cIieeCodigoModular,
+               "cIieeNombre" =>$cIieeNombre,
+               "cNivelNombre" =>$cNivelNombre,
+               "cYAcadNombre" => $cYAcadNombre,
+               "cPersNombreLargo" =>$cPersNombreLargo,
+               "cNivelTipoNombre" =>$cNivelTipoNombre,
+               "cEntNombreLargo" => $cEntNombreLargo,
+               // "cPerfilNombre" =>$cPerfilNombre,
+               // "cPersDocumento" =>$cPersDocumento,
+               // "cPersNombreLargo" =>$cPersNombreLargo,
+               // "cTipoSectorNombre" =>$cTipoSectorNombre,
+   
+           ];
+           //portrait landscape
+           $pdf = Pdf::setOptions([
+               'isRemoteEnabled' => true,   // Permite imágenes remotas
+               'chroot' => public_path(),   // Asegura acceso a public/
+           ])
+          
+           ->loadView('reporte_vacantes', $respuesta)
+           ->setPaper('a4', 'portrait');
+   
+           $dompdf = $pdf->getDomPDF();
+           $canvas = $dompdf->getCanvas();
+           $fontMetrics = new \Dompdf\FontMetrics($canvas, $dompdf->getOptions());
+           $font = $fontMetrics->getFont("helvetica", "normal"); // usa helvetica (Verdana a veces falla)
+           
+               $canvas->page_script(function ($pageNumber, $pageCount, $canvas, $fontMetrics) use ($respuesta) {
+               $font = $fontMetrics->getFont("helvetica", "normal");
+           
+               $autor = $respuesta['cPersNombreLargo'] ?? 'Sin autor';
+               $fecha = now()->format('Y-m-d H:i:s');
+
+               $w = $canvas->get_width();   // ancho de la hoja
+               $h = $canvas->get_height();  // alto de la hoja
+               $y = $h - 40; // 40pt desde el borde inferior (~1.4cm)
+
+            //    $canvas->text(70, 560, "Página $pageNumber de $pageCount", $font, 9);
+            //    $canvas->text(370, 560, "Autor: ".$autor, $font, 9);
+            //    $canvas->text(670, 560, $fecha, $font, 9);
+            $canvas->text(70, $y, "Página $pageNumber de $pageCount", $font, 9);
+            $canvas->text($w/2 - 50, $y, "Autor: ".$autor, $font, 6);
+            $canvas->text($w - 150, $y, $fecha, $font, 6);
+           });
+           
+           return $pdf->stream('reporte.pdf');
+        
     }
 
     public function buscarDni(Request $request){

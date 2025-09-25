@@ -10,23 +10,24 @@ use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaBienestarController;
 use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaViviendaController;
-use App\Http\Controllers\FichaEconomicoController;
 use Illuminate\Support\Facades\Route;
-use app\Http\Controllers\bienestar\EstudianteController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
+use App\Http\Controllers\bienestar\FichaDiscapacidadDetalleController;
+use App\Http\Controllers\bienestar\FichaDosisController;
+use App\Http\Controllers\bienestar\FichaEconomicoController;
 use App\Http\Controllers\bienestar\FichaPdfController;
 use App\Http\Controllers\bienestar\FichaSaludController;
 use App\Http\Controllers\bienestar\RecordarioFechasController;
 use App\Http\Controllers\bienestar\SeguimientoBienestarController;
-use App\Http\Controllers\FichaDosisController;
+use App\Http\Middleware\RefreshToken;
 
-Route::group(['prefix' => 'bienestar'], function () {
+Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function () {
 
     Route::post('listarEstudiantesApoderado', [FichaBienestarController::class, 'listarEstudiantesApoderado']);
     Route::post('listarFichas', [FichaBienestarController::class, 'listarFichas']);
     Route::post('crearFicha', [FichaBienestarController::class, 'crearFicha']);
     Route::get('obtenerParametrosFicha', [FichaBienestarController::class, 'obtenerParametrosFicha']);
-    Route::delete('borrarFicha', [FichaBienestarController::class, 'borrarFicha']);
+    Route::post('borrarFicha', [FichaBienestarController::class, 'borrarFicha']);
     Route::post('verFicha', [FichaBienestarController::class, 'verFicha']);
 
     Route::post('descargarFicha', [FichaPdfController::class, 'descargarFicha']);
@@ -76,6 +77,13 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('actualizarDosis', [FichaDosisController::class, 'actualizarDosis']);
     Route::post('borrarDosis', [FichaDosisController::class, 'borrarDosis']);
 
+    Route::post('listarDiscapacidadesDetalle', [FichaDiscapacidadDetalleController::class, 'listarDiscapacidadesDetalle']);
+    Route::post('verDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'verDiscapacidadDetalle']);
+    Route::post('guardarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'guardarDiscapacidadDetalle']);
+    Route::post('actualizarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'actualizarDiscapacidadDetalle']);
+    Route::post('borrarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'borrarDiscapacidadDetalle']);
+    Route::post('descargarDiscapacidadDetalle', [FichaDiscapacidadDetalleController::class, 'descargarDiscapacidadDetalle']);
+
     /* Recordatorios de cumpleaños */
     Route::get('verRecordatorioPeriodos', [RecordarioFechasController::class, 'verRecordatorioPeriodos']);
     Route::post('verFechasEspeciales', [RecordarioFechasController::class, 'verFechasEspeciales']);
@@ -121,5 +129,6 @@ Route::group(['prefix' => 'bienestar'], function () {
     Route::post('verSeguimiento', [SeguimientoBienestarController::class, 'verSeguimiento']);
     Route::post('borrarSeguimiento', [SeguimientoBienestarController::class, 'borrarSeguimiento']);
     Route::post('verDatosPersona', [SeguimientoBienestarController::class, 'verDatosPersona']);
+    Route::post('descargarSeguimiento', [SeguimientoBienestarController::class, 'descargarSeguimiento']);
 });
 

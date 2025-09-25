@@ -603,14 +603,15 @@ class AulaVirtualController extends ApiController
         $params = [
             $request->iEstudianteId      ??  NULL,
             $request->iForoId            ??  NULL,
-            $request->cForoRptaDocente    ??  NULL
+            $request->cForoRptaDocente    ??  NULL,
+            $request->nForoRptaNota    ??  NULL
         ];
 
 
         try {
             // Llama al procedimiento almacenado 'Sp_UPD_calificarDocenteForoRespuestas' en la base de datos,
             // pasándole los parámetros preparados. Este procedimiento se encarga de actualizar la calificación.
-            $data = DB::select('exec aula.Sp_UPD_calificarDocenteForoRespuestasEstudiante ?,?,?', $params);
+            $data = DB::select('exec aula.Sp_UPD_calificarDocenteForoRespuestasEstudiante ?,?,?,?', $params);
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $estado = 200;

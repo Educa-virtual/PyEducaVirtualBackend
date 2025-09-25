@@ -18,7 +18,7 @@ use App\Http\Controllers\acad\IndicadorActividadesController;
 use App\Http\Controllers\doc\MaterialEducativosController;
 use App\Http\Controllers\acad\SilaboActividadAprendizajesController;
 use App\Http\Controllers\acad\TipoIndicadorLogrosController;
-use App\Http\Controllers\api\acad\GradoAcademicosController;
+use App\Http\Controllers\api\acad\FeriadoImportanteController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\doc\CargaNoLectivasController;
@@ -83,7 +83,7 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('store', [ContenidoSemanasController::class, 'store']);
   });
   Route::group(['prefix' => 'grado-academico'], function () {
-    Route::post('list', [GradoAcademicosController::class, 'list']);
+    Route::post('list', [FeriadoImportanteController::class, 'list']);
   });
   Route::group(['prefix' => 'persona'], function () {
     Route::post('list', [PersonaController::class, 'list']);

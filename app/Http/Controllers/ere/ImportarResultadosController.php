@@ -111,7 +111,6 @@ class ImportarResultadosController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-
         return new JsonResponse($response, $codeResponse);
     }
 

@@ -17,17 +17,19 @@ use Illuminate\Support\Facades\Log;
 
 class FichaFamiliarController extends Controller
 {
-    private $perfiles_permitidos = [
+    private $registran = [
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
         Perfil::DOCENTE,
         Perfil::DIRECTOR_IE,
+        Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
     ];
 
     public function listarFichaFamiliares(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::selfichasFamiliaresPersonas($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
@@ -39,13 +41,10 @@ class FichaFamiliarController extends Controller
     public function guardarFichaFamiliar(FichaFamiliarSaveRequest $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::insfichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se guardo la información', $data);
         } catch (Exception $e) {
-            // Log::info($e);
-            // $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            // return new JsonResponse($response, 500);
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -53,7 +52,7 @@ class FichaFamiliarController extends Controller
     public function actualizarFichaFamiliar(FichaFamiliarSaveRequest $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::updFichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se actualizo la información', $data);
         } catch (Exception $e) {
@@ -64,7 +63,7 @@ class FichaFamiliarController extends Controller
     public function verFichaFamiliar(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::selFichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
@@ -75,7 +74,7 @@ class FichaFamiliarController extends Controller
     public function borrarFichaFamiliar(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::delFichaFamiliar($request);
             return FormatearMensajeHelper::ok('Se elimino la ficha familiar', $data);
         } catch (Exception $e) {

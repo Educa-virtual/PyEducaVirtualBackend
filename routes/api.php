@@ -67,13 +67,14 @@ Route::group(['middleware' => ['auth:api', RefreshToken::class]], function () {
 });
 
 
-Route::post('/verificar', [MailController::class, 'index']);
-Route::post('/verificar_codigo', [MailController::class, 'comparar']);
+//Route::post('/verificar', [MailController::class, 'index']);
+//Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 
 Route::group(['prefix' => 'administrador'], function () {
     Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']);
     Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
+    Route::post('addCursosNivelesGrados', [AdministradorController::class, 'addCursosNivelesGrados']);
     Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
     Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);
@@ -208,6 +209,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('reporteHorasNivelGrado', [GestionInstitucionalController::class, 'reporteHorasNivelGrado']);
         Route::post('reporteSeccionesNivelGrado', [GestionInstitucionalController::class, 'reporteSeccionesNivelGrado']);
         Route::post('reportePDFResumenAmbientes', [GestionInstitucionalController::class, 'reportePDFResumenAmbientes']);
+        Route::post('reportePDFResumenVacantes', [GestionInstitucionalController::class, 'reportePDFResumenVacantes']);
+
         Route::post('obtenerInformacionEstudianteDNI', [GestionInstitucionalController::class, 'obtenerInformacionEstudianteDNI']);
         Route::post('obtenerCredencialesSede', [GestionInstitucionalController::class, 'obtenerCredencialesSede']);
         Route::post('importarDocente_IE', [GestionInstitucionalController::class, 'importarDocente_IE']);
@@ -408,9 +411,9 @@ Route::group(['prefix' => 'acad'], function () {
 
 Route::get('/imprimir', PersonaController::class);
 
-Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
-Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
-Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+//Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
+//Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
+//Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
 
 Route::group(['prefix' => 'grl'], function () {
     Route::get('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
@@ -457,3 +460,4 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
 
 
 Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+Route::get('evaluaciones/competencias', [App\Http\Controllers\eval\EvaluacionesController::class, 'obtenerCompetencias']);

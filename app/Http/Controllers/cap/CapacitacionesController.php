@@ -21,8 +21,6 @@ class CapacitacionesController extends Controller
     // 10 => Finalizado
     public function guardarCapacitaciones(Request $request)
     {
-        // return $request->all();
-
         try {
             $fieldsToDecode = [
                 'iTipoCapId',
@@ -129,8 +127,10 @@ class CapacitacionesController extends Controller
         }
     }
 
-    public function actualizarCapacitaciones(Request $request)
+    public function actualizarCapacitaciones(Request $request, $iCapacitacionId)
     {
+        $request->merge(['iCapacitacionId' => $iCapacitacionId]);
+
         try {
             $fieldsToDecode = [
                 'iCapacitacionId',
@@ -185,7 +185,7 @@ class CapacitacionesController extends Controller
                     @_jsonHorario=?',
                 $parametros
             );
-            return $data;
+
             if ($data[0]->iCapacitacionId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
@@ -205,8 +205,10 @@ class CapacitacionesController extends Controller
         }
     }
 
-    public function eliminarCapacitaciones(Request $request)
+    public function eliminarCapacitaciones(Request $request, $iCapacitacionId)
     {
+        $request->merge(['iCapacitacionId' => $iCapacitacionId]);
+
         try {
             $fieldsToDecode = [
                 'iCapacitacionId',
@@ -333,6 +335,87 @@ class CapacitacionesController extends Controller
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function listarCapacitacionesPublicadas(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iCapacitacionId',
+                'iTipoCapId',
+                'iNivelPedId',
+                'iTipoPubId',
+                'iInstId'
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $data = DB::select(
+                'exec cap.SP_SEL_capacitacionesPublicadas'
+            );
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function listarCapacitacionesxiCredId(Request $request, $cPerfil, $iCredId)
+    {
+        $request->merge(['cPerfil' => $cPerfil]);
+        $request->merge(['iCredId' => $iCredId]);
+
+        $validator = Validator::make($request->all(), [
+            'cPerfil' => ['required'],
+            'iCredId' => ['required'],
+        ], [
+            'cPerfil.required' => 'No se encontró el perfil',
+            'iCredId.required' => 'No se encontró la credencial',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validated' => false,
+                'errors' => $validator->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        try {
+            $fieldsToDecode = [
+                'iCredId',
+                'iCapacitacionId',
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->cPerfil              ??  NULL,
+                $request->iCredId              ??  NULL
+            ];
+
+            $data = DB::select(
+                'exec cap.SP_SEL_capacitacionesxcPerfilxiCredId 
+                @_cPerfil=?,
+                @_iCredId=?',
+                $parametros
+            );
+
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api\acad;
 
+use App\Helpers\ResponseHandler;
 use DateTime;
 use Exception;
 use Dompdf\Options;
@@ -98,7 +99,18 @@ class AdministradorController extends Controller
             return new JsonResponse($response, $estado);
     }
 
-    
+    public function addCursosNivelesGrados(Request $request){
+        $query = DB::select("EXEC acad.SP_INS_CurriculaCursosCursoNivelGrado @json = :json, @_opcion = :opcion", [
+            'json' => json_encode([
+                'iCursoId' => $request->input('iCursoId'),
+                'iNivelGradoId' => $request->input('iNivelGradoId'),
+                'cCursoDescripcion' => $request->input('cCursoDescripcion'),
+            ]),
+            'opcion' => 'addCursosNivelesGrados'
+        ]);
+
+        return ResponseHandler::success($query, 'Curso agregado al nivel grado correctamente.');
+    }
 
     public function addNiveles(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
     {

@@ -54,14 +54,14 @@ class DetalleCargaNoLectivasController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-
             $request->iDetCargaNoLectId             ?? NULL,
             $request->iCargaNoLectivaId             ?? NULL,
             $request->iTipoCargaNoLectId            ?? NULL,
             $request->nDetCargaNoLectHoras          ?? NULL,
             $request->cDetCargaNoLectEvidencias     ?? NULL,
-
-            $request->iCredId
+            $request->iCredId,
+            $request->cDescripcion                  ?? NULL,
+            $request->dtInicio                      ?? NULL,
 
         ];
 
@@ -91,10 +91,9 @@ class DetalleCargaNoLectivasController extends Controller
     {
         $resp = new DetalleCargaNoLectivasController();
         $parametros = $resp->validate($request);
-
         try {
             $data = DB::select('exec doc.Sp_INS_detalleCargaNoLectivas
-                ?,?,?,?,?,?,?,?', $parametros);
+                ?,?,?,?,?,?,?,?,?,?', $parametros);
             
             if ($data[0]->iDetCargaNoLectId > 0) {
 
@@ -116,10 +115,9 @@ class DetalleCargaNoLectivasController extends Controller
     {
         $resp = new DetalleCargaNoLectivasController();
         $parametros = $resp->validate($request);
-
         try {
             $data = DB::select('exec doc.Sp_UPD_detalleCargaNoLectivas
-                ?,?,?,?,?,?,?,?', $parametros);
+                ?,?,?,?,?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iDetCargaNoLectId > 0) {
 

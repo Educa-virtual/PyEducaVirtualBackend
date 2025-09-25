@@ -9,7 +9,7 @@ class EncuestaBienestarPregunta
     public static function selPreguntas($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -19,7 +19,7 @@ class EncuestaBienestarPregunta
     public static function insPregunta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iEncuPregTipoId,
             $request->iEncuPregOrden,
@@ -34,7 +34,7 @@ class EncuestaBienestarPregunta
     public static function updPregunta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iEncuPregId,
             $request->iEncuPregTipoId,
@@ -50,7 +50,7 @@ class EncuestaBienestarPregunta
     public static function selPregunta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
@@ -60,7 +60,7 @@ class EncuestaBienestarPregunta
     public static function delPregunta($request)
     {
         $parametros = [
-            $request->iCredEntPerfId,
+            $request->header('iCredEntPerfId'),
             $request->iEncuPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));

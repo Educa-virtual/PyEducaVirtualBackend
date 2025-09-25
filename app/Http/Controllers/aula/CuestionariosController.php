@@ -17,25 +17,28 @@ class CuestionariosController extends Controller
     {
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
-            'iProgActId' => ['required'],
             'iDocenteId' => ['required'],
             'cTitulo' => ['required', 'max:250'],
             'cSubtitulo' => ['nullable', 'max:250'],
             'cDescripcion' => ['required'],
-            'dtInicio'     => ['required', 'date'],
-            'dtFin'        => ['required', 'date', 'after:dtInicio'],
+            'dtInicio'     => ['required'],
+            'dtFin'        => ['required'],
+
+            'iContenidoSemId' => ['required'],
+            'iActTipoId' => ['required'],
+            'iYAcadId' => ['required'],
         ], [
-            'iProgActId.required' => 'No se encontró el identificador iProgActId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
             'cTitulo.required' => 'No se encontró el título',
             'cTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cSubtitulo.max' => 'El subtítulo no debe exceder los 250 caracteres.',
             'cDescripcion.required' => 'No se encontró el identificador cDescripcion',
             'dtInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtInicio.date'         => 'La fecha de inicio no es válida.',
             'dtFin.required'        => 'La fecha y hora de fin es obligatoria',
-            'dtFin.date'            => 'La fecha de fin no es válida.',
-            'dtFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
+
+            'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
+            'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
+            'iYAcadId.required' => 'No se encontró el identificador del año académico',
         ]);
 
         if ($validator->fails()) {
@@ -47,14 +50,17 @@ class CuestionariosController extends Controller
 
         try {
             $fieldsToDecode = [
-                'iProgActId',
                 'iDocenteId',
+                'iContenidoSemId',
+                'iActTipoId',
+                'idDocCursoId',
                 'iCredId',
+                'iCapacitacionId',
+                'iYAcadId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iProgActId        ?? NULL,
                 $request->iDocenteId        ?? NULL,
                 $request->cTitulo           ?? NULL,
                 $request->cSubtitulo        ?? NULL,
@@ -62,13 +68,17 @@ class CuestionariosController extends Controller
                 $request->dtInicio          ?? NULL,
                 $request->dtFin             ?? NULL,
                 $request->cArchivoAdjunto   ?? NULL,
+                $request->iContenidoSemId           ?? NULL,
+                $request->iActTipoId                ?? NULL,
+                $request->idDocCursoId              ?? NULL,
+                $request->iCapacitacionId           ?? NULL,
+                $request->iYAcadId                  ?? NULL,
 
                 $request->iCredId           ?? NULL
             ];
 
             $data = DB::select(
                 'exec aula.SP_INS_cuestionarios 
-                    @_iProgActId=?,
                     @_iDocenteId=?,
                     @_cTitulo=?,
                     @_cSubtitulo=?,
@@ -76,6 +86,11 @@ class CuestionariosController extends Controller
                     @_dtInicio=?,
                     @_dtFin=?,
                     @_cArchivoAdjunto=?,
+                    @_iContenidoSemId=?,
+                    @_iActTipoId=?,
+                    @_idDocCursoId=?,
+                    @_iCapacitacionId=?,
+                    @_iYAcadId=?,
                     @_iCredId=?',
                 $parametros
             );
@@ -106,26 +121,21 @@ class CuestionariosController extends Controller
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
             'iCuestionarioId' => ['required'],
-            'iProgActId' => ['required'],
             'iDocenteId' => ['required'],
             'cTitulo' => ['required', 'max:250'],
             'cSubtitulo' => ['nullable', 'max:250'],
             'cDescripcion' => ['required'],
-            'dtInicio'     => ['required', 'date'],
-            'dtFin'        => ['required', 'date', 'after:dtInicio'],
+            'dtInicio'     => ['required'],
+            'dtFin'        => ['required'],
         ], [
             'iCuestionarioId.required' => 'No se encontró el identificador iCuestionarioId',
-            'iProgActId.required' => 'No se encontró el identificador iProgActId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
             'cTitulo.required' => 'No se encontró el identificador cTitulo',
             'cTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cSubtitulo.max' => 'El subtítulo no debe exceder los 250 caracteres.',
             'cDescripcion.required' => 'No se encontró el identificador cDescripcion',
             'dtInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtInicio.date'         => 'La fecha de inicio no es válida.',
             'dtFin.required'        => 'La fecha y hora de fin es obligatoria',
-            'dtFin.date'            => 'La fecha de fin no es válida.',
-            'dtFin.after'  => 'La fecha de fin debe ser posterior a la fecha de inicio.',
         ]);
 
         if ($validator->fails()) {
@@ -138,16 +148,12 @@ class CuestionariosController extends Controller
         try {
             $fieldsToDecode = [
                 'iCuestionarioId',
-                'iProgActId',
-                'iDocenteId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-            
+
             $parametros = [
                 $request->iCuestionarioId   ?? NULL,
-                $request->iProgActId        ?? NULL,
-                $request->iDocenteId        ?? NULL,
                 $request->cTitulo           ?? NULL,
                 $request->cSubtitulo        ?? NULL,
                 $request->cDescripcion      ?? NULL,
@@ -160,8 +166,6 @@ class CuestionariosController extends Controller
             $data = DB::select(
                 'exec aula.SP_UPD_cuestionarios 
                     @_iCuestionarioId=?,
-                    @_iProgActId=?,
-                    @_iDocenteId=?,
                     @_cTitulo=?,
                     @_cSubtitulo=?,
                     @_cDescripcion=?,
@@ -284,7 +288,7 @@ class CuestionariosController extends Controller
                 $parametros
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-            
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
                 Response::HTTP_OK

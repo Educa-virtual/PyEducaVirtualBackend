@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Services\acad\FechasImportantesService;
 use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 class FechasImportantesController extends Controller
 {
     protected $hashids;
-    
+
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
@@ -58,12 +60,12 @@ class FechasImportantesController extends Controller
             $iNivelGradoId ?? NULL,
             $iDocenteId ?? NULL,
         ];
-        
+
         $query=DB::select("execute asi.Sp_SEL_fechas_asistencia ?,?,?,?,?,?,?", $solicitud);
-        
+
         try{
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'se obtuvo la información',
                 'data' => $query,
             ];
@@ -72,7 +74,7 @@ class FechasImportantesController extends Controller
 
         } catch(Exception $e){
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
@@ -80,5 +82,15 @@ class FechasImportantesController extends Controller
         }
 
         return new JsonResponse($response,$estado);
+    }
+
+    public function obtenerTiposFechas()
+    {
+        try {
+            $data = FechasImportantesService::obtenerTiposFechasCalendario();
+            return FormatearMensajeHelper::ok('Se obtuvo los tipos de fechas', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
     }
 }

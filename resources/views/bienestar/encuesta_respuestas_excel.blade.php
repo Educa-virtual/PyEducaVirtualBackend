@@ -47,10 +47,75 @@ $hoja1->setCellValue('A8', 'CATEGORÍA:')
 $hoja1->setCellValue('A9', 'CREADA POR:')
     ->setCellValue('B9', $encuesta->cCreador);
 
-$hoja1->getStyle('A1:A9')
+$hoja1->mergeCells('A10:B10');
+$hoja1->setCellValue('A10', 'FILTROS APLICADOS');
+
+$pos_inicial = 10;
+
+if($filtros->matricula) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'MATRICULA:')
+        ->setCellValue('B'.$pos_inicial, $filtros->matricula);
+}
+
+if($filtros->nivel_tipo) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'NIVEL EDUCATIVO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->nivel_tipo);
+}
+
+if($filtros->tipo_sector) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'TIPO DE SECTOR:')
+        ->setCellValue('B'.$pos_inicial, $filtros->tipo_sector);
+}
+
+if($filtros->zona) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'ZONA:')
+        ->setCellValue('B'.$pos_inicial, $filtros->zona);
+}
+
+if($filtros->ugel) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'UGEL:')
+        ->setCellValue('B'.$pos_inicial, $filtros->ugel);
+}
+
+if($filtros->distrito) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'DISTRITO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->distrito);
+}
+
+if($filtros->ie) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'I.E.:')
+        ->setCellValue('B'.$pos_inicial, $filtros->ie);
+}
+
+if($filtros->grado) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'GRADO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->grado);
+}
+
+if($filtros->seccion) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'SECCION:')
+        ->setCellValue('B'.$pos_inicial, $filtros->seccion);
+}
+
+if($filtros->genero) {
+    $pos_inicial++;
+    $hoja1->setCellValue('A'.$pos_inicial, 'GENERO:')
+        ->setCellValue('B'.$pos_inicial, $filtros->genero);
+}
+
+$hoja1->getStyle('A1:A'.$pos_inicial)
     ->getFont()
     ->setBold(true);
-$hoja1->getStyle('A5:A9')
+$hoja1->getStyle('A5:A'.$pos_inicial)
     ->getFill()
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
@@ -60,11 +125,23 @@ $hoja1->getStyle('A1:B1')
     ->setFillType(Fill::FILL_SOLID)
     ->getStartColor()
     ->setARGB($header_color);
+$hoja1->getStyle('A10:B10')
+    ->getFill()
+    ->setFillType(Fill::FILL_SOLID)
+    ->getStartColor()
+    ->setARGB($header_color);
+$hoja1->getStyle('A10:B10')
+    ->getAlignment()
+    ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+    ->setVertical(Alignment::VERTICAL_CENTER);
 $hoja1->getStyle('A1:B1')
     ->getAlignment()
     ->setHorizontal(Alignment::HORIZONTAL_CENTER)
     ->setVertical(Alignment::VERTICAL_CENTER);
 $hoja1->getStyle('A1:B1')
+    ->getFont()
+    ->setSize(14);
+$hoja1->getStyle('A10:B10')
     ->getFont()
     ->setSize(14);
 

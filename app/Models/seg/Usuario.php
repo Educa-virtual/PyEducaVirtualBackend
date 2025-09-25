@@ -23,7 +23,15 @@ class Usuario extends Model
 
     public static function selUsuarioPorIdPersona($iPersId)
     {
-         return DB::selectOne('EXEC [seg].[SP_SEL_usuarios] @iPersId=?', [$iPersId]);
+        return DB::selectOne('EXEC [seg].[SP_SEL_usuarios] @iPersId=?', [$iPersId]);
+    }
+
+    public static function selUsuarioPorCredencial($cCredUsuario)
+    {
+        return DB::selectOne("SELECT TOP 1 per.iPersId, cred.iCredId,cPersCorreo, per.cPersNombre, per.cPersPaterno, per.cPersMaterno
+        FROM grl.personas AS per
+        INNER JOIN seg.credenciales AS cred ON cred.iPersId=per.iPersId
+        WHERE cred.cCredUsuario=?", [$cCredUsuario]);
     }
 
     public static function updFechaVigenciaCuenta($iCredId, $dtCredCaduca)
@@ -65,6 +73,13 @@ class Usuario extends Model
 
     public static function insPerfilUgel($iCredId, $request)
     {
+        $params=[
+            $request->iUgelId,
+            $request->iEntId,
+            $request->iPerfilId,
+            $iCredId,
+            $request->iCursosNivelGradId
+        ];
         DB::statement("EXEC [seg].[SP_INS_PerfilUgel] @iUgelId=?, @iEntId=?, @iPerfilId=?, @iCredId=?, @iCursosNivelGradId=?", [
             $request->iUgelId,
             $request->iEntId,
@@ -87,6 +102,11 @@ class Usuario extends Model
     public static function insPersonas($parametros)
     {
         return DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+    }
+
+    public static function updPersonas($parametros)
+    {
+        return DB::select('execute grl.Sp_UPD_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
     }
 
     public static function insCredenciales($iPersId, $iCredId)

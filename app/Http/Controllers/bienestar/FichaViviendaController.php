@@ -16,29 +16,19 @@ use Illuminate\Support\Facades\DB;
 
 class FichaViviendaController extends Controller
 {
-    private $perfiles_permitidos = [
+    private $registran = [
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
         Perfil::DOCENTE,
         Perfil::DIRECTOR_IE,
+        Perfil::SUBDIRECTOR_IE,
+        Perfil::ASISTENTE_SOCIAL,
     ];
-
-    public function guardarFichaVivienda(FichaViviendaSaveRequest $request)
-    {
-        try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
-            $data = FichaVivienda::insFichaVivienda($request);
-            return FormatearMensajeHelper::ok('Se guardó la información', $data);
-        }
-        catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
 
     public function actualizarFichaVivienda(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaVivienda::updFichaVivienda($request);
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         }
@@ -50,7 +40,7 @@ class FichaViviendaController extends Controller
     public function verFichaVivienda(Request $request)
     {
         try {
-            // Gate::authorize('tiene-perfil', $this->perfiles_permitidos);
+            Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaVivienda::selfichaVivienda($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }

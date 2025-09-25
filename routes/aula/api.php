@@ -20,6 +20,7 @@ use App\Http\Controllers\aula\PreguntaAlternativasRespuestasController;
 use App\Http\Controllers\aula\PreguntasController;
 use App\Http\Controllers\aula\ReunionVirtualesController;
 use App\Http\Controllers\aula\TipoExperienciaAprendizajeController;
+use App\Http\Controllers\aula\TipoPreguntasController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
@@ -98,10 +99,10 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::get('generarReporteDeLogrosAlcanzadosXYear', [ResultadoController::class, 'generarReporteDeLogrosAlcanzadosXYear']);
     });
     Route::group(['prefix' => 'anuncios'], function () {
-        Route::post('guardarAnuncios', [AnunciosController::class, 'guardarAnuncios']);
-        Route::post('listarAnuncios', [AnunciosController::class, 'listarAnuncios']);
-        Route::post('eliminarAnuncios', [AnunciosController::class, 'eliminarAnuncios']);
-        Route::post('fijarAnuncios', [AnunciosController::class, 'fijarAnuncios']);
+        Route::post('/', [AnunciosController::class, 'guardarAnuncios']);
+        Route::get('/', [AnunciosController::class, 'listarAnuncios']);
+        Route::delete('/{iAnuncioId}', [AnunciosController::class, 'eliminarAnuncios']);
+        Route::put('/{iAnuncioId}/fijar', [AnunciosController::class, 'fijarAnuncios']);
     });
 
     Route::group(['prefix' => 'foros'], function () {
@@ -158,5 +159,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     });
     Route::prefix('tipo-experiencia-aprendizaje')->group(function () {
         Route::get('/', [TipoExperienciaAprendizajeController::class, 'listarTipoExperienciaAprendizaje']); // Para obtener los tipos de experiencia de aprendizaje
+    });
+    Route::prefix('tipo-preguntas')->group(function () {
+        Route::get('/', [TipoPreguntasController::class, 'listarTipoPreguntas']); // Para obtener los tipos de preguntas
     });
 });

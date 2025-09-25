@@ -51,8 +51,8 @@ class TareaCabeceraGruposController extends Controller
             ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             // Si se obtiene la información, se recorre y se realiza el proceso de codificación de los IDs
-             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-    
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             // Si la consulta fue exitosa, se prepara la respuesta con código 200 (OK)
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
@@ -84,7 +84,7 @@ class TareaCabeceraGruposController extends Controller
             'iEscalaCalifId'
         ];
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-        
+
         // Preparación de los parámetros que se enviarán al procedimiento almacenado
         $parametros = [
             $request->opcion,
@@ -187,13 +187,14 @@ class TareaCabeceraGruposController extends Controller
         $parametros = [
             $request->iTareaCabGrupoId,  // ID del grupo de la tarea
             $request->iEscalaCalifId,              // ID de la escala de calificación
+            $request->nTareaGrupoNota,              // ID de la escala de calificación
             $request->cTareaGrupoComentarioDocente,  // Comentario del docente sobre la tarea
         ];
 
         try {
             // Ejecutamos el procedimiento almacenado con los parámetros proporcionados
             $data = DB::select('exec aula.SP_UPD_tareaCabeceraGruposCalificarDocente
-                ?,?,?', $parametros);
+                ?,?,?,?', $parametros);
 
             // Verificamos si el resultado contiene un ID de grupo de tarea mayor que 0
             if ($data[0]->iTareaCabGrupoId > 0) {
@@ -217,7 +218,7 @@ class TareaCabeceraGruposController extends Controller
 
     // Definición de la función que recibe una solicitud HTTP
     public function transferenciaTareaCabeceraGrupos(Request $request)
-    {   
+    {
         $fieldsToDecode = [
             'iTareaCabGrupoId',
             'iTareaEstudianteId',
@@ -256,7 +257,7 @@ class TareaCabeceraGruposController extends Controller
     }
 
     public function entregarEstudianteTareaGrupal(Request $request)
-    {   
+    {
         $fieldsToDecode = [
             'iTareaId',
             'iEstudianteId'
