@@ -14,7 +14,6 @@ class Respuesta
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
-            $request->iYAcadId,
             $request->iNivelTipoId,
             $request->iTipoSectorId,
             $request->iZonaId,

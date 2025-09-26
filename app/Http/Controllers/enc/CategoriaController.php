@@ -21,14 +21,12 @@ class CategoriaController extends Controller
         Perfil::ESPECIALISTA_DREMO,
         Perfil::ESPECIALISTA_UGEL,
         Perfil::DIRECTOR_IE,
-        Perfil::SUBDIRECTOR_IE,
     ];
 
     private $encuestados = [
         Perfil::ESPECIALISTA_DREMO,
         Perfil::ESPECIALISTA_UGEL,
         Perfil::DIRECTOR_IE,
-        Perfil::SUBDIRECTOR_IE,
         Perfil::DOCENTE,
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
