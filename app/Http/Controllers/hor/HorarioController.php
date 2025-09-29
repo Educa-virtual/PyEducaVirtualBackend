@@ -13,7 +13,7 @@ class HorarioController extends Controller
 {
     public function obtenerHorario($iYAcadId, Request $request) {
         try {
-            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
+            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiantePorCredPerfId($request->header('iCredEntPerfId'), $iYAcadId);
             $horario = HorariosService::obtenerHorario($matricula);
             return FormatearMensajeHelper::ok('Datos obtenidos', ['matricula' => $matricula, 'horario' => $horario]);
         } catch (Exception $ex) {

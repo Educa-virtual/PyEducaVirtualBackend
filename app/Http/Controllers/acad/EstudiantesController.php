@@ -371,7 +371,7 @@ class EstudiantesController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $matricula =  MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
+            $matricula =  MatriculasService::obtenerDetallesMatriculaEstudiantePorCredPerfId($request->header('iCredEntPerfId'), $iYAcadId);
             return FormatearMensajeHelper::ok("Si existe", ['existe' => $matricula != null]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -382,7 +382,7 @@ class EstudiantesController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
+            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiantePorCredPerfId($request->header('iCredEntPerfId'), $iYAcadId);
             $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
             $tiposActividad = TiposActividadService::obtenerTiposActividad();
             $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
