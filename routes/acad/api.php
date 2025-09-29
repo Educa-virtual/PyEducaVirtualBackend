@@ -39,6 +39,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
     });
 
     Route::group(['prefix' => 'estudiantes'], function () {
+        Route::get('{iEstudianteId}/matriculas', [MatriculaController::class, 'obtenerMatriculasEstudiante']);
         Route::group(['prefix' => 'calendario-academico/anio/{iYAcadId}'], function () {
             Route::get('', [EstudiantesController::class, 'obtenerCalendario']);
         });
@@ -76,6 +77,13 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
         Route::group(['prefix' => 'reportes-academicos'], function () {
             Route::get('progreso/{iYAcadId}/estudiante/{cPersDocumento}/pdf', [ReporteAcademicoProgresoController::class, 'generarReporteDirectorPdf']);
             Route::get('progreso/{iYAcadId}/estudiante/{cPersDocumento}', [ReporteAcademicoProgresoController::class, 'obtenerDataReporteDirector']);
+        });
+    });
+
+    Route::group(['prefix' => 'apoderados'], function () {
+        Route::group(['prefix' => 'reportes-academicos'], function () {
+            Route::get('progreso/{iMatrId}/pdf', [ReporteAcademicoProgresoController::class, 'generarReporteApoderadoPdf']);
+            Route::get('progreso/{iMatrId}', [ReporteAcademicoProgresoController::class, 'obtenerDataReporteApoderado']);
         });
     });
 });

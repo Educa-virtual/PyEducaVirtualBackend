@@ -72,7 +72,7 @@ class Matricula
             $request->iNivelGradoId,
             $request->iSeccionId,
             $request->iTurnoId,
-            null,
+            $request->iEstudianteId,
             null,
             null,
             null,
@@ -119,12 +119,18 @@ class Matricula
         return DB::delete("exec acad.Sp_DEL_matriculaPorId $placeholders", $parametros);
     }
 
-    public static function selDetalleMatriculaEstudiante($iCredEntPerfId, $iYAcadId)
+    public static function selDetalleMatriculaEstudiantePorCredPerfId($iCredEntPerfId, $iYAcadId)
     {
-        return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iCredEntPerfId=?, @iYAcadId=?", [$iCredEntPerfId, $iYAcadId]);
+        return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iCredEntPerfId=?, @iYAcadId=?, @iMatrId=NULL", [$iCredEntPerfId, $iYAcadId]);
+    }
+
+    public static function selDetalleMatriculaEstudiantePorId($iMatrId)
+    {
+        return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iMatrId=?, @iCredEntPerfId=NULL, @iYAcadId=NULL", [$iMatrId]);
     }
 
     public static function selCursosMatricula($iMatrId) {
         return DB::select("EXEC [acad].[SP_SEL_cursosMatricula] @iMatrId=?", [$iMatrId]);
     }
+
 }
