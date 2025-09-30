@@ -23,4 +23,14 @@ INNER JOIN acad.matricula AS mat ON mat.iEstudianteId=est.iEstudianteId
 INNER JOIN grl.personas AS per ON per.iPersId=est.iPersId
 WHERE per.cPersDocumento=? AND mat.iSedeId=?", [$cPersDocumento, $iSedeId]);
     }
+
+    public static function selEstudiantePorIeDocumentoAnio($cPersDocumento, $iSedeId, $iYAcadId)
+    {
+        return DB::selectOne("SELECT per.cPersDocumento, est.iEstudianteId, mat.iMatrId, cPersPaterno, cPersMaterno, cPersNombre
+FROM acad.estudiantes AS est
+INNER JOIN grl.personas AS per ON per.iPersId=est.iPersId
+INNER JOIN acad.matricula AS mat ON mat.iEstudianteId=est.iEstudianteId
+WHERE per.cPersDocumento=? AND mat.iSedeId=? AND mat.iYAcadId=?
+AND mat.iEstado=1", [$cPersDocumento, $iSedeId, $iYAcadId]);
+    }
 }

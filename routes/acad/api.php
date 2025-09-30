@@ -9,6 +9,7 @@ use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
+use App\Http\Controllers\acad\DirectorController;
 use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\FechasImportantesController;
@@ -78,6 +79,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
             Route::get('progreso/{iYAcadId}/estudiante/{cPersDocumento}/pdf', [ReporteAcademicoProgresoController::class, 'generarReporteDirectorPdf']);
             Route::get('progreso/{iYAcadId}/estudiante/{cPersDocumento}', [ReporteAcademicoProgresoController::class, 'obtenerDataReporteDirector']);
         });
+        Route::get('estudiantes/{cPersDocumento}/anio/{iYAcadId}', [DirectorController::class, 'buscarEstudiantePorAnioSede']);
     });
 
     Route::group(['prefix' => 'apoderados'], function () {
