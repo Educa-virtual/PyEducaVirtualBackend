@@ -16,6 +16,7 @@ use App\Services\FormatearExcelMatriculasService;
 use App\Services\LeerExcelService;
 use App\Services\FormatearExcelPadresService;
 use App\Services\ParseSqlErrorService;
+use App\Services\seg\UsuariosService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -371,8 +372,11 @@ class EstudiantesController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $matricula =  MatriculasService::obtenerDetallesMatriculaEstudiantePorCredPerfId($request->header('iCredEntPerfId'), $iYAcadId);
-            return FormatearMensajeHelper::ok("Si existe", ['existe' => $matricula != null]);
+
+            $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $matricula =  MatriculasService::obtenerDetalleMatriculaEstudiante($params);
+            return FormatearMensajeHelper::ok("Existe", ['existe' => $matricula != null]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -382,7 +386,9 @@ class EstudiantesController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiantePorCredPerfId($request->header('iCredEntPerfId'), $iYAcadId);
+            $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
             $tiposActividad = TiposActividadService::obtenerTiposActividad();
             $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);

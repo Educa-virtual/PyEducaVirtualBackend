@@ -121,8 +121,9 @@ class Usuario extends Model
 
     public static function selDetallesCredencialEntidad($iCredEntPerfId)
     {
-        return DB::selectOne("SELECT * FROM seg.credenciales_entidades_perfiles AS cep
+        return DB::selectOne("SELECT cep.*, ce.*,c.iPersId FROM seg.credenciales_entidades_perfiles AS cep
 INNER JOIN seg.credenciales_entidades AS ce ON ce.iCredEntId=cep.iCredEntId
+INNER JOIN seg.credenciales AS c ON c.iCredId=ce.iCredId
 WHERE iCredEntPerfId=?", [$iCredEntPerfId]);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\acad\CompetenciaCurso;
 use App\Models\acad\Matricula;
 use App\Models\eval\ResultadoCompetencia;
 use App\Repositories\grl\PersonasRepository;
+use App\Services\seg\UsuariosService;
 use Exception;
 use stdClass;
 
@@ -51,7 +52,7 @@ class ReportesAcademicosService
                 $curso->iCursoId,
             );
             foreach ($curso->competencias as $competencia) {
-                $competencia->notas=[];
+                $competencia->notas = [];
                 for ($i = 1; $i <= 5; $i++) {
                     $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
                         $matricula->iMatrId,
@@ -87,7 +88,9 @@ class ReportesAcademicosService
 
     public static function obtenerResultadoParaGrafico($iCredPerfIdEstudiante, $iYAcadId, $iIeCursoId)
     {
-        $matricula = MatriculasService::obtenerDetallesMatriculaEstudiantePorCredPerfId($iCredPerfIdEstudiante, $iYAcadId);
+        $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($iCredPerfIdEstudiante);
+        $params = [$detallesCredencial->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+        $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
         $curso = IeCursosService::obtenerCursoPorIeCurso($iIeCursoId);
         $competencias = self::obtenerCompetenciasPorCurso($matricula->iNivelTipoId, $curso->iCursoId);
         $data = [];

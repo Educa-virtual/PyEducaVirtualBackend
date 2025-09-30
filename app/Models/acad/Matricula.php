@@ -119,14 +119,9 @@ class Matricula
         return DB::delete("exec acad.Sp_DEL_matriculaPorId $placeholders", $parametros);
     }
 
-    public static function selDetalleMatriculaEstudiantePorCredPerfId($iCredEntPerfId, $iYAcadId)
+    public static function selDetalleMatriculaEstudiante($params)
     {
-        return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iCredEntPerfId=?, @iYAcadId=?, @iMatrId=NULL", [$iCredEntPerfId, $iYAcadId]);
-    }
-
-    public static function selDetalleMatriculaEstudiantePorId($iMatrId)
-    {
-        return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iMatrId=?, @iCredEntPerfId=NULL, @iYAcadId=NULL", [$iMatrId]);
+        return DB::selectOne("EXEC [acad].[SP_SEL_detalleMatriculaEstudiante] @iPersId=?, @iYAcadId=?, @iSedeId=?, @iMatrId=?", $params);
     }
 
     public static function selCursosMatricula($iMatrId) {

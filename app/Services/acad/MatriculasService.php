@@ -7,14 +7,9 @@ use App\Models\acad\Matricula;
 
 class MatriculasService
 {
-    public static function obtenerDetallesMatriculaEstudiantePorCredPerfId($iCredEntPerfId, $iYAcadId)
+    public static function obtenerDetalleMatriculaEstudiante($params)
     {
-        return Matricula::selDetalleMatriculaEstudiantePorCredPerfId($iCredEntPerfId, $iYAcadId);
-    }
-
-    public static function obtenerDetalleMatriculaEstudiantePorId($iMatrId)
-    {
-        return Matricula::selDetalleMatriculaEstudiantePorId($iMatrId);
+        return Matricula::selDetalleMatriculaEstudiante($params);
     }
 
     public static function obtenerMatriculaPorId($request)
