@@ -407,7 +407,7 @@ class AsistenciaController extends Controller
     public function report(Request $request)
     {
     
-        $iDocenteId = VerifyHash::decodesxId($request->iDocenteId);
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
         $inicio = $request['id'];    
         $fecha_inicial = str_pad($inicio, 2, "0", STR_PAD_LEFT);
         $year_actual = date('Y');
@@ -513,8 +513,8 @@ class AsistenciaController extends Controller
         $respuesta = [
             "iiee"              => $json_institucion[0]["cIieeNombre"],
             "logo"              => $logo,
-            "docente"           => strtolower($query[0]->docentes),
-            "area_curricular"   => strtolower($query[0]->curso),
+            "docente"           => strtoupper($query[0]->docentes),
+            "area_curricular"   => strtoupper($query[0]->curso),
             "grado"             => $request->cGradoAbreviacion,
             "seccion"           => $request->cSeccionNombre,
             "modular"           => $json_institucion[0]["cIieeCodigoModular"],
@@ -535,9 +535,7 @@ class AsistenciaController extends Controller
     }
     public function reporte_diario(Request $request)
     {
-    
-        $iDocenteId = VerifyHash::decodesxId($request->iDocenteId);
-
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
         $inicio = $request['id'];
         $fin = $request['id'];
 
@@ -549,9 +547,6 @@ class AsistenciaController extends Controller
 
         $fecha_inicio = new DateTime($inicio);
         $fecha_fin = new DateTime($fin);
-
-        // $meses = $fecha_inicio->diff($fecha_fin);
-        // $meses_restantes = $meses->m;
 
         $solicitud = [
             $request->opcion ?? 'REPORTE_PERSONALIZADO',
@@ -569,7 +564,7 @@ class AsistenciaController extends Controller
             $inicio,
             $fin,
         ];
-        
+
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
         $query = DB::select($consulta, $solicitud);
         $nombre_mes = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -609,7 +604,7 @@ class AsistenciaController extends Controller
         $datos = [];
         foreach ($json_asistencia as $key => $indice) {
             $datos["lista"][$key][] = $indice["completoalumno"];
-            $valor = $indice["diasAsistencia"];
+            $valor = $indice["diasAsistencia"] ?? NULL;
             $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["cTipoAsiLetra"];
         }
 

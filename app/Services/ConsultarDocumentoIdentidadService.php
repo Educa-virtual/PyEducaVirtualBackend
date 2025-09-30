@@ -113,11 +113,14 @@ class ConsultarDocumentoIdentidadService
                 ];
             }
             $respuestaFormateada = $this->formatearRespuestaDni($respuesta->data);
-            PersonasService::actualizarPersonaConDataApi($respuestaFormateada);
+            $iPersId = PersonasService::actualizarPersonaConDataApi($respuestaFormateada);
+
+    
             return [
-                'message' => 'Se obtuvo la información',
+                'message' => 'Se obtuvo la información del servicio ',
                 'data' => $respuestaFormateada,
                 'status' => $respuesta->status,
+                'iPersId' =>$iPersId //$iPersId  se agrego 
             ];
         }
     }
