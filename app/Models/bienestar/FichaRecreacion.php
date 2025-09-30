@@ -41,6 +41,7 @@ class FichaRecreacion
             $request->header('iCredEntPerfId'),
             $request->cFichaDGPerteneceClubInteres,
             $request->cFichaDGOcupaCargoIE,
+            $request->cTipoFamiliarOtro,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select('EXEC obe.Sp_UPD_fichaRecreacion ' . $placeholders, $parametros);

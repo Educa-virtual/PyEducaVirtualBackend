@@ -73,7 +73,7 @@ class FichaDiscapacidadDetalleController extends Controller
             Gate::authorize('tiene-perfil', [$this->registran]);
 
             // Subir archivo
-            if( !$request->cDiscFichaArchivoNombre && $request->hasFile('archivo') ) {
+            if( $request->hasFile('archivo') ) {
                 $archivo = $request->file('archivo');
                 $iYAcadId = $request->iYAcadId;
                 $iFichaDGId = $request->iFichaDGId;
@@ -103,8 +103,8 @@ class FichaDiscapacidadDetalleController extends Controller
 
     private function subirArchivo($archivo, $ruta)
     {
-        // $nombre_archivo = hash('sha256', uniqid()) . '.' . $archivo->getClientOriginalExtension();
-        $nombre_archivo = substr($archivo->getClientOriginalName(), 0, 150) . '.' . $archivo->getClientOriginalExtension();
+        $nombre_archivo = hash('sha256', uniqid()) . '.' . $archivo->getClientOriginalExtension();
+        // $nombre_archivo = substr($archivo->getClientOriginalName(), 0, 150) . '.' . $archivo->getClientOriginalExtension();
         if(!Storage::disk('local')->exists($ruta)) {
             Storage::disk('local')->makeDirectory($ruta, 0755, true);
         }
