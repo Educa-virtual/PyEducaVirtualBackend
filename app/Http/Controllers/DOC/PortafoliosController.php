@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\doc;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use App\Models\doc\Portafolio;
 use Exception;
 use Illuminate\Http\Request;
 use Hashids\Hashids;
@@ -25,7 +27,7 @@ class PortafoliosController extends Controller
         $iYAcadId = $request->iYAcadId;
         $iCredId = $request->iCredId;
         $iIieeId = $request->iIieeId;
-
+        return $iDocenteId;
         try {
             $data = DB::select("
                 SELECT 
@@ -58,7 +60,35 @@ class PortafoliosController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function guardarItinerario(Request $request)
+    public function portafolios(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = Portafolio::obtenerPortafolios($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function guardarItinerario(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = Portafolio::guardarItinerario($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function guardarCuadernoCampo(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = Portafolio::guardarCuadernoCampo($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    /*public function guardarItinerario(Request $request)
     {
         $request['iDocenteId'] = VerifyHash::decodes($request->iDocenteId);
         $request['iYAcadId'] = $request->iYAcadId;
@@ -98,5 +128,5 @@ class PortafoliosController extends Controller
         }
 
         return new JsonResponse($response, $codeResponse);
-    }
+    }*/
 }

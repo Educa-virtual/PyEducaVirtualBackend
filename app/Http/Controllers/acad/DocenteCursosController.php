@@ -33,10 +33,20 @@ class DocenteCursosController extends Controller
     }
 
     public function guardarPortafolioDocumento(Request $request){
+
+        $tipo = [
+            'itinerario',
+            'actividad',
+            'cuaderno',
+            'instrumento',
+        ];
+
         $iPersId = VerifyHash::decodes($request->iPersId);
         $documento = $request->file('archivo');
         $tipoPortafolio = $request->tipoPortafolio;
-        $folder = $tipoPortafolio.'/'.$iPersId;      
+        $cIieeCodigoModular = $request->cIieeCodigoModular;
+        $years = $request->years;
+        $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$tipo[$tipoPortafolio];      
         $generado = Storage::disk('public')->putFile($folder,$documento);
         $ruta = $folder.'/'.basename($generado);
          try {
