@@ -45,13 +45,11 @@ class ReporteAcademicoProgresoController extends Controller
         }
     }
 
-    public function generarReporteApoderadoPdf($iMatrId, Request $request)
+    public function generarReporteApoderadoPdf($iMatrId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            //$request->merge(['iMatrId' => VerifyHash::decodesxId($iMatrId)]);
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiantePorId(VerifyHash::decodesxId($iMatrId));
-            //$matricula = MatriculasService::obtenerMatriculaPorId($request);
             ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
             $outputPdf = ReportesAcademicosService::generarReporteAcademicoProgresoPdf($matricula);
             return response()->download($outputPdf)->deleteFileAfterSend(true);
@@ -105,7 +103,6 @@ class ReporteAcademicoProgresoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            //s$request->merge(['iMatrId' => VerifyHash::decodesxId($iMatrId)]);
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiantePorId(VerifyHash::decodesxId($iMatrId));
             ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
             $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($matricula);
