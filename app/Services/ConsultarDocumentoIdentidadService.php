@@ -117,7 +117,7 @@ class ConsultarDocumentoIdentidadService
 
     
             return [
-                'message' => 'Se obtuvo la información del servicio ' . $iPersId,
+                'message' => 'Se obtuvo la información del servicio ',
                 'data' => $respuestaFormateada,
                 'status' => $respuesta->status,
                 'iPersId' =>$iPersId //$iPersId  se agrego 
