@@ -63,9 +63,14 @@ class PersonaController extends Controller
             }*/
             $consultarDocumentoService = new ConsultarDocumentoIdentidadService();
             $dataServicio = $consultarDocumentoService->buscar($request->iTipoIdentId, $request->cPersDocumento);
-            $data = $dataServicio['data'];
+            $data = array_merge($dataServicio['data'], [
+                'iPersId' => $dataServicio['iPersId'] ?? null,
+            ]);
+
             $mensaje = $dataServicio['message'];
             $status = $dataServicio['status'];
+
+          
             return FormatearMensajeHelper::ok($mensaje, $data, $status);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
