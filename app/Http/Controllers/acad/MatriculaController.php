@@ -136,7 +136,7 @@ class MatriculaController extends Controller
     {
         try {
             $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
-            $cursos = CompetenciaCurso::selCursosPorIe($matricula->iSedeId, $matricula->iNivelGradoId);
+            $cursos = CompetenciaCurso::selCursosPorIe($matricula->iSedeId, $iYAcadId, $matricula->iNivelGradoId);
             return FormatearMensajeHelper::ok('Se eliminó la información', $cursos);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

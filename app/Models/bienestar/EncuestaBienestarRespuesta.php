@@ -74,6 +74,15 @@ class EncuestaBienestarRespuesta
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iMatrId,
+            $request->iNivelTipoId,
+            $request->iTipoSectorId,
+            $request->iZonaId,
+            $request->iUgelId,
+            $request->iDsttId,
+            $request->iIieeId,
+            $request->iNivelGradoId,
+            $request->iSeccionId,
+            $request->cPersSexo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectResultSets("EXEC obe.Sp_SEL_encuestaRespuestasDetalle $placeholders", $parametros);

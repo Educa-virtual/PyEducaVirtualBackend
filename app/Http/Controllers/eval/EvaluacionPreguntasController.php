@@ -174,6 +174,7 @@ class EvaluacionPreguntasController extends Controller
                 $request->iTipoPregId                 ??  NULL,
                 $request->cEvalPregPregunta           ??  NULL,
                 $request->cEvalPregTextoAyuda         ??  NULL,
+                $request->bArgumentar                 ??  NULL,
                 $request->jsonAlternativas            ??  NULL,
                 $request->iCredId                     ??  NULL
             ];
@@ -184,6 +185,7 @@ class EvaluacionPreguntasController extends Controller
                     @_iTipoPregId=?,   
                     @_cEvalPregPregunta=?,   
                     @_cEvalPregTextoAyuda=?,   
+                    @_bArgumentar=?,   
                     @_jsonAlternativas=?,   
                     @_iCredId=?',
                 $parametros
@@ -295,6 +297,40 @@ class EvaluacionPreguntasController extends Controller
             );
 
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            foreach ($data as &$item) {
+                // Caso de pregunta simple (raíz)
+                if (!empty($item->cEvalRptaPizarraUrl)) {
+                    $path = public_path($item->cEvalRptaPizarraUrl);
+                    if (file_exists($path)) {
+                        $contenido = file_get_contents($path);
+                        $item->cEvalRptaPizarraBase64 = 'data:image/svg+xml;base64,' . base64_encode($contenido);
+                    } else {
+                        $item->cEvalRptaPizarraBase64 = null;
+                    }
+                }
+
+                // Caso de preguntas múltiples con encabezado (jsonPreguntas)
+                if (!empty($item->jsonPreguntas)) {
+                    $preguntas = json_decode($item->jsonPreguntas);
+                    if (is_array($preguntas)) {
+                        foreach ($preguntas as &$preg) {
+                            if (!empty($preg->cEvalRptaPizarraUrl)) {
+                                $path = public_path($preg->cEvalRptaPizarraUrl);
+                                if (file_exists($path)) {
+                                    $contenido = file_get_contents($path);
+                                    $preg->cEvalRptaPizarraBase64 = 'data:image/svg+xml;base64,' . base64_encode($contenido);
+                                } else {
+                                    $preg->cEvalRptaPizarraBase64 = null;
+                                }
+                            }
+                        }
+                        // volver a guardar el json ya modificado
+                        $item->jsonPreguntas = json_encode($preguntas, JSON_UNESCAPED_UNICODE);
+                    }
+                }
+            }
+
 
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
