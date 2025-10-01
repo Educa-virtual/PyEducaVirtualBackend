@@ -67,7 +67,7 @@ class CategoriaController extends Controller
     public function guardarCategoria(GuardarCategoriaRequest $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
 
             // Subir archivo
             if( $request->hasFile('archivo') ) {
@@ -88,7 +88,7 @@ class CategoriaController extends Controller
     public function actualizarCategoria(ActualizarCategoriaRequest $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
 
             // Subir archivo
             if( $request->hasFile('archivo') ) {
@@ -109,7 +109,7 @@ class CategoriaController extends Controller
     public function borrarCategoria(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
             $data = Categoria::delCategoria($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
