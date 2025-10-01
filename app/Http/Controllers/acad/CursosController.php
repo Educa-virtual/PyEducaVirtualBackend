@@ -96,13 +96,12 @@ class CursosController extends Controller
 
     public function obtenerResultadoParaGrafico($iYAcadId, $iIeCursoId, Request $request)
     {
-        file_put_contents('D:\params.txt', $request->header('iCredEntPerfId'));
-        //try {
+        try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]); //$iCredPerfIdEstudiante, $iYAcadId, $iIeCursoId
             $data =  ReportesAcademicosService::obtenerResultadoParaGrafico($request->header('iCredEntPerfId'), $iYAcadId, $iIeCursoId);
             return FormatearMensajeHelper::ok("Datos obtenidos", $data);
-        /*} catch (Exception $ex) {
+        } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
-        }*/
+        }
     }
 }
