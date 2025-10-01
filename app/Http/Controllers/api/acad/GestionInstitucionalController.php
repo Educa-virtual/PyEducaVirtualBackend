@@ -792,10 +792,16 @@ class GestionInstitucionalController extends Controller
             return new JsonResponse(['observados' => $observados], 400);
         }
 
+        $iPersId = DB::table('grl.personas')
+        ->where('cPersDocumento', $item['cPersDocumento'])
+        ->where('iTipoIdentId', $item['iTipoIdentId'])
+        ->value('iPersId'); // devuelve solo el valor de la columna
+
+
         try {
             // Registrar nuevo personal si no existe
-            if (empty($item["iPersId"])) {
-                $iTipoPersId = ((int)$item['iTipoIdentId'] == 2) ? 2 : 1;
+            if (is_null($iPersId)) {
+                $iTipoPersId = ((INT)$item['iTipoIdentId'] == 2) ? 2 : 1;
                 $parametros = [
                     $iTipoPersId,
                     $item['iTipoIdentId'],
@@ -828,7 +834,7 @@ class GestionInstitucionalController extends Controller
                     $observados[] = ['validated' => false, 'message' => 'Error al registrar el personal.', 'item' => $item];
                 }
             } else {
-                $iPersId = $item["iPersId"];
+                 $item["iPersId"] = $iPersId ;
             }
 
             // Procesar según la condición

@@ -131,7 +131,7 @@ Route::group(['prefix' => 'docente'], function () {
     Route::post('delete', [CargaNoLectivasController::class, 'delete']);
   });
   Route::group(['prefix' => 'portafolios'], function () {
-    Route::post('obtenerPortafolios', [PortafoliosController::class, 'obtenerPortafolios']);
+    Route::post('obtenerPortafolios', [PortafoliosController::class, 'portafolios']);
     Route::post('guardarItinerario', [PortafoliosController::class, 'guardarItinerario']);
   });
   Route::group(['prefix' => 'cuadernos-campo'], function () {

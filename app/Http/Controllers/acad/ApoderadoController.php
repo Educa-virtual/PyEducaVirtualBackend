@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use App\Services\acad\MatriculasService;
+use App\Services\apo\ApoderadosService;
 use App\Services\ParseSqlErrorService;
+use Exception;
 use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class ApoderadoController extends Controller
 {
@@ -118,5 +126,17 @@ class ApoderadoController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
+    public function obtenerEstudiantes()
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
+            $data = ApoderadosService::obtenerEstudiantesPorApoderado(Auth::user()->iPersId);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
 
 }

@@ -10,4 +10,14 @@ class EstudiantesService
     {
         return Estudiante::selIdEstudiantePorIdPersona($iEstudianteId);
     }
+
+    public static function obtenerIdCredIdPersEstudiantePorIeDocumento($cPersDocumento, $iSedeId)
+    {
+        return Estudiante::selIdCredIdPersEstudiantePorIeDocumento($cPersDocumento, $iSedeId);
+    }
+
+    public static function obtenerEstudiantePorIeDocumentoAnio($cPersDocumento, $iSedeId, $iYAcadId)
+    {
+        return Estudiante::selEstudiantePorIeDocumentoAnio($cPersDocumento, $iSedeId, $iYAcadId);
+    }
 }

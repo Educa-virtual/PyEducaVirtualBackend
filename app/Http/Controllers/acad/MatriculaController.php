@@ -2,18 +2,23 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use App\Models\acad\CompetenciaCurso;
 use App\Models\acad\Matricula;
 use App\Services\acad\MatriculasService;
 use App\Services\ParseSqlErrorService;
+use App\Services\seg\UsuariosService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class MatriculaController extends Controller
@@ -135,11 +140,25 @@ class MatriculaController extends Controller
     public function obtenerCursosPorMatricula($iYAcadId, Request $request)
     {
         try {
-            $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($request->header('iCredEntPerfId'), $iYAcadId);
+            $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $cursos = CompetenciaCurso::selCursosPorIe($matricula->iSedeId, $iYAcadId, $matricula->iNivelGradoId);
             return FormatearMensajeHelper::ok('Se eliminó la información', $cursos);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function obtenerMatriculasEstudiante($iEstudianteId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
+            $request->merge(['iEstudianteId' => VerifyHash::decodesxId($iEstudianteId)]);
+            $data = MatriculasService::obtenerMatriculasEstudiante($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
     }
 }

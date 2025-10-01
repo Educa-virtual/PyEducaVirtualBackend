@@ -12,6 +12,7 @@ use App\Models\grl\Persona;
 use App\Models\seg\PasswordReset;
 use App\Models\seg\SolicitudRegistroUsuario;
 use App\Models\seg\Usuario;
+use App\Services\grl\PersonasService;
 use Carbon\Carbon;
 use Exception;
 use Faker\Calculator\Ean;
@@ -58,73 +59,13 @@ class UsuariosService
             'data' => 'required|array',
             'data.cPersNombre' => 'required'
         ]);
-        $item = $request->data;
-        $iPersId = null;
-        $mensaje = '';
-        $iTipoPersId = ((int)$item['iTipoIdentId'] == 2) ? 2 : 1;
+        $persona = PersonasService::obtenerPersonaPorDocumento($request->data['cPersDocumento']);
+        Usuario::insCredenciales($persona->iPersId, $iCredId);
 
-        $persona = Persona::selPersonaPorDocumento($item['cPersDocumento']);
-        if ($persona) {
-            //Actualizar persona
-            $parametros = [
-                $persona->iPersId,
-                $item['cPersDocumento'],
-                $item['cPersPaterno'],
-                isset($item['cPersMaterno']) ? $item['cPersMaterno'] : '',
-                $item['cPersNombre'],
-                isset($item['cPersSexo']) ? $item['cPersSexo'] : "M",
-                isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
-                isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
-                NULL,
-                $item['cPersRazonSocialNombre'] ?? '',
-                '',
-                '',
-                $item['cPersDomicilio'],
-                isset($iCredId) ? $iCredId : null,
-                null,
-                isset($item['iNacionId']) ? $item['iNacionId'] : null,
-                isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
-                isset($item['iDptoId']) ? (trim($item['iDptoId']) ?: null) : null,
-                isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
-                isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
-                isset($iTipoPersId) ? $iTipoPersId : null,
-                $item['iTipoIdentId']
-            ];
-            Usuario::updPersonas($parametros);
-            $iPersId = $persona->iPersId;
-        } else {
-            $parametros = [
-                isset($iTipoPersId) ? $iTipoPersId : null,
-                $item['iTipoIdentId'],
-                $item['cPersDocumento'],
-                $item['cPersPaterno'],
-                isset($item['cPersMaterno']) ? $item['cPersMaterno'] : null,
-                $item['cPersNombre'],
-                isset($item['cPersSexo']) ? $item['cPersSexo'] : "M",
-                isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
-                isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
-                NULL,
-                $item['cPersRazonSocialNombre'] ?? '',
-                '',
-                '',
-                $item['cPersDomicilio'],
-                isset($iCredId) ? $iCredId : null,
-                isset($item['iNacionId']) ? $item['iNacionId'] : null,
-                isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
-                isset($item['iDptoId']) ? (trim($item['iDptoId']) ?: null) : null,
-                isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
-                isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
-            ];
-            $data = Usuario::insPersonas($parametros);
-            $iPersId = !empty($data) ? $data[0]->iPersId : null;
-        }
-        Usuario::insCredenciales($iPersId, $iCredId);
-        $mensaje = 'Se ha registrado el usuario';
-
-        $persona = Usuario::selUsuarioPorIdPersona($iPersId);
+        $persona = Usuario::selUsuarioPorIdPersona($persona->iPersId);
         return [
             'data' => $persona,
-            'mensaje' => $mensaje
+            'mensaje' => 'Se ha registrado el usuario'
         ];
     }
 
@@ -181,5 +122,9 @@ class UsuariosService
             $request->contrasenaNueva
         ];
         Usuario::updCredenciasUpdatePassword($parametros);
+    }
+
+    public static function obtenerDetallesCredencialEntidad($iCredEntPerfId) {
+        return Usuario::selDetallesCredencialEntidad($iCredEntPerfId);
     }
 }

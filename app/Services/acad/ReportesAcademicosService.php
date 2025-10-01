@@ -6,28 +6,31 @@ use App\Models\acad\CompetenciaCurso;
 use App\Models\acad\Matricula;
 use App\Models\eval\ResultadoCompetencia;
 use App\Repositories\grl\PersonasRepository;
+use App\Services\seg\UsuariosService;
 use Exception;
 use stdClass;
 
 class ReportesAcademicosService
 {
-    public static function generarReporteAcademicoProgreso($usuario, $iCredPerfIdEstudiante, $iYAcadId)
+    //$iPersId, $iCredPerfIdEstudiante, $iYAcadId
+    //$matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
+    public static function generarReporteAcademicoProgresoPdf($matricula)
     {
-        $yearAcademico = YearAcademicosService::obtenerYearAcademico($iYAcadId);
-        $persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
-        $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
+        $yearAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
+        $persona = PersonasRepository::obtenerPersonaPorId($matricula->iPersId);
         $ie = InstitucionesEducativasService::obtenerInstitucionEducativa($matricula->iIieeId);
-        $tutor = DocentesCursosService::obtenerTutorSalonIe($iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);
-        $fechasInicioFin = CalendariosAcademicosService::obtenerCalendarioFechasInicioFinSede($iYAcadId, $matricula->iSedeId);
+        $tutor = DocentesCursosService::obtenerTutorSalonIe($matricula->iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);
+        $fechasInicioFin = CalendariosAcademicosService::obtenerCalendarioFechasInicioFinSede($matricula->iYAcadId, $matricula->iSedeId);
         $htmlcontent = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_body', compact('persona', 'matricula', 'ie', 'tutor', 'yearAcademico', 'fechasInicioFin'))->render();
-
-        $archivoHtml = $usuario->iPersId . '_reporte_progreso.html';
+        //$footerHtml = view('acad.estudiante.reportes_academicos.progreso.reporte_progreso_footer', compact('persona'))->render();
+        //$fullHtml = $htmlcontent . $footerHtml;
+        $archivoHtml = $matricula->iMatrId . '_reporte_progreso.html';
         $tempPath = storage_path('app\\' . $archivoHtml);
         file_put_contents($tempPath, $htmlcontent);
 
         $exePath   = env('WEASYPRINT_PATH');
         $inputHtml = storage_path('app\\' . $archivoHtml);
-        $outputPdf = storage_path('app\\' . $usuario->iPersId . '_reporte_progreso.pdf');
+        $outputPdf = storage_path('app\\' . $matricula->iMatrId . '_reporte_progreso.pdf');
         $cmd = "\"{$exePath}\" \"{$inputHtml}\" \"{$outputPdf}\"";
         $output = shell_exec($cmd . ' 2>&1');
         if (!file_exists($outputPdf)) {
@@ -36,20 +39,20 @@ class ReportesAcademicosService
         unlink($inputHtml);
         return $outputPdf;
     }
-
-    public static function obtenerReporteAcademicoProgreso($iCredPerfIdEstudiante, $iYAcadId)
+    //$iCredPerfIdEstudiante, $iYAcadId
+    //$matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
+    public static function obtenerReporteAcademicoProgreso($matricula)
     {
-        $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
         /*Se obtienen los cursos por IE debido a que, si solo se obtiene los cursos a los que esta matriculado el alumno, la libreta podria salir con cantidad
         de cursos distinta por alumno*/
-        $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $iYAcadId, $matricula->iNivelGradoId);
+        $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iYAcadId, $matricula->iNivelGradoId);
         foreach ($cursos as $curso) {
             $curso->competencias = ReportesAcademicosService::obtenerCompetenciasPorCurso(
                 $curso->iNivelTipoId,
                 $curso->iCursoId,
             );
             foreach ($curso->competencias as $competencia) {
-                $competencia->notas=[];
+                $competencia->notas = [];
                 for ($i = 1; $i <= 5; $i++) {
                     $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
                         $matricula->iMatrId,
@@ -85,7 +88,9 @@ class ReportesAcademicosService
 
     public static function obtenerResultadoParaGrafico($iCredPerfIdEstudiante, $iYAcadId, $iIeCursoId)
     {
-        $matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
+        $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($iCredPerfIdEstudiante);
+        $params = [$detallesCredencial->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+        $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
         $curso = IeCursosService::obtenerCursoPorIeCurso($iIeCursoId);
         $competencias = self::obtenerCompetenciasPorCurso($matricula->iNivelTipoId, $curso->iCursoId);
         $data = [];
