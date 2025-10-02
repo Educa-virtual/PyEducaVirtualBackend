@@ -33,5 +33,6 @@ ORDER BY cCursoNombre", [$iSedeId, $iYAcadId, $iNivelGradoId]);
 FROM acad.competencias_cursos AS compcur
 INNER JOIN acad.curriculo_competencias AS curcomp ON curcomp.iCompetenciaId=compcur.iCompetenciaId
 WHERE compcur.iEstado=1 AND compcur.iNivelTipoId=? AND compcur.iCursoId=?", [$iNivelTipoId, $iCursoId]);
+        //return DB::select("EXEC [acad].[Sp_SEL_competencias_cursos] @_iCursoId=?, @_iNivelTipoId=?", [$iCursoId, $iNivelTipoId]);
     }
 }

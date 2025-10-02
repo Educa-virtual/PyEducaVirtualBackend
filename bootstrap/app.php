@@ -51,6 +51,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/hor/api.php'));
             Route::prefix('api')
                 ->group(base_path('routes/doc/api.php'));
+                Route::prefix('api')
+                ->group(base_path('routes/apo/api.php'));
         },
         commands: __DIR__ . '/../routes/console.php',
         health: '/up'

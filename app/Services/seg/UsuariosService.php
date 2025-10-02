@@ -123,4 +123,8 @@ class UsuariosService
         ];
         Usuario::updCredenciasUpdatePassword($parametros);
     }
+
+    public static function obtenerDetallesCredencialEntidad($iCredEntPerfId) {
+        return Usuario::selDetallesCredencialEntidad($iCredEntPerfId);
+    }
 }
