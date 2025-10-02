@@ -10,4 +10,9 @@ class YearAcademicosService
     {
         return YearAcademico::selYearAcademico($iYAcadId);
     }
+
+    public static function obtenerYearAcademicoPorAnio($anio)
+    {
+        return YearAcademico::selYearAcademicoPorAnio($anio);
+    }
 }

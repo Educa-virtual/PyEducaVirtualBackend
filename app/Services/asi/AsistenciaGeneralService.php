@@ -10,4 +10,8 @@ class AsistenciaGeneralService
     {
         return AsistenciaGeneral::selCantidadRegistrosPorTipo($iEstudianteId, $iYAcadId, $iSedeId, $iTipoAsiId, $desde, $hasta);
     }
+
+    public static function obtenerAsistenciaEstudiante($iMatrId, $anio, $mes) {
+        return AsistenciaGeneral::selAsistenciaEstudiante($iMatrId, $anio, $mes);
+    }
 }

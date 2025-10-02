@@ -4,12 +4,17 @@ namespace App\Services\acad;
 
 use App\Helpers\VerifyHash;
 use App\Models\acad\Matricula;
+use Exception;
 
 class MatriculasService
 {
     public static function obtenerDetalleMatriculaEstudiante($params)
     {
-        return Matricula::selDetalleMatriculaEstudiante($params);
+        $data = Matricula::selDetalleMatriculaEstudiante($params);
+        if (!$data) {
+            throw new Exception("No existe una matrícula para el año seleccionado o los parámetros enviados");
+        }
+        return $data;
     }
 
     public static function obtenerMatriculaPorId($request)
