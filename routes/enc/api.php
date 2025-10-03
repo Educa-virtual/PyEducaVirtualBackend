@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\enc\CategoriaController;
 use App\Http\Controllers\enc\EncuestaController;
+use App\Http\Controllers\enc\EncuestaFijaController;
 use App\Http\Controllers\enc\PreguntaController;
 use App\Http\Controllers\enc\RespuestaController;
 use App\Http\Controllers\enc\ResumenController;
@@ -43,4 +44,7 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('imprimirRespuestas', [RespuestaController::class, 'imprimirRespuestas']);
 
     Route::post('verResumen', [ResumenController::class, 'verResumen']);
+
+    Route::post('crearEncuestaSatisfaccion', [EncuestaFijaController::class, 'crearEncuestaSatisfaccion']);
+    Route::post('crearEncuestaAutoevaluacion', [EncuestaFijaController::class, 'crearEncuestaAutoevaluacion']);
 });
