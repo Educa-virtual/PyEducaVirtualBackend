@@ -15,11 +15,6 @@ AND iTipoAsiId=? AND CAST(dtAsistencia AS DATE) BETWEEN ? AND ?", [$iEstudianteI
     }
 
     public static function selAsistenciaEstudiantePorPeriodo($iMatrId, $anio, $mes) {
-        return DB::select("SELECT asi.idAsistencia, CAST(dtAsistencia AS DATE) AS dtAsistencia, tipo.iTipoAsiId, tipo.cTipoAsiLetra,
-        tipo.cTipoAsiNombre
-FROM asi.asistencia_general AS asi
-INNER JOIN asi.tipo_asistencias AS tipo ON asi.iTipoAsiId=tipo.iTipoAsiId
-WHERE asi.iMatrId=? AND YEAR(dtAsistencia)=? AND MONTH(dtAsistencia)=?
-ORDER BY dtAsistencia ASC", [$iMatrId, $anio, $mes]);
+        return DB::select("EXEC [asi].[SP_SEL_asistenciaGeneralEstudiantePorPeriodo] @iMatrId=?, @anio=?, @mes=?", [$iMatrId, $anio, $mes]);
     }
 }
