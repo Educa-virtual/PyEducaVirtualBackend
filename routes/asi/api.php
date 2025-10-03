@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\asi\AsistenciaControlController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\asi\AsistenciaGeneralController;
+use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'asi'], function () {
-    Route::get('asistencia/general/estudiante/{anio}/{mes}', [AsistenciaGeneralController::class, 'obtenerAsistenciaEstudiante']);
+Route::group(['prefix' => 'asi', 'middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::group(['prefix' => 'grupos'], function () {
         Route::post('verificar-grupo-asistencia', [AsistenciaController::class, 'verificarGrupoAsistencia']);
         Route::post('guardar-grupo-asistencia', [AsistenciaController::class, 'guardarGrupo']);
@@ -21,6 +22,12 @@ Route::group(['prefix' => 'asi'], function () {
         Route::post('guardar-asistencia-aula', [AsistenciaController::class, 'guardarAsistenciaGeneral']);
     });
     Route::group(['prefix' => 'asistencia'], function () {
+        Route::group(['prefix' => 'general/{anio}/{mes}'], function () {
+            Route::get('estudiante', [AsistenciaGeneralController::class, 'obtenerAsistenciaEstudiantePorFecha']);
+        });
+        Route::group(['prefix' => 'control/{fecha}'], function () {
+            Route::get('estudiante', [AsistenciaControlController::class, 'obtenerAsistenciaEstudiantePorFecha']);
+        });
         Route::post('descargar-justificacion', [AsistenciaController::class, 'descargarJustificacion']);
     });
 });
