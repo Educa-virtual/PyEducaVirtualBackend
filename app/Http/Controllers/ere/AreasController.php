@@ -211,7 +211,9 @@ class AreasController extends Controller
         try {
             ob_end_clean(); //Sin esto, al descargar el archivo, Word muestra un mensaje de error al abrirlo
             $ruta = AreasService::obtenerCartillaRespuestas($evaluacionId, $areaId);
-            return Storage::disk('public')->download($ruta, "Hoja respuestas.docx");
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk=Storage::disk('public');
+            return $disk->download($ruta, "Hoja respuestas.docx");
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -257,7 +259,8 @@ class AreasController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
             AreasService::actualizarEstadoDescarga($evaluacionId, $areaId, $request->bDescarga);
-            return FormatearMensajeHelper::ok('Se ha actualizado el estado de la descarga');
+            $mensaje = 'Las descargas ahora están ' .($request->bDescarga ? 'activadas' : 'desactivadas');
+            return FormatearMensajeHelper::ok($mensaje);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

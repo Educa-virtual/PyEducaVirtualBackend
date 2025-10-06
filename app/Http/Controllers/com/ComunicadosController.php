@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ResponseHandler;
 use Hashids\Hashids;
+use App\Helpers\VerifyHash;
 
 class ComunicadosController extends Controller
 {
@@ -51,7 +52,7 @@ class ComunicadosController extends Controller
             ->select('iPrioridadId', 'cPrioridadNombre')
             ->get();
 
-        $iPersId = $this->decodeValue($request->input('iPersId')); 
+        $iPersId = VerifyHash::decodes($request->input('iPersId')); 
         $grupos = DB::table('com.grupos')
             ->select('iGrupoId', 'cGrupoNombre')
             ->where('iPersId', $iPersId)
