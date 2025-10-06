@@ -4,6 +4,8 @@ use App\Http\Controllers\enc\CategoriaController;
 use App\Http\Controllers\enc\EncuestaController;
 use App\Http\Controllers\enc\EncuestaFijaController;
 use App\Http\Controllers\enc\PLantillaController;
+use App\Http\Controllers\enc\PlantillaPreguntaController;
+use App\Http\Controllers\enc\PlantillaSeccionController;
 use App\Http\Controllers\enc\PreguntaController;
 use App\Http\Controllers\enc\RespuestaController;
 use App\Http\Controllers\enc\ResumenController;
@@ -54,4 +56,17 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('guardarPlantilla', [PLantillaController::class, 'guardarPlantilla']);
     Route::post('actualizarPlantilla', [PLantillaController::class, 'actualizarPlantilla']);
     Route::post('borrarPlantilla', [PLantillaController::class, 'borrarPlantilla']);
+    Route::post('actualizarPlantillaEstado', [PLantillaController::class, 'actualizarPlantillaEstado']);
+
+    Route::post('listaPlantillaSecciones', [PlantillaSeccionController::class, 'listarSecciones']);
+    Route::post('verPlantillaSeccion', [PlantillaSeccionController::class, 'verPlantillaSeccion']);
+    Route::post('guardarPlantillaSeccion', [PlantillaSeccionController::class, 'guardarPlantillaeccion']);
+    Route::post('actualizarPlantillaSeccion', [PlantillaSeccionController::class, 'actualizarPlantillaSeccion']);
+    Route::post('borrarPlantillaSeccion', [PlantillaSeccionController::class, 'borrarPlantillaSeccion']);
+
+    Route::post('listarPlantillaPreguntas', [PlantillaPreguntaController::class, 'listarPlantillaPreguntas']);
+    Route::post('verPlantillaPregunta', [PlantillaPreguntaController::class, 'verPlantillaPregunta']);
+    Route::post('guardarPlantillaPregunta', [PlantillaPreguntaController::class, 'guardaPlantillarPregunta']);
+    Route::post('actualizarPlantillaPregunta', [PlantillaPreguntaController::class, 'actualizarPlantillaPregunta']);
+    Route::post('borrarPlantillaPregunta', [PlantillaPreguntaController::class, 'borrarPlantillaPregunta']);
 });
