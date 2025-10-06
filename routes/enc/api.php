@@ -3,6 +3,7 @@
 use App\Http\Controllers\enc\CategoriaController;
 use App\Http\Controllers\enc\EncuestaController;
 use App\Http\Controllers\enc\EncuestaFijaController;
+use App\Http\Controllers\enc\PLantillaController;
 use App\Http\Controllers\enc\PreguntaController;
 use App\Http\Controllers\enc\RespuestaController;
 use App\Http\Controllers\enc\ResumenController;
@@ -47,4 +48,10 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
 
     Route::post('crearEncuestaSatisfaccion', [EncuestaFijaController::class, 'crearEncuestaSatisfaccion']);
     Route::post('crearEncuestaAutoevaluacion', [EncuestaFijaController::class, 'crearEncuestaAutoevaluacion']);
+
+    Route::post('listarPlantillas', [PLantillaController::class, 'listarPlantillas']);
+    Route::post('verPlantilla', [PLantillaController::class, 'verPlantilla']);
+    Route::post('guardarPlantilla', [PLantillaController::class, 'guardarPlantilla']);
+    Route::post('actualizarPlantilla', [PLantillaController::class, 'actualizarPlantilla']);
+    Route::post('borrarPlantilla', [PLantillaController::class, 'borrarPlantilla']);
 });

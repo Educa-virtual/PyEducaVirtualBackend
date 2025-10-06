@@ -10,7 +10,6 @@ class PLantilla extends Model
     public static function selPlantillas($request) {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iYAcadId,
             $request->iCateId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
