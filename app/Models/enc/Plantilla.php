@@ -13,8 +13,8 @@ class PLantilla extends Model
             $request->iYAcadId,
             $request->iCateId,
             $request->iPlanId,
-            $request->dFechaInicio,
-            $request->dFechaFin,
+            $request->dEncuInicio,
+            $request->dEncuFin,
             $request->bCopiarPoblacion,
             $request->bCopiarAccesos,
             $request->bCopiarPreguntas,
@@ -23,7 +23,7 @@ class PLantilla extends Model
             $request->cEncuSubtitulo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC enc.Sp_INS_encuestaPlantilla $placeholders", $parametros);
+        return DB::selectOne("EXEC enc.Sp_INS_encuestaPlantilla $placeholders", $parametros);
     }
 
     public static function selPlantillas($request) {

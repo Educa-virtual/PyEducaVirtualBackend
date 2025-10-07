@@ -103,4 +103,24 @@ class Encuesta extends Model
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_UPD_encuestaEstado $placeholders", $parametros);
     }
+
+    public static function guardarEncuestaDuplicado($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+            $request->iCateId,
+            $request->iEncuId,
+            $request->dEncuInicio,
+            $request->dEncuFin,
+            $request->bCopiarPoblacion,
+            $request->bCopiarAccesos,
+            $request->bCopiarPreguntas,
+            $request->iPeriodoOrden,
+            $request->cEncuNombre,
+            $request->cEncuSubtitulo,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC enc.Sp_INS_encuestaDuplicado $placeholders", $parametros);
+    }
 }

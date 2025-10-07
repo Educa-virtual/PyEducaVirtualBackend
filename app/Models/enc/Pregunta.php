@@ -11,7 +11,7 @@ class Pregunta extends Model
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
-            $request->iPreguntaId,
+            $request->iPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC enc.Sp_SEL_preguntas $placeholders", $parametros);

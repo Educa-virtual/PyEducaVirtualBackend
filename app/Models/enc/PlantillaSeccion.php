@@ -52,7 +52,7 @@ class PlantillaSeccion extends Model
     public static function delPlantillaSeccion($request) {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iSeccionId,
+            $request->iPlanSeccionId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_DEL_plantillaSeccion $placeholders", $parametros);

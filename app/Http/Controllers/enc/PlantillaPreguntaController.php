@@ -19,17 +19,6 @@ class PlantillaPreguntaController extends Controller
         Perfil::DIRECTOR_IE,
     ];
 
-    public function listarPlantillaPreguntas(Request $request)
-    {
-        try {
-            Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = PlantillaPregunta::selPlantillaPreguntas($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        } catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
-
     public function verPlantillaPregunta(Request $request)
     {
         try {
