@@ -109,7 +109,7 @@ class EncuestaController extends Controller
         }
     }
     
-    public function guardarEncuestaDuplicado(Request $request) {
+    public function guardarEncuestaDesdeDuplicado(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = Encuesta::insEncuestaDuplicado($request);

@@ -21,6 +21,7 @@ class PLantilla extends Model
             $request->iPeriodoOrden,
             $request->cEncuNombre,
             $request->cEncuSubtitulo,
+            $request->iTiemDurId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_INS_encuestaPlantilla $placeholders", $parametros);
