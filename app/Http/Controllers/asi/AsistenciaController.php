@@ -16,6 +16,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\FormatearMensajeHelper;
+use App\Services\asi\AsistenciaGeneralService;
 use Illuminate\Support\Facades\Storage;
 
 class AsistenciaController extends Controller
@@ -43,6 +44,7 @@ class AsistenciaController extends Controller
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AsistenciaAdministrativa::guardarAsistenciaGeneral($request);
+            AsistenciaGeneralService::notificarApoderadosInasistencia($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
