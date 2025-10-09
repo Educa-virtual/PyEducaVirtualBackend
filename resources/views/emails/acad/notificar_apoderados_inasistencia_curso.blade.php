@@ -4,7 +4,7 @@
     </p>
     <p>Le informamos que <strong>{{ $data->cPersNombreEst }} {{ $data->cPersPaternoEst }}
             {{ $data->cPersMaternoEst }}</strong>
-        no asistió al curso de {{ $data->cCursoNombre }} el día <strong>{{ $fecha }}</strong>,
+        no asistió al área curricular de {{ $data->cCursoNombre }} el día <strong>{{ $fecha }}</strong>,
         dictado por {{ $docente->cPersNombre }} {{ $docente->cPersPaterno }} {{ $docente->cPersMaterno }},
         en la institución educativa {{ $data->cIieeNombre }}.
     </p>
