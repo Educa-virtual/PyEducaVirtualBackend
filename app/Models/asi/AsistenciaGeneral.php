@@ -20,7 +20,8 @@ AND iTipoAsiId=? AND CAST(dtAsistencia AS DATE) BETWEEN ? AND ?", [$iEstudianteI
 
     public static function selEstudiantesConFalta($fecha, $matriculas)
     {
-        //file_put_contents('D:\params.txt',json_encode($matriculas));
+        // Convertir todos los valores a enteros para mayor seguridad
+        $matriculas = array_map('intval', $matriculas);
         $placeholders = implode(',', array_fill(0, count($matriculas), '?'));
         $sql = "SELECT asi.idAsistencia,asi.iMatrId, persEst.cPersNombre AS cPersNombreEst, persEst.cPersPaterno AS cPersPaternoEst,
         persEst.cPersMaterno AS cPersMaternoEst,

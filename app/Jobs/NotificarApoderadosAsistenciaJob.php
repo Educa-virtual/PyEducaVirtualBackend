@@ -31,7 +31,6 @@ class NotificarApoderadosAsistenciaJob implements ShouldQueue
             if (filter_var($fila->cPersCorreo, FILTER_VALIDATE_EMAIL)) {
                 Mail::mailer('mailer_noreply')->to($fila->cPersCorreo)->send(new NotificarApoderadosAsistenciaMail($fila, $this->fecha));
                 AsistenciaGeneralService::marcarNotificado($fila->idAsistencia);
-                //file_put_contents('d:/asi_log.txt', date('Y-m-d H:i:s') . " - ID: {$fila->idAsistencia} \n", FILE_APPEND);
             }
         }
     }
