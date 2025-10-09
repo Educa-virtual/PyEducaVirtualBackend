@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class NotificarApoderadosAsistenciaMail extends Mailable
+class NotificarApoderadosInasistenciaGeneralMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -25,7 +25,7 @@ class NotificarApoderadosAsistenciaMail extends Mailable
     public function build()
     {
         return $this->subject('Notificación por inasistencia')
-            ->view('emails.acad.notificar_apoderados_asistencia')
+            ->view('emails.acad.notificar_apoderados_inasistencia_general')
             ->with([
                 'data' => $this->data,
                 'fecha' => $this->fecha
