@@ -5,6 +5,7 @@
 /public/storage
 !/public/storage/ere/evaluaciones/
 !/public/storage/ere/evaluaciones/hoja-respuestas/
+!/storage/app/public/ere/evaluaciones/hoja-respuestas/
 !/public/cursos/images_opt/*
 !/public/cursos/images_sq/*
 !/public/cursos/images/SVG/*
