@@ -7,26 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class PLantilla extends Model
 {
-    public static function insEncuestaPlantilla($request) {
-        $parametros = [
-            $request->header('iCredEntPerfId'),
-            $request->iYAcadId,
-            $request->iCateId,
-            $request->iPlanId,
-            $request->dEncuInicio,
-            $request->dEncuFin,
-            $request->bCopiarPoblacion,
-            $request->bCopiarAccesos,
-            $request->bCopiarPreguntas,
-            $request->iPeriodoOrden,
-            $request->cEncuNombre,
-            $request->cEncuSubtitulo,
-            $request->iTiemDurId,
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne("EXEC enc.Sp_INS_encuestaPlantilla $placeholders", $parametros);
-    }
-
     public static function selPlantillas($request) {
         $parametros = [
             $request->header('iCredEntPerfId'),
@@ -102,5 +82,37 @@ class PLantilla extends Model
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_UPD_plantillaEstado $placeholders", $parametros);
+    }
+
+    public static function insPlantillaDuplicado($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iCateId,
+            $request->iPlanId,
+            $request->cPlanNombre,
+            $request->cPlanSubtitulo,
+            $request->bCopiarPoblacion,
+            $request->bCopiarAccesos,
+            $request->bCopiarPreguntas,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC enc.Sp_INS_plantillaDuplicado $placeholders", $parametros);
+    }
+
+    public static function insPlantillaEncuesta($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iCateId,
+            $request->iEncuId,
+            $request->cPlanNombre,
+            $request->cPlanSubtitulo,
+            $request->bCopiarPoblacion,
+            $request->bCopiarAccesos,
+            $request->bCopiarPreguntas,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC enc.Sp_INS_plantillaEncuesta $placeholders", $parametros);
     }
 }

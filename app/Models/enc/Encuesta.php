@@ -124,4 +124,24 @@ class Encuesta extends Model
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_INS_encuestaDuplicado $placeholders", $parametros);
     }
+
+    public static function insEncuestaPlantilla($request) {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+            $request->iCateId,
+            $request->iPlanId,
+            $request->dEncuInicio,
+            $request->dEncuFin,
+            $request->bCopiarPoblacion,
+            $request->bCopiarAccesos,
+            $request->bCopiarPreguntas,
+            $request->iPeriodoOrden,
+            $request->cEncuNombre,
+            $request->cEncuSubtitulo,
+            $request->iTiemDurId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC enc.Sp_INS_encuestaPlantilla $placeholders", $parametros);
+    }
 }

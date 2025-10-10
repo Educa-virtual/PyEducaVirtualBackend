@@ -51,8 +51,10 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('crearEncuestaSatisfaccion', [EncuestaFijaController::class, 'crearEncuestaSatisfaccion']);
     Route::post('crearEncuestaAutoevaluacion', [EncuestaFijaController::class, 'crearEncuestaAutoevaluacion']);
 
-    Route::post('guardarEncuestaDesdePlantilla', [PLantillaController::class, 'guardarEncuestaDesdePlantilla']);
+    Route::post('guardarEncuestaDesdePlantilla', [EncuestaController::class, 'guardarEncuestaDesdePlantilla']);
     Route::post('guardarEncuestaDesdeDuplicado', [EncuestaController::class, 'guardarEncuestaDesdeDuplicado']);
+    Route::post('guardarPlantillaDesdeEncuesta', [PLantillaController::class, 'guardarPlantillaDesdeEncuesta']);
+    Route::post('guardarPlantillaDesdeDuplicado', [PLantillaController::class, 'guardarPlantillaDesdeDuplicado']);
 
     Route::post('listarPlantillas', [PLantillaController::class, 'listarPlantillas']);
     Route::post('verPlantilla', [PLantillaController::class, 'verPlantilla']);

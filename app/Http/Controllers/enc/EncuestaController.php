@@ -108,11 +108,21 @@ class EncuestaController extends Controller
             return FormatearMensajeHelper::error($e);
         }
     }
-    
+
     public function guardarEncuestaDesdeDuplicado(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = Encuesta::insEncuestaDuplicado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarEncuestaDesdePlantilla(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::insEncuestaPlantilla($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

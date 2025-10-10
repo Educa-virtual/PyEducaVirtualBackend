@@ -80,10 +80,20 @@ class PLantillaController extends Controller
         }
     }
 
-    public function guardarEncuestaDesdePlantilla(Request $request) {
+    public function guardarPlantillaDesdeDuplicado(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Plantilla::insEncuestaPlantilla($request);
+            $data = Plantilla::insPlantillaDuplicado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarPlantillaDesdeEncuesta(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Plantilla::insPlantillaEncuesta($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
