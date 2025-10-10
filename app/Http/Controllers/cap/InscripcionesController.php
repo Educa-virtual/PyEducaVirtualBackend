@@ -12,6 +12,8 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\api\grl\PersonaController;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\grl\PersonasController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\cap\EstadoInscripcionMail;
 
 class InscripcionesController extends Controller
 {
@@ -244,10 +246,51 @@ class InscripcionesController extends Controller
                     @_iCredId=?',
                 $parametros
             );
-            $cEstado = $request->bEstado ? 'Validado' : 'Rechazado';
+            $cEstado = $request->bEstado ? 'validado' : 'rechazado';
 
             if ($data[0]->iInscripId > 0) {
                 $message = 'Se ha ' . $cEstado . ' correctamente a la Inscripción';
+
+                $info = DB::select(
+                    'exec cap.SP_SEL_detalleInscripcion ?',
+                    [$request->iInscripId]
+                );
+
+                if (count($info) > 0) {
+                    $participante = (object) [
+                        'cPersNombre' => $info[0]->cPersNombre,
+                        'cPersCorreo' => $info[0]->cInscripCorreo,
+                    ];
+                    $capacitacion = (object) [
+                        'cCapacitacionNombre' => $info[0]->cCapTitulo,
+                    ];
+
+
+                    if (!empty($participante->cPersCorreo)) {
+                        $estadoTexto = $request->bEstado ? 'aprobado' : 'rechazado';
+                        try {
+                            Mail::mailer('mailer_capacitaciones')
+                                ->to($participante->cPersCorreo)
+                                ->send(new EstadoInscripcionMail($participante, $capacitacion, $estadoTexto));
+                        } catch (\Exception $e) {
+                            return new JsonResponse(
+                                ['validated' => false, 'message' => $e->getMessage(), 'data' => []],
+                                Response::HTTP_INTERNAL_SERVER_ERROR
+                            );
+                        }
+                        // try {
+                        //     Mail::mailer('mailer_capacitaciones')
+                        //         ->to($participante->cPersCorreo)
+                        //         ->send(new EstadoInscripcionMail($participante, $capacitacion, $estadoTexto));
+
+                        //     Log::info("📧 Correo enviado correctamente a {$participante->cPersCorreo}");
+                        // } catch (\Throwable $e) {
+                        //     Log::error("❌ Error al enviar correo a {$participante->cPersCorreo}: " . $e->getMessage(), [
+                        //         'trace' => $e->getTraceAsString(),
+                        //     ]);
+                        // }
+                    }
+                }
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => $data],
                     Response::HTTP_OK
