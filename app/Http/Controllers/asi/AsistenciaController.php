@@ -16,6 +16,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\FormatearMensajeHelper;
+use App\Models\asi\Codigo;
 use Illuminate\Support\Facades\Storage;
 
 class AsistenciaController extends Controller
@@ -29,6 +30,15 @@ class AsistenciaController extends Controller
 
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
+    public function obtenerCodigo(Request $request){
+       try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = Codigo::obtenerCodigo($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
     }
     public function guardarAsistenciaEstudiante(Request $request){
         try {
