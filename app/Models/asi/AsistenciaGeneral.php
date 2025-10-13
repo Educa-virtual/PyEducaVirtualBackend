@@ -38,4 +38,8 @@ AND iTipoAsiId=? AND CAST(dtAsistencia AS DATE) BETWEEN ? AND ?", [$iEstudianteI
         WHERE CAST(dtAsistencia AS DATE)=? AND (bNotificado IS NULL OR bNotificado=0) AND asi.iMatrId IN ($placeholders)";
         return DB::select($sql, array_merge([$fecha], $matriculas));
     }
+
+    public static function selAsistenciaEstudiantePorPeriodo($iMatrId, $anio, $mes) {
+        return DB::select("EXEC [asi].[SP_SEL_asistenciaGeneralEstudiantePorPeriodo] @iMatrId=?, @anio=?, @mes=?", [$iMatrId, $anio, $mes]);
+    }
 }
