@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Mail\acad\NotificarApoderadosAsistenciaMail;
-use App\Mail\NotificarUsuarios;
+use App\Mail\acad\NotificarApoderadosInasistenciaGeneralMail;
 use App\Services\asi\AsistenciaGeneralService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,7 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class NotificarApoderadosAsistenciaJob implements ShouldQueue
+class NotificarApoderadosInasistenciaGeneralJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -29,8 +28,8 @@ class NotificarApoderadosAsistenciaJob implements ShouldQueue
     {
         foreach ($this->data as $fila) {
             if (filter_var($fila->cPersCorreo, FILTER_VALIDATE_EMAIL)) {
-                Mail::mailer('mailer_noreply')->to($fila->cPersCorreo)->send(new NotificarApoderadosAsistenciaMail($fila, $this->fecha));
-                AsistenciaGeneralService::marcarNotificado($fila->idAsistencia);
+                Mail::mailer('mailer_noreply')->to($fila->cPersCorreo)->send(new NotificarApoderadosInasistenciaGeneralMail($fila, $this->fecha));
+                AsistenciaGeneralService::marcarAsistenciaGeneralNotificada($fila->idAsistencia);
             }
         }
     }
