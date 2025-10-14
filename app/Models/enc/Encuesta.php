@@ -49,6 +49,7 @@ class Encuesta extends Model
             $request->jsonPoblacion,
             $request->jsonAccesos,
             $request->iYAcadId,
+            $request->iFuenteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_INS_encuesta $placeholders", $parametros);
@@ -68,6 +69,7 @@ class Encuesta extends Model
             $request->jsonPoblacion,
             $request->jsonAccesos,
             $request->iYAcadId,
+            $request->iFuenteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_UPD_encuesta $placeholders", $parametros);
