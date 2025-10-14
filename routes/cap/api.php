@@ -29,6 +29,9 @@ Route::group(['prefix' => 'cap'], function () {
   });
   Route::group(['prefix' => 'tipo-publicos'], function () {
     Route::get('/', [TipoPublicosController::class, 'listarTipoPublicos']);
+    Route::post('/', [TipoPublicosController::class, 'guardarTipoPublicos']);
+    Route::put('/{iTipoPubId}', [TipoPublicosController::class, 'actualizarTipoPublicos']);
+    Route::delete('/{iTipoPubId}', [TipoPublicosController::class, 'eliminarTipoPublicos']);
   });
   Route::group(['prefix' => 'capacitaciones'], function () {
     Route::post('/', [CapacitacionesController::class, 'guardarCapacitaciones']);
