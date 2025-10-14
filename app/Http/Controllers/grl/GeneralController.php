@@ -32,11 +32,11 @@ class GeneralController extends Controller
 
             $iPersId = VerifyHash::decodes($request->iPersId);
             $documento = $request->file('file');
-            $tipoPortafolio = $request->tipoPortafolio;
-            $cIieeCodigoModular = $request->cIieeCodigoModular;
-            $years = $request->years;
-            $carpeta = '';
-            $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$carpeta;      
+            //$tipoPortafolio = $request->tipoPortafolio;
+            //$cIieeCodigoModular = $request->cIieeCodigoModular;
+            //$years = $request->years;
+            //$carpeta = '';
+            $folder = $request->file('nameFile');//$years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$carpeta;      
             $generado = Storage::disk('public')->putFile($folder,$documento);
             $ruta = $folder.'/'.basename($generado);
 
