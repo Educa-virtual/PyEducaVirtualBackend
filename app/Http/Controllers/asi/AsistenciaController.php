@@ -16,6 +16,8 @@ use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\FormatearMensajeHelper;
+use App\Services\asi\AsistenciaGeneralService;
+use App\Services\asi\ControlAsistenciaService;
 use Illuminate\Support\Facades\Storage;
 
 class AsistenciaController extends Controller
@@ -43,6 +45,7 @@ class AsistenciaController extends Controller
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AsistenciaAdministrativa::guardarAsistenciaGeneral($request);
+            AsistenciaGeneralService::notificarApoderadosInasistenciaGeneral($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -383,8 +386,10 @@ class AsistenciaController extends Controller
 
         $enviar = str_repeat('?,',count($solicitud)-1).'?';
         $tabla = 'execute asi.Sp_INS_control_asistencias '.$enviar;
+
         try {
             $query = DB::select($tabla, $solicitud);
+            ControlAsistenciaService::notificarApoderadosInasistenciaCurso($solicitud);
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
