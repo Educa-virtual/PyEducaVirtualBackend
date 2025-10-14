@@ -1,7 +1,7 @@
 @extends('emails.layouts.no-reply')
 
 @section('body')
-<p>Hola <strong>{{ $participante->cPersNombre }}</strong>,</p>
+<p>Estimado(a) <strong>{{ $participante->cPersNombre }}</strong>,</p>
 
 @if($estado === 'aprobado')
 <p>¡Felicidades! Tu inscripción a la capacitación

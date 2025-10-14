@@ -278,17 +278,6 @@ class InscripcionesController extends Controller
                                 Response::HTTP_INTERNAL_SERVER_ERROR
                             );
                         }
-                        // try {
-                        //     Mail::mailer('mailer_capacitaciones')
-                        //         ->to($participante->cPersCorreo)
-                        //         ->send(new EstadoInscripcionMail($participante, $capacitacion, $estadoTexto));
-
-                        //     Log::info("📧 Correo enviado correctamente a {$participante->cPersCorreo}");
-                        // } catch (\Throwable $e) {
-                        //     Log::error("❌ Error al enviar correo a {$participante->cPersCorreo}: " . $e->getMessage(), [
-                        //         'trace' => $e->getTraceAsString(),
-                        //     ]);
-                        // }
                     }
                 }
                 return new JsonResponse(
