@@ -24,6 +24,7 @@ Route::group(['prefix' => 'asi', 'middleware' => ['auth:api', RefreshToken::clas
     Route::group(['prefix' => 'asistencia'], function () {
         Route::group(['prefix' => 'general/{anio}/{mes}'], function () {
             Route::get('estudiante', [AsistenciaGeneralController::class, 'obtenerAsistenciaEstudiantePorFecha']);
+            Route::get('apoderado/estudiante/{iMatrId}', [AsistenciaGeneralController::class, 'obtenerAsistenciaEstudianteApoderadoPorFecha']);
         });
         Route::group(['prefix' => 'control/{fecha}'], function () {
             Route::get('estudiante', [AsistenciaControlController::class, 'obtenerAsistenciaEstudiantePorFecha']);

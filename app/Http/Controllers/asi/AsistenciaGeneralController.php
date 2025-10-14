@@ -4,6 +4,7 @@ namespace App\Http\Controllers\asi;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use App\Services\acad\MatriculasService;
 use App\Services\acad\YearAcademicosService;
@@ -23,6 +24,23 @@ class AsistenciaGeneralController extends Controller
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
             $yearAcademico = YearAcademicosService::obtenerYearAcademicoPorAnio($anio);
             $params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
+            $asistencia = AsistenciaGeneralService::obtenerAsistenciaEstudiantePorPeriodo($matricula, $anio, $mes);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $asistencia);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    public function obtenerAsistenciaEstudianteApoderadoPorFecha($anio, $mes, $iMatrId, Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
+            //$detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
+            //$yearAcademico = YearAcademicosService::obtenerYearAcademicoPorAnio($anio);
+            //$params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, NULL];
+            //$matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
+            $params = [NULL, NULL, NULL, VerifyHash::decodesxId($iMatrId)];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $asistencia = AsistenciaGeneralService::obtenerAsistenciaEstudiantePorPeriodo($matricula, $anio, $mes);
             return FormatearMensajeHelper::ok('Datos obtenidos', $asistencia);
