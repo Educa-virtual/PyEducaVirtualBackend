@@ -16,6 +16,8 @@ use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\FormatearMensajeHelper;
+use App\Services\asi\AsistenciaGeneralService;
+use App\Services\asi\ControlAsistenciaService;
 use Illuminate\Support\Facades\Storage;
 
 class AsistenciaController extends Controller
@@ -43,6 +45,7 @@ class AsistenciaController extends Controller
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AsistenciaAdministrativa::guardarAsistenciaGeneral($request);
+            AsistenciaGeneralService::notificarApoderadosInasistenciaGeneral($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -103,12 +106,12 @@ class AsistenciaController extends Controller
         }
     }
     public function verificarGrupoAsistencia(Request $request){
-  
+
         $iSedeId = $request["iSedeId"];
 
         if(empty($iSedeId)){
             $mensaje = "No se envio datos de la institucion";
-            return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
+            return ResponseHandler::error("Error para obtener Datos",400,$mensaje);
         }
 
         $enviar = [
@@ -127,13 +130,13 @@ class AsistenciaController extends Controller
     }
 
     public function verificarHorarioAsistencia(Request $request){
-  
+
         $iSedeId = $request["iSedeId"];
         $iYAcadId = $request["iYAcadId"];
 
         if(empty($iSedeId)){
             $mensaje = "No se envio datos de la institucion";
-            return ResponseHandler::error("Error para obtener Datos",400,$mensaje); 
+            return ResponseHandler::error("Error para obtener Datos",400,$mensaje);
         }
 
         $enviar = [
@@ -165,7 +168,7 @@ class AsistenciaController extends Controller
     private function decodificar($id){
         return is_null($id) ? null : (is_numeric($id) ? $id : ($this->hashids->decode($id)[0] ?? null));
     }
-     
+
     // Obtener las fechas de las areas curriculares para registrar la asistencia
     public function obtenerDetallesCurricular(Request $request){
         $iGradoId = $request["iGradoId"];
@@ -218,7 +221,7 @@ class AsistenciaController extends Controller
             $iSedeId        ?? NULL,
             $iIieeId        ?? NULL,
         ];
-        
+
         $query = 'EXEC acad.Sp_SEL_buscar_cursos_horario '.str_repeat('?,',count($solicitud)-1).'?';
         try {
             $data = DB::select($query, $solicitud);
@@ -240,7 +243,7 @@ class AsistenciaController extends Controller
         $iSeccionId = $request["iSeccionId"];
         $iNivelGradoId = $request["iNivelGradoId"];
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
-        
+
         $solicitud = [
             $iGradoId ?? NULL,
             $iIieeId ?? NULL,
@@ -254,11 +257,11 @@ class AsistenciaController extends Controller
         ];
 
         $query = "execute asi.Sp_SEL_fechas_asistencia ".str_repeat('?,',count($solicitud)-1)."?";
-        
+
         try{
             $data = DB::select($query, $solicitud);
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'se obtuvo la información',
                 'data' => $data,
             ];
@@ -267,7 +270,7 @@ class AsistenciaController extends Controller
 
         } catch(Exception $e){
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
@@ -283,7 +286,7 @@ class AsistenciaController extends Controller
         $iDocenteId = $this->decodificar($request["iDocenteId"]);
         $iSeccionId = $this->decodificar($request["iSeccionId"]);
         $iNivelGradoId = $this->decodificar($request["iNivelGradoId"]);
-        
+
         $solicitud = [
             $request->opcion,
             $iCursoId,
@@ -304,7 +307,7 @@ class AsistenciaController extends Controller
         $query = DB::select($consulta, $solicitud);
         try{
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'se obtuvo la información',
                 'data' => $query,
             ];
@@ -313,7 +316,7 @@ class AsistenciaController extends Controller
 
         } catch(Exception $e){
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
@@ -326,9 +329,9 @@ class AsistenciaController extends Controller
         $solicitud = [
             'buscar_festividades',
         ];
-        
+
         $query = DB::select("EXECUTE acad.Sp_SEL_fechas_importantes ?",$solicitud);
-       
+
         try {
             $response = [
                 'validated' => true,
@@ -383,8 +386,10 @@ class AsistenciaController extends Controller
 
         $enviar = str_repeat('?,',count($solicitud)-1).'?';
         $tabla = 'execute asi.Sp_INS_control_asistencias '.$enviar;
+
         try {
             $query = DB::select($tabla, $solicitud);
+            ControlAsistenciaService::notificarApoderadosInasistenciaCurso($solicitud);
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
@@ -406,9 +411,9 @@ class AsistenciaController extends Controller
 
     public function report(Request $request)
     {
-    
+
         $iDocenteId = VerifyHash::decodes($request->iDocenteId);
-        $inicio = $request['id'];    
+        $inicio = $request['id'];
         $fecha_inicial = str_pad($inicio, 2, "0", STR_PAD_LEFT);
         $year_actual = date('Y');
         $combinar = $year_actual . "-" . $fecha_inicial . "-01";
@@ -468,34 +473,34 @@ class AsistenciaController extends Controller
         for ($i = 1; $i <= $ultimo; $i++) {
             $json_registro[] = ["diaMes" => intval($i), "cTipoAsiLetra" => ""];
         }
-    
+
         $json_asistencia = json_decode($query[0]->asistencia,true);
 
         foreach ($json_asistencia as &$valor) {
-            $registro = $valor["diasAsistencia"];  
+            $registro = $valor["diasAsistencia"];
             $paquete = [];
-            
+
             foreach ($registro as &$fila) {
                 $fila["diaMes"] = intval($fila["diaMes"]);
                 $paquete[] = intval($fila["diaMes"]);
             }
-            
+
             $filtrar = array_filter($json_registro, function ($valor) use ($paquete) {
                 return !in_array(intval($valor["diaMes"]), $paquete);
             });
-            
+
             $convertir = $registro;
 
             if(!is_array($convertir)){
                 $convertir = [];
             }
-            
+
             $unir = array_merge($filtrar, $convertir);
             usort($unir, function ($a, $b) {
                 return $a["diaMes"] > $b["diaMes"] ? 1 : -1;
             });
-            
-            $valor["diasAsistencia"] = $unir; 
+
+            $valor["diasAsistencia"] = $unir;
         }
 
         $json_institucion = json_decode($query[0]->institucion,true);
@@ -527,7 +532,7 @@ class AsistenciaController extends Controller
             "fin"               => "2024-10-31",
             "ciclo"             => $request->cCicloRomanos,
         ];
-    
+
         $pdf = Pdf::loadView('asistencia_reporte_mensual', $respuesta)
             ->setPaper('a4', 'landscape')
             ->stream('silabus.pdf');
@@ -585,10 +590,10 @@ class AsistenciaController extends Controller
         $fechas[0]["ultimo_dia"] = $dia;
         $fechas[0]["dia"] = $dia_indice;
 
-        
+
         $json_institucion = json_decode($query[0]->institucion,true);
         $json_asistencia = json_decode($query[0]->asistencia,true);
-        
+
         $logo = $json_institucion[0]["cIieeLogo"];
         if(!empty($logo)){
             $verLogo = explode(",",$logo);
@@ -596,7 +601,7 @@ class AsistenciaController extends Controller
         }else{
             $base64Image = "";
         }
-        
+
         if (base64_decode($base64Image, true) === false) {
             $logo="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
         }
@@ -608,7 +613,7 @@ class AsistenciaController extends Controller
             $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["cTipoAsiLetra"];
         }
 
-        
+
         $formato_fecha = new DateTime($inicio);
         $fecha_fija = $formato_fecha->format('Y-m-d');
 
@@ -634,12 +639,12 @@ class AsistenciaController extends Controller
     }
     public function reporte_personalizado(Request $request)
     {
-    
+
         $iDocenteId = VerifyHash::decodesxId($request->iDocenteId);
 
         $inicio = $request['id'][0];
         $fin = $request['id'][1];
-    
+
         $year = date("Y");
         $convertir_year = strtotime($year);
         $years = date('Y', $convertir_year);
@@ -749,7 +754,7 @@ class AsistenciaController extends Controller
                 }
             }
         }
-        
+
         $json_institucion = json_decode($query[0]->institucion,true);
 
         $logo = $json_institucion[0]["cIieeLogo"];
@@ -790,14 +795,14 @@ class AsistenciaController extends Controller
     }
     public function descargarJustificacion(Request $request){
         $cJustificar = $request->cJustificar;
-        
+
         if (!Storage::disk('public')->exists($cJustificar)) {
             throw new Exception('El archivo no existe');
         }
-        
+
         $archivo = Storage::disk('public')->get($cJustificar);
         return $archivo;
-        
+
     }
 }
 
