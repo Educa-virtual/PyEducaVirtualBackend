@@ -63,11 +63,14 @@ class DocenteCursosController extends Controller
     }
     public function guardarProgramacionCurricular(Request $request){
         $iPersId = VerifyHash::decodes($request->iPersId);
+        $cIieeCodigoModular = $request->cIieeCodigoModular;
+        $years = $request->years;
         $documento = $request->file('archivo');
         $nombre = $documento->getClientOriginalName();
         $extension = $documento->getClientOriginalExtension();
         $peso = $documento->getSize();
-        $folder = 'programacionCurricular/'.$iPersId;
+        $carpeta = 'programacionCurricular';;
+        $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$carpeta;  
         $portafolio = $request->portafolio;
         
         if ($documento) {
