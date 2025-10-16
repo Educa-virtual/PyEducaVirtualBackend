@@ -16,7 +16,7 @@ class EncuestaFija extends Model
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne("EXEC enc.Sp_INS_encuestaAutoevaluacion $placeholders", $parametros);
+        return DB::insert("EXEC enc.Sp_INS_encuestaAutoevaluacion $placeholders", $parametros);
     }
 
     public static function insEncuestaSatisfaccion($request) {
@@ -28,6 +28,6 @@ class EncuestaFija extends Model
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne("EXEC enc.Sp_INS_encuestaSatisfaccion $placeholders", $parametros);
+        return DB::insert("EXEC enc.Sp_INS_encuestaSatisfaccion $placeholders", $parametros);
     }
 }
