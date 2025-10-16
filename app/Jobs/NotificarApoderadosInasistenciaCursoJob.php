@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\acad\NotificarApoderadosInasistenciaCursoMail;
 use App\Services\asi\ControlAsistenciaService;
+use App\Services\FactilizaService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -29,8 +30,23 @@ class NotificarApoderadosInasistenciaCursoJob implements ShouldQueue
     public function handle(): void
     {
         foreach ($this->data as $fila) {
-            if (filter_var($fila->cPersCorreo, FILTER_VALIDATE_EMAIL)) {
-                Mail::mailer('mailer_noreply')->to($fila->cPersCorreo)->send(new NotificarApoderadosInasistenciaCursoMail($fila, $this->fecha, $this->docente));
+            $marcarNotificado = false;
+            if (!empty($fila->cPersTelefono)) {
+                $nombreApp = config('app.name');
+                $mensaje = "Estimado(a) {$fila->cPersNombreApo} {$fila->cPersPaternoApo} {$fila->cPersMaternoApo},
+                \n\nLe informamos que {$fila->cPersNombreEst} {$fila->cPersPaternoEst} {$fila->cPersMaternoEst} no asistió al área curricular de  {$fila->cCursoNombre} el día {$this->fecha}, dictada por {$this->docente->cPersNombre} {$this->docente->cPersPaterno} {$this->docente->cPersMaterno}, en la institución educativa {$fila->cIieeNombre}.
+                \n\nSi la inasistencia se debió a un motivo justificado, le agradeceremos que lo comunique a la institución a la brevedad posible.
+                \n\nAtentamente, {$nombreApp}.
+                \n\nEste es un mensaje automático, por favor no responder.";
+                FactilizaService::enviarMensajeWhatsApp($fila->cPersTelefono, $mensaje);
+                $marcarNotificado = true;
+            } else {
+                if (filter_var($fila->cPersCorreo, FILTER_VALIDATE_EMAIL)) {
+                    Mail::mailer('mailer_noreply')->to($fila->cPersCorreo)->send(new NotificarApoderadosInasistenciaCursoMail($fila, $this->fecha, $this->docente));
+                    $marcarNotificado = true;
+                }
+            }
+            if ($marcarNotificado) {
                 ControlAsistenciaService::marcarAsistenciaNotificada($fila->iCtrlAsistenciaId);
             }
         }
