@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\grl;
 
-use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -30,19 +29,9 @@ class GeneralController extends Controller
 
         if ($request->hasFile('file')) {
 
-            $iPersId = VerifyHash::decodes($request->iPersId);
-            $documento = $request->file('file');
-            $tipoPortafolio = $request->tipoPortafolio;
-            $cIieeCodigoModular = $request->cIieeCodigoModular;
-            $years = $request->years;
-            $carpeta = '';
-            $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$carpeta;      
-            $generado = Storage::disk('public')->putFile($folder,$documento);
-            $ruta = $folder.'/'.basename($generado);
-
-            // $file = $request->file('file');
-            // $path = $request->file("file")->store($request->nameFile, ['disk' => 'file']);
-            return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $ruta], 200);
+            $file = $request->file('file');
+            $path = $request->file("file")->store($request->nameFile, ['disk' => 'file']);
+            return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $path], 200);
             return response()->json($path);
         } else {
             return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);
