@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\cap;
+namespace App\Http\Controllers\repo;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,55 +9,40 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Validator;
 
-class TipoPublicosController extends Controller
+class CarpetasController extends Controller
 {
-    public function listarTipoPublicos()
+    public function guardarCarpeta(Request $request)
     {
         try {
             $fieldsToDecode = [
-                'iTipoPubId',
-            ];
-
-            $data = DB::select(
-                'exec cap.SP_SEL_tipoPublicos',
-            );
-            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-            return new JsonResponse(
-                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-    }
-
-    public function guardarTipoPublicos(Request $request)
-    {
-        try {
-            $fieldsToDecode = [
-                'iTipoPubId',
+                'iCarpetaId',
+                'iPersId',
+                'iParentCarpetaId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->cTipoPubNombre       ??  NULL,
+                $request->cNombre           ??  NULL,
+                $request->iPersId           ??  NULL,
+                $request->iParentCarpetaId  ??  NULL,
 
-                $request->iCredId              ??  NULL
+                $request->iCredId           ??  NULL
+
             ];
 
             $data = DB::select(
-                'exec cap.SP_INS_tipoPublicos
-                    @_cTipoPubNombre=?,
+                'exec repo.SP_INS_carpetas
+                    @_cNombre=?,
+                    @_iPersId=?,
+                    @_iParentCarpetaId=?,
                     @_iCredId=?',
                 $parametros
             );
 
-            if ($data[0]->iTipoPubId > 0) {
+            if ($data[0]->iCarpetaId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
                     Response::HTTP_OK
@@ -76,33 +61,71 @@ class TipoPublicosController extends Controller
         }
     }
 
-    public function actualizarTipoPublicos($iTipoPubId, Request $request)
+    public function obtenerCarpetas(Request $request)
     {
-        $request->merge(['iTipoPubId' => $iTipoPubId]);
-
         try {
             $fieldsToDecode = [
-                'iTipoPubId',
+                'iCarpetaId',
+                'iPersId',
+                'iParentCarpetaId',
+                'iCredId',
+                'iId', //iCarpetaId o iArchivoId
+            ];
+            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+
+            $parametros = [
+                $request->iCarpetaId           ??  NULL,
+                $request->iPersId              ??  NULL,
+                $request->iCredId              ??  NULL,
+            ];
+
+            $data = DB::select(
+                'exec repo.SP_SEL_carpetas
+                 @_iCarpetaId=?,
+                 @_iPersId=?,
+                 @_iCredId=?',
+                $parametros
+            );
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
+            return new JsonResponse(
+                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse(
+                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function actualizarCarpeta(Request $request)
+    {
+        try {
+            $fieldsToDecode = [
+                'iCarpetaId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iTipoPubId           ??  NULL,
-                $request->cTipoPubNombre       ??  NULL,
+                $request->iCarpetaId        ??  NULL,
+                $request->cNombre           ??  NULL,
 
-                $request->iCredId              ??  NULL
+                $request->iCredId           ??  NULL
+
             ];
 
             $data = DB::select(
-                'exec cap.SP_UPD_tipoPublicos
-                    @_iTipoPubId=?,
-                    @_cTipoPubNombre=?,
+                'exec repo.SP_UPD_carpetas
+                    @_iCarpetaId=?,
+                    @_cNombre=?,
                     @_iCredId=?',
                 $parametros
             );
 
-            if ($data[0]->iTipoPubId > 0) {
+            if ($data[0]->iCarpetaId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
                     Response::HTTP_OK
@@ -121,31 +144,31 @@ class TipoPublicosController extends Controller
         }
     }
 
-    public function eliminarTipoPublicos($iTipoPubId, Request $request)
+    public function eliminarCarpeta(Request $request)
     {
-        $request->merge(['iTipoPubId' => $iTipoPubId]);
 
         try {
             $fieldsToDecode = [
-                'iTipoPubId',
+                'iCarpetaId',
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iTipoPubId           ??  NULL,
+                $request->iCarpetaId        ??  NULL,
 
-                $request->iCredId              ??  NULL
+                $request->iCredId           ??  NULL
+
             ];
 
             $data = DB::select(
-                'exec cap.SP_DEL_tipoPublicos
-                    @_iTipoPubId=?,
+                'exec repo.SP_DEL_carpetas
+                    @_iCarpetaId=?,
                     @_iCredId=?',
                 $parametros
             );
 
-            if ($data[0]->iTipoPubId > 0) {
+            if ($data[0]->iCarpetaId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha eliminado exitosamente ', 'data' => null],
                     Response::HTTP_OK

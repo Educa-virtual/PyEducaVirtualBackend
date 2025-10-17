@@ -40,7 +40,6 @@ BAT;
 
         //$sql = "BACKUP DATABASE [$database] TO DISK = N'$backupPath' WITH INIT, NAME = 'Full Backup of $database'";
         $sql="BACKUP DATABASE [CINFODW] TO DISK = N'D:\BackupBD\archivo.bak';";
-        //file_put_contents("D:\\backup.txt",$sql);
         DB::statement($sql);*/
 
         //DB::statement('EXEC [seg].usp_BackupDatabase @DatabaseName=?, @BackupFileName=?, @BackupPath=?', [$nombreBd, $nombreBackup, $ruta]);
