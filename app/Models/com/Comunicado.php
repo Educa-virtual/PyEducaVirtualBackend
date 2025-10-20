@@ -11,6 +11,7 @@ class Comunicado extends Model
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iYAcadId,
+            $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC com.Sp_SEL_comunicados2 $placeholders", $parametros);
@@ -28,7 +29,7 @@ class Comunicado extends Model
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iComunicadoId,
-            $request->iTipoUsuario
+            $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC com.Sp_SEL_comunicado $placeholders", $parametros);

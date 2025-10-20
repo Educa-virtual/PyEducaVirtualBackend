@@ -13,11 +13,16 @@ use Illuminate\Support\Facades\Gate;
 class ComunicadoController extends Controller
 {
     private $emisores = [
+        Perfil::ADMINISTRADOR_DREMO,
+        Perfil::ESPECIALISTA_DREMO,
+        Perfil::ESPECIALISTA_UGEL,
         Perfil::DIRECTOR_IE,
         Perfil::DOCENTE,
     ];
 
     private $recipientes = [
+        Perfil::ESPECIALISTA_DREMO,
+        Perfil::ESPECIALISTA_UGEL,
         Perfil::DIRECTOR_IE,
         Perfil::DOCENTE,
         Perfil::ESTUDIANTE,
