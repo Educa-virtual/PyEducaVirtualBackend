@@ -88,8 +88,19 @@ class ComunicadoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->emisores)]);
-            $data = Comunicado::selPoblacionObjetivo($request);
+            $data = Comunicado::selGrupoCantidad($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function buscarPersona(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->emisores]);
+            $data = Comunicado::selBuscarPersona($request);
+            return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
