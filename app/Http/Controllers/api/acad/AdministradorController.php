@@ -698,7 +698,87 @@ class AdministradorController extends Controller
         DB::select('EXEC seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
         $procesados[] = ['validated' => true, 'message' => 'Credencial generada.'];
     }
+    /* Administrar instituciones*/
+    public function insertarIntituciones(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [
+            $request->iCredEntPerfId,            
+            $request->iCredId,
+            $request->iIieeId,
+            $request->iDsttId,
+            $request->iZonaId,
+            $request->iTipoSectorId,
+            $request->cIieeCodigoModular,
+            $request->cIieeNombre,
+            $request->cIieeRUC,
+            $request->cIieeLogo,
+            $request->cIieeRslCreacion,
+            $request->dIieeRslCreacion,
+            $request->iIieeEstado
+        ];
     
+            $query = DB::select("EXEC acad.SP_INS_Instituciones_educativas ?,?,?,?,?;?;?,?,?,?,?,?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
+    public function insertarSedes(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [
+            $request->iCredEntPerfId,            
+            $request->iCredId,
+            $request->iSedeId,
+            $request->iIieeId,
+            $request->cSedeNombre,
+            $request->cSedeDireccion,
+            $request->cSedeRslCreacion,
+            $request->dSedeRslCreacion,
+            $request->iEstado,
+            $request->iServEdId
+           
+        ];
+    
+            $query = DB::select("EXEC acad.SP_INS_Sedes ?,?;?;?,?,?,?,?,?,?", //actualizado
+            $solicitud);
+    
+            try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+    
+            $estado = 201;
+            } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+            }
+    
+            return new JsonResponse($response, $estado);
+    }
 }
 
 
