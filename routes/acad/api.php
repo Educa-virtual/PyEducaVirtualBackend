@@ -20,6 +20,7 @@ use App\Http\Controllers\acad\PeriodoEvaluacionesController;
 use App\Http\Controllers\acad\ReporteAcademicoProgresoController;
 use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\acad\TurnosController;
+use App\Http\Controllers\api\acad\AdministradorController;
 use App\Http\Controllers\api\acad\DistribucionBloqueController;
 use App\Http\Controllers\api\acad\FeriadoImportanteController;
 use App\Http\Controllers\api\acad\TipoFechaController;
@@ -186,5 +187,17 @@ Route::group(['prefix' => 'acad'], function () {
     });
     Route::group(['prefix' => 'turnos'], function () {
         Route::get('/', [TurnosController::class, 'obtenerTurnos']);
+    });
+
+    Route::group(['prefix' => 'administrador'], function () {
+        Route::post('addCurriculas', [AdministradorController::class, 'addCurriculas']);
+        Route::put('updCurriculas', [AdministradorController::class, 'updCurriculas']);
+        Route::post('addCursosNivelesGrados', [AdministradorController::class, 'addCursosNivelesGrados']);
+        Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
+        Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
+        Route::post('insertarIntituciones', [AdministradorController::class, 'insertarIntituciones']);
+        Route::post('insertarSedes', [AdministradorController::class, 'insertarSedes']);
+    
+        Route::post('mensaje', [AdministradorController::class, 'mensaje']);
     });
 });

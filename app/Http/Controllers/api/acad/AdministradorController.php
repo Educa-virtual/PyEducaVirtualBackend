@@ -717,9 +717,9 @@ class AdministradorController extends Controller
             $request->cIieeRslCreacion,
             $request->dIieeRslCreacion,
             $request->iIieeEstado
-        ];
+            ];
     
-            $query = DB::select("EXEC acad.SP_INS_Instituciones_educativas ?,?,?,?,?,?,?;?;?,?,?,?,?,?,?", //actualizado
+            $query = DB::select("EXEC acad.SP_INS_Instituciones_educativas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", //actualizado
             $solicitud);
     
             try {
