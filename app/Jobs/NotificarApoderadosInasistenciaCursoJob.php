@@ -34,10 +34,10 @@ class NotificarApoderadosInasistenciaCursoJob implements ShouldQueue
             if (!empty($fila->cPersTelefono)) {
                 $nombreApp = config('app.name');
                 $mensaje = "Estimado(a) {$fila->cPersNombreApo} {$fila->cPersPaternoApo} {$fila->cPersMaternoApo},
-                \n\nLe informamos que {$fila->cPersNombreEst} {$fila->cPersPaternoEst} {$fila->cPersMaternoEst} no asistió al área curricular de  {$fila->cCursoNombre} el día {$this->fecha}, dictada por {$this->docente->cPersNombre} {$this->docente->cPersPaterno} {$this->docente->cPersMaterno}, en la institución educativa {$fila->cIieeNombre}.
-                \n\nSi la inasistencia se debió a un motivo justificado, le agradeceremos que lo comunique a la institución a la brevedad posible.
-                \n\nAtentamente, {$nombreApp}.
-                \n\nEste es un mensaje automático, por favor no responder.";
+                \nLe informamos que {$fila->cPersNombreEst} {$fila->cPersPaternoEst} {$fila->cPersMaternoEst} no asistió al área curricular de  {$fila->cCursoNombre} el día {$this->fecha}, dictada por {$this->docente->cPersNombre} {$this->docente->cPersPaterno} {$this->docente->cPersMaterno}, en la institución educativa {$fila->cIieeNombre}.
+                \nSi la inasistencia se debió a un motivo justificado, le agradeceremos que lo comunique a la institución a la brevedad posible.
+                \nAtentamente, {$nombreApp}.
+                \nEste es un mensaje automático, por favor no responder.";
                 FactilizaService::enviarMensajeWhatsApp($fila->cPersTelefono, $mensaje);
                 $marcarNotificado = true;
             } else {
