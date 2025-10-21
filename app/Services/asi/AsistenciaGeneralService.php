@@ -25,7 +25,7 @@ class AsistenciaGeneralService
         }
         if (count($matriculasInasistencias) > 0) {
             $fecha = Carbon::parse($request->dtAsistencia);
-            $data = AsistenciaGeneral::selEstudiantesConFalta($fecha->format('Y-m-d'), $matriculasInasistencias);
+            $data = AsistenciaGeneral::selEstudiantesConFalta($fecha, $matriculasInasistencias);
             NotificarApoderadosInasistenciaGeneralJob::dispatch($data, $fecha->format('d/m/Y'));
         }
     }

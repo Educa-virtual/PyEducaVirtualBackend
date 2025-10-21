@@ -458,6 +458,5 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
     });
 });
 
-
-Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+//Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
 Route::get('evaluaciones/competencias', [App\Http\Controllers\eval\EvaluacionesController::class, 'obtenerCompetencias']);
