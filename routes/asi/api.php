@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\asi\AsistenciaControlController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\asi\AsistenciaGeneralController;
@@ -20,6 +21,7 @@ Route::group(['prefix' => 'asi', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('buscar-reporte', [AsistenciaController::class, 'buscarAsisnteciaGeneral']);
         Route::post('guardar-asistencia', [AsistenciaController::class, 'guardarAsistenciaEstudiante']);
         Route::post('guardar-asistencia-aula', [AsistenciaController::class, 'guardarAsistenciaGeneral']);
+        Route::post('obtener_codigo', [AsistenciaController::class, 'obtenerCodigo']);
     });
     Route::group(['prefix' => 'asistencia'], function () {
         Route::group(['prefix' => 'general/{anio}/{mes}'], function () {

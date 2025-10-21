@@ -16,6 +16,7 @@ use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\FormatearMensajeHelper;
+use App\Models\asi\Codigo;
 use App\Services\asi\AsistenciaGeneralService;
 use App\Services\asi\ControlAsistenciaService;
 use Illuminate\Support\Facades\Storage;
@@ -31,6 +32,15 @@ class AsistenciaController extends Controller
 
     public function __construct(){
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    }
+    public function obtenerCodigo(Request $request){
+       try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = Codigo::obtenerCodigo($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
     }
     public function guardarAsistenciaEstudiante(Request $request){
         try {
@@ -201,7 +211,7 @@ class AsistenciaController extends Controller
         $iIieeId = $request["iIieeId"];
         $iCursoId = $request["iCursoId"];
         $iYAcadId = $request["iYAcadId"];
-        $iDocenteId = $this->decodificar($request["iDocenteId"]);
+        $iDocenteId = VerifyHash::decodes($request["iDocenteId"]);
         $iSeccionId = $request["iSeccionId"];
         $iNivelGradoId = $request["iNivelGradoId"];
         $iGradoId = $request["iGradoId"];
@@ -477,7 +487,8 @@ class AsistenciaController extends Controller
         $json_asistencia = json_decode($query[0]->asistencia,true);
 
         foreach ($json_asistencia as &$valor) {
-            $registro = $valor["diasAsistencia"];
+            
+            $registro = isset($valor["diasAsistencia"]) ? $valor["diasAsistencia"] : [];  
             $paquete = [];
 
             foreach ($registro as &$fila) {
@@ -502,6 +513,7 @@ class AsistenciaController extends Controller
 
             $valor["diasAsistencia"] = $unir;
         }
+        
 
         $json_institucion = json_decode($query[0]->institucion,true);
         $logo = $json_institucion[0]["cIieeLogo"];
