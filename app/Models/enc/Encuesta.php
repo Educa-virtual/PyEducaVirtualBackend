@@ -144,6 +144,7 @@ class Encuesta extends Model
             $request->cEncuSubtitulo,
             $request->iTiemDurId,
             $request->iCursoId,
+            $request->iEstadoPorDefecto,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_INS_encuestaPlantilla $placeholders", $parametros);

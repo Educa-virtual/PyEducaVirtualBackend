@@ -38,7 +38,10 @@ class CategoriaController extends Controller
             Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
             $data = Categoria::selCategorias($request);
             foreach( $data as $key => $value) {
-                if($value->cCateImagenNombre) {
+                if(
+                    $value->cCateImagenNombre &&
+                    Storage::disk('public')->exists("encuestas/categorias/$value->cCateImagenNombre")
+                ) {
                     $data[$key]->cCateImagenUrl = asset(Storage::url("encuestas/categorias/$value->cCateImagenNombre"));
                 } else {
                     $data[$key]->cCateImagenUrl = asset("cursos/images/no-image.jpg");
@@ -55,8 +58,13 @@ class CategoriaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
             $data = Categoria::selCategoria($request);
-            if($data->cCateImagenNombre) {
+            if(
+                $data->cCateImagenNombre &&
+                Storage::disk('public')->exists("encuestas/categorias/$data->cCateImagenNombre")
+            ) {
                 $data->cCateImagenUrl = asset(Storage::url("encuestas/categorias/$data->cCateImagenNombre"));
+            } else {
+                $data->cCateImagenUrl = asset("cursos/images/no-image.jpg");
             }
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
