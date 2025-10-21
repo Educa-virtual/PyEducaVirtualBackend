@@ -707,6 +707,8 @@ class AdministradorController extends Controller
             $request->iIieeId,
             $request->iDsttId,
             $request->iZonaId,
+            $request->iUgelId,
+            $request->iNivelTipoId,
             $request->iTipoSectorId,
             $request->cIieeCodigoModular,
             $request->cIieeNombre,
@@ -717,7 +719,7 @@ class AdministradorController extends Controller
             $request->iIieeEstado
         ];
     
-            $query = DB::select("EXEC acad.SP_INS_Instituciones_educativas ?,?,?,?,?;?;?,?,?,?,?,?,?", //actualizado
+            $query = DB::select("EXEC acad.SP_INS_Instituciones_educativas ?,?,?,?,?,?,?;?;?,?,?,?,?,?,?", //actualizado
             $solicitud);
     
             try {
