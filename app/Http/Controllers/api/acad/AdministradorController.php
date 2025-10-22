@@ -809,4 +809,41 @@ class AdministradorController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+    public function insertarCompetenciasCurso(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [
+            $request->iCredId,
+            $request->iCredEntPerfId,           
+            $request->iCompCursoId,
+            $request->iNivelTipoId,
+            $request->iCursoId,
+            $request->iCompetenciaId,
+            $request->iEstado
+        ];
+
+        $query = DB::select(
+            "EXEC acad.Sp_INS_competenciasXiCursoId ?,?,?,?,?,?,?", //actualizado
+            $solicitud
+        );
+
+        try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
 }
