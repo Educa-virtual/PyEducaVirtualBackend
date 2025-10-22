@@ -309,7 +309,6 @@ class EvaluacionController extends Controller
             $areaIdDescifrado = VerifyHash::decodesxId($areaId);
             $evaluacion = EvaluacionesService::obtenerEvaluacionPorArea($evaluacionIdDescifrado, $areaIdDescifrado);
             $preguntas = EvaluacionesService::obtenerPreguntasPorEvaluacionArea($evaluacionIdDescifrado, $areaIdDescifrado);
-            file_put_contents('D:\param.txt',$evaluacionIdDescifrado.' - '.$areaIdDescifrado);
             $data = [
                 'evaluacion' => $evaluacion,
                 'preguntas' => $preguntas
