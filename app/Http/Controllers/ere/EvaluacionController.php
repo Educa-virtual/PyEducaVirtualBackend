@@ -290,7 +290,37 @@ class EvaluacionController extends Controller
         }
     }
 
-    public function obtenerEvaluacionesPorEstudiante()
+    /*public function obtenerEvaluacionPorArea($evaluacionId, $areaId) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
+            $evaluacionIdDescifrado = VerifyHash::decodesxId($evaluacionId);
+            $areaIdDescifrado = VerifyHash::decodesxId($areaId);
+            $data = EvaluacionesService::obtenerEvaluacionPorArea($evaluacionIdDescifrado, $areaIdDescifrado);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }*/
+
+    public function obtenerVistaPreviaEvaluacionPorArea($evaluacionId, $areaId) {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
+            $evaluacionIdDescifrado = VerifyHash::decodesxId($evaluacionId);
+            $areaIdDescifrado = VerifyHash::decodesxId($areaId);
+            $evaluacion = EvaluacionesService::obtenerEvaluacionPorArea($evaluacionIdDescifrado, $areaIdDescifrado);
+            $preguntas = EvaluacionesService::obtenerPreguntasPorEvaluacionArea($evaluacionIdDescifrado, $areaIdDescifrado);
+            file_put_contents('D:\param.txt',$evaluacionIdDescifrado.' - '.$areaIdDescifrado);
+            $data = [
+                'evaluacion' => $evaluacion,
+                'preguntas' => $preguntas
+            ];
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    /*public function obtenerEvaluacionesPorEstudiante()
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
@@ -313,5 +343,5 @@ class EvaluacionController extends Controller
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
-    }
+    }*/
 }
