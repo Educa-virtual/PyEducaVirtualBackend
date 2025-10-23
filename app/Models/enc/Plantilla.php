@@ -11,6 +11,7 @@ class PLantilla extends Model
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iCateId,
+            $request->iTipoReporte,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC enc.Sp_SEL_plantillas $placeholders", $parametros);
@@ -114,5 +115,16 @@ class PLantilla extends Model
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC enc.Sp_INS_plantillaEncuesta $placeholders", $parametros);
+    }
+
+    public static function updPlantillaArchivar($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iPlanId,
+            $request->bArchivar,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC enc.Sp_UPD_plantillaArchivar $placeholders", $parametros);
     }
 }

@@ -73,4 +73,6 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('guardarPlantillaPregunta', [PlantillaPreguntaController::class, 'guardarPlantillaPregunta']);
     Route::post('actualizarPlantillaPregunta', [PlantillaPreguntaController::class, 'actualizarPlantillaPregunta']);
     Route::post('borrarPlantillaPregunta', [PlantillaPreguntaController::class, 'borrarPlantillaPregunta']);
+
+    Route::post('archivarPlantilla', [PlantillaController::class, 'archivarPlantilla']);
 });
