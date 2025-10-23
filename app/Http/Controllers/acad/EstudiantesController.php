@@ -11,6 +11,7 @@ use App\Services\acad\FechasImportantesService;
 use App\Services\acad\MatriculasService;
 use App\Services\acad\TiposActividadService;
 use App\Services\acad\YearAcademicosService;
+use App\Services\apo\ApoderadosService;
 use App\Services\aula\ProgramacionActividadesService;
 use App\Services\FormatearExcelMatriculasService;
 use App\Services\LeerExcelService;
@@ -299,35 +300,13 @@ class EstudiantesController extends Controller
 
     public function importarEstudiantesPadresExcel(Request $request)
     {
-        $datos_hojas = LeerExcelService::leer($request);
-
-
-        $datos_hoja = FormatearExcelPadresService::formatear($datos_hojas);
-
-        $parametros = [
-            $request->iSedeId,
-            $request->iSemAcadId,
-            $request->iYAcadId,
-            $request->iCredId,
-            $datos_hoja['nivel'],
-            $datos_hoja['modalidad'],
-            $datos_hoja['turno'],
-            json_encode($datos_hoja['estudiantes']),
-            $datos_hoja['codigo_modular'],
-        ];
-
         try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantes_padres_masivo ?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            ApoderadosService::importarDesdeArchivoExcel($request, Auth::user()->iPersId);
+            return FormatearMensajeHelper::ok('Se han importado los apoderados correctamente');
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
-
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function importarEstudiantesMatriculasExcel(Request $request)

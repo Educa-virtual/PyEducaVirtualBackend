@@ -377,7 +377,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
         Route::post('searchApoderado', [ApoderadoController::class, 'show']);
 
-        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel'])->middleware(['auth:api', RefreshToken::class]);
         Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
 
         Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);
