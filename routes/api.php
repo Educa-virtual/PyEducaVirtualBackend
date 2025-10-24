@@ -77,8 +77,6 @@ Route::group(['prefix' => 'administrador'], function () {
     Route::post('addCursosNivelesGrados', [AdministradorController::class, 'addCursosNivelesGrados']);
     Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
     Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
-    Route::post('insertarIntituciones', [AdministradorController::class, 'insertarIntituciones']);
-    Route::post('insertarSedes', [AdministradorController::class, 'insertarSedes']);
 
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);
 });
@@ -379,7 +377,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
         Route::post('searchApoderado', [ApoderadoController::class, 'show']);
 
-        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel'])->middleware(['auth:api', RefreshToken::class]);
         Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
 
         Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);

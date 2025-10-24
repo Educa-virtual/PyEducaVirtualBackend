@@ -45,6 +45,8 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
             Route::get('nivel-logros', [NivelLogrosController::class, 'obtenerNivelLogrosPorCurso']);
             Route::post('nivel-logros', [NivelLogrosController::class, 'registrarNivelLogroPorCurso']);
             Route::get('cantidad-maxima-preguntas', [EvaluacionController::class, 'obtenerCantidadMaximaPreguntas']);
+            //Route::get('', [EvaluacionController::class, 'obtenerEvaluacionPorArea']);
+            Route::get('vista-previa', [EvaluacionController::class, 'obtenerVistaPreviaEvaluacionPorArea']);
         });
         Route::group(['prefix' => 'instituciones-educativas/{iieeId}/directores/{iPersId}'], function () {
             Route::get('areas/horas', [AreasController::class, 'obtenerHorasAreasPorEvaluacionDirectorIe']);

@@ -737,14 +737,18 @@ class AdministradorController extends Controller
             $request->cIieeCodigoModular,
             $request->cIieeNombre,
             $request->cIieeRUC,
+            $request->cIieeDireccion,
+            $request->cIieeDirector,
+            $request->cIieeTelefono,
+            $request->cIieeEmail,
             $request->cIieeLogo,
             $request->cIieeRslCreacion,
             $request->dIieeRslCreacion,
-            $request->iIieeEstado
+            $request->iEstado
         ];
 
         $query = DB::select(
-            "EXEC acad.SP_INS_Instituciones_educativas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", //actualizado
+            "EXEC acad.SP_INS_Instituciones_educativas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", //actualizado
             $solicitud
         );
 
@@ -780,12 +784,13 @@ class AdministradorController extends Controller
             $request->cSedeRslCreacion,
             $request->dSedeRslCreacion,
             $request->iEstado,
-            $request->iServEdId
+            $request->iServEdId,
+            $request->cSedeTelefono
 
         ];
 
         $query = DB::select(
-            "EXEC acad.SP_INS_Sedes ?,?,?,?,?,?,?,?,?,?", //actualizado
+            "EXEC acad.SP_INS_Sedes ?,?,?,?,?,?,?,?,?,?,?", //actualizado
             $solicitud
         );
 

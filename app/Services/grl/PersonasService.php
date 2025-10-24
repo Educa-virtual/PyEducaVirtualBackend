@@ -82,8 +82,8 @@ class PersonasService
                 isset($item['iDptoId']) ? (trim($item['iDptoId']) ?: null) : null,
                 isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
                 isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
-                isset($iTipoPersId) ? $iTipoPersId : null,
-                $item['iTipoIdentId']
+                //isset($iTipoPersId) ? $iTipoPersId : null,
+                //$item['iTipoIdentId']
             ];
             Usuario::updPersonas($parametros);
             $iPersId = $persona->iPersId;

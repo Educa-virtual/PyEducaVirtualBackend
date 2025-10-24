@@ -11,4 +11,12 @@ class InstitucionesEducativasService
     {
         return InstitucionEducativa::selInstitucionEducativa($iIieeId);
     }
+
+    public static function obtenerIePorCodigoModular($codigoModular) {
+        return InstitucionEducativa::selInstitucionEducativaPorCodigoModular($codigoModular);
+    }
+
+    public static function obtenerIePorSede($iSedeId) {
+        return InstitucionEducativa::selInstitucionEducativaPorSede($iSedeId);
+    }
 }
