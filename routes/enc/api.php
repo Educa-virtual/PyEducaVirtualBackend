@@ -27,6 +27,7 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('actualizarEncuesta', [EncuestaController::class, 'actualizarEncuesta']);
     Route::post('borrarEncuesta', [EncuestaController::class, 'borrarEncuesta']);
     Route::post('actualizarEncuestaEstado', [EncuestaController::class, 'actualizarEncuestaEstado']);
+    Route::post('crearEncuestaFija', [EncuestaController::class, 'crearEncuestaFija']);
 
     Route::post('listarSecciones', [SeccionController::class, 'listarSecciones']);
     Route::post('verSeccion', [SeccionController::class, 'verSeccion']);
