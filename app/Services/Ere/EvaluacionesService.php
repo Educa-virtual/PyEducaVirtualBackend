@@ -21,4 +21,12 @@ class EvaluacionesService
         }
         return $resultado;
     }
+
+    public static function obtenerEvaluacionPorArea($iEvaluacionId, $iCursoNivelGradId) {
+        return Evaluacion::selEvaluacionPorArea($iEvaluacionId, $iCursoNivelGradId);
+    }
+
+    public static function obtenerPreguntasPorEvaluacionArea($iEvaluacionId, $iCursoNivelGradId) {
+        return Evaluacion::selPreguntasPorEvaluacionArea($iEvaluacionId, $iCursoNivelGradId);
+    }
 }

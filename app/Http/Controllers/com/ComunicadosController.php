@@ -70,8 +70,6 @@ class ComunicadosController extends Controller
         if (!empty($semestre)) {
             $semestre_acad_id = $semestre[0]->iSemAcadId;
         }
-
-        $iIieeId = $request->input('iIieeId');
         // Llamada al SP que retorna los datos para los dropdown de Curso, Sección y Grado
         if ($iPerfilId == 7) {
             try {

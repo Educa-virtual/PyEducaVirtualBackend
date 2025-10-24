@@ -2,6 +2,7 @@
 
 namespace App\Models\asi;
 
+use App\Helpers\VerifyHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,16 +63,21 @@ class AsistenciaAdministrativa extends Model
         return $data;
     }
     public static function buscarAlumnos(Request $request){
+
+        $cPersDocumento = VerifyHash::decodes($request->cPersDocumento);
+        $cEstCodigo = VerifyHash::decodes($request->cEstCodigo);
+
         $datos = [
             $request->opcion,
             $request->iGradoId ?? NULL,
             $request->iSeccionId ?? NULL,
             $request->iSedeId,          
             $request->iYAcadId,
-            $request->cEstCodigo ?? NULL,
-            $request->cPersDocumento ?? NULL,
+            $cEstCodigo ?? NULL,
+            $cPersDocumento ?? NULL,
             $request->dtAsistencia,
         ];
+        
         $enviados = str_repeat('?,',count($datos)-1).'?';
         $data = DB::select("EXEC [asi].[SP_SEL_buscarAlumnos] ".$enviados,$datos);
         return $data;
