@@ -198,7 +198,9 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('insertarIntituciones', [AdministradorController::class, 'insertarIntituciones']);
         Route::post('insertarSedes', [AdministradorController::class, 'insertarSedes']);
         Route::post('insertarCompetenciasCurso', [AdministradorController::class,'insertarCompetenciasCurso']);
-    
+        Route::post('insertarAreas', [AdministradorController::class,'insertarAreas']);
+        
+
         Route::post('mensaje', [AdministradorController::class, 'mensaje']);
     });
 });

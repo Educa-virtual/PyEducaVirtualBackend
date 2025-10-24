@@ -846,4 +846,52 @@ class AdministradorController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+
+    public function insertarAreas(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [ 
+            $request->iCredId,
+            $request->iCredEntPerfId,
+            $request->iCursoId,
+            $request->iCurrId,
+            $request->iTipoCursoId,
+            $request->cCursoNombre,
+            $request->nCursoCredTeoria,
+            $request->nCursoCredPractica,
+            $request->cCursoDescripcion,
+            $request->nCursoTotalCreditos,
+            $request->cCursoPerfilDocente,
+            $request->iCursoTotalHoras,
+            $request->iCursoEstado,
+            $request->iEstado,
+            $request->cCursoImagen,      
+        ];
+
+        $query = DB::select(
+            "EXEC acad.Sp_INS_areaXiCurrId ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", //actualizado
+            $solicitud
+        );
+
+        try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
+
+    
 }
