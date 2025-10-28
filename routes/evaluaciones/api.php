@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
 use App\Http\Controllers\eval\EvaluacionPromediosController;
 use App\Http\Controllers\eval\InstrumentosController;
+use App\Http\Controllers\evaluaciones\LogroAlcanzadoController;
 use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones',], function () {
@@ -118,6 +119,12 @@ Route::group(['prefix' => 'evaluaciones',], function () {
     });
     Route::group(['prefix' => 'evaluacion-promedios'], function () {
         Route::post('/', [EvaluacionPromediosController::class, 'guardarConclusionxiEvaluacionIdxiEstudianteId']);
+    });
+    Route::group(['prefix' => 'logros', 'middleware' => ['auth:api']], function () {
+        Route::post('obtenerDatosCursoDocente', [LogroAlcanzadoController::class, 'obtenerDatosCursoDocente']);
+        Route::post('obtenerLogrosEstudiante', [LogroAlcanzadoController::class, 'obtenerLogrosEstudiante']);
+        Route::post('guardarLogro', [LogroAlcanzadoController::class, 'guardarLogro']);
+        Route::post('actualizarLogro', [LogroAlcanzadoController::class, 'actualizarLogro']);
     });
 });
 
