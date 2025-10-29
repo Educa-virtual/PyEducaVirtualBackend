@@ -6,6 +6,17 @@ use Illuminate\Support\Facades\DB;
 
 class LogroAlcanzado
 {
+    public static function selPeriodosEvaluacionSede($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+            $request->iSedeId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC eval.Sp_SEL_periodosEvaluacionSede $placeholders", $parametros);
+    }
+
     public static function selDatosCursoDocente($request)
     {
         $parametros = [
@@ -27,24 +38,20 @@ class LogroAlcanzado
         return DB::select("EXEC eval.Sp_SEL_logrosAlcanzadosEstudiante $placeholders", $parametros);
     }
 
-    public static function guardarLogro($request)
-    {
-        $parametros = [
-            $request->jsonLogro,
-            $request->opcion,
-            $request->header('iCredId')
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne("EXEC eval.Sp_INS_resultadoXcompetencias $placeholders", $parametros);
-    }
-
     public static function actualizarLogro($request)
     {
         $parametros = [
-            $request->jsonLogro,
-            $request->header('iCredId'),
+            $request->header('iCredEntPerfId'),
+            $request->idDocCursoId,
+            $request->iCompetenciaId,
+            $request->iResultadoCompId,
+            $request->iPeriodoId,
+            $request->iDetMatrId,
+            $request->iResultado,
+            $request->cDescripcion,
+            $request->cNivelLogro,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne("EXEC eval.Sp_UPD_resultadoXperiodoDetMatricula $placeholders", $parametros);
+        return DB::selectOne("EXEC eval.Sp_UPD_logroAlcanzadoEstudiante $placeholders", $parametros);
     }
 }

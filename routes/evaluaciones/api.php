@@ -121,9 +121,9 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('/', [EvaluacionPromediosController::class, 'guardarConclusionxiEvaluacionIdxiEstudianteId']);
     });
     Route::group(['prefix' => 'logros', 'middleware' => ['auth:api']], function () {
+        Route::post('obtenerPeriodosEvaluacionSede', [LogroAlcanzadoController::class, 'obtenerPeriodosEvaluacionSede']);
         Route::post('obtenerDatosCursoDocente', [LogroAlcanzadoController::class, 'obtenerDatosCursoDocente']);
         Route::post('obtenerLogrosEstudiante', [LogroAlcanzadoController::class, 'obtenerLogrosEstudiante']);
-        Route::post('guardarLogro', [LogroAlcanzadoController::class, 'guardarLogro']);
         Route::post('actualizarLogro', [LogroAlcanzadoController::class, 'actualizarLogro']);
     });
 });

@@ -16,6 +16,18 @@ class LogroAlcanzadoController extends Controller
         Perfil::DOCENTE,
     ];
 
+    public function obtenerPeriodosEvaluacionSede(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->permitidos]);
+            $data = LogroAlcanzado::selPeriodosEvaluacionSede($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function obtenerDatosCursoDocente(Request $request)
     {
         try {
@@ -40,28 +52,15 @@ class LogroAlcanzadoController extends Controller
         }
     }
 
-    public function guardarLogro(Request $request)
+    public function actualizarLogro(Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [$this->permitidos]);
-            $data = LogroAlcanzado::guardarLogro($request);
+            $data = LogroAlcanzado::actualizarLogro($request);
             return FormatearMensajeHelper::ok('Se guardó el dato', $data);
         }
         catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
-
-    public function actualizarLogro(Request $request)
-    {
-        try {
-            Gate::authorize('tiene-perfil', [$this->permitidos]);
-            $data = LogroAlcanzado::actualizarLogro($request);
-            return FormatearMensajeHelper::ok('Se actualizó el dato', $data);
-        }
-        catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
-
 }
