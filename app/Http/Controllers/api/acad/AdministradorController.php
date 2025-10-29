@@ -897,6 +897,81 @@ class AdministradorController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+//Sp_INS_competenciasXiCurrId
+    public function insertarCompetencia(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [ 
+            $request->iCredId,
+            $request->iCredEntPerfId,
+            $request->iCompetenciaId,
+            $request->iCurrId,
+            $request->cCompetenciaNro,
+            $request->cCompetenciaNombre,
+            $request->cCompetenciaDescripcion,           
+            $request->iEstado                 
+        ];
 
+        $query = DB::select(
+            "EXEC acad.Sp_INS_competenciasXiCurrId ?,?,?,?,?,?,?,?", //actualizado
+            $solicitud
+        );
+
+        try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
     
+    public function insertarCompetenciaCapacidad(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
+    {
+        $solicitud = [ 
+            $request->iCredId,
+            $request->iCredEntPerfId,
+            $request->iCapacidadId,
+            $request->iCompetenciaId,
+            $request->cCapacidadNombre,
+            $request->cCapacidadDescripcion,         
+            $request->iEstado                 
+        ];
+
+        $query = DB::select(
+            "EXEC acad.Sp_INS_capacidadesXiCompetenciaId ?,?,?,?,?,?,?", //actualizado
+            $solicitud
+        );
+
+        try {
+            // Ensure this is inside a valid function or method
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
+
+            $estado = 201;
+        } catch (Exception $e) {
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
+        }
+
+        return new JsonResponse($response, $estado);
+    }
 }
