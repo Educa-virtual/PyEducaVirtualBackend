@@ -64,7 +64,7 @@ class CategoriaController extends Controller
             ) {
                 $data->cCateImagenUrl = asset(Storage::url("encuestas/categorias/$data->cCateImagenNombre"));
             } else {
-                $data->cCateImagenUrl = asset("cursos/images/no-image.jpg");
+                $data->cCateImagenUrl = null;
             }
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
