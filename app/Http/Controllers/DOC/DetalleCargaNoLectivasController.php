@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\doc;
 
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -79,7 +80,7 @@ class DetalleCargaNoLectivasController extends Controller
 
             $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -89,11 +90,18 @@ class DetalleCargaNoLectivasController extends Controller
 
     public function store(Request $request)
     {
-        $resp = new DetalleCargaNoLectivasController();
-        $parametros = $resp->validate($request);
+        $parametros = [
+            $request->iCargaNoLectivaId         ?? NULL,
+            $request->iTipoCargaNoLectId        ?? NULL,
+            $request->nDetCargaNoLectHoras      ?? NULL,
+            $request->cDetCargaNoLectEvidencias ?? NULL,
+            $request->iCredId                   ?? NULL,
+            $request->cDescripcion              ?? NULL,
+            $request->dtInicio                  ?? NULL,
+        ];
+
         try {
-            $data = DB::select('exec doc.Sp_INS_detalleCargaNoLectivas
-                ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec doc.Sp_INS_detalleCargaNoLectivas ?,?,?,?,?,?,?', $parametros);
             
             if ($data[0]->iDetCargaNoLectId > 0) {
 
@@ -103,7 +111,7 @@ class DetalleCargaNoLectivasController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -113,11 +121,23 @@ class DetalleCargaNoLectivasController extends Controller
 
     public function update(Request $request)
     {
-        $resp = new DetalleCargaNoLectivasController();
-        $parametros = $resp->validate($request);
+        
+        $parametros = [
+            $request->opcion,
+            $request->iDetCargaNoLectId         ?? NULL,
+            $request->iTipoCargaNoLectId        ?? NULL,
+            $request->nDetCargaNoLectHoras      ?? NULL,
+            $request->cDetCargaNoLectEvidencias ?? NULL,
+            $request->iCredId                   ?? NULL,
+            $request->cDescripcion              ?? NULL,
+            $request->dtInicio     
+        ];
+
+        $enviar = str_repeat('?,', count($parametros)-1).'?';
+        $procedimiento = 'exec doc.Sp_UPD_detalleCargaNoLectivas '.$enviar;
+
         try {
-            $data = DB::select('exec doc.Sp_UPD_detalleCargaNoLectivas
-                ?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select($procedimiento, $parametros);
 
             if ($data[0]->iDetCargaNoLectId > 0) {
 
@@ -127,7 +147,7 @@ class DetalleCargaNoLectivasController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -137,15 +157,18 @@ class DetalleCargaNoLectivasController extends Controller
 
     public function delete(Request $request)
     {   
-        
-        $resp = new DetalleCargaNoLectivasController();
-        $parametros = $resp->validate($request);
+
+        $parametros = [
+            $request->opcion,
+            $request->iDetCargaNoLectId,
+            $request->iCredId,
+        ];
+
+        $enviar = str_repeat('?,', count($parametros)-1).'?';
+        $procedimiento = 'exec doc.Sp_DEL_detalleCargaNoLectivas '.$enviar;
 
         try {
-            $data = DB::select('exec doc.Sp_DEL_detalleCargaNoLectivas
-                ?,?,?,?,?,?,?,?', $parametros);
-            
-            
+            $data = DB::select($procedimiento, $parametros);
             if ($data[0]->iDetCargaNoLectId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
@@ -154,7 +177,7 @@ class DetalleCargaNoLectivasController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
