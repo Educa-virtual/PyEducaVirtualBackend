@@ -201,9 +201,8 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('insertarAreas', [AdministradorController::class,'insertarAreas']);
         Route::post('insertarCompetencia', [AdministradorController::class,'insertarCompetencia']);
         Route::post('insertarCompetenciaCapacidad', [AdministradorController::class,'insertarCompetenciaCapacidad']);
-
-        
-        
+        Route::post('aperturarSede', [AdministradorController::class,'aperturarSede']);
+ 
         Route::post('mensaje', [AdministradorController::class, 'mensaje']);
     });
 });
