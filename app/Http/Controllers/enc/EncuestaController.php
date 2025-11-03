@@ -128,14 +128,4 @@ class EncuestaController extends Controller
             return FormatearMensajeHelper::error($e);
         }
     }
-
-    public function crearEncuestaFija(Request $request) {
-        try {
-            Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::selEncuestaFijaParametros($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        } catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
 }

@@ -27,7 +27,6 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
     Route::post('actualizarEncuesta', [EncuestaController::class, 'actualizarEncuesta']);
     Route::post('borrarEncuesta', [EncuestaController::class, 'borrarEncuesta']);
     Route::post('actualizarEncuestaEstado', [EncuestaController::class, 'actualizarEncuestaEstado']);
-    Route::post('crearEncuestaFija', [EncuestaController::class, 'crearEncuestaFija']);
 
     Route::post('listarSecciones', [SeccionController::class, 'listarSecciones']);
     Route::post('verSeccion', [SeccionController::class, 'verSeccion']);
@@ -49,6 +48,7 @@ Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
 
     Route::post('verResumen', [ResumenController::class, 'verResumen']);
 
+    Route::post('crearEncuestaFija', [EncuestaFijaController::class, 'crearEncuestaFija']);
     Route::post('crearEncuestaSatisfaccion', [EncuestaFijaController::class, 'crearEncuestaSatisfaccion']);
     Route::post('crearEncuestaAutoevaluacion', [EncuestaFijaController::class, 'crearEncuestaAutoevaluacion']);
 
