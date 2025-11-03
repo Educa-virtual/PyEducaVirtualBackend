@@ -5,12 +5,12 @@ namespace App\Http\Controllers\enc;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Models\enc\Encuesta;
+use App\Models\enc\Plantilla;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class EncuestaController extends Controller
+class PLantillaController extends Controller
 {
     private $encuestadores = [
         Perfil::ADMINISTRADOR_DREMO,
@@ -19,110 +19,91 @@ class EncuestaController extends Controller
         Perfil::DIRECTOR_IE,
     ];
 
-    private $encuestados = [
-        Perfil::ESPECIALISTA_DREMO,
-        Perfil::ESPECIALISTA_UGEL,
-        Perfil::DIRECTOR_IE,
-        Perfil::DOCENTE,
-        Perfil::ESTUDIANTE,
-        Perfil::APODERADO,
-    ];
-
-    public function listarEncuestas(Request $request) {
-        try {
-            Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
-            $data = Encuesta::selEncuestas($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        } catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
-
-    public function crearEncuesta(Request $request) {
+    public function listarPlantillas(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::selEncuestaParametros($request);
+            $data = Plantilla::selPlantillas($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function verEncuesta(Request $request) {
-        try {
-            Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
-            $data = Encuesta::selEncuesta($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        } catch (Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
-
-    public function guardarEncuesta(Request $request) {
+    public function verPlantilla(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::insEncuesta($request);
+            $data = Plantilla::selPlantilla($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function borrarEncuesta(Request $request) {
+    public function guardarPlantilla(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::delEncuesta($request);
+            $data = Plantilla::insPlantilla($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function actualizarEncuesta(Request $request) {
+    public function borrarPlantilla(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::updEncuesta($request);
+            $data = Plantilla::delPlantilla($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function obtenerPoblacionObjetivo(Request $request)
+    public function actualizarPlantilla(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Plantilla::updPlantilla($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function actualizarPlantillaEstado(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
-            $data = Encuesta::selPoblacionObjetivo($request);
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Plantilla::updPlantillaEstado($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function actualizarEncuestaEstado(Request $request) {
+    public function guardarPlantillaDesdeDuplicado(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::updEncuestaEstado($request);
+            $data = Plantilla::insPlantillaDuplicado($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function guardarEncuestaDesdeDuplicado(Request $request) {
+    public function guardarPlantillaDesdeEncuesta(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::insEncuestaDuplicado($request);
+            $data = Plantilla::insPlantillaEncuesta($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function guardarEncuestaDesdePlantilla(Request $request) {
+    public function archivarPlantilla(Request $request) {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
-            $data = Encuesta::insEncuestaPlantilla($request);
+            $data = Plantilla::updPlantillaArchivar($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
