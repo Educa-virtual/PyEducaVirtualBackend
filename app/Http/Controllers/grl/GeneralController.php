@@ -38,6 +38,33 @@ class GeneralController extends Controller
         }
     }
 
+    public function subirDocumento(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'file' => 'required|mimes:pdf,jpeg,png'
+            ],
+            [
+                'file.required' => 'Es necesario que cargue un archivo',
+                'file.mimes' => 'El archivo debe ser formato PDF, JPEG o PNG; seleccione otro archivo.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return new JsonResponse(['validated' => false, 'message' => $validator->errors(), 'data' => []], 422);
+        }
+
+        if ($request->hasFile('file')) {
+            $documento_recibido = $request->file("file");
+            $documento_almacenado = Storage::disk('public')->put($request->nameFile,$documento_recibido);
+            $ruta_generada = $request->nameFile.'/'.basename($documento_almacenado);
+            return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $ruta_generada], 200);
+        } else {
+            return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);
+        }
+    }
+
     public function removerArchivo(Request $request)
     {
         $validator = Validator::make(
