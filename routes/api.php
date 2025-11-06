@@ -77,10 +77,11 @@ Route::group(['prefix' => 'administrador'], function () {
     Route::post('addCursosNivelesGrados', [AdministradorController::class, 'addCursosNivelesGrados']);
     Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
     Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
+
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);
 });
 
-
+//pev-101-formulario-instituciones
 Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
