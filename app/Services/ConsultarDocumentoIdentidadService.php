@@ -4,18 +4,20 @@ namespace App\Services;
 
 use App\Services\grl\PersonasService;
 use DateTimeImmutable;
+use Exception;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class ConsultarDocumentoIdentidadService
 {
 
-    private $token;
+    //private $token;
     private $divirApellidoNombresService;
 
 
     public function __construct()
     {
-        $this->token = env('FACTILIZA_TOKEN');
+        //$this->token = env('FACTILIZA_TOKEN');
         $this->divirApellidoNombresService = new DividirApellidoNombresService();
     }
 
@@ -42,7 +44,8 @@ class ConsultarDocumentoIdentidadService
                 return [
                     'message' => 'Tipo de identificación no existe',
                     'data' => [],
-                    'status' => 404];
+                    'status' => Response::HTTP_NOT_FOUND
+                ];
         }
     }
 
@@ -53,74 +56,32 @@ class ConsultarDocumentoIdentidadService
      */
     public function buscarDni($documento)
     {
-        if(strlen($documento) != 8) {
-            return [
-                'message' => 'El DNI debe tener 8 digitos',
-                'data' => [],
-                'status' => 422,
-            ];
-        }
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api.factiliza.com/v1/dni/info/$documento",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => [
-              "Authorization: Bearer ".$this->token
-            ],
-          ]);
-
-
-
-
-        // curl_setopt_array($curl, [
-        //     CURLOPT_URL => "https://api.factiliza.com/v1/dni/info/" . $documento,
-        //     CURLOPT_RETURNTRANSFER => true,
-        //     CURLOPT_ENCODING => "",
-        //     CURLOPT_MAXREDIRS => 10,
-        //     CURLOPT_TIMEOUT => 10,
-        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        //     CURLOPT_CUSTOMREQUEST => "GET",
-        //     CURLOPT_HTTPHEADER => [
-        //         "Authorization: Bearer " . $this->token
-        //     ],
-        // ]);
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($err) {
-            return [
-                'message' => 'Error consultando servicio: ' . $err,
-                'data' => [],
-                'status' => 500
-            ];
-        } else {
+        try {
+            if (strlen($documento) != 8) {
+                throw new Exception("El DNI debe tener 8 digitos");
+            }
+            $response = FactilizaService::consultarDocumento('dni', $documento);
             $respuesta = json_decode($response);
-            if( $respuesta->data === null ) {
+            if ($respuesta->data === null) {
                 return [
                     'message' => 'No se obtuvo datos: ' . $respuesta->message,
                     'data' => [],
-                    'status' => 404,
+                    'status' => Response::HTTP_NOT_FOUND,
                 ];
             }
             $respuestaFormateada = $this->formatearRespuestaDni($respuesta->data);
             $iPersId = PersonasService::actualizarPersonaConDataApi($respuestaFormateada);
-
-    
             return [
                 'message' => 'Se obtuvo la información del servicio ',
                 'data' => $respuestaFormateada,
                 'status' => $respuesta->status,
-                'iPersId' =>$iPersId //$iPersId  se agrego 
+                'iPersId' => $iPersId //$iPersId  se agrego
+            ];
+        } catch (Exception $ex) {
+            return [
+                'message' => 'Error consultando servicio: ' . $ex->getMessage(),
+                'data' => [],
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
             ];
         }
     }
@@ -132,53 +93,30 @@ class ConsultarDocumentoIdentidadService
      */
     public function buscarCarnet($documento)
     {
-        if(strlen($documento) != 12) {
-            return [
-                'message' => 'El Carnet debe tener 12 digitos',
-                'data' => [],
-                'status' => 422,
-            ];
-        }
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api.factiliza.com/v1/cee/info/" . $documento,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer " . $this->token
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($err) {
-            return [
-                'message' => 'Error consultando servicio: ' . $err,
-                'data' => [],
-                'status' => 500
-            ];
-        } else {
+        try {
+            if (strlen($documento) != 12) {
+                throw new Exception("El Carnet debe tener 12 digitos");
+            }
+            $response = FactilizaService::consultarDocumento('carnet', $documento);
             $respuesta = json_decode($response);
-            if( $respuesta->data === null ) {
+            if ($respuesta->data === null) {
                 return [
                     'message' => 'No se obtuvo datos: ' . $respuesta->message,
                     'data' => [],
                     'status' => 404,
                 ];
             }
+            $respuestaFormateada = $this->formatearRespuestaCarnet($respuesta->data);
             return [
-                'message' => 'Se obtuvo la información',
-                'data' => $this->formatearRespuestaCarnet($respuesta->data),
-                'status' => $respuesta->status,
+                'message' => 'Se obtuvo la información del servicio ',
+                'data' => $respuestaFormateada,
+                'status' => $respuesta->status
+            ];
+        } catch (Exception $ex) {
+            return [
+                'message' => 'Error consultando servicio: ' . $ex->getMessage(),
+                'data' => [],
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
             ];
         }
     }
@@ -191,53 +129,30 @@ class ConsultarDocumentoIdentidadService
 
     private function buscarRuc($documento)
     {
-        if(strlen($documento) != 11) {
-            return [
-                'message' => 'El RUC debe tener 11 digitos',
-                'data' => [],
-                'status' => 422,
-            ];
-        }
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => "https://api.factiliza.com/v1/ruc/info/" . $documento,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => [
-                "Authorization: Bearer " . $this->token
-            ],
-        ]);
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($err) {
-            return [
-                'message' => 'Error consultando servicio: ' . $err,
-                'data' => [],
-                'status' => 500
-            ];
-        } else {
+        try {
+            if (strlen($documento) != 11) {
+                throw new Exception("El RUC debe tener 11 digitos");
+            }
+            $response = FactilizaService::consultarDocumento('ruc', $documento);
             $respuesta = json_decode($response);
-            if( $respuesta->data === null ) {
+            if ($respuesta->data === null) {
                 return [
                     'message' => 'No se obtuvo datos: ' . $respuesta->message,
                     'data' => [],
                     'status' => 404,
                 ];
             }
+            $respuestaFormateada = $this->formatearRespuestaRuc($respuesta->data);
             return [
-                'message' => 'Se obtuvo la información',
-                'data' => $this->formatearRespuestaRuc($respuesta->data),
-                'status' => $respuesta->status,
+                'message' => 'Se obtuvo la información del servicio ',
+                'data' => $respuestaFormateada,
+                'status' => $respuesta->status
+            ];
+        } catch (Exception $ex) {
+            return [
+                'message' => 'Error consultando servicio: ' . $ex->getMessage(),
+                'data' => [],
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
             ];
         }
     }
@@ -263,13 +178,13 @@ class ConsultarDocumentoIdentidadService
         }
 
         // Convertir multiples formatos de fecha a Y-m-d
-        if( strpos($respuesta->fecha_nacimiento, '/') !== false ) {
+        if (strpos($respuesta->fecha_nacimiento, '/') !== false) {
             $fecha_nacimiento = DateTimeImmutable::createFromFormat('d/m/Y', trim($respuesta->fecha_nacimiento));
             $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');
-        } elseif( strpos($respuesta->fecha_nacimiento, '-') == 4 ) {
+        } elseif (strpos($respuesta->fecha_nacimiento, '-') == 4) {
             $fecha_nacimiento = DateTimeImmutable::createFromFormat('Y', trim($respuesta->fecha_nacimiento));
             $fecha_nacimiento_formateada = $respuesta->fecha_nacimiento;
-        } elseif( strpos($respuesta->fecha_nacimiento, '-') == 2 ) {
+        } elseif (strpos($respuesta->fecha_nacimiento, '-') == 2) {
             $fecha_nacimiento = DateTimeImmutable::createFromFormat('d-m-Y', trim($respuesta->fecha_nacimiento));
             $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');
         } else {

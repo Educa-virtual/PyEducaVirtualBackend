@@ -17,7 +17,7 @@ class ControlAsistencia extends Model
         return DB::select("SELECT asi.iCtrlAsistenciaId,persEst.cPersNombre AS cPersNombreEst, persEst.cPersPaterno AS cPersPaternoEst,
 persEst.cPersMaterno AS cPersMaternoEst,
 persApo.cPersNombre AS cPersNombreApo, persApo.cPersPaterno AS cPersPaternoApo, persApo.cPersMaterno AS  cPersMaternoApo,
-persApo.cPersCorreo, ie.cIieeNombre, cur.cCursoNombre
+persApo.cPersCorreo, persApo.cPersTelefono, ie.cIieeNombre, cur.cCursoNombre
 FROM asi.control_asistencias AS asi
 INNER JOIN apo.apoderado AS apo ON apo.iEstudianteId=asi.iEstudianteId
 INNER JOIN acad.estudiantes AS est ON est.iEstudianteId=asi.iEstudianteId

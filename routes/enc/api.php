@@ -1,54 +1,79 @@
 <?php
 
-use App\Http\Controllers\acad\InstitucionEducativaController;
-use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\enc\CategoriaController;
-use App\Http\Controllers\enc\ConfiguracionEncuestaController;
-use App\Http\Controllers\enc\DirectorController;
-use App\Http\Controllers\enc\DocenteController;
 use App\Http\Controllers\enc\EncuestaController;
-use App\Http\Controllers\enc\EstudianteController;
-use App\Http\Controllers\enc\TiempoDuracionController;
-use App\Http\Controllers\enc\TipoAccesoController;
-use App\Http\Controllers\enc\UgelController;
-use App\Http\Controllers\seg\AuthController;
-use App\Http\Controllers\seg\ModuloAdministrativoController;
-use App\Http\Controllers\seg\PerfilController;
-use App\Http\Controllers\seg\UsuarioController;
-use App\Http\Middleware\RefreshToken;
+use App\Http\Controllers\enc\EncuestaFijaController;
+use App\Http\Controllers\enc\PLantillaController;
+use App\Http\Controllers\enc\PlantillaPreguntaController;
+use App\Http\Controllers\enc\PlantillaSeccionController;
+use App\Http\Controllers\enc\PreguntaController;
+use App\Http\Controllers\enc\RespuestaController;
+use App\Http\Controllers\enc\ResumenController;
+use App\Http\Controllers\enc\SeccionController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'enc', 'middleware' => ['auth:api', RefreshToken::class]], function () {
-    Route::group(['prefix' => 'tipos-acceso'], function () {
-        Route::get('', [TipoAccesoController::class, 'obtenerTiposAcceso']);
-    });
-    Route::group(['prefix' => 'tiempos-duracion'], function () {
-        Route::get('', [TiempoDuracionController::class, 'obtenerTiemposDuracion']);
-    });
-    Route::group(['prefix' => 'categorias'], function () {
-        Route::get('', [CategoriaController::class, 'obtenerCategorias']);
-        Route::post('', [CategoriaController::class, 'registrarCategoria']);
-        Route::group(['prefix' => '{iCategoriaEncuestaId}'], function () {
-            Route::get('', [CategoriaController::class, 'obtenerDetallesCategoria']);
-            Route::patch('', [CategoriaController::class, 'actualizarCategoria']);
-            Route::delete('', [CategoriaController::class, 'eliminarCategoria']);
-            Route::get('encuestas', [EncuestaController::class, 'obtenerEncuestasPorCategoria']);
-        });
-    });
+Route::group(['prefix' => 'enc', 'middleware' => ['auth:api']], function () {
+    Route::post('listarCategorias', [CategoriaController::class, 'listarCategorias']);
+    Route::post('guardarCategoria', [CategoriaController::class, 'guardarCategoria']);
+    Route::post('verCategoria', [CategoriaController::class, 'verCategoria']);
+    Route::post('actualizarCategoria', [CategoriaController::class, 'actualizarCategoria']);
+    Route::post('borrarCategoria', [CategoriaController::class, 'borrarCategoria']);
 
-    Route::group(['prefix' => 'encuestas'], function () {
-        Route::group(['prefix' => 'configuracion'], function () {
-            Route::post('', [ConfiguracionEncuestaController::class, 'registrarConfiguracion']);
-        });
-        Route::group(['prefix' => '{iConfEncId}'], function () {
-            Route::patch('accesos', [EncuestaController::class, 'actualizarAccesosEncuesta']);
-            Route::delete('', [EncuestaController::class, 'eliminarEncuesta']);
-        });
-        Route::group(['prefix' => 'filtros'], function () {
-            Route::get('estudiantes', [EstudianteController::class, 'obtenerEstudiantesParaFiltroEncuesta']);
-            Route::get('docentes', [DocenteController::class, 'obtenerDocentesParaFiltroEncuesta']);
-            Route::get('directores', [DirectorController::class, 'obtenerDirectoresParaFiltroEncuesta']);
-            Route::get('ugeles', [UgelController::class, 'obtenerUgelesParaFiltroEncuesta']);
-        });
-    });
+    Route::post('obtenerPoblacionObjetivo', [EncuestaController::class, 'obtenerPoblacionObjetivo']);
+    Route::post('listarEncuestas', [EncuestaController::class, 'listarEncuestas']);
+    Route::post('crearEncuesta', [EncuestaController::class, 'crearEncuesta']);
+    Route::post('verEncuesta', [EncuestaController::class, 'verEncuesta']);
+    Route::post('guardarEncuesta', [EncuestaController::class, 'guardarEncuesta']);
+    Route::post('actualizarEncuesta', [EncuestaController::class, 'actualizarEncuesta']);
+    Route::post('borrarEncuesta', [EncuestaController::class, 'borrarEncuesta']);
+    Route::post('actualizarEncuestaEstado', [EncuestaController::class, 'actualizarEncuestaEstado']);
+
+    Route::post('listarSecciones', [SeccionController::class, 'listarSecciones']);
+    Route::post('verSeccion', [SeccionController::class, 'verSeccion']);
+    Route::post('guardarSeccion', [SeccionController::class, 'guardarSeccion']);
+    Route::post('actualizarSeccion', [SeccionController::class, 'actualizarSeccion']);
+    Route::post('borrarSeccion', [SeccionController::class, 'borrarSeccion']);
+
+    Route::post('listarPreguntas', [PreguntaController::class, 'listarPreguntas']);
+    Route::post('verPregunta', [PreguntaController::class, 'verPregunta']);
+    Route::post('guardarPregunta', [PreguntaController::class, 'guardarPregunta']);
+    Route::post('actualizarPregunta', [PreguntaController::class, 'actualizarPregunta']);
+    Route::post('borrarPregunta', [PreguntaController::class, 'borrarPregunta']);
+
+    Route::post('listarRespuestas', [RespuestaController::class, 'listarRespuestas']);
+    Route::post('verRespuestas', [RespuestaController::class, 'verRespuestas']);
+    Route::post('guardarRespuestas', [RespuestaController::class, 'guardarRespuestas']);
+    Route::post('actualizarRespuestas', [RespuestaController::class, 'actualizarRespuestas']);
+    Route::post('imprimirRespuestas', [RespuestaController::class, 'imprimirRespuestas']);
+
+    Route::post('verResumen', [ResumenController::class, 'verResumen']);
+
+    Route::post('crearEncuestaFija', [EncuestaFijaController::class, 'crearEncuestaFija']);
+    Route::post('crearEncuestaSatisfaccion', [EncuestaFijaController::class, 'crearEncuestaSatisfaccion']);
+    Route::post('crearEncuestaAutoevaluacion', [EncuestaFijaController::class, 'crearEncuestaAutoevaluacion']);
+
+    Route::post('guardarEncuestaDesdePlantilla', [EncuestaController::class, 'guardarEncuestaDesdePlantilla']);
+    Route::post('guardarEncuestaDesdeDuplicado', [EncuestaController::class, 'guardarEncuestaDesdeDuplicado']);
+    Route::post('guardarPlantillaDesdeEncuesta', [PLantillaController::class, 'guardarPlantillaDesdeEncuesta']);
+    Route::post('guardarPlantillaDesdeDuplicado', [PLantillaController::class, 'guardarPlantillaDesdeDuplicado']);
+
+    Route::post('listarPlantillas', [PLantillaController::class, 'listarPlantillas']);
+    Route::post('verPlantilla', [PLantillaController::class, 'verPlantilla']);
+    Route::post('guardarPlantilla', [PLantillaController::class, 'guardarPlantilla']);
+    Route::post('actualizarPlantilla', [PLantillaController::class, 'actualizarPlantilla']);
+    Route::post('borrarPlantilla', [PLantillaController::class, 'borrarPlantilla']);
+    Route::post('actualizarPlantillaEstado', [PLantillaController::class, 'actualizarPlantillaEstado']);
+
+    Route::post('listarPlantillaSecciones', [PlantillaSeccionController::class, 'listarPlantillaSecciones']);
+    Route::post('verPlantillaSeccion', [PlantillaSeccionController::class, 'verPlantillaSeccion']);
+    Route::post('guardarPlantillaSeccion', [PlantillaSeccionController::class, 'guardarPlantillaSeccion']);
+    Route::post('actualizarPlantillaSeccion', [PlantillaSeccionController::class, 'actualizarPlantillaSeccion']);
+    Route::post('borrarPlantillaSeccion', [PlantillaSeccionController::class, 'borrarPlantillaSeccion']);
+
+    Route::post('verPlantillaPregunta', [PlantillaPreguntaController::class, 'verPlantillaPregunta']);
+    Route::post('guardarPlantillaPregunta', [PlantillaPreguntaController::class, 'guardarPlantillaPregunta']);
+    Route::post('actualizarPlantillaPregunta', [PlantillaPreguntaController::class, 'actualizarPlantillaPregunta']);
+    Route::post('borrarPlantillaPregunta', [PlantillaPreguntaController::class, 'borrarPlantillaPregunta']);
+
+    Route::post('archivarPlantilla', [PlantillaController::class, 'archivarPlantilla']);
 });

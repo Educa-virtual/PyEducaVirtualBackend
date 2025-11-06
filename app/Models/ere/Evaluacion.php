@@ -84,4 +84,32 @@ class Evaluacion extends Model
     {
         return DB::select("EXEC [ere].[Sp_SEL_resultadoEvaluacionEstudiante] @iEstudianteId=?, @iEvaluacionId=?", [$iEstudianteId, $iEvaluacionId]);
     }
+
+    public static function selEvaluacionPorArea($iEvaluacionId, $iCursoNivelGradId)
+    {
+        return DB::selectOne("SELECT TOP 1 e.cEvaluacionNombre,ne.cNivelEvalNombre,c.cCursoNombre,g.cGradoAbreviacion,
+		nt.cNivelTipoNombre,nt.iNivelTipoId
+FROM ere.evaluacion AS e
+INNER JOIN ere.nivel_evaluaciones AS ne ON e.iNivelEvalId = ne.iNivelEvalId
+INNER JOIN ere.examen_cursos AS ec ON ec.iEvaluacionId = e.iEvaluacionId
+INNER JOIN acad.cursos_niveles_grados AS cng ON cng.iCursosNivelGradId = ec.iCursoNivelGradId
+INNER JOIN acad.cursos AS c ON c.iCursoId = cng.iCursoId
+INNER JOIN acad.nivel_grados AS ng ON ng.iNivelGradoId = cng.iNivelGradoId
+INNER JOIN acad.grados AS g ON g.iGradoId = ng.iGradoId
+INNER JOIN acad.nivel_ciclos AS nic ON nic.iNivelCicloId = ng.iNivelCicloId
+INNER JOIN acad.nivel_tipos AS nt ON nt.iNivelTipoId = nic.iNivelTipoId
+WHERE e.iEvaluacionId=? AND cng.iCursosNivelGradId=?", [$iEvaluacionId, $iCursoNivelGradId]);
+    }
+
+    public static function selPreguntasPorEvaluacionArea($iEvaluacionId, $iCursoNivelGradId) {
+        return DB::select("SELECT p.iPreguntaId, p.cPregunta,p.cPreguntaTextoAyuda,p.iEncabPregId
+,(SELECT al.iAlternativaId, al.cAlternativaDescripcion, al.cAlternativaLetra, al.cAlternativaImagen, p.iPreguntaId, 0 AS iMarcado
+FROM ere.alternativas AS al
+WHERE al.iPreguntaId = p.iPreguntaId AND al.iEstado = 1
+FOR JSON PATH) AS alternativas, ecanbp.cEncabPregContenido
+FROM ere.evaluacion_preguntas AS ep
+INNER JOIN ere.preguntas AS p ON p.iPreguntaId = ep.iPreguntaId
+LEFT JOIN  ere.encabezado_preguntas AS ecanbp ON ecanbp.iEncabPregId = p.iEncabPregId
+WHERE ep.iEvaluacionId = ? AND p.bPreguntaEstado = 1 AND p.iCursosNivelGradId = ?", [$iEvaluacionId, $iCursoNivelGradId]);
+    }
 }

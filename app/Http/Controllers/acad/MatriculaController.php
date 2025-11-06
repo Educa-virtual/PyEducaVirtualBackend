@@ -8,6 +8,7 @@ use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use App\Models\acad\CompetenciaCurso;
 use App\Models\acad\Matricula;
+use App\Models\acad\YearAcademico;
 use App\Services\acad\MatriculasService;
 use App\Services\ParseSqlErrorService;
 use App\Services\seg\UsuariosService;
@@ -154,7 +155,9 @@ class MatriculaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
+            $anioAcademico = YearAcademico::selYearAcademicoPorAnio($request->query('anio'));
             $request->merge(['iEstudianteId' => VerifyHash::decodesxId($iEstudianteId)]);
+            $request->merge(['iYAcadId' => $anioAcademico->iYAcadId]);
             $data = MatriculasService::obtenerMatriculasEstudiante($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
