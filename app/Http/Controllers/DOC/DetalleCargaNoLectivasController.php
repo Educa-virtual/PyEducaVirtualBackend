@@ -91,6 +91,7 @@ class DetalleCargaNoLectivasController extends Controller
     public function store(Request $request)
     {
         $parametros = [
+            $request->cNombre                   ?? NULL,
             $request->iCargaNoLectivaId         ?? NULL,
             $request->iTipoCargaNoLectId        ?? NULL,
             $request->nDetCargaNoLectHoras      ?? NULL,
@@ -100,8 +101,11 @@ class DetalleCargaNoLectivasController extends Controller
             $request->dtInicio                  ?? NULL,
         ];
 
+        $solicitud = str_repeat('?,', count($parametros)-1).'?';
+        $procedimiento = 'exec doc.Sp_INS_detalleCargaNoLectivas '.$solicitud;
+
         try {
-            $data = DB::select('exec doc.Sp_INS_detalleCargaNoLectivas ?,?,?,?,?,?,?', $parametros);
+            $data = DB::select($procedimiento, $parametros);
             
             if ($data[0]->iDetCargaNoLectId > 0) {
 
@@ -124,6 +128,7 @@ class DetalleCargaNoLectivasController extends Controller
         
         $parametros = [
             $request->opcion,
+            $request->cNombre                   ?? NULL,
             $request->iDetCargaNoLectId         ?? NULL,
             $request->iTipoCargaNoLectId        ?? NULL,
             $request->nDetCargaNoLectHoras      ?? NULL,
