@@ -163,4 +163,9 @@ Route::group(['prefix' => 'aula-virtual'], function () {
     Route::prefix('tipo-preguntas')->group(function () {
         Route::get('/', [TipoPreguntasController::class, 'listarTipoPreguntas']); // Para obtener los tipos de preguntas
     });
+
+    Route::prefix('sesiones-aprendizaje')->group(function () {
+        Route::post('obtenerSesiones', [AulaVirtualController::class, 'sesionesAprendizaje']); // Para obtener las sesiones de aprendizaje
+    });
+
 });
