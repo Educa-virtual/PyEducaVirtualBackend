@@ -30,8 +30,9 @@ class GeneralController extends Controller
         if ($request->hasFile('file')) {
 
             $file = $request->file('file');
-            $path = $request->file("file")->store($request->nameFile, ['disk' => 'file']);
-            return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $path], 200);
+            $path = Storage::disk('public')->put($request->nameFile, $file);
+            $ruta_generada = $request->nameFile.'/'.basename($path);
+            return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $ruta_generada], 200);
             return response()->json($path);
         } else {
             return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);
@@ -83,8 +84,8 @@ class GeneralController extends Controller
 
         $ruta = $request->input('data');
 
-        if (Storage::disk('file')->exists($ruta)) {
-            Storage::disk('file')->delete($ruta);
+        if (Storage::disk('public')->exists($ruta)) {
+            Storage::disk('public')->delete($ruta);
             return new JsonResponse([
                 'validated' => true,
                 'message' => 'El archivo se eliminó correctamente',
