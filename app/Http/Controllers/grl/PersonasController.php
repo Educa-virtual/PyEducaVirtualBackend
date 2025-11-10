@@ -216,7 +216,9 @@ class PersonasController extends Controller
             $request->cPersDocumento        ??  NULL,
             $request->cPersNombre           ??  NULL,
             $request->cPersPaterno          ??  NULL,
-            $request->cPersMaterno          ??  NULL
+            $request->cPersMaterno          ??  NULL,
+            $request->cPersTelefono         ??  NULL,
+            $request->cPersCorreo           ??  NULL,
         ];
 
         try {

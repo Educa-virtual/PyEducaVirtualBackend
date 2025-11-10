@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers\cap;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use Illuminate\Http\Response;
 use App\Http\Controllers\grl\PersonasController;
+use App\Http\Requests\bienestar\FichaRecreacionSaveRequest;
+use App\Models\cap\Instructor;
+use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class InstructoresController extends Controller
 {
-    //Notas: Campo iEstado
-    // 0 => Eliminado
-    // 1 => Activo
-    // 10 => Inactivo
+    private $ESTADO_ELIMINADO = 0;
+    private $ESTADO_INACTIVO = 10;
+    private $ESTADO_ACTIVO = 1;
 
     public function buscarInstructorxiTipoIdentIdxcPersDocumento($iTipoIdentId = 1, $cPersDocumento = null, Request $request)
     {
@@ -81,28 +85,11 @@ class InstructoresController extends Controller
                 'iCredId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iEstado              ??  NULL,
-                $request->iCredId              ??  NULL
-            ];
-
-            $data = DB::select(
-                'exec cap.SP_SEL_instructores 
-                    @_iEstado=?,   
-                    @_iCredId=?',
-                $parametros
-            );
+            $data = Instructor::selInstructores($request);
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-            return new JsonResponse(
-                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
-                Response::HTTP_OK
-            );
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
@@ -157,105 +144,30 @@ class InstructoresController extends Controller
         $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
 
         try {
-            $fieldsToDecode = [
-                'iPersId',
-                'iCredId',
-            ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iPersId               ??  NULL,
-                $request->iCredId               ??  NULL
-            ];
-
-            $data = DB::select(
-                'exec cap.SP_INS_instructores 
-                    @_iPersId=?,   
-                    @_iCredId=?',
-                $parametros
-            );
-
-            if ($data[0]->iInstId > 0) {
-                $message = 'Se ha guardado exitosamente';
-                return new JsonResponse(
-                    ['validated' => true, 'message' => $message, 'data' => []],
-                    Response::HTTP_OK
-                );
-            } else {
-                $message = 'No se ha podido guardar';
-                return new JsonResponse(
-                    ['validated' => false, 'message' => $message, 'data' => []],
-                    Response::HTTP_OK
-                );
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            $data = Instructor::insInstructores($request);
+            return FormatearMensajeHelper::ok('Se ha guardado exitosamente', $data);
+            
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
     public function eliminarInstructores(Request $request, $iInstId)
     {
-        $request->merge(['iInstId' => $iInstId]);
-
-        $validator = Validator::make($request->all(), [
-            'iInstId' => ['required'],
-        ], [
-            'iInstId.required' => 'No se encontró el identificador iInstId',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'validated' => false,
-                'errors' => $validator->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         try {
-            $fieldsToDecode = [
-                'iInstId',
-                'iCredId'
-            ];
-
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iInstId      ??  NULL,
-                $request->iCredId      ??  NULL
-            ];
-            $data = DB::select(
-                'exec cap.SP_DEL_instructores
-                    @_iInstId=?,    
-                    @_iCredId=?',
-                $parametros
-            );
-
-            if ($data[0]->iInstId > 0) {
-                $message = 'Se ha eliminado exitosamente';
-                return new JsonResponse(
-                    ['validated' => true, 'message' => $message, 'data' => $data],
-                    Response::HTTP_OK
-                );
-            } else {
-                $message = 'No se ha podido eliminar';
-                return new JsonResponse(
-                    ['validated' => false, 'message' => $message, 'data' => []],
-                    Response::HTTP_OK
-                );
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            $request->merge(['iInstId' => $iInstId]);
+            $request = VerifyHash::validateRequest($request, ['iInstId']);
+            $data = Instructor::delInstructores($request);
+            return FormatearMensajeHelper::ok('Se ha eliminado exitosamente', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
     public function actualizarInstructores(Request $request, $iInstId)
     {
         $request->merge(['iInstId' => $iInstId]);
+        $request = VerifyHash::validateRequest($request, ['iInstId']);
 
         $validator = Validator::make($request->all(), [
             'cOpcion' => ['required'],
@@ -280,108 +192,23 @@ class InstructoresController extends Controller
         }
 
         try {
-            $fieldsToDecode = [
-                'iInstId',
-                'iCredId'
-            ];
-
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->cOpcion           ??  NULL,
-                $request->iInstId           ??  NULL,
-                $request->cPersCelular      ??  NULL,
-                $request->cPersCorreo       ??  NULL,
-                $request->cPersDireccion    ??  NULL,
-                $request->iCredId           ??  NULL
-            ];
-
-            $data = DB::select(
-                'exec cap.SP_UPD_instructores
-                    @_cOpcion=?,    
-                    @_iInstId=?,    
-                    @_cPersCelular=?,    
-                    @_cPersCorreo=?,    
-                    @_cPersDireccion=?,    
-                    @_iCredId=?',
-                $parametros
-            );
-
-            if ($data[0]->iInstId > 0) {
-                $message = 'Se ha actualizado exitosamente';
-                return new JsonResponse(
-                    ['validated' => true, 'message' => $message, 'data' => $data],
-                    Response::HTTP_OK
-                );
-            } else {
-                $message = 'No se ha podido actualizar';
-                return new JsonResponse(
-                    ['validated' => false, 'message' => $message, 'data' => []],
-                    Response::HTTP_OK
-                );
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            $data = Instructor::updInstructores($request);
+            return FormatearMensajeHelper::ok('Se ha actualizado exitosamente', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function cambiarEstadoInstructores(Request $request, $iInstId)
+    public function actualizarEstadoInstructores($iInstId, Request $request)
     {
-        $request->merge(['iInstId' => $iInstId]);
-
-        $validator = Validator::make($request->all(), [
-            'iInstId' => ['required'],
-        ], [
-            'iInstId.required' => 'No se encontró el identificador iInstId',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'validated' => false,
-                'errors' => $validator->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         try {
-            $fieldsToDecode = [
-                'iInstId',
-                'iCredId'
-            ];
-
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iInstId      ??  NULL,
-                $request->iCredId      ??  NULL
-            ];
-            $data = DB::select(
-                'exec cap.SP_DEL_instructores
-                    @_iInstId=?,    
-                    @_iCredId=?',
-                $parametros
-            );
-
-            if ($data[0]->iInstId > 0) {
-                $message = 'Se ha eliminado exitosamente';
-                return new JsonResponse(
-                    ['validated' => true, 'message' => $message, 'data' => $data],
-                    Response::HTTP_OK
-                );
-            } else {
-                $message = 'No se ha podido eliminar';
-                return new JsonResponse(
-                    ['validated' => false, 'message' => $message, 'data' => []],
-                    Response::HTTP_OK
-                );
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            Log::info($iInstId);
+            $request->merge(['iInstId' => $iInstId]);
+            $request = VerifyHash::validateRequest($request, ['iInstId']);
+            $data = Instructor::updInstructoresEstado($request);
+            return FormatearMensajeHelper::ok('Se ha actualizado exitosamente', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 }
