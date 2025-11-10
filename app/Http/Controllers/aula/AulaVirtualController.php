@@ -768,4 +768,22 @@ class AulaVirtualController extends ApiController
             return FormatearMensajeHelper::error($e);
         }
     }
+    public function sesionesArea(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AulaVirtual::obtenerSesionesArea($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function actividadesContenido(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AulaVirtual::obtenerProgramacionActividadArea($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
 }

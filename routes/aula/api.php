@@ -166,6 +166,8 @@ Route::group(['prefix' => 'aula-virtual'], function () {
 
     Route::prefix('sesiones-aprendizaje')->group(function () {
         Route::post('obtenerSesiones', [AulaVirtualController::class, 'sesionesAprendizaje']); // Para obtener las sesiones de aprendizaje
+        Route::post('sesiones-area', [AulaVirtualController::class, 'sesionesArea']);   // Para obtener las sesiones de aprendizaje por area
+        Route::post('programacion-informacion-area', [AulaVirtualController::class, 'actividadesContenido']);  // Obtiene un informe de las programacion de actividades por area
     });
 
 });
