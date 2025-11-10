@@ -44,7 +44,7 @@ class Instructor
             $request->iInstId,
             $request->cPersDireccion,
             $request->cPersCorreo,
-            $request->cPersCelular,
+            $request->cPersTelefono,
             $request->header('iCredId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));

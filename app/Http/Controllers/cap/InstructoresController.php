@@ -101,7 +101,7 @@ class InstructoresController extends Controller
             'cPersNombre' => ['required', 'string'],
             'cPersPaterno' => ['required'],
             'cPersMaterno' => ['required'],
-            'cPersCelular' => ['required'],
+            'cPersTelefono' => ['required'],
             'cPersCorreo' => ['required', 'email'],
             'cPersDireccion' => ['required']
         ], [
@@ -111,7 +111,7 @@ class InstructoresController extends Controller
             'cPersNombre.string' => 'El nombre debe ser una cadena de texto',
             'cPersPaterno.required' => 'Debe ingresar el apellido paterno',
             'cPersMaterno.required' => 'Debe ingresar el apellido materno',
-            'cPersCelular.required' => 'Debe ingresar el número de celular',
+            'cPersTelefono.required' => 'Debe ingresar el número de celular',
             'cPersCorreo.required' => 'Debe ingresar el correo electrónico',
             'cPersCorreo.email' => 'Debe ingresar un correo electrónico válido',
             'cPersDireccion.required' => 'Debe ingresar la dirección'
@@ -172,13 +172,13 @@ class InstructoresController extends Controller
         $validator = Validator::make($request->all(), [
             'cOpcion' => ['required'],
             'iInstId' => ['required'],
-            'cPersCelular' => ['required'],
+            'cPersTelefono' => ['required'],
             'cPersCorreo' => ['required', 'email'],
             'cPersDireccion' => ['required']
         ], [
             'cOpcion.required' => 'No se encontró la opción',
             'iInstId.required' => 'No se encontró el identificador iInstId',
-            'cPersCelular.required' => 'Debe ingresar el número de celular',
+            'cPersTelefono.required' => 'Debe ingresar el número de celular',
             'cPersCorreo.required' => 'Debe ingresar el correo electrónico',
             'cPersCorreo.email' => 'Debe ingresar un correo electrónico válido',
             'cPersDireccion.required' => 'Debe ingresar la dirección'

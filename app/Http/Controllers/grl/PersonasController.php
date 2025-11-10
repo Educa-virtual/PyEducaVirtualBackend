@@ -148,7 +148,7 @@ class PersonasController extends Controller
             $request->cPersFotografia,
             $request->cPersDomicilio,
             $request->cPersCorreo,
-            $request->cPersCelular
+            $request->cPersTelefono,
         ];
 
         try {
@@ -222,7 +222,7 @@ class PersonasController extends Controller
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?", $parametros);
+            $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?,?,?", $parametros);
             return $data;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
