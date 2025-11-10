@@ -12,7 +12,7 @@ class AulaVirtual extends Model
     public static function obtenerSesiones(Request $request){
 
         $parametros = [
-            $request->idDocCursoId,
+            $request->iSilaboId,
         ];
 
         $solicitud = str_repeat('?,', count($parametros)-1).'?';
