@@ -203,12 +203,11 @@
         <thead>
             <tr>
                 <th rowspan="2" class="text-center">Área curricular</th>
-                <th rowspan="2" class="text-center" style="width: 25%">Competencia</th>
-                <th colspan="2" class="text-center">PRIMER PERIODO</th>
-                <th colspan="2" class="text-center">SEGUNDO PERIODO</th>
-                <th colspan="2" class="text-center">TERCER PERIODO</th>
-                <th colspan="2" class="text-center">CUARTO PERIODO</th>
-                <th rowspan="2" class="text-center" style="width: 9%">NL alcanzado al finalizar el periodo lectivo</th>
+                <th rowspan="2" class="text-center" style="width: 25%">Tipo de actividad</th>
+                <th colspan="2" class="text-center">Titulo</th>
+                <th colspan="2" class="text-center">Fecha de inicio</th>
+                <th colspan="2" class="text-center">Fecha de fin</th>
+                <th rowspan="2" class="text-center" style="width: 9%">Estado</th>
             </tr>
         </thead>
         <tobdy>
@@ -243,45 +242,6 @@
                         echo '<td></td>';
                         echo '<td></td>';
                         echo '</tr>';
-                    } else {
-                        foreach ($competencias as $competencia) {
-                            if (!$primeraFila) {
-                                echo '<tr>';
-                            } else {
-                                $primeraFila = false;
-                            }
-                            echo '<td class="text-justify">' . $competencia->cCompetenciaNombre . '</td>';
-                            for ($i = 1; $i <= 5; $i++) {
-                                $resultadoCompetencia = ReportesAcademicosService::obtenerResultadosPorCompetencia(
-                                    $matricula->iMatrId,
-                                    $competencia->iCompetenciaId ?? 0,
-                                    $curso->iCursosNivelGradId,
-                                    $i,
-                                );
-                                if ($resultadoCompetencia) {
-                                    if ($i == 5) {
-                                        echo '<td class="text-center"><strong>' .
-                                            $resultadoCompetencia->cNivelLogro .
-                                            '</strong></td>'; // NL
-                                    } else {
-                                        echo '<td class="text-center"><strong>' .
-                                            $resultadoCompetencia->cNivelLogro .
-                                            '</strong></td>'; // NL
-                                        echo '<td class="conclusion-descriptiva text-justify">' .
-                                            $resultadoCompetencia->cDescripcion .
-                                            '</td>';
-                                    }
-                                } else {
-                                    if ($i == 5) {
-                                        echo '<td></td>'; // NL
-                                    } else {
-                                        echo '<td></td>'; // NL
-                                        echo '<td></td>'; // Conclusión descriptiva
-                                    }
-                                }
-                            }
-                            echo '</tr>';
-                        }
                     }
                 }
             @endphp
