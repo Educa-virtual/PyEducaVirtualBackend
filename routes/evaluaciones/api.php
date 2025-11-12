@@ -125,6 +125,8 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('obtenerDatosCursoDocente', [LogroAlcanzadoController::class, 'obtenerDatosCursoDocente']);
         Route::post('obtenerLogrosEstudiante', [LogroAlcanzadoController::class, 'obtenerLogrosEstudiante']);
         Route::post('actualizarLogro', [LogroAlcanzadoController::class, 'actualizarLogro']);
+        Route::post('obtenerEscalasCalificacion', [LogroAlcanzadoController::class, 'obtenerEscalasCalificacion']);
+        Route::post('actualizarEscalaCalificacion', [LogroAlcanzadoController::class, 'actualizarEscalaCalificacion']);
     });
 });
 

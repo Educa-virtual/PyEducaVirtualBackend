@@ -63,4 +63,28 @@ class LogroAlcanzadoController extends Controller
             return FormatearMensajeHelper::error($e);
         }
     }
+
+    public function obtenerEscalasCalificacion(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->permitidos]);
+            $data = LogroAlcanzado::selEscalasCalificacionCurso($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function actualizarEscalaCalificacion(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->permitidos]);
+            $data = LogroAlcanzado::updEscalaCalificacionCurso($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
 }

@@ -217,6 +217,13 @@ class DocenteCursosController extends Controller
         $query = 'EXEC acad.Sp_SEL_docentexcursoxgradoxseccion '.str_repeat('?,',count($solicitud)-1).'?';
         try {
             $data = DB::select($query, $solicitud);
+            foreach ($data as $key => $value) {
+                if($value->cCursoImagen) {
+                    $data[$key]->cCursoImagenUrl = asset("$value->cCursoImagen");
+                } else {
+                    $data[$key]->cCursoImagenUrl = asset("cursos/images/no-image.jpg");
+                }
+            }
             return ResponseHandler::success($data);
         } catch (Exception $e) {
             return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());

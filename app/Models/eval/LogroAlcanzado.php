@@ -54,4 +54,26 @@ class LogroAlcanzado
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC eval.Sp_UPD_logroAlcanzadoEstudiante $placeholders", $parametros);
     }
+
+    public static function selEscalasCalificacionCurso($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->idDocCursoId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC eval.Sp_SEL_escalasCalificacionCurso $placeholders", $parametros);
+    }
+
+    public static function updEscalaCalificacionCurso($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->idDocCursoId,
+            $request->iTipoCalificacionId,
+            $request->jsonEscalas,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC eval.Sp_INS_UPD_escalaCalificacionCurso $placeholders", $parametros);
+    }
 }
