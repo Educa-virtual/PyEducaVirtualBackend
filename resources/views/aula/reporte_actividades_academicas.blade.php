@@ -148,13 +148,17 @@
                                     <td colspan="3">{{ mb_strtoupper($ie->cIieeNombre) }}</td>
                                 </tr>
                                 <tr>
+                                    <th>Área Curricular:</th>
+                                    <td colspan="3">{{mb_strtoupper($area)}}</td>
+                                </tr>
+                                <tr>
                                     <th>Grado:</th>
                                     <td>{{mb_strtoupper($grado)}}</td>
                                     <th>Sección:</th>
                                     <td>{{mb_strtoupper($seccion)}}</td>
                                 </tr>
                                 <tr>
-                                    <th>Apellidos y nombres del docente:</th>
+                                    <th>Apellidos y nombres del Docente:</th>
                                     <td colspan="3">
                                         @php
                                             echo mb_strtoupper(
@@ -189,10 +193,10 @@
                 <th class="text-center">#</th>
                 <th class="text-center" style="width: 25%">Tipo de actividad</th>
                 <th class="text-center">Titulo</th>
-                <th class="text-center">Descripcion</th>
+                <th class="text-center">Descripción</th>
                 <th class="text-center">Fecha de inicio</th>
                 <th class="text-center">Fecha de fin</th>
-                <th class="text-center">Fecha de Publicacion</th>
+                <th class="text-center">Fecha de Publicación</th>
                 <th class="text-center" style="width: 9%">Estado</th>
             </tr>
         </thead>
