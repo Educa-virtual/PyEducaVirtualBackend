@@ -19,7 +19,7 @@
 
         @page {
             size: A4 portrait;
-            margin-top: 3cm;
+            margin-top: 1cm;
             margin-bottom: 2cm;
             margin-left: 1.5cm;
             margin-right: 1.5cm;
@@ -101,18 +101,6 @@
         table.sin-borde th {
             border: none;
         }
-
-        /*td[rowspan] {
-            position: relative;
-        }
-
-        td[rowspan]::after {
-            content: "";
-            bottom: 0;
-            left: 0;
-            right: 0;
-            border-bottom: 1px solid black;
-        }*/
     </style>
 
     <div id="pie-izquierdo">IMP. POR {{ $persona->cPersPaterno }} {{ $persona->cPersMaterno }}, {{ $persona->cPersNombre }}</div>
@@ -146,40 +134,36 @@
                                     <th style="width: 25%;">DRE:</th>
                                     <td>DRE MOQUEGUA</td>
                                     <th style="width: 15%;">UGEL:</th>
-                                    <td>UGEL {{ mb_strtoupper($matricula->cUgelNombre) }}</td>
+                                    <td>UGEL {{ mb_strtoupper($ie->cUgelNombre) }}</td>
                                 </tr>
                                 <tr>
                                     <th>Nivel:</th>
-                                    <td>{{ mb_strtoupper(str_replace('Educación ', '', $matricula->cNivelTipoNombre)) }}
+                                    <td>{{ mb_strtoupper(str_replace('Educación ', '', $ie->cNivelTipoNombre)) }}
                                     </td>
                                     <th>Código Modular:</th>
-                                    <td>{{ $matricula->cIieeCodigoModular }}</td>
+                                    <td>{{ $ie->cIieeCodigoModular }}</td>
                                 </tr>
                                 <tr>
                                     <th>Institución educativa:</th>
-                                    <td colspan="3">{{ mb_strtoupper($matricula->cIieeNombre) }}</td>
+                                    <td colspan="3">{{ mb_strtoupper($ie->cIieeNombre) }}</td>
                                 </tr>
                                 <tr>
                                     <th>Grado:</th>
-                                    <td>{{ mb_strtoupper($matricula->cGradoNombre) }}</td>
+                                    <td>{{mb_strtoupper($grado)}}</td>
                                     <th>Sección:</th>
-                                    <td>{{ mb_strtoupper($matricula->cGradoAbreviacion) }}
-                                        {{ $matricula->cSeccionNombre }}
-                                    </td>
+                                    <td>{{mb_strtoupper($seccion)}}</td>
                                 </tr>
                                 <tr>
                                     <th>Apellidos y nombres del docente:</th>
                                     <td colspan="3">
                                         @php
-                                            if ($tutor) {
-                                                echo mb_strtoupper(
-                                                    $tutor->cPersPaterno .
-                                                        ' ' .
-                                                        $tutor->cPersMaterno .
-                                                        ', ' .
-                                                        $tutor->cPersNombre,
-                                                );
-                                            }
+                                            echo mb_strtoupper(
+                                                $persona->cPersPaterno .
+                                                    ' ' .
+                                                    $persona->cPersMaterno .
+                                                    ', ' .
+                                                    $persona->cPersNombre,
+                                            );
                                         @endphp
                                     </td>
                                 </tr>
@@ -202,47 +186,29 @@
     <table class="table table-condensed table-areas-curriculares">
         <thead>
             <tr>
-                <th rowspan="2" class="text-center">Área curricular</th>
-                <th rowspan="2" class="text-center" style="width: 25%">Tipo de actividad</th>
-                <th colspan="2" class="text-center">Titulo</th>
-                <th colspan="2" class="text-center">Fecha de inicio</th>
-                <th colspan="2" class="text-center">Fecha de fin</th>
-                <th rowspan="2" class="text-center" style="width: 9%">Estado</th>
+                <th class="text-center">#</th>
+                <th class="text-center" style="width: 25%">Tipo de actividad</th>
+                <th class="text-center">Titulo</th>
+                <th class="text-center">Descripcion</th>
+                <th class="text-center">Fecha de inicio</th>
+                <th class="text-center">Fecha de fin</th>
+                <th class="text-center">Fecha de Publicacion</th>
+                <th class="text-center" style="width: 9%">Estado</th>
             </tr>
         </thead>
         <tobdy>
             @php
-                $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iYAcadId, $matricula->iNivelGradoId);
-                $contador = 0;
-                $totalFilas = count($cursos);
-                foreach ($cursos as $curso) {
-                    $contador++;
+                foreach ($actividades as $index => $actividad) {
                     echo '<tr>';
-                    echo '<td rowspan=' .
-                        ($curso->iCantidadFilas == '0' ? '1' : $curso->iCantidadFilas) .
-                        '>' .
-                        $curso->cCursoNombre .
-                        '</td>';
-
-                    $competencias = ReportesAcademicosService::obtenerCompetenciasPorCurso(
-                        $curso->iNivelTipoId,
-                        $curso->iCursoId,
-                    );
-                    $cantidadCompetencias = count($competencias);
-                    $primeraFila = true;
-                    if ($cantidadCompetencias == 0) {
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '<td></td>';
-                        echo '</tr>';
-                    }
+                    echo '<td>'.($index+1).'</td>';
+                    echo '<td>'.$actividad->cActTipoNombre.'</td>';
+                    echo '<td>'.$actividad->cProgActTituloLeccion.'</td>';
+                    echo '<td>'.$actividad->cProgActDescripcion.'</td>';
+                    echo '<td>'.$actividad->dtProgActInicio.'</td>';
+                    echo '<td>'.$actividad->dtProgActFin.'</td>';
+                    echo '<td>'.$actividad->dtProgActPublicacion.'</td>';
+                    echo '<td>'.$actividad->iEstado.'</td>';
+                    echo '</tr>';
                 }
             @endphp
         </tobdy>

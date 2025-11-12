@@ -778,10 +778,12 @@ class AulaVirtualController extends ApiController
         }
     }
     public function actividadesContenido(Request $request){
+        // generar reporte de actividades
         try {
-            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
-            $data = AulaVirtual::obtenerProgramacionActividadArea($request);
-            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+            // Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
+            $outputPdf = AulaVirtual::obtenerProgramacionActividadArea($request);
+            //return FormatearMensajeHelper::ok('Datos obtenidos', $outputPdf);
+            return response()->download($outputPdf)->deleteFileAfterSend(true);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
