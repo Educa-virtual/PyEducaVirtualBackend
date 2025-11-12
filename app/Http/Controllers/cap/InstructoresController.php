@@ -100,7 +100,7 @@ class InstructoresController extends Controller
             );
         } catch (\Exception $e) {
             return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
+                ['validated' => false, 'message' => $e, 'data' => []],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
