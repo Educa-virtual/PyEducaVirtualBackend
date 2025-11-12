@@ -34,7 +34,6 @@ class AulaVirtual extends Model
             ,$request->iYAcadId
             ,$request->iSedeId
         ];
-
         $solicitud = str_repeat('?,', count($parametros)-1).'?';
         $procedimiento = "EXEC aula.SP_SEL_obtenerActividadSesionesArea ".$solicitud;
 
@@ -60,6 +59,7 @@ class AulaVirtual extends Model
         $area = $request->cCursoNombre;
         $grado = $request->cGradoAbreviacion;
         $seccion = $request->cSeccionNombre;
+        $periodo = $request->cNumeroPeriodo;
 
         $persona = PersonasRepository::obtenerPersonaPorId($iPersId);
         $ie = InstitucionesEducativasService::obtenerIeNivel($request->iIieeId);
@@ -69,7 +69,7 @@ class AulaVirtual extends Model
         $ie = InstitucionesEducativasService::obtenerIeNivel($request->iIieeId);
         $yearAcademico = YearAcademicosService::obtenerYearAcademico($request->iYAcadId);
 
-        $htmlcontent = view('aula.reporte_actividades_academicas', compact('persona','ie','yearAcademico','grado','seccion','actividades','area'))->render();
+        $htmlcontent = view('aula.reporte_actividades_academicas', compact('persona','ie','yearAcademico','grado','seccion','actividades','area','periodo'))->render();
 
         $archivoBlade = 'reporte_actividades_academicas';
         $archivoHtml = $archivoBlade . '.html';

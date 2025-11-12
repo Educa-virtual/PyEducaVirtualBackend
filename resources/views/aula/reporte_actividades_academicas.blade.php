@@ -158,6 +158,10 @@
                                     <td>{{mb_strtoupper($seccion)}}</td>
                                 </tr>
                                 <tr>
+                                    <th>Periodo:</th>
+                                    <td colspan="3">{{mb_strtoupper($periodo)}}</td>
+                                </tr>
+                                <tr>
                                     <th>Apellidos y nombres del Docente:</th>
                                     <td colspan="3">
                                         @php
