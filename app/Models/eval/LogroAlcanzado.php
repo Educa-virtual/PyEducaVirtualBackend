@@ -50,6 +50,7 @@ class LogroAlcanzado
             $request->iResultado,
             $request->cDescripcion,
             $request->cNivelLogro,
+            $request->iEscalaCalifId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC eval.Sp_UPD_logroAlcanzadoEstudiante $placeholders", $parametros);
