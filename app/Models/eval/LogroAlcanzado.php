@@ -74,6 +74,6 @@ class LogroAlcanzado
             $request->jsonEscalas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC eval.Sp_INS_UPD_escalaCalificacionCurso $placeholders", $parametros);
+        return DB::update("EXEC eval.Sp_INS_UPD_escalaCalificacionCurso $placeholders", $parametros);
     }
 }
