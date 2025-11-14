@@ -200,7 +200,6 @@
                 <th class="text-center">Descripción</th>
                 <th class="text-center">Fecha de inicio</th>
                 <th class="text-center">Fecha de fin</th>
-                <th class="text-center">Fecha de Publicación</th>
                 <th class="text-center" style="width: 9%">Estado</th>
             </tr>
         </thead>
@@ -214,7 +213,6 @@
                     echo '<td>'.$actividad->cProgActDescripcion.'</td>';
                     echo '<td>'.$actividad->dtProgActInicio.'</td>';
                     echo '<td>'.$actividad->dtProgActFin.'</td>';
-                    echo '<td>'.$actividad->dtProgActPublicacion.'</td>';
                     echo '<td>'.$actividad->iEstado.'</td>';
                     echo '</tr>';
                 }
