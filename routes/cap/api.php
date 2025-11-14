@@ -48,6 +48,7 @@ Route::group(['prefix' => 'cap'], function () {
     Route::post('/', [InstructoresController::class, 'guardarInstructores']); // Para crear
     Route::put('/{iInstId}', [InstructoresController::class, 'actualizarInstructores']); // Para actualizar
     Route::delete('/{iInstId}', [InstructoresController::class, 'eliminarInstructores']); // Para eliminar
+    Route::post('/{iInstId}/estado', [InstructoresController::class, 'actualizarEstadoInstructores']); // Para actualizar el estado de un instructor
   });
   Route::prefix('notas')->group(function () {
     Route::get('/{iCapacitacionId}', [NotasController::class, 'obtenerNotaEstudiantes']);
