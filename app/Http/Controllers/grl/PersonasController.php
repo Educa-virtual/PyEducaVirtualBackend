@@ -148,7 +148,7 @@ class PersonasController extends Controller
             $request->cPersFotografia,
             $request->cPersDomicilio,
             $request->cPersCorreo,
-            $request->cPersCelular
+            $request->cPersTelefono,
         ];
 
         try {
@@ -216,11 +216,13 @@ class PersonasController extends Controller
             $request->cPersDocumento        ??  NULL,
             $request->cPersNombre           ??  NULL,
             $request->cPersPaterno          ??  NULL,
-            $request->cPersMaterno          ??  NULL
+            $request->cPersMaterno          ??  NULL,
+            $request->cPersTelefono         ??  NULL,
+            $request->cPersCorreo           ??  NULL,
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?", $parametros);
+            $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?,?,?", $parametros);
             return $data;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
