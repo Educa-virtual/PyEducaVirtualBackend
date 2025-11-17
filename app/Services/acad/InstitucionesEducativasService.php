@@ -19,4 +19,8 @@ class InstitucionesEducativasService
     public static function obtenerIePorSede($iSedeId) {
         return InstitucionEducativa::selInstitucionEducativaPorSede($iSedeId);
     }
+
+    public static function obtenerIeNivel($iIieeId) {
+        return InstitucionEducativa::selInstitucionEducativaNivel($iIieeId);
+    }
 }

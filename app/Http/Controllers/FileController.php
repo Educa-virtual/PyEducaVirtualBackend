@@ -7,9 +7,20 @@ use Illuminate\Http\Request;
 use App\Helpers\ResponseHandler;
 use App\Helpers\CollectionStrategy;
 use App\Http\Controllers\ApiController;
-
+use Illuminate\Support\Facades\Storage;
 class FileController extends Controller
 {
+
+  public function descargarArchivo(Request $request){
+    $ruta = $request->ruta;
+    if (!Storage::disk('public')->exists($ruta)) {
+        throw new Exception('El archivo no existe');
+    }
+
+     $path = Storage::disk('public')->path($ruta);
+      $nombreArchivo = basename($ruta);
+      return response()->download($path, $nombreArchivo);
+  }
 
   public function uploadFile(Request $request)
   {

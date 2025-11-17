@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\doc;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
@@ -59,18 +61,17 @@ class CargaNoLectivasController extends Controller
 
         $parametros = [
             $request->opcion,
-            $request->valorBusqueda ?? '-',
-
-            $request->iCargaNoLectivaId     ?? NULL,
-            $request->iSemAcadId            ?? NULL,
-            $request->iYAcadId              ?? NULL,
-            $request->iDocenteId            ?? NULL,
-            $request->iEstado               ?? NULL,
-            $request->iSesionId             ?? NULL,
-            $request->dtCreado              ?? NULL,
-            $request->dtActualizado         ?? NULL,
-            $request->iCredId,
-            $request->iSedeId
+            $request->valorBusqueda      ?? '-',
+            $request->iCargaNoLectivaId  ?? NULL,
+            $request->iSemAcadId         ?? NULL,
+            $request->iYAcadId           ?? NULL,
+            $request->iDocenteId         ?? NULL,
+            $request->iEstado            ?? NULL,
+            $request->iSesionId          ?? NULL,
+            $request->dtCreado           ?? NULL,
+            $request->dtActualizado      ?? NULL,
+            $request->iCredId            ?? NULL,
+            $request->iSedeId            ?? NULL,
         ];
 
         return $parametros;
@@ -78,16 +79,21 @@ class CargaNoLectivasController extends Controller
 
     public function list(Request $request)
     {
-        $resp = new CargaNoLectivasController();
-        $parametros = $resp->validate($request);
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda      ?? '-',
+            $iDocenteId                  ?? NULL,
+            $request->iCredId            ?? NULL,
+            $request->iSedeId            ?? NULL,
+        ];
 
         try {
             $data = DB::select('exec doc.Sp_SEL_cargaNoLectivas
-                ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
+                ?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -97,17 +103,24 @@ class CargaNoLectivasController extends Controller
 
     public function store(Request $request)
     {
-        $resp = new CargaNoLectivasController();
-        $parametros = $resp->validate($request);
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+        $parametros = [
+            $request->opcion,
+            $request->valorBusqueda      ?? '-',
+            $request->iYAcadId           ?? NULL,
+            $iDocenteId                  ?? NULL,
+            $request->iCredId            ?? NULL,
+        ];
+
+        $solicitud = str_repeat('?,', count($parametros)-1).'?';
+        $procedimiento = 'exec doc.Sp_INS_cargaNoLectivas '.$solicitud;
 
         try {
-            $data = DB::select('exec doc.Sp_INS_cargaNoLectivas
-                ?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
+            $data = DB::select($procedimiento, $parametros);
             switch ($request->opcion) {
                 case 'GUARDARxDetalleCargaNoLectiva':
                     if ($data[0]->iCargaNoLectivaId > 0) {
-                        $request['iCargaNoLectivaId'] = $this->hashids->encode($data[0]->iCargaNoLectivaId);
+                        $request['iCargaNoLectivaId'] = $data[0]->iCargaNoLectivaId;
                         $resp = new DetalleCargaNoLectivasController();
                     }
                     return $resp->store($request);
@@ -124,7 +137,7 @@ class CargaNoLectivasController extends Controller
                     break;
             }
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -149,7 +162,7 @@ class CargaNoLectivasController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
@@ -174,7 +187,7 @@ class CargaNoLectivasController extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
