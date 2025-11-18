@@ -10,26 +10,26 @@ class ActualizarCategoriaRequest extends GeneralFormRequest
     public function rules(): array
     {
         return [
-            'iCategoriaEncuestaId' => 'required|integer|exists:enc.categoria_encuesta,iCategoriaEncuestaId',
-            'cNombre' => 'required|string|max:150',
-            'cDescripcion' => 'required|string|max:150',
-            'bPuedeCrearEspDremo' =>'required|boolean',
-            'bPuedeCrearAccesoEspUgel'=>'required|boolean',
-            'bPuedeCrearDirector'=>'required|boolean',
-            'cImagenUrl' => 'nullable|string|max:255'
+            'iCateId' => 'required|integer',
+            'cCateNombre' => 'required|string|max:150',
+            'cCateDescripcion' => 'nullable|string|max:500',
+            'cCateImagenNombre' => 'nullable|string|max:150',
+            'bCatePermisoDremo' => 'nullable|boolean',
+            'bCatePermisoUgel' => 'nullable|boolean',
+            'bCatePermisoDirector' => 'nullable|boolean',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'iCategoriaEncuestaId' => 'ID de la categoría de encuesta',
-            'cNombre' => 'Nombre',
-            'cDescripcion' => 'Descripción',
-            'bPuedeCrearEspDremo' =>'Esp. Dremo puede crear encuestas',
-            'bPuedeCrearAccesoEspUgel' => 'Esp. Ugel puede crear encuestas',
-            'bPuedeCrearDirector' => 'Director puede crear encuestas',
-            'cImagenUrl' => 'URL de la imagen'
+            'iCateId' => 'ID de categoría',
+            'cCateNombre' => 'Nombre',
+            'cCateDescripcion' => 'Descripción',
+            'cCateImagenNombre' => 'Imagen',
+            'bCatePermisoDremo' =>'Permiso para DREMO',
+            'bCatePermisoUgel' => 'Permiso para UGEL',
+            'bCatePermisoDirector' => 'Permiso para Director',
         ];
     }
 }

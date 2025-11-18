@@ -2,41 +2,130 @@
 
 namespace App\Http\Controllers\enc;
 
+use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\enc\InsertarCategoriaRequest;
-use App\Http\Requests\enc\RegistrarCategoriaRequest;
-use App\Services\enc\CategoriasService;
-use App\Services\enc\EncuestasService;
+use App\Models\enc\Encuesta;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class EncuestaController extends Controller
 {
-    public function obtenerEncuestasPorCategoria($iCategoriaEncuestaId) {
+    private $encuestadores = [
+        Perfil::ADMINISTRADOR_DREMO,
+        Perfil::ESPECIALISTA_DREMO,
+        Perfil::ESPECIALISTA_UGEL,
+        Perfil::DIRECTOR_IE,
+    ];
+
+    private $encuestados = [
+        Perfil::ESPECIALISTA_DREMO,
+        Perfil::ESPECIALISTA_UGEL,
+        Perfil::DIRECTOR_IE,
+        Perfil::DOCENTE,
+        Perfil::ESTUDIANTE,
+        Perfil::APODERADO,
+    ];
+
+    public function listarEncuestas(Request $request) {
         try {
-            $data = EncuestasService::obtenerEncuestasPorCategoria($iCategoriaEncuestaId);
-            return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+            Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
+            $data = Encuesta::selEncuestas($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function eliminarEncuesta($iConfEncId) {
+    public function crearEncuesta(Request $request) {
         try {
-            EncuestasService::eliminarEncuesta($iConfEncId);
-            return FormatearMensajeHelper::ok('Encuesta eliminada correctamente');
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::selEncuestaParametros($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function actualizarAccesosEncuesta($iConfEncId, Request $request) {
+    public function verEncuesta(Request $request) {
         try {
-            EncuestasService::actualizarAccesosEncuesta($iConfEncId, $request);
-            return FormatearMensajeHelper::ok('Se han actualizado los accesos de la encuesta');
-        } catch (Exception $ex) {
-            return FormatearMensajeHelper::error($ex);
+            Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
+            $data = Encuesta::selEncuesta($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarEncuesta(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::insEncuesta($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function borrarEncuesta(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::delEncuesta($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function actualizarEncuesta(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::updEncuesta($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function obtenerPoblacionObjetivo(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
+            $data = Encuesta::selPoblacionObjetivo($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function actualizarEncuestaEstado(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::updEncuestaEstado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarEncuestaDesdeDuplicado(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::insEncuestaDuplicado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarEncuestaDesdePlantilla(Request $request) {
+        try {
+            Gate::authorize('tiene-perfil', [$this->encuestadores]);
+            $data = Encuesta::insEncuestaPlantilla($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 }

@@ -24,4 +24,12 @@ class Apoderado extends Model
     {
         return DB::selectOne("SELECT * FROM apo.apoderado AS apo WHERE apo.iPersId=? AND apo.iEstudianteId=?", [$iPersIdApoderado, $iEstudianteId]);
     }
+
+    public static function insApoderadosDesdeArchivo($json, $iSesionId)
+    {
+        foreach ($json as $item) {
+            $jsonItem = json_encode($item, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            DB::statement("EXEC apo.SP_INS_ApoderadosEstudiantes @json=?, @iSesionId=?", [$jsonItem, $iSesionId]);
+        }
+    }
 }

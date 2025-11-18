@@ -29,9 +29,16 @@ class PeriodoEvaluacionesController extends Controller
 
     public function processConfigCalendario(Request $request)
     {
-        $query = DB::select("EXEC acad.Sp_INS_generarDistribucionSemanasXiYearIdXiPerioEvalId @iPerioEvalId = :iPerioEvalId, @iYAcadId = :iYAcadId", [
+        $query = DB::select("EXEC acad.Sp_INS_generarDistribucionSemanasXiYearIdXiPerioEvalId 
+            @_iCredEntPerfId = :iCredEntPerfId,
+            @_iCredId = :iCredId,
+            @iPerioEvalId = :iPerioEvalId, 
+            @iYAcadId = :iYAcadId", [            
+            'iCredEntPerfId' => $request->input('iCredEntPerfId'),
+            'iCredId' => $request->input('iCredId'),
             'iPerioEvalId' => $request->input('iPerioEvalId'),
             'iYAcadId' => $request->input('iYAcadId'),
+            
         ]);
 
 

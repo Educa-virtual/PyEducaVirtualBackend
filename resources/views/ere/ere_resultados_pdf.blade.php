@@ -181,7 +181,7 @@
                 <td class="align-middle text-center">{{ $ie->total }}</td>
                 @foreach ($niveles as $nivel)
                     @php( $nivel_logro_id = strval($nivel->nivel_logro_id) )
-                    <td class="align-middle text-center">{{ number_format( intval($ie?->$nivel_logro_id ?? 0), 2) }}</td>
+                    <td class="align-middle text-center">{{ number_format( strval($ie?->$nivel_logro_id ?? 0), 2) }}</td>
                 @endforeach
             </tr>
         @endforeach
