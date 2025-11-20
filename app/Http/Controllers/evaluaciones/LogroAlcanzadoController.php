@@ -87,4 +87,40 @@ class LogroAlcanzadoController extends Controller
             return FormatearMensajeHelper::error($e);
         }
     }
+
+    public function exportarBoletas(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->permitidos]);
+            $data = LogroAlcanzado::selLogrosAlcanzadosMasivo($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function exportarExcel(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->permitidos]);
+            $data = LogroAlcanzado::selLogrosAlcanzadosMasivo($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function exportarFormatoSiagie(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [$this->permitidos]);
+            $data = LogroAlcanzado::selLogrosAlcanzadosPeriodo($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        }
+        catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
 }

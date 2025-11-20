@@ -127,6 +127,10 @@ Route::group(['prefix' => 'evaluaciones',], function () {
         Route::post('actualizarLogro', [LogroAlcanzadoController::class, 'actualizarLogro']);
         Route::post('obtenerEscalasCalificacion', [LogroAlcanzadoController::class, 'obtenerEscalasCalificacion']);
         Route::post('actualizarEscalaCalificacion', [LogroAlcanzadoController::class, 'actualizarEscalaCalificacion']);
+
+        Route::post('exportarBoletas', [LogroAlcanzadoController::class, 'exportarBoletas']);
+        Route::post('exportarExcel', [LogroAlcanzadoController::class, 'exportarExcel']);
+        Route::post('exportarFormatoSiagie', [LogroAlcanzadoController::class, 'exportarFormatoSiagie']);
     });
 });
 

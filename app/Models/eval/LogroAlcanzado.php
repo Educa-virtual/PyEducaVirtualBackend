@@ -77,4 +77,25 @@ class LogroAlcanzado
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC eval.Sp_INS_UPD_escalaCalificacionCurso $placeholders", $parametros);
     }
+
+    public static function selLogrosAlcanzadosMasivo($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->idDocCursoId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC eval.Sp_SEL_logrosAlcanzadosMasivo $placeholders", $parametros);
+    }
+
+    public static function selLogrosAlcanzadosPeriodo($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->idDocCursoId,
+            $request->iPeriodoId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC eval.Sp_SEL_logrosAlcanzadosPeriodo $placeholders", $parametros);
+    }
 }
