@@ -2,8 +2,11 @@
 
 namespace App\Models\com;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Comunicado extends Model
 {
@@ -46,6 +49,7 @@ class Comunicado extends Model
             $request->dtComunicadoEmision,
             $request->dtComunicadoHasta,
             $request->jsonGrupo,
+            $request->cComunicadoAdjunto,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC com.Sp_INS_comunicado $placeholders", $parametros);
@@ -96,5 +100,26 @@ class Comunicado extends Model
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC com.Sp_SEL_buscarPersona $placeholders", $parametros);
+    }
+
+    public static function subirDocumento($request)
+    {
+        if (!$request->hasFile('archivo')) {
+            throw new Exception("No se envió ningún archivo.");
+        }
+        $nombreOriginal = pathinfo($request->nombreArchivo, PATHINFO_FILENAME);
+        $nombreArchivo = Str::slug($nombreOriginal);
+        $documento = $request->file("archivo");
+        $extension = $documento->getClientOriginalExtension();
+        $nombreRuta = $request->nombreRuta;
+        $ruta = Storage::disk('local')->put($nombreRuta, $documento);
+
+        $archivoGnerado = [
+            'nombreArchivoGuardado' => $nombreArchivo,
+            'rutaArchivoGuardado' => $ruta,
+            'extension' => $extension,
+        ];
+
+        return $archivoGnerado;
     }
 }
