@@ -66,6 +66,7 @@ class Comunicado extends Model
             $request->dtComunicadoEmision,
             $request->dtComunicadoHasta,
             $request->jsonGrupo,
+            $request->cComunicadoAdjunto,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC com.Sp_UPD_comunicado $placeholders", $parametros);
