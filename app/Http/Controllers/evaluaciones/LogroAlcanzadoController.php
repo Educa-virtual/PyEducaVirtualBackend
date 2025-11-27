@@ -105,11 +105,21 @@ class LogroAlcanzadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->permitidos]);
             $data = LogroAlcanzado::selLogrosAlcanzadosMasivo($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
         catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
+
+        $filtros = $data[0][0];
+        $competencias = $data[1];
+        $periodos = $data[2];
+        $notas = $data[3];
+
+        foreach ( $notas as $nota) {
+            $nota->competencias = json_decode($nota->competencias);
+        }
+
+        return view('eval.registro_notas_excel', compact('filtros', 'competencias', 'periodos', 'notas'));
     }
 
     public function exportarFormatoSiagie(Request $request)

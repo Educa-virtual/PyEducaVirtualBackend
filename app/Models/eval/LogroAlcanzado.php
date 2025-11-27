@@ -85,7 +85,7 @@ class LogroAlcanzado
             $request->idDocCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC eval.Sp_SEL_logrosAlcanzadosMasivo $placeholders", $parametros);
+        return DB::selectResultSets("EXEC eval.Sp_SEL_logrosAlcanzadosMasivo $placeholders", $parametros);
     }
 
     public static function selLogrosAlcanzadosPeriodo($request)
@@ -96,6 +96,6 @@ class LogroAlcanzado
             $request->iPeriodoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC eval.Sp_SEL_logrosAlcanzadosPeriodo $placeholders", $parametros);
+        return DB::selectResultSets("EXEC eval.Sp_SEL_logrosAlcanzadosPeriodo $placeholders", $parametros);
     }
 }
