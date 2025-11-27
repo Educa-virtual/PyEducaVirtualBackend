@@ -127,10 +127,19 @@ class LogroAlcanzadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->permitidos]);
             $data = LogroAlcanzado::selLogrosAlcanzadosPeriodo($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         }
         catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
+
+        $filtros = $data[0][0];
+        $competencias = $data[1];
+        $notas = $data[2];
+
+        foreach ( $notas as $nota) {
+            $nota->competencias = json_decode($nota->competencias);
+        }
+
+        return view('eval.registro_notas_siagie', compact('filtros', 'competencias', 'notas'));
     }
 }
