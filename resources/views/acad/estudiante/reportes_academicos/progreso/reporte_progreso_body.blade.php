@@ -234,7 +234,7 @@
                 <th style="width: 10%" class="text-center">Conclusión descriptiva</th>
             </tr>
         </thead>
-        <tobdy>
+        <tbody>
             @php
                 $cursos = ReportesAcademicosService::obtenerCursosPorIe($matricula->iSedeId, $matricula->iYAcadId, $matricula->iNivelGradoId);
                 $contador = 0;
@@ -308,7 +308,7 @@
                     }
                 }
             @endphp
-        </tobdy>
+        </tbody>
     </table>
 
     <!--<br><br>
