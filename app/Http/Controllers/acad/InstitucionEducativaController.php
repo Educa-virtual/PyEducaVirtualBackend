@@ -19,13 +19,12 @@ class InstitucionEducativaController extends Controller
         }
     }
 
-    public function obtenerIePorUgel($iUgelId) {
+    public function obtenerIePorUgel($iUgelId) {}
 
-    }
-
-    public function obtenerSedesIe($iIieeId) {
+    public function obtenerSedesIe($iIieeId)
+    {
         try {
-            $sedes=DB::select('SELECT iSedeId, iIieeId, cSedeNombre, iEstado FROM acad.sedes WHERE iIieeId=?',[$iIieeId]);
+            $sedes = DB::select('SELECT iSedeId, iIieeId, cSedeNombre, iEstado, cSedeDireccion, cSedeTelefono, iServEdId FROM acad.sedes WHERE iIieeId=?', [$iIieeId]);
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $sedes);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

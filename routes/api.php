@@ -77,10 +77,11 @@ Route::group(['prefix' => 'administrador'], function () {
     Route::post('addCursosNivelesGrados', [AdministradorController::class, 'addCursosNivelesGrados']);
     Route::post('addNiveles', [AdministradorController::class, 'addNiveles']);
     Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
+
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);
 });
 
-
+//pev-101-formulario-instituciones
 Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
@@ -376,7 +377,7 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
         Route::post('searchApoderado', [ApoderadoController::class, 'show']);
 
-        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel']);
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel'])->middleware(['auth:api', RefreshToken::class]);
         Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
 
         Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\aula;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\ApiController;
 use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\evaluaciones\BancoRepository;
@@ -15,6 +16,7 @@ use Throwable;
 use function PHPUnit\Framework\isNull;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Models\aula\AulaVirtual;
 use Illuminate\Http\Response;
 
 class AulaVirtualController extends ApiController
@@ -756,5 +758,34 @@ class AulaVirtualController extends ApiController
         }
 
         return new JsonResponse($response, $estado);
+    }
+    public function sesionesAprendizaje(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AulaVirtual::obtenerSesiones($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function sesionesArea(Request $request){
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AulaVirtual::obtenerSesionesArea($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function actividadesContenido(Request $request){
+        // generar reporte de actividades
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
+            $outputPdf = AulaVirtual::obtenerProgramacionActividadArea($request);
+            //return FormatearMensajeHelper::ok('Datos obtenidos', $outputPdf);
+            return response()->download($outputPdf)->deleteFileAfterSend(true);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
     }
 }

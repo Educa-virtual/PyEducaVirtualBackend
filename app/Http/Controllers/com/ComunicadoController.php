@@ -9,6 +9,7 @@ use App\Models\com\Comunicado;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class ComunicadoController extends Controller
 {
@@ -106,6 +107,33 @@ class ComunicadoController extends Controller
             Gate::authorize('tiene-perfil', [$this->emisores]);
             $data = Comunicado::selBuscarPersona($request);
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function subirDocumento(Request $request) {
+        try {
+            $request->merge(["nombreRuta" => "comunicados"]);
+            $request->validate([
+                'archivo' => 'required|file|mimes:pdf,doc,docx,png,jpeg,jpg,xlsx,pptx|max:9000',
+            ]);
+
+            $data = Comunicado::subirDocumento($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+    public function descargarDocumento(Request $request) {
+        try {
+            $archivo = $request->archivo;
+            $ruta = Storage::disk('local')->path($archivo);
+            if (!file_exists($ruta)) {
+                abort(404, 'Archivo no encontrado');
+            }
+            return response()->download($ruta);
+
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
