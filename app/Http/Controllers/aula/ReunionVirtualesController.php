@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class ReunionVirtualesController extends Controller
 {
@@ -52,6 +53,7 @@ class ReunionVirtualesController extends Controller
                 'iYAcadId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            
             $parametros = [
                 $request->cRVirtualTema               ??  NULL,
                 $request->dtRVirtualInicio            ??  NULL,
@@ -62,8 +64,11 @@ class ReunionVirtualesController extends Controller
                 $request->idDocCursoId                ??  NULL,
                 $request->iCapacitacionId             ??  NULL,
                 $request->iYAcadId                    ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCredId                     ??  NULL,            
+                $request->jCompetencias               ?? NULL
             ];
+            Log::info("PARAMETROS ENVIADOS AL SP:", $parametros); 
+           
 
             $data = DB::select(
                 'exec aula.SP_INS_reunionVirtuales 
@@ -76,10 +81,14 @@ class ReunionVirtualesController extends Controller
                     @_idDocCursoId=?,
                     @_iCapacitacionId=?,
                     @_iYAcadId=?,
-                    @_iCredId=?',
+                    @_iCredId=?, 
+                    @_jCompetencias=?',
                 $parametros
             );
-            if ($data[0]->iRVirtualId > 0) {
+            // Siempre DB::select retorna array
+            $response = $data[0];
+
+            if ($response->iResult == 1) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
                     Response::HTTP_OK
@@ -91,6 +100,7 @@ class ReunionVirtualesController extends Controller
                 );
             }
         } catch (\Exception $e) {
+            Log::error("ERROR SQL: ".$e->getMessage());
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -137,7 +147,8 @@ class ReunionVirtualesController extends Controller
                 $request->dtRVirtualInicio            ??  NULL,
                 $request->dtRVirtualFin               ??  NULL,
                 $request->cRVirtualUrlJoin            ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCredId                     ??  NULL,
+                $request->jCompetencias               ?? NULL
             ];
 
             $data = DB::select(
@@ -147,7 +158,8 @@ class ReunionVirtualesController extends Controller
                     @_dtRVirtualInicio=?, 
                     @_dtRVirtualFin=?, 
                     @_cRVirtualUrlJoin=?, 
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_jCompetencias=?',
                 $parametros
             );
             if ($data[0]->iRVirtualId > 0) {

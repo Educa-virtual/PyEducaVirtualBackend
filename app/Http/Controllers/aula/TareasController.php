@@ -58,7 +58,7 @@ class TareasController extends Controller
                 'idDocCursoId',
                 'iCredId',
                 'iCapacitacionId',
-                'iYAcadId',
+                'iYAcadId',              
 
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
@@ -77,7 +77,8 @@ class TareasController extends Controller
                 $request->iCapacitacionId                ?? NULL,
                 $request->iYAcadId                       ?? NULL,
 
-                $request->iCredId                        ?? NULL
+                $request->iCredId                        ?? NULL,
+                $request->jCompetencias                  ?? NULL,
             ];
 
             $data = DB::select(
@@ -94,7 +95,8 @@ class TareasController extends Controller
                     @_idDocCursoId=?,
                     @_iCapacitacionId=?,
                     @_iYAcadId=?,
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_jCompetencias=?',
                 $parametros
             );
 
@@ -167,7 +169,8 @@ class TareasController extends Controller
                 $request->dtTareaInicio                   ?? NULL,
                 $request->dtTareaFin                      ?? NULL,
 
-                $request->iCredId                        ?? NULL
+                $request->iCredId                        ?? NULL,
+                $request->jCompetencias                  ?? NULL
             ];
 
             $data = DB::select(
@@ -178,7 +181,8 @@ class TareasController extends Controller
                     @_cTareaArchivoAdjunto=?,
                     @_dtTareaInicio=?, 
                     @_dtTareaFin=?, 
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_jCompetencias=?',
                 $parametros
             );
 
