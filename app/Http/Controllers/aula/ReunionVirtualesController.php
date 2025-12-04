@@ -64,8 +64,8 @@ class ReunionVirtualesController extends Controller
                 $request->idDocCursoId                ??  NULL,
                 $request->iCapacitacionId             ??  NULL,
                 $request->iYAcadId                    ??  NULL,
-                $request->iCredId                     ??  NULL,            
-                $request->jCompetencias               ?? NULL
+                $request->iCredId                     ??  NULL            
+                //$request->jCompetencias               ?? NULL
             ];
            // Log::info("PARAMETROS ENVIADOS AL SP:", $parametros); 
            
@@ -81,8 +81,7 @@ class ReunionVirtualesController extends Controller
                     @_idDocCursoId=?,
                     @_iCapacitacionId=?,
                     @_iYAcadId=?,
-                    @_iCredId=?, 
-                    @_jCompetencias=?',
+                    @_iCredId=?',
                 $parametros
             );
             // Siempre DB::select retorna array
@@ -147,8 +146,8 @@ class ReunionVirtualesController extends Controller
                 $request->dtRVirtualInicio            ??  NULL,
                 $request->dtRVirtualFin               ??  NULL,
                 $request->cRVirtualUrlJoin            ??  NULL,
-                $request->iCredId                     ??  NULL,
-                $request->jCompetencias               ?? NULL
+                $request->iCredId                     ??  NULL
+               // $request->jCompetencias               ?? NULL
             ];
 
             $data = DB::select(
@@ -158,8 +157,7 @@ class ReunionVirtualesController extends Controller
                     @_dtRVirtualInicio=?, 
                     @_dtRVirtualFin=?, 
                     @_cRVirtualUrlJoin=?, 
-                    @_iCredId=?,
-                    @_jCompetencias=?',
+                    @_iCredId=?',
                 $parametros
             );
             if ($data[0]->iRVirtualId > 0) {

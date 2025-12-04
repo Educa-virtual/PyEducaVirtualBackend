@@ -74,8 +74,8 @@ class CuestionariosController extends Controller
                 $request->iCapacitacionId           ?? NULL,
                 $request->iYAcadId                  ?? NULL,
 
-                $request->iCredId           ?? NULL,
-                $request->jCompetencias               ?? NULL
+                $request->iCredId           ?? NULL
+                //$request->jCompetencias               ?? NULL
             ];
 
             $data = DB::select(
@@ -92,8 +92,7 @@ class CuestionariosController extends Controller
                     @_idDocCursoId=?,
                     @_iCapacitacionId=?,
                     @_iYAcadId=?,
-                    @_iCredId=?,
-                    @_jCompetencias=?',
+                    @_iCredId=?',
                 $parametros
             );
 
@@ -163,8 +162,8 @@ class CuestionariosController extends Controller
                 $request->dtFin             ?? NULL,
                 $request->cArchivoAdjunto   ?? NULL,
 
-                $request->iCredId           ?? NULL,
-                $request->jCompetencias               ?? NULL
+                $request->iCredId           ?? NULL
+                //$request->jCompetencias               ?? NULL
             ];
             $data = DB::select(
                 'exec aula.SP_UPD_cuestionarios 
@@ -175,8 +174,7 @@ class CuestionariosController extends Controller
                     @_dtInicio=?,
                     @_dtFin=?,
                     @_cArchivoAdjunto=?,
-                     @_iCredId=?,
-                    @_jCompetencias=?',
+                    @_iCredId=?',
                 $parametros
             );
 
