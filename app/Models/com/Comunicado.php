@@ -123,4 +123,13 @@ class Comunicado extends Model
 
         return $archivoGnerado;
     }
+    public static function insRecepcionarComunicado($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iComunicadoId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC com.SEL_INS_RecepcionComunicados $placeholders", $parametros);
+    }
 }

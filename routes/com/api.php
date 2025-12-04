@@ -39,4 +39,5 @@ Route::group(['prefix' => 'com', 'middleware' => ['auth:api']], function () {
     Route::post('buscarPersona', [ComunicadoController::class, 'buscarPersona']);
     Route::post('subirDocumento', [ComunicadoController::class, 'subirDocumento']);
     Route::post('descargarDocumento', [ComunicadoController::class, 'descargarDocumento']);
+    Route::post('recepcionarComunicado', [ComunicadoController::class, 'recepcionarComunicado']);
 });
