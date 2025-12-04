@@ -774,24 +774,39 @@ class AdministradorController extends Controller
     }
     public function insertarSedes(Request $request) //Gestion de niveles, ciclos, grados,niveles ciclos,  niveles grados
     {
-        $solicitud = [
-            $request->iCredEntPerfId,
-            $request->iCredId,
-            $request->iSedeId,
-            $request->iIieeId,
-            $request->cSedeNombre,
-            $request->cSedeDireccion,
-            $request->cSedeRslCreacion,
-            $request->dSedeRslCreacion,
-            $request->iEstado,
-            $request->iServEdId,
-            $request->cSedeTelefono
-
-        ];
-
+        
         $query = DB::select(
-            "EXEC acad.SP_INS_Sedes ?,?,?,?,?,?,?,?,?,?,?", //actualizado
-            $solicitud
+            "EXEC acad.SP_INS_Sedes 
+                @_iCredEntPerfId = :iCredEntPerfId,
+                @_iCredId = :iCredId,
+                @_iSedeId = :iSedeId,
+                @_iIieeId = :iIieeId,
+                @_cSedeNombre = :cSedeNombre,
+                @_cSedeDireccion = :cSedeDireccion,
+                @_cSedeRslCreacion = :cSedeRslCreacion,
+                @_dSedeRslCreacion = :dSedeRslCreacion,
+                @_iEstado = :iEstado,
+                @_iServEdId = :iServEdId,
+                @_cSedeTelefono = :cSedeTelefono,
+                @_iTurnoId = :iTurnoId,
+                @_cSedeEmail = :cSedeEmail,
+                @_cSedeDirector = :cSedeDirector",
+            [
+                'iCredEntPerfId' => $request->iCredEntPerfId,
+                'iCredId' => $request->iCredId,
+                'iSedeId' => $request->iSedeId,
+                'iIieeId' => $request->iIieeId,
+                'cSedeNombre' => $request->cSedeNombre,
+                'cSedeDireccion' => $request->cSedeDireccion,
+                'cSedeRslCreacion' => $request->cSedeRslCreacion,
+                'dSedeRslCreacion' => $request->dSedeRslCreacion,
+                'iEstado' => $request->iEstado,
+                'iServEdId' => $request->iServEdId,
+                'cSedeTelefono' => $request->cSedeTelefono,
+                'iTurnoId' => $request->iTurnoId,
+                'cSedeEmail' => $request->cSedeEmail,
+                'cSedeDirector' => $request->cSedeDirector,
+            ]
         );
 
         try {
