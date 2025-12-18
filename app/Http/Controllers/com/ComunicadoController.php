@@ -141,7 +141,7 @@ class ComunicadoController extends Controller
     public function recepcionarComunicado(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [$this->emisores]);
+           // Gate::authorize('tiene-perfil', [$this->emisores]);
             $data = Comunicado::insRecepcionarComunicado($request);
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
