@@ -130,7 +130,7 @@ class Comunicado extends Model
             $request->header('iCredEntPerfId'),
             $request->iComunicadoId,
         ];
-        return $parametros;
+      //  return $parametros;
 
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC com.SEL_INS_RecepcionComunicados $placeholders", $parametros);
