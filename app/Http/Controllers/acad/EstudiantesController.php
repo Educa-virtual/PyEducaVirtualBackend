@@ -386,7 +386,7 @@ class EstudiantesController extends Controller
     public function obtenerCalendarioEstudiante($iYAcadId,$iPersId,$iSedeId)
     {
         try {
-            //Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
             //$detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
             $params = [Auth::user()->$iPersId, $iYAcadId, $iSedeId, NULL];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
