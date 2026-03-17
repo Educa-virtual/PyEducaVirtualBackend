@@ -43,9 +43,8 @@ class BuzonSugerencia extends Model
 
     public static function selBuzonSugerenciasDirector(Request $request)
     {
-        $data = DB::select("EXEC [acad].[SP_SEL_buzonSugerenciasDirector] @iCredEntPerfId=?, @anio=?", [
-            $request->header('iCredEntPerfId'),
-            $request->query('anio')
+        $data = DB::select("EXEC [acad].[SP_SEL_buzonSugerenciasDirector] @iCredEntPerfId=?", [
+            $request->header('iCredEntPerfId')
         ]);
         return $data;
     }
