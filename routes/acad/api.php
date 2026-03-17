@@ -40,10 +40,22 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api', RefreshToken::cla
     });
 
     Route::group(['prefix' => 'estudiantes'], function () {
+
         Route::get('{iEstudianteId}/matriculas', [MatriculaController::class, 'obtenerMatriculasEstudiante']);
-        Route::group(['prefix' => 'calendario-academico/anio/{iYAcadId}'], function () {
-            Route::get('', [EstudiantesController::class, 'obtenerCalendario']);
+        Route::prefix('calendario-academico')->group(function () {
+
+           // Calendario general por año
+            Route::get(
+                'anio/{iYAcadId}',
+                [EstudiantesController::class, 'obtenerCalendario']
+            );
+              // Calendario del estudiante / apoderado
+            Route::get(
+                'apoderado/{iYAcadId}/{iPersId}/{iSedeId}',
+                [EstudiantesController::class, 'obtenerCalendarioEstudiante']
+            );
         });
+            
         Route::group(['prefix' => 'buzon-sugerencias'], function () {
             Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerencias']);
