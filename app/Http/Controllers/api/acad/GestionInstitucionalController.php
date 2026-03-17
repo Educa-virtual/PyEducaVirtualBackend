@@ -32,8 +32,8 @@ class GestionInstitucionalController extends Controller
     public function listarPersonalIes(Request $request)
     {
         $solicitud = [
+            $request->iYAcadId,
             $request->iSedeId,
-            $request->iYAcadId
         ];
 
         $query = DB::select(
