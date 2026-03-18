@@ -91,7 +91,9 @@ class ForosController extends Controller
             $request->cForoDescripcion  ?? NULL,
             $request->dtForoInicio      ?? NULL,
             $request->dtForoFin         ?? NULL,
-            $request->cForoUrl          ?? NULL
+            $request->cForoUrl          ?? NULL,
+            $request->jCompetencias     ?? NULL
+            
         ];
 
         try {
@@ -103,7 +105,8 @@ class ForosController extends Controller
                     @_cForoDescripcion=?, 
                     @_dtForoInicio=?, 
                     @_dtForoFin=?, 
-                    @_cForoUrl=?',
+                    @_cForoUrl=?,
+                    @_jCompetencias=?',
                 $parametros
             );
 
@@ -316,7 +319,8 @@ class ForosController extends Controller
                 $request->iCapacitacionId                ?? NULL,
                 $request->iYAcadId                       ?? NULL,
 
-                $request->iCredId                        ?? NULL
+                $request->iCredId                        ?? NULL,
+                $request->jCompetencias                  ?? NULL
             ];
 
             $data = DB::select(
@@ -335,7 +339,9 @@ class ForosController extends Controller
                     @_idDocCursoId=?,
                     @_iCapacitacionId=?,
                     @_iYAcadId=?,
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    
+                    @_jCompetencias=?',
                 $parametros
             );
 

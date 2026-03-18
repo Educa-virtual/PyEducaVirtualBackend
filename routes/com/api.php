@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\com\ComunicadoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\com\ComunicadosController;
 use App\Http\Controllers\com\GruposController;
@@ -24,4 +26,18 @@ Route::group(['prefix' => 'com'], function () {
         Route::post('guardar_miembros', [GruposController::class, 'guardarMiembros']);
         Route::post('actualizar_grupo', [GruposController::class, 'actualizarGrupo']);
     });
+});
+
+Route::group(['prefix' => 'com', 'middleware' => ['auth:api']], function () {
+    Route::post('listarComunicados', [ComunicadoController::class, 'listarComunicados']);
+    Route::post('crearComunicado', [ComunicadoController::class, 'crearComunicado']);
+    Route::post('verComunicado', [ComunicadoController::class, 'verComunicado']);
+    Route::post('guardarComunicado', [ComunicadoController::class, 'guardarComunicado']);
+    Route::post('actualizarComunicado', [ComunicadoController::class, 'actualizarComunicado']);
+    Route::post('borrarComunicado', [ComunicadoController::class, 'borrarComunicado']);
+    Route::post('obtenerGrupoCantidad', [ComunicadoController::class, 'obtenerGrupoCantidad']);
+    Route::post('buscarPersona', [ComunicadoController::class, 'buscarPersona']);
+    Route::post('subirDocumento', [ComunicadoController::class, 'subirDocumento']);
+    Route::post('descargarDocumento', [ComunicadoController::class, 'descargarDocumento']);
+    Route::post('recepcionarComunicado', [ComunicadoController::class, 'recepcionarComunicado']);
 });

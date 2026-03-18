@@ -117,7 +117,8 @@ class EvaluacionesController extends Controller
                 $request->iCapacitacionId           ?? NULL,
                 $request->iYAcadId                  ?? NULL,
 
-                $request->iCredId                   ?? NULL
+                $request->iCredId                   ?? NULL,
+                $request->jCompetencias             ?? NULL
             ];
 
             $data = DB::select(
@@ -134,7 +135,8 @@ class EvaluacionesController extends Controller
                     @_idDocCursoId=?,
                     @_iCapacitacionId=?,
                     @_iYAcadId=?,
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_jCompetencias=?',
                 $parametros
             );
 
@@ -198,7 +200,8 @@ class EvaluacionesController extends Controller
                 $request->dtEvaluacionFin           ?? NULL,
                 $request->cEvaluacionArchivoAdjunto ?? NULL,
 
-                $request->iCredId                   ?? NULL
+                $request->iCredId                   ?? NULL,
+                $request->jCompetencias                ?? NULL
             ];
 
             $data = DB::select(
@@ -209,7 +212,8 @@ class EvaluacionesController extends Controller
                     @_dtEvaluacionInicio=?,
                     @_dtEvaluacionFin=?,
                     @_cEvaluacionArchivoAdjunto=?,
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_jCompetencias=?',
                 $parametros
             );
 

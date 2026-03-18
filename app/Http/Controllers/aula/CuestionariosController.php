@@ -75,6 +75,7 @@ class CuestionariosController extends Controller
                 $request->iYAcadId                  ?? NULL,
 
                 $request->iCredId           ?? NULL
+                //$request->jCompetencias               ?? NULL
             ];
 
             $data = DB::select(
@@ -162,6 +163,7 @@ class CuestionariosController extends Controller
                 $request->cArchivoAdjunto   ?? NULL,
 
                 $request->iCredId           ?? NULL
+                //$request->jCompetencias               ?? NULL
             ];
             $data = DB::select(
                 'exec aula.SP_UPD_cuestionarios 
