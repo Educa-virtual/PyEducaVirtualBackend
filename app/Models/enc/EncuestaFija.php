@@ -14,6 +14,7 @@ class EncuestaFija extends Model
             $request->iCateId,
             $request->iPlanId,
             $request->iEncuId,
+            $request->jsonPeriodosCursos,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::insert("EXEC enc.Sp_INS_encuestaAutoevaluacion $placeholders", $parametros);
@@ -26,12 +27,13 @@ class EncuestaFija extends Model
             $request->iCateId,
             $request->iPlanId,
             $request->iEncuId,
+            $request->jsonCursos,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::insert("EXEC enc.Sp_INS_encuestaSatisfaccion $placeholders", $parametros);
     }
 
-    public static function selEncuestaFijaParametros($request)
+    public static function selEncuestaParametrosFija($request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
