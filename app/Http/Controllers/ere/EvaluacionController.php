@@ -14,6 +14,7 @@ use App\Helpers\VerifyHash;
 use App\Models\ere\Evaluacion;
 use App\Services\acad\EstudiantesService;
 use App\Services\ere\EvaluacionesService;
+use App\Services\ParseSqlErrorService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -343,4 +344,30 @@ class EvaluacionController extends Controller
             return FormatearMensajeHelper::error($ex);
         }
     }*/
+
+    /**
+     * Obtiene la cantidad de preguntas de una evaluación segun curso y grado
+     * @param Request $request con id de evaluación, curso y grado
+     * @return JsonResponse con cantidad de preguntas o error
+     */
+    public function obtenerCantidadPreguntas(Request $request)
+    {
+        $iCursosNivelGradId = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $this->decodeValue($request->iEvaluacionIdHashed),
+            $this->decodeValue($iCursosNivelGradId),
+        ];
+        try {
+            $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+            $data = DB::selectOne("EXEC ere.SP_SEL_cantidadPreguntas $placeholders", $parametros);
+            $response = ['validated' => true, 'mensaje' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'mensaje' => $error_message];
+            $codeResponse = 500;
+        }
+        return response()->json($response, $codeResponse);
+    }
 }

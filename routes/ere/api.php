@@ -87,6 +87,7 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::post('ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId', [EvaluacionController::class, 'ConsultarPreguntasxiEvaluacionIdxiCursoNivelGradIdxiEstudianteId']);
         Route::post('verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId', [EvaluacionController::class, 'verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId']);
         Route::post('obtenerEvaluacionxiEvaluacionIdxiCursoNivelGradIdxiIieeId', [EvaluacionController::class, 'obtenerEvaluacionxiEvaluacionIdxiCursoNivelGradIdxiIieeId']);
+        Route::post('cantidad-preguntas', [EvaluacionController::class, 'obtenerCantidadPreguntas']);
     });
     Route::group(['prefix' => 'alternativas'], function () {
         Route::post('handleCrudOperation', [AlternativasController::class, 'handleCrudOperation']);
