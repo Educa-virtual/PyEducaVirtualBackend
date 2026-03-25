@@ -91,6 +91,7 @@ class DetalleCargaNoLectivasController extends Controller
     public function store(Request $request)
     {
         $parametros = [
+            'GUARDARxDetalleCargaNoLectiva',
             $request->cNombre                   ?? NULL,
             $request->iCargaNoLectivaId         ?? NULL,
             $request->iTipoCargaNoLectId        ?? NULL,

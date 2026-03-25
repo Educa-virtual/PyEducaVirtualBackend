@@ -17,12 +17,13 @@ class Comunicado extends Model
             $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC com.Sp_SEL_comunicados2 $placeholders", $parametros);
+        return DB::select("EXEC com.Sp_SEL_comunicados $placeholders", $parametros);
     }
 
     public static function selComunicadoParametros($request) {
         $parametros = [
             $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC com.Sp_SEL_comunicadoParametros $placeholders", $parametros);

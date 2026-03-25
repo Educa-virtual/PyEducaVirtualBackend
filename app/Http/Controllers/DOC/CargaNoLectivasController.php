@@ -106,10 +106,11 @@ class CargaNoLectivasController extends Controller
         $iDocenteId = VerifyHash::decodes($request->iDocenteId);
         $parametros = [
             $request->opcion,
-            $request->valorBusqueda      ?? '-',
+            $request->valorBusqueda      ?? NULL,
             $request->iYAcadId           ?? NULL,
             $iDocenteId                  ?? NULL,
             $request->iCredId            ?? NULL,
+            $request->iSedeId            ?? NULL,
         ];
 
         $solicitud = str_repeat('?,', count($parametros)-1).'?';
