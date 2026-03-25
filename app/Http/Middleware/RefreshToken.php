@@ -30,7 +30,9 @@ class RefreshToken
 
         try {
             if (Auth::guard('api')->check()) {
-                $newToken = JWTAuth::refresh(JWTAuth::getToken(), false);
+                // Devolver mismo token, revisar refresh en consultas asincronas
+                $newToken = JWTAuth::getToken();
+                // $newToken = JWTAuth::refresh(JWTAuth::getToken(), false);
                 $response->headers->set('Access-Control-Expose-Headers', 'Authorization');
                 $response->headers->set('Authorization', $newToken);
             }
