@@ -13,16 +13,14 @@ class Codigo extends Model
         $iPersId = VerifyHash::decodes($request->iPersId);
         $iSedeId = $request->iSedeId;
         $iYAcadId = $request->iYAcadId;
-        $datos = [
-            $iPersId,
-            $iYAcadId,
-            $iSedeId,
-        ];
-        $enviar = str_repeat('?,',count($datos)-1).'?';
-        $procedimiento = "EXEC asi.Sp_SEL_codigo ".$enviar;
-        $data = DB::SELECT($procedimiento, $datos);
-        
-        $grupo = (array) $data[0];
+
+        $data = DB::selectOne("SELECT gp.cPersDocumento,am.cMatrNumero FROM grl.personas AS gp
+            INNER JOIN acad.estudiantes AS ae ON ae.iPersId = gp.iPersId
+            INNER JOIN acad.matricula AS am
+            ON am.iEstudianteId = ae.iEstudianteId AND am.iEstado = 1 AND am.iMatrEstado = 1 AND am.iSedeId = ? AND am.iYAcadId = ?
+            WHERE gp.iPersId = ?",[$iSedeId,$iYAcadId,$iPersId]);
+
+        $grupo = (array) $data;
         $grupo["cMatrNumero"] = VerifyHash::encodexId($grupo["cMatrNumero"] ?? NULL);
         $grupo["cPersDocumento"] = VerifyHash::encodexId($grupo["cPersDocumento"] ?? NULL);
 
