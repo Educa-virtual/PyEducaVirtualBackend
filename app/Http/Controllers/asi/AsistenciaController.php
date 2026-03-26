@@ -377,7 +377,7 @@ class AsistenciaController extends Controller
         if ($archivos) {
             foreach ($archivos as $index => $archivo) {
                     $documento = Storage::disk('public')->put($ruta,$archivo);
-                    $asistencia[$index]['justificacion'] = basename($documento);
+                    $asistencia[$index]['justificacion'] = $ruta."/".basename($documento);
             }
         }
         $solicitud = [
