@@ -69,11 +69,44 @@ class ImportarResultadosController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
+    /**
+     * Importar resultados de 1 solo estudiante desde formulario (TODO)
+     * @param Request $request con ids y json de respuestas
+     * @return JsonResponse con success o error
+     */
+    public function importarResultadosEstudiante(Request $request)
+    {
+        $iCursosNivelGradId = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            !empty($request->iYAcadId) ? $request->iYAcadId : null,
+            $this->decodeValue($request->iEvaluacionIdHashed),
+            $this->decodeValue($iCursosNivelGradId),
+            !empty($request->json_resultados) ? $request->json_resultados : null,
+        ];
+        try {
+            $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+            $data = DB::select("EXEC ere.Sp_INS_importarResultado $placeholders", $parametros);
+    
+            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
+            $codeResponse = 200;
+        } catch (\Exception $e) {
+            $error_message = ParseSqlErrorService::parse($e->getMessage());
+            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
+            $codeResponse = 500;
+        }
+       // return   $parametros;
+        return new JsonResponse($response, $codeResponse);
+    }
 
+    /**
+     * Importar resultados de estudiantes desde archivo excel (DEPRECATED)
+     * @param Request $request con datos del excel y json de respuestas
+     * @return JsonResponse con success o error
+     */
     public function importar(Request $request)
     {
-        // Subir archivo para revisión, desactivar eventualmente
-        // $this->subirArchivo($request);
+        // Desactivado
 
         $datos_hojas = $request['datos_hojas'];
 
