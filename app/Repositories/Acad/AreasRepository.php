@@ -15,8 +15,8 @@ class AreasRepository
     public static function obtenerAreasPorEvaluacion($evaluacionIdDescifrado, $iPersId, $iCredEntPerfId)
     {
         return DB::select(
-            'EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @iEvaluacionId=?, @iPersId=?, @iCredEntPerfId=?',
-            [$evaluacionIdDescifrado, $iPersId, $iCredEntPerfId]
+            'EXEC [ere].SP_SEL_AreasEvaluacionesEspecialista @_iEvaluacionId=?, @_iCredEntPerfId=?',
+            [$evaluacionIdDescifrado, $iCredEntPerfId]
         );
     }
 

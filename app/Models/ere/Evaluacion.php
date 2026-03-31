@@ -50,14 +50,21 @@ class Evaluacion extends Model
     public $timestamps = false;
 
     // Aquí puedes definir un método para ejecutar el procedimiento almacenado
-    public static function obtenerEvaluaciones()
-    { //Se cambio el nombre sp_SEL_Evaluaciones
-        return DB::select('EXEC ere.SP_SEL_evaluaciones');
+    public static function obtenerEvaluaciones($request)
+    {
+        $params = [
+            $request->header('iCredEntPerfId'),
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($params), '?'));
+        return DB::select("EXEC ere.SP_SEL_evaluaciones $placeholders", $params);
     }
 
     public static function guardarEvaluaciones($params)
     {
-        return DB::select('EXEC ere.SP_INS_evaluaciones ?,?,?,?,?,?,?,?', $params);
+        $placeholders = implode(',', array_fill(0, count($params), '?'));
+        return DB::select("EXEC ere.SP_INS_evaluaciones $placeholders", $params);
     }
     public static function actualizarEvaluacion(array $params)
     {

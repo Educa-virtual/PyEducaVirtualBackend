@@ -11,10 +11,15 @@ use Illuminate\Support\Facades\DB;
 class InstitucionesEducativasController extends ApiController
 {
     //
-    public function obtenerInstitucionesEducativas()
+    public function obtenerInstitucionesEducativas(Request $request)
     {
         try {
-            $preguntas = DB::select('EXEC ere.SP_SEL_instituciones');
+            $params = [
+                $request->header('iCredEntPerfId'),
+                $request->iUgelId,
+            ];
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+            $preguntas = DB::select("EXEC ere.SP_SEL_instituciones $placeholders", $params);
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

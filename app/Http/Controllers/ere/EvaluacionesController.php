@@ -49,7 +49,7 @@ class EvaluacionesController extends ApiController
         ]);
     }
 
-    public function obtenerEvaluaciones()
+    public function obtenerEvaluaciones(Request $request)
     {
 
         $campos = 'iEvaluacionId,idTipoEvalId,iNivelEvalId,dtEvaluacionCreacion,cEvaluacionNombre,cEvaluacionDescripcion,cEvaluacionUrlDrive,cEvaluacionUrlPlantilla,cEvaluacionUrlManual,cEvaluacionUrlMatriz,cEvaluacionObs,dtEvaluacionLiberarMatriz,dtEvaluacionLiberarCuadernillo,dtEvaluacionLiberarResultados,iEstado,iSesionId,cEvaluacionIUrlCuadernillo,cEvaluacionUrlHojaRespuestas';
@@ -62,7 +62,13 @@ class EvaluacionesController extends ApiController
             $where
         ];
         try {
-            $evaluaciones = DB::select('EXEC ere.SP_SEL_evaluaciones');
+            $params = [
+                $request->header('iCredEntPerfId'),
+                $request->idTipoEvalId,
+                $request->iNivelEvalId,
+            ];
+            $placeholders = implode(',', array_fill(0, count($params), '?'));
+            $evaluaciones = DB::select("EXEC ere.SP_SEL_evaluaciones $placeholders", $params);
             foreach ($evaluaciones as $key => $value) {
                 if (isset($value->iEvaluacionId)) {
                     $value->iEvaluacionIdxHash = $this->hashids->encode($value->iEvaluacionId);
@@ -116,6 +122,8 @@ class EvaluacionesController extends ApiController
             $request->dtEvaluacionFechaInicio,
             $request->dtEvaluacionFechaFin,
             $request->iEstado,
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
 
 
         ];

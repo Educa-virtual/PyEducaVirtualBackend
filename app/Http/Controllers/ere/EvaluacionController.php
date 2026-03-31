@@ -305,7 +305,7 @@ class EvaluacionController extends Controller
 
     public function obtenerVistaPreviaEvaluacionPorArea($evaluacionId, $areaId) {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO, Perfil::ESPECIALISTA_UGEL]]);
             $evaluacionIdDescifrado = VerifyHash::decodesxId($evaluacionId);
             $areaIdDescifrado = VerifyHash::decodesxId($areaId);
             $evaluacion = EvaluacionesService::obtenerEvaluacionPorArea($evaluacionIdDescifrado, $areaIdDescifrado);

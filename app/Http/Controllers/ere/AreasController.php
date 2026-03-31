@@ -233,7 +233,13 @@ class AreasController extends Controller
     public function obtenerAreasPorEvaluacion($evaluacionId)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ADMINISTRADOR_DREMO]]);
+            Gate::authorize('tiene-perfil', [[
+                Perfil::ESPECIALISTA_DREMO,
+                Perfil::DIRECTOR_IE,
+                Perfil::DOCENTE,
+                Perfil::ADMINISTRADOR_DREMO,
+                Perfil::ESPECIALISTA_UGEL,
+            ]]);
             $resultados = AreasService::obtenerAreasPorEvaluacion($evaluacionId, Auth::user()->iPersId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $resultados);
         } catch (Exception $ex) {
