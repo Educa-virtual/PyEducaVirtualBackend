@@ -92,7 +92,7 @@ class AreasController extends Controller
 
     public function guardarArchivoPdf($evaluacionId, $areaId, Request $request)
     {
-        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
+        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::ESPECIALISTA_UGEL]]);
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
         $areaIdDescifrado = $this->hashids->decode($areaId);
         if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
@@ -123,7 +123,7 @@ class AreasController extends Controller
 
     private function descargarArchivoPreguntasPdf($evaluacion, $area)
     {
-        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE]]);
+        Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ESPECIALISTA_UGEL]]);
         try {
             $data = AreasService::obtenerArchivoErePdf($evaluacion, $area);
         } catch (Exception $ex) {
@@ -165,7 +165,7 @@ class AreasController extends Controller
     public function descargarArchivoPreguntas($evaluacionId, $areaId, Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::ESPECIALISTA_UGEL]]);
             $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
             $areaIdDescifrado = $this->hashids->decode($areaId);
             if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
@@ -198,7 +198,7 @@ class AreasController extends Controller
     public function eliminarArchivoPreguntasPdf($evaluacionId, $areaId)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::ESPECIALISTA_UGEL]]);
             AreasService::eliminarArchivoErePdf($evaluacionId, $areaId);
             return FormatearMensajeHelper::ok('Archivo eliminado correctamente.');
         } catch (Exception $ex) {
@@ -222,7 +222,7 @@ class AreasController extends Controller
     public function generarMatrizCompetencias($evaluacionId, $areaId)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ADMINISTRADOR_DREMO]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ESPECIALISTA_DREMO, Perfil::DIRECTOR_IE, Perfil::DOCENTE, Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_UGEL]]);
             $usuario = Auth::user();
             return AreasService::generarMatrizCompetencias($evaluacionId, $areaId, $usuario);
         } catch (Exception $ex) {
