@@ -96,6 +96,7 @@
             <th class="align-middle bg-light text-center font-xs" width="4%">ACIERTOS</th>
             <th class="align-middle bg-light text-center font-xs" width="4%">DESACIERTOS</th>
             <th class="align-middle bg-light text-center font-xs" width="4%">BLANCOS</th>
+            <th class="align-middle bg-light text-center font-xs" width="4%">PUNTAJE</th>
             <th class="align-middle bg-light text-center" width="8%">NIVEL</th>
         </tr>
     </thead>
@@ -117,6 +118,7 @@
                 <td class="align-middle text-center">{{ (int) $resultado->aciertos }}</td>
                 <td class="align-middle text-center">{{ (int) $resultado->desaciertos }}</td>
                 <td class="align-middle text-center">{{ (int) $resultado->blancos }}</td>
+                <td class="align-middle text-center">{{ $resultado->puntaje }}</td>
                 <td class="align-middle text-center">{{ $resultado->nivel_logro }}</td>
             </tr>
         @endforeach
@@ -225,17 +227,19 @@
 <table class="table table-bordered table-condensed table-sm py-4">
     <thead>
         <tr>
-            <th class="font-lg bg-light text-center" colspan="8">RESULTADOS SEGÚN DESEMPEÑOS</th>
+            <th class="font-lg bg-light text-center" colspan="10">RESULTADOS SEGÚN DESEMPEÑOS</th>
         </tr>
         <tr>
             <th class="align-middle bg-light text-center" width="7%">PREGUNTA</th>
             <th class="align-middle bg-light text-center" width="15%">COMPETENCIA</th>
-            <th class="align-middle bg-light text-center" width="20%">CAPACIDAD</th>
-            <th class="align-middle bg-light text-center" width="24%">DESEMPEÑO</th>
+            <th class="align-middle bg-light text-center" width="15%">CAPACIDAD</th>
+            <th class="align-middle bg-light text-center" width="20%">DESEMPEÑO</th>
             <th class="align-middle bg-light text-center" width="7%">ACIERTOS</th>
             <th class="align-middle bg-light text-center" width="10%">DESACIERTOS</th>
             <th class="align-middle bg-light text-center" width="7%">% DE ACIERTOS</th>
             <th class="align-middle bg-light text-center" width="10%">% DE DESACIERTOS</th>
+            <th class="align-middle bg-light text-center" width="4%">PESO</th>
+            <th class="align-middle bg-light text-center" width="5%">PUNTAJE</th>
         </tr>
     </thead>
     <tbody>
@@ -249,6 +253,8 @@
                 <td class="align-middle text-center">{{ $item->desaciertos }}</td>
                 <td class="align-middle text-center">{{ $item->porcentaje_aciertos }}</td>
                 <td class="align-middle text-center">{{ $item->porcentaje_desaciertos }}</td>
+                <td class="align-middle text-center">{{ $item->peso }}</td>
+                <td class="align-middle text-center">{{ $item->puntaje }}</td>
             </tr>
         @endforeach
     </tbody>
