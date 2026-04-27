@@ -63,13 +63,13 @@
     <thead>
         <tr>
             @php
-                $otras_columnas = 9;
+                $otras_columnas = 10;
                 if( !isset($filtros->cod_ie) && !isset($filtros->distrito) ) {
-                    $otras_columnas = 9;
+                    $otras_columnas = 10;
                 } elseif( isset($filtros->distrito) && !isset($filtros->cod_ie) ) {
-                    $otras_columnas = 8;
+                    $otras_columnas = 9;
                 } else {
-                    $otras_columnas = 7;
+                    $otras_columnas = 8;
                 }
             @endphp
             <th class="font-lg bg-light text-center" colspan="{{ $nro_preguntas + $otras_columnas }}">RESULTADOS DE ESTUDIANTES</th>
