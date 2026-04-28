@@ -33,6 +33,9 @@ use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
+    Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
+    Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
+    Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
     Route::get('fechas-importantes/tipos', [FechasImportantesController::class, 'obtenerTiposFechas']);
     Route::group(['prefix' => 'instituciones-educativas'], function () {
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
