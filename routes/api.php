@@ -366,37 +366,6 @@ Route::group(['prefix' => 'acad'], function () {
         Route::post('CursosDiasHorarios', [CalendarioAcademicosController::class, 'guardarRemoverCursosDiasHorarios']);
     });
 
-    Route::group(['prefix' => 'estudiante'], function () {
-
-        Route::post('guardarEstudiante', [EstudiantesController::class, 'save']);
-        Route::post('actualizarEstudiante', [EstudiantesController::class, 'update']);
-        Route::post('searchEstudiantes', [EstudiantesController::class, 'index']);
-        Route::post('searchEstudiante', [EstudiantesController::class, 'show']);
-
-        Route::post('guardarApoderado', [ApoderadoController::class, 'save']);
-        Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
-        Route::post('searchApoderado', [ApoderadoController::class, 'show']);
-
-        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel'])->middleware(['auth:api', RefreshToken::class]);
-        Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
-
-        Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);
-    });
-
-    Route::group(['prefix' => 'matricula'], function () {
-
-        Route::post('searchGrados', [MatriculaController::class, 'searchGrados']);
-        Route::post('searchSecciones', [MatriculaController::class, 'searchSecciones']);
-        Route::post('searchTurnos', [MatriculaController::class, 'searchTurnos']);
-
-        Route::post('searchGradoSeccionTurnoConf', [MatriculaController::class, 'searchGradoSeccionTurnoConf']);
-        Route::post('searchNivelGrado', [MatriculaController::class, 'searchNivelGrado']);
-
-        Route::post('searchMatriculas', [MatriculaController::class, 'index']);
-        Route::post('searchMatricula', [MatriculaController::class, 'show']);
-        Route::post('guardarMatricula', [MatriculaController::class, 'save']);
-        Route::post('borrarMatricula', [MatriculaController::class, 'delete']);
-    });
 });
 
 

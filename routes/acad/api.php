@@ -1,6 +1,7 @@
 
 <?php
 
+use App\Http\Controllers\acad\ApoderadoController;
 use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
@@ -29,6 +30,7 @@ use App\Http\Controllers\VacantesController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
+use App\Http\Controllers\FileController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
@@ -99,6 +101,33 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
             Route::get('progreso/{iMatrId}/pdf', [ReporteAcademicoProgresoController::class, 'generarReporteApoderadoPdf']);
             Route::get('progreso/{iMatrId}', [ReporteAcademicoProgresoController::class, 'obtenerDataReporteApoderado']);
         });
+    });
+
+    Route::group(['prefix' => 'matricula'], function () {
+        Route::post('searchGradoSeccionTurnoConf', [MatriculaController::class, 'searchGradoSeccionTurnoConf']);
+        Route::post('crearMatricula', [MatriculaController::class, 'crearMatricula']);
+        Route::post('listarMatriculas', [MatriculaController::class, 'listarMatriculas']);
+        Route::post('verMatricula', [MatriculaController::class, 'verMatricula']);
+        Route::post('guardarMatricula', [MatriculaController::class, 'guardarMatricula']);
+        Route::post('actualizarMatricula', [MatriculaController::class, 'actualizarMatricula']);
+        Route::post('borrarMatricula', [MatriculaController::class, 'borrarMatricula']);
+    });
+
+    Route::group(['prefix' => 'estudiante'], function () {
+
+        Route::post('guardarEstudiante', [EstudiantesController::class, 'save']);
+        Route::post('actualizarEstudiante', [EstudiantesController::class, 'update']);
+        Route::post('searchEstudiantes', [EstudiantesController::class, 'index']);
+        Route::post('searchEstudiante', [EstudiantesController::class, 'show']);
+
+        Route::post('guardarApoderado', [ApoderadoController::class, 'save']);
+        Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
+        Route::post('searchApoderado', [ApoderadoController::class, 'show']);
+
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel'])->middleware(['auth:api', RefreshToken::class]);
+        Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
+
+        Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);
     });
 });
 
