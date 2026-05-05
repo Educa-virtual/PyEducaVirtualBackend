@@ -6,6 +6,7 @@ use App\Helpers\FormatearMensajeHelper;
 use App\Enums\Perfil;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
+use App\Models\acad\Estudiante;
 use App\Models\User;
 use App\Services\acad\FechasImportantesService;
 use App\Services\acad\MatriculasService;
@@ -88,214 +89,44 @@ class EstudiantesController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    /**
-     * Guarda un estudiante
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function save(Request $request)
+    public function guardarEstudiante(Request $request)
     {
-        // primero guardar como persona
-        $request->merge([
-            'iTipoPersId' => 1, // Siempre persona natural
-        ]);
-
-        $parametros = [
-            $request->iTipoPersId,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersRazonSocialNombre,
-            $request->cPersRazonSocialCorto,
-            $request->cPersRazonSocialSigla,
-            $request->cPersDomicilio,
-            $request->iCredId,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-        ];
-
         try {
-            $data = DB::select('EXEC grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = Estudiante::insEstudiante($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-            return new JsonResponse($response, $codeResponse);
+            return FormatearMensajeHelper::error($e);
         }
-
-        // luego guardar como estudiante
-        $parametros = [
-            $data[0]->iPersId,
-            1, // iCurrId
-            $request->cPersNombre,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->dPersNacimiento,
-            $request->cPersCertificado,
-            $request->cPersDomicilio,
-            $request->iCredId,
-            $request->cEstCodigo,
-            $request->cEstUbigeo,
-            $request->cEstTelefono,
-            $request->cEstCorreo,
-            $request->iPersApoderadoId,
-        ];
-
-        try {
-            $data = DB::select('EXEC acad.Sp_INS_estudiantes ?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
-
-            $data = DB::select('EXEC acad.Sp_SEL_estudiante_persona ?', [$data[0]->iEstudianteId]);
-
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
-    /**
-     * Actualiza un estudiante
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function update(Request $request)
+    public function actualizarEstudiante(Request $request)
     {
-        // Primero actualizar datos de estudiante en tabla persona
-        $parametros = [
-            $request->iPersId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersRazonSocialNombre,
-            $request->cPersRazonSocialCorto,
-            $request->cPersRazonSocialSigla,
-            $request->cPersDomicilio,
-            $request->iCredId,
-            $request->iPersRepresentanteLegalId,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-        ];
-
         try {
-            $data = DB::select('EXEC grl.Sp_UPD_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = Estudiante::updEstudiante($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-            return new JsonResponse($response, $codeResponse);
+            return FormatearMensajeHelper::error($e);
         }
-
-        // luego actualizar datos en tabla estudiante
-        $parametros = [
-            $request->iEstudianteId,
-            $data[0]->iPersId,
-            $request->iCurrId,
-            $request->cPersNombre,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->dPersNacimiento,
-            $request->cEstPartidaNacimiento,
-            $request->cPersDomicilio,
-            $request->iCredId,
-            $request->cEstCodigo,
-            $request->cEstUbideo,
-            $request->cEstTelefono,
-            $request->cEstCorreo,
-            $request->iPersApoderadoId,
-        ];
-
-        try {
-            $data = DB::select('EXEC acad.Sp_UPD_estudiante ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas ?', [$data[0]->iEstudianteId]);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
-        }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
-    /**
-     * Buscar estudiantes segun parametros
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function index(Request $request)
+    public function listarEstudiantes(Request $request)
     {
-        $parametros = [
-            $request->iEstudianteId,
-            $request->iPersId,
-            $request->iCurrId,
-            $request->cEstCodigo,
-            $request->dtEstIngreso,
-            $request->cEstNombres,
-            $request->cEstPaterno,
-            $request->cEstMaterno,
-            $request->dtEstFechaNacimiento,
-        ];
-
         try {
-            $data = DB::select('EXEC acad.Sp_SEL_estudiantes_personas ?,?,?,?,?,?,?,?,?', $parametros);
-
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Estudiante::selEstudiantes($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
-    /**
-     * Buscar un estudiante segun parametros
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function show(Request $request)
+    public function verEstudiante(Request $request)
     {
-        $parametros = [
-            $request->iEstudianteId,
-            $request->iPersId,
-            $request->cEstCodigo
-        ];
         try {
-            $data = DB::select('EXEC acad.Sp_SEL_estudiante_persona ?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            $data = Estudiante::selEstudiante($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
-            $error_message = ParseSqlErrorService::parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function importarEstudiantesPadresExcel(Request $request)

@@ -7,9 +7,13 @@ use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use App\Models\acad\CompetenciaCurso;
+use App\Models\acad\Estudiante;
 use App\Models\acad\Matricula;
 use App\Models\acad\YearAcademico;
+use App\Models\apo\Apoderado;
+use App\Models\seg\Usuario;
 use App\Services\acad\MatriculasService;
+use App\Services\grl\PersonasService;
 use App\Services\seg\UsuariosService;
 use Exception;
 use Illuminate\Http\Request;
@@ -67,6 +71,25 @@ class MatriculaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+
+            if ($request->iPersId == null || $request->iPersId == 0) {
+                $request->merge([
+                    'iPersId' => Usuario::insPersonas($request),
+                ]);
+            } else {
+                Usuario::updPersonas($request);
+            }
+
+            if($request->iEstudianteId == null || $request->iEstudianteId == 0) {
+                $request->merge([
+                    'iEstudianteId' => Estudiante::insEstudiante($request),
+                ]);
+            } else {
+                Estudiante::updEstudiante($request);
+            }
+
+            Apoderado::insApoderado($request);
+
             $data = Matricula::insMatricula($request);
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
@@ -78,6 +101,22 @@ class MatriculaController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+
+            if ($request->iPersId == null || $request->iPersId == 0) {
+                $request->merge([
+                    'iPersId' => Usuario::insPersonas($request),
+                ]);
+            } else {
+                Usuario::updPersonas($request);
+            }
+
+            if($request->iEstudianteId == null || $request->iEstudianteId == 0) {
+                $request->merge([
+                    'iEstudianteId' => Estudiante::insEstudiante($request),
+                ]);
+            } else {
+                Estudiante::updEstudiante($request);
+            }
             $data = Matricula::updMatricula($request);
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {

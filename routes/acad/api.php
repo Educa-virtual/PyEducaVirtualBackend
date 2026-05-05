@@ -117,12 +117,13 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
 
         Route::post('guardarEstudiante', [EstudiantesController::class, 'save']);
         Route::post('actualizarEstudiante', [EstudiantesController::class, 'update']);
-        Route::post('searchEstudiantes', [EstudiantesController::class, 'index']);
-        Route::post('searchEstudiante', [EstudiantesController::class, 'show']);
+        Route::post('listarEstudiantes', [EstudiantesController::class, 'listarEstudiantes']);
+        Route::post('verEstudiante', [EstudiantesController::class, 'verEstudiante']);
 
-        Route::post('guardarApoderado', [ApoderadoController::class, 'save']);
-        Route::post('actualizarApoderado', [ApoderadoController::class, 'update']);
-        Route::post('searchApoderado', [ApoderadoController::class, 'show']);
+        Route::post('listarApoderados', [ApoderadoController::class, 'listarApoderados']);
+        Route::post('guardarApoderado', [ApoderadoController::class, 'guardarApoderado']);
+        Route::post('actualizarApoderado', [ApoderadoController::class, 'actualizarApoderado']);
+        Route::post('verApoderado', [ApoderadoController::class, 'verApoderado']);
 
         Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel'])->middleware(['auth:api', RefreshToken::class]);
         Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
