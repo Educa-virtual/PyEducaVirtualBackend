@@ -6,6 +6,7 @@ use App\Http\Controllers\grl\FeriadosNacionalesController;
 use App\Http\Controllers\grl\PersonasContactosController;
 use App\Http\Controllers\grl\PersonasController;
 use App\Http\Controllers\grl\PrioridadController;
+use App\Http\Controllers\grl\TipoIdentificacionController;
 use App\Http\Controllers\grl\YearController;
 
 Route::group(['prefix' => 'administracion'], function () {
@@ -14,7 +15,9 @@ Route::group(['prefix' => 'administracion'], function () {
   Route::post('dias', [DiasController::class, 'list']);
 });
 
-Route::group(['prefix' => 'grl'], function () {
+Route::group(['prefix' => 'grl', 'middleware' => ['auth:api']], function () {
+  Route::post('selTipoIdentificacion', [TipoIdentificacionController::class, 'selTipoIdentificacion']);
+  
   Route::get('prioridades', [PrioridadController::class, 'obtenerPrioridades']);
   Route::group(['prefix' => 'personas'], function () {
     Route::post('list', [PersonasController::class, 'list']);
