@@ -99,62 +99,6 @@ class Usuario extends Model
         ]);
     }
 
-    public static function insPersonas(Object $request)
-    {
-        $parametros = [
-            $request->iTipoPersId,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersRazonSocialNombre,
-            $request->cPersRazonSocialCorto,
-            $request->cPersRazonSocialSigla,
-            $request->cPersDomicilio,
-            $request->header('iCredId'),
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC grl.Sp_INS_personas $placeholders", $parametros);
-    }
-
-    public static function updPersonas(Object $request)
-    {
-        $parametros = [
-            $request->iPersId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersRazonSocialNombre,
-            $request->cPersRazonSocialCorto,
-            $request->cPersRazonSocialSigla,
-            $request->cPersDomicilio,
-            $request->header('iCredId'),
-            $request->iPersRepresentanteLegalId,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC grl.Sp_UPD_personas $placeholders", $parametros);
-    }
-
     public static function insCredenciales($iPersId, $iCredId)
     {
         DB::statement('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);

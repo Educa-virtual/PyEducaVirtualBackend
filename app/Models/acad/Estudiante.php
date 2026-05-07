@@ -30,6 +30,8 @@ class Estudiante extends Model
             $request->iEstudianteId,
             $request->iPersId,
             $request->cEstCodigo,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC acad.Sp_SEL_estudiante $placeholders", $parametros);
@@ -46,15 +48,14 @@ class Estudiante extends Model
             $request->dPersNacimiento,
             $request->cPersCertificado,
             $request->cPersDomicilio,
-            $request->hedaer('iCredId'),
+            $request->header('iCredEntPerfId'),
             $request->cEstCodigo,
             $request->cEstUbigeo,
             $request->cEstTelefono,
             $request->cEstCorreo,
-            $request->iPersApoderadoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.Sp_INS_estudiantes $placeholders", $parametros);
+        return DB::selectOne("EXEC acad.Sp_INS_estudiante $placeholders", $parametros);
     }
 
     public static function updEstudiante(Object $request)
@@ -69,15 +70,14 @@ class Estudiante extends Model
             $request->dPersNacimiento,
             $request->cEstPartidaNacimiento,
             $request->cPersDomicilio,
-            $request->header('iCredId'),
+            $request->header('iCredEntPerfId'),
             $request->cEstCodigo,
             $request->cEstUbideo,
             $request->cEstTelefono,
             $request->cEstCorreo,
-            $request->iPersApoderadoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.Sp_UPD_estudiante $placeholders", $parametros);
+        return DB::selectOne("EXEC acad.Sp_UPD_estudiante $placeholders", $parametros);
     }
 
     public static function selIdEstudiantePorIdPersona($iEstudianteId)

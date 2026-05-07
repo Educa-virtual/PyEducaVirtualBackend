@@ -11,15 +11,14 @@ use App\Models\acad\Estudiante;
 use App\Models\acad\Matricula;
 use App\Models\acad\YearAcademico;
 use App\Models\apo\Apoderado;
-use App\Models\seg\Usuario;
+use App\Models\grl\Persona;
 use App\Services\acad\MatriculasService;
-use App\Services\grl\PersonasService;
 use App\Services\seg\UsuariosService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 
 class MatriculaController extends Controller
 {
@@ -70,29 +69,36 @@ class MatriculaController extends Controller
     public function guardarMatricula(Request $request)
     {
         try {
+            DB::beginTransaction();
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
 
             if ($request->iPersId == null || $request->iPersId == 0) {
+                $persona = Persona::insPersonas($request);
                 $request->merge([
-                    'iPersId' => Usuario::insPersonas($request),
+                    'iPersId' => $persona['iPersId'],
                 ]);
             } else {
-                Usuario::updPersonas($request);
+                Persona::updPersonas($request);
             }
 
             if($request->iEstudianteId == null || $request->iEstudianteId == 0) {
+                $estudiante = Estudiante::insEstudiante($request);
                 $request->merge([
-                    'iEstudianteId' => Estudiante::insEstudiante($request),
+                    'iEstudianteId' => $estudiante['iEstudianteId'],
                 ]);
             } else {
                 Estudiante::updEstudiante($request);
             }
 
-            Apoderado::insApoderado($request);
+            if($request->iApoderadoId != null || $request->iApoderadoId > 0) {
+                Apoderado::insApoderado($request);
+            }
 
             $data = Matricula::insMatricula($request);
+            DB::commit();
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
+            DB::rollback();
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -100,14 +106,15 @@ class MatriculaController extends Controller
     public function actualizarMatricula(Request $request)
     {
         try {
+            DB::beginTransaction();
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
 
             if ($request->iPersId == null || $request->iPersId == 0) {
                 $request->merge([
-                    'iPersId' => Usuario::insPersonas($request),
+                    'iPersId' => Persona::insPersonas($request),
                 ]);
             } else {
-                Usuario::updPersonas($request);
+                Persona::updPersonas($request);
             }
 
             if($request->iEstudianteId == null || $request->iEstudianteId == 0) {
@@ -117,9 +124,12 @@ class MatriculaController extends Controller
             } else {
                 Estudiante::updEstudiante($request);
             }
+
             $data = Matricula::updMatricula($request);
+            DB::commit();
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
+            DB::rollback();
             return FormatearMensajeHelper::error($e);
         }
     }

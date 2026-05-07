@@ -46,9 +46,11 @@ class Matricula
             $request->header('iCredEntPerfId'),
             $request->iMatrEstado,
             $request->iMatrNEE,
+            $request->iSemAcadId,
+            $request->iCurrId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert("exec acad.Sp_INS_matricula $placeholders", $parametros);
+        return DB::selectOne("exec acad.Sp_INS_matricula $placeholders", $parametros);
     }
 
     public static function updMatricula($request)
@@ -56,7 +58,6 @@ class Matricula
         $parametros = [
             $request->iMatrId,
             $request->iEstudianteId,
-            $request->iYAcadId,
             $request->iTipoMatrId,
             $request->iSedeId,
             $request->iNivelGradoId,
@@ -67,9 +68,11 @@ class Matricula
             $request->header('iCredEntPerfId'),
             $request->iMatrEstado,
             $request->iMatrNEE,
+            $request->iSemAcadId,
+            $request->iCurrId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert("exec acad.Sp_UPD_matricula $placeholders", $parametros);
+        return DB::selectOne("exec acad.Sp_UPD_matricula $placeholders", $parametros);
     }
 
     public static function selMatriculas($request)

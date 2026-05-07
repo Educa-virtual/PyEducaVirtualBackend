@@ -32,7 +32,7 @@ class Apoderado extends Model
             $request->cObservacion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC apo.SP_INS_apoderado $placeholders", $parametros);
+        return DB::selectOne("EXEC apo.SP_INS_apoderado $placeholders", $parametros);
     }
 
     public static function updApoderado(Object $request)
@@ -45,7 +45,7 @@ class Apoderado extends Model
             $request->cObservacion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC apo.SP_UPD_apoderado $placeholders", $parametros);
+        return DB::selectOne("EXEC apo.SP_UPD_apoderado $placeholders", $parametros);
     }
 
     public static function delApoderado(Object $request)
