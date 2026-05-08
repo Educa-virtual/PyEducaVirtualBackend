@@ -69,8 +69,8 @@ class MatriculaController extends Controller
     public function guardarMatricula(Request $request)
     {
         try {
-            DB::beginTransaction();
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            DB::beginTransaction();
 
             if ($request->iPersId == null || $request->iPersId == 0) {
                 $persona = Persona::insPersonas($request);
@@ -106,8 +106,8 @@ class MatriculaController extends Controller
     public function actualizarMatricula(Request $request)
     {
         try {
-            DB::beginTransaction();
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            DB::beginTransaction();
 
             if ($request->iPersId == null || $request->iPersId == 0) {
                 $request->merge([
