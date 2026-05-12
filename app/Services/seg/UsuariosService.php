@@ -26,15 +26,19 @@ class UsuariosService
     public static function generarParametrosParaObtenerUsuarios($tipo, Request $request)
     {
         $parametros = [
-            $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
-            $request->get('offset', 0),
-            $request->get('limit', 20),
-            $request->get('opcionSeleccionada'),
-            $request->get('criterioBusqueda') ?? '',
-            $request->get('institucionSeleccionada'),
-            $request->get('perfilSeleccionado'),
-            $request->get('iUgelSeleccionada'),
-            $request->get('ieSedeSeleccionada')
+            'soloTotal' => $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
+            'offset' => $request->get('offset', 0),
+            'limit' => $request->get('limit', 20),
+            'opcionBusqueda' => $request->get('opcionSeleccionada'),
+            'criterioBusqueda' => $request->get('criterioBusqueda') ?? '',
+            'institucionSeleccionada' => $request->get('institucionSeleccionada'),
+            'perfilSeleccionado' => $request->get('perfilSeleccionado'),
+            'iUgelSeleccionada' => $request->get('iUgelSeleccionada'),
+            'ieSedeSeleccionada' => $request->get('ieSedeSeleccionada'),
+            'iPersId' => $request->get('iPersId', null),
+            'nivelSeleccionado' => $request->get('nivelSeleccionado', null),
+            'columnaOrdenar' => $request->get('columnaOrdenar', null),
+            'direccionOrdenar' => $request->get('direccionOrdenar', null),
         ];
         return $parametros;
     }

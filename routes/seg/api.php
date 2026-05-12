@@ -57,7 +57,7 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
             Route::patch('password', [UsuarioController::class, 'restablecerClaveUsuario']);
             Route::patch('vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
         });
-        Route::post('', [UsuarioController::class, 'registrarUsuario']);
+        // Route::post('', [UsuarioController::class, 'registrarUsuario']);
     });
     Route::group(['prefix' => 'personas'], function () {
         Route::get('', [PersonaController::class, 'buscarPersona']);

@@ -36,6 +36,9 @@ class Usuario extends Model
             $request->iUgelSeleccionada,
             $request->ieSedeSeleccionada,
             $request->iPersId,
+            $request->nivelSeleccionado,
+            $request->columnaOrdenar,
+            $request->direccionOrdenar,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC seg.SP_SEL_usuarios $placeholders", $parametros);
