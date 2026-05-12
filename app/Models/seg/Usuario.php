@@ -8,17 +8,37 @@ use Illuminate\Support\Facades\DB;
 
 class Usuario extends Model
 {
+    public static function selCredencialParametros(Object $request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC seg.Sp_SEL_credencialParametros $placeholders", $parametros);
+    }
+
     public static function obtenerIdPersonaPorIdCred($iCredId)
     {
         $data = DB::selectOne("SELECT TOP 1 iPersId FROM seg.credenciales WHERE iCredId=?", [$iCredId]);
         return $data->iPersId ?? null;
     }
 
-    public static function selUsuarios($parametros)
+    public static function selUsuarios(Object $request)
     {
-        return DB::select("EXEC [seg].[SP_SEL_usuarios] @soloTotal=?, @offset=?,  @limit=?, @opcionBusqueda=?,
-        @criterioBusqueda=?, @institucionSeleccionada=?, @perfilSeleccionado=?, @iUgelSeleccionada=?, @ieSedeSeleccionada=?,
-        @iPersId=NULL", $parametros);
+        $parametros = [
+            $request->soloTotal,
+            $request->offset,
+            $request->limit,
+            $request->opcionBusqueda,
+            $request->criterioBusqueda,
+            $request->institucionSeleccionada,
+            $request->perfilSeleccionado,
+            $request->iUgelSeleccionada,
+            $request->ieSedeSeleccionada,
+            $request->iPersId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC seg.SP_SEL_usuarios $placeholders", $parametros);
     }
 
     public static function selUsuarioPorIdPersona($iPersId)

@@ -4,27 +4,33 @@ namespace App\Http\Controllers\seg;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
-use App\Http\Requests\seg\LoginUsuarioRequest;
-use App\Http\Requests\seg\SolicitarRegistroUsuarioRequest;
 use App\Models\seg\Usuario;
-use App\Models\User;
 use App\Services\seg\UsuariosService;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class UsuarioController
 {
-    function obtenerListaUsuarios(Request $request)
+    public function crearUsuario(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            $data = Usuario::selCredencialParametros($request);
+            return FormatearMensajeHelper::ok('Se ha creado el usuario', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
+
+    function listarUsuarios(Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $resultado = UsuariosService::obtenerUsuarios($request);
-            return FormatearMensajeHelper::ok('Datos obtenidos', $resultado, Response::HTTP_OK);
+            $data = UsuariosService::obtenerUsuarios($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

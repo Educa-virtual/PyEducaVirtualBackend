@@ -42,9 +42,9 @@ class UsuariosService
     public static function obtenerUsuarios(Request $request)
     {
         $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('data', $request);
-        $dataUsuarios = Usuario::selUsuarios($parametros);
+        $dataUsuarios = Usuario::selUsuarios((object) $parametros);
         $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('cantidad', $request);
-        $dataCantidad = Usuario::selUsuarios($parametros);
+        $dataCantidad = Usuario::selUsuarios((object) $parametros);
         $resultado = [
             'totalFilas' => $dataCantidad[0]->totalFilas,
             'dataUsuarios' => $dataUsuarios,

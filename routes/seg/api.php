@@ -35,7 +35,11 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
         Route::get('consultas-backend', [AuditoriaController::class, 'obtenerConsultasBackend']);
     });
 
+    Route::get('crearUsuario', [UsuarioController::class, 'crearUsuario']);
     Route::group(['prefix' => 'usuarios'], function () {
+
+        Route::post('', [UsuarioController::class, 'listarUsuarios']);
+
         Route::group(['prefix' => 'password-recovery'], function () {
             Route::post('codigo-recuperacion', [PasswordRecoveryController::class, 'enviarCodigoRecuperacion'])->withoutMiddleware('auth:api');
             Route::post('codigo-recuperacion/validar', [PasswordRecoveryController::class, 'validarCodigoRecuperacion'])->withoutMiddleware('auth:api');
@@ -51,9 +55,8 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
             Route::delete('perfiles/{iCredEntPerfId}', [UsuarioController::class, 'eliminarPerfilUsuario']);
             Route::patch('estado', [UsuarioController::class, 'cambiarEstadoUsuario']);
             Route::patch('password', [UsuarioController::class, 'restablecerClaveUsuario']);
-            Route::patch('fecha-vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
+            Route::patch('vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
         });
-        Route::get('', [UsuarioController::class, 'obtenerListaUsuarios']);
         Route::post('', [UsuarioController::class, 'registrarUsuario']);
     });
     Route::group(['prefix' => 'personas'], function () {
