@@ -36,9 +36,9 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
     });
 
     Route::get('crearUsuario', [UsuarioController::class, 'crearUsuario']);
+    Route::post('listarUsuarios', [UsuarioController::class, 'listarUsuarios']);
     Route::group(['prefix' => 'usuarios'], function () {
 
-        Route::post('', [UsuarioController::class, 'listarUsuarios']);
 
         Route::group(['prefix' => 'password-recovery'], function () {
             Route::post('codigo-recuperacion', [PasswordRecoveryController::class, 'enviarCodigoRecuperacion'])->withoutMiddleware('auth:api');
@@ -57,10 +57,10 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
             Route::patch('password', [UsuarioController::class, 'restablecerClaveUsuario']);
             Route::patch('vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
         });
-        // Route::post('', [UsuarioController::class, 'registrarUsuario']);
+        Route::post('', [UsuarioController::class, 'registrarUsuario']);
     });
     Route::group(['prefix' => 'personas'], function () {
-        Route::get('', [PersonaController::class, 'buscarPersona']);
+        Route::post('', [PersonaController::class, 'buscarPersona']);
     });
     Route::group(['prefix' => 'perfiles'], function () {
         Route::get('', [PerfilController::class, 'obtenerPerfiles']);

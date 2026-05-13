@@ -37,6 +37,9 @@ class UsuariosService
             'ieSedeSeleccionada' => $request->get('ieSedeSeleccionada'),
             'iPersId' => $request->get('iPersId', null),
             'nivelSeleccionado' => $request->get('nivelSeleccionado', null),
+            'estadoSeleccionado' => $request->get('estadoSeleccionado', null),
+            'fechaDesde' => $request->get('fechaDesde', null),
+            'fechaHasta' => $request->get('fechaHasta', null),
             'columnaOrdenar' => $request->get('columnaOrdenar', null),
             'direccionOrdenar' => $request->get('direccionOrdenar', null),
         ];
@@ -57,14 +60,18 @@ class UsuariosService
         return $resultado;
     }
 
-    public static function registrarUsuario($request, $iCredId)
+    public static function registrarUsuario($request)
     {
         $request->validate([
-            'data' => 'required|array',
-            'data.cPersNombre' => 'required'
+            'cPersDocumento' => 'required|string|size:8',
         ]);
-        $persona = PersonasService::obtenerPersonaPorDocumento($request->data['cPersDocumento']);
-        Usuario::insCredenciales($persona->iPersId, $iCredId);
+        $persona = PersonasService::obtenerPersonaPorDocumento($request->cPersDocumento);
+        $parametros = [
+            'iEntId' => 10,
+            'iPersId' => $persona->iPersId,
+            'iCredEntPerfId' => $request->header('iCredEntPerfId'),
+        ];
+        Usuario::insCredenciales((object) $parametros);
 
         $persona = Usuario::selUsuarioPorIdPersona($persona->iPersId);
         return [

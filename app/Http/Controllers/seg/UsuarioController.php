@@ -4,7 +4,9 @@ namespace App\Http\Controllers\seg;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
+use App\Models\grl\Persona;
 use App\Models\seg\Usuario;
+use App\Services\grl\PersonasService;
 use App\Services\seg\UsuariosService;
 use Exception;
 use Illuminate\Http\Request;
@@ -104,7 +106,8 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $resultado = UsuariosService::registrarUsuario($request, Auth::user()->iCredId);
+            PersonasService::actualizarPersonaConDataApi($request, $request);
+            $resultado = UsuariosService::registrarUsuario($request);
             return FormatearMensajeHelper::ok($resultado['mensaje'], $resultado['data']);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

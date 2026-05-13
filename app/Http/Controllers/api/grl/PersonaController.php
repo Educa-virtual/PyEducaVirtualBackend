@@ -40,27 +40,7 @@ class PersonaController extends Controller
      */
     public function buscarPersona(Request $request)
     {
-        $parametros = [
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-        ];
-
         try {
-            // Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::ADMINISTRADOR_DREMO]]);
-            /*$resultado = DB::select('exec grl.Sp_SEL_personasXiTipoIdentIdXcPersDocumento ?,?', $parametros);
-            $cantidadResultados = count($resultado);
-            if ($cantidadResultados == 0) {
-                // No está registrado, consultar en servicio web
-
-            } elseif ($cantidadResultados > 1) {
-                $data = null;
-                $mensaje = 'El documento de identidad está duplicado';
-                $status = 500;
-            } else {
-                $data = $resultado[0];
-                $mensaje = 'El usuario ya está registrado';
-                $status = 200;
-            }*/
             $consultarDocumentoService = new ConsultarDocumentoIdentidadService();
             $dataServicio = $consultarDocumentoService->buscar($request->iTipoIdentId, $request->cPersDocumento);
             $data = array_merge($dataServicio['data'], [

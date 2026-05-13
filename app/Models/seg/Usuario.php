@@ -37,6 +37,9 @@ class Usuario extends Model
             $request->ieSedeSeleccionada,
             $request->iPersId,
             $request->nivelSeleccionado,
+            $request->estadoSeleccionado,
+            $request->fechaDesde,
+            $request->fechaHasta,
             $request->columnaOrdenar,
             $request->direccionOrdenar,
         ];
@@ -122,19 +125,75 @@ class Usuario extends Model
         ]);
     }
 
-    public static function insPersonas($parametros)
+    public static function insPersonas($datos)
     {
-        return DB::select('execute grl.Sp_INS_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+        $parametros = [
+            $datos->iTipoPersId ?? NULL,
+            $datos->iTipoIdentId ?? NULL,
+            $datos->cPersDocumento ?? NULL,
+            $datos->cPersPaterno ?? NULL,
+            $datos->cPersMaterno ?? NULL,
+            $datos->cPersNombre ?? NULL,
+            $datos->cPersSexo ?? NULL,
+            $datos->dPersNacimiento ?? NULL,
+            $datos->iTipoEstCivId ?? NULL,
+            $datos->cPersFotografia ?? NULL,
+            $datos->cPersRazonSocialNombre ?? NULL,
+            $datos->cPersRazonSocialCorto ?? NULL,
+            $datos->cPersRazonSocialSigla ?? NULL,
+            $datos->cPersDomicilio ?? NULL,
+            $datos->iCredSesionId ?? NULL,
+            $datos->iNacionId ?? NULL,
+            $datos->iPaisId ?? NULL,
+            $datos->iDptoId ?? NULL,
+            $datos->iPrvnId ?? NULL,
+            $datos->iDsttId ?? NULL,
+            $datos->cPersTelefono ?? NULL,
+            $datos->cPersCorreo ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("execute grl.Sp_INS_personas $placeholders", $parametros);
     }
 
-    public static function updPersonas($parametros)
+    public static function updPersonas($datos)
     {
-        return DB::select('execute grl.Sp_UPD_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+        $parametros = [
+            $datos->iPersId,
+            $datos->cPersDocumento,
+            $datos->cPersPaterno,
+            $datos->cPersMaterno,
+            $datos->cPersNombre,
+            $datos->cPersSexo,
+            $datos->dPersNacimiento,
+            $datos->iTipoEstCivId,
+            $datos->cPersFotografia,
+            $datos->cPersRazonSocialNombre,
+            $datos->cPersRazonSocialCorto,
+            $datos->cPersRazonSocialSigla,
+            $datos->cPersDomicilio,
+            $datos->iCredSesionId,
+            $datos->iPersRepresentanteLegalId,
+            $datos->iNacionId,
+            $datos->iPaisId,
+            $datos->iDptoId,
+            $datos->iPrvnId,
+            $datos->iDsttId,
+            $datos->cPersTelefono,
+            $datos->cPersCorreo,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("execute grl.Sp_UPD_personas $placeholders", $parametros);
     }
 
-    public static function insCredenciales($iPersId, $iCredId)
+    public static function insCredenciales($data)
     {
-        DB::statement('execute seg.Sp_INS_credenciales ?,?,?', [10, $iPersId, $iCredId]);
+        $parametros = [
+            $data->iEntId,
+            $data->iPersId,
+            $data->iCredEntPerfId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        DB::statement("execute seg.Sp_INS_credenciales $placeholders", $parametros);
     }
 
     public static function updCredenciasUpdatePassword($parametros)

@@ -61,21 +61,24 @@ class ConsultarDocumentoIdentidadService
                 throw new Exception("El DNI debe tener 8 digitos");
             }
             $response = FactilizaService::consultarDocumento('dni', $documento);
+            $persona = PersonasService::obtenerPersonaPorDocumento($documento);
             $respuesta = json_decode($response);
             if ($respuesta->data === null) {
-                return [
-                    'message' => 'No se obtuvo datos: ' . $respuesta->message,
-                    'data' => [],
-                    'status' => Response::HTTP_NOT_FOUND,
-                ];
+                if (!$persona) {
+                    return [
+                        'message' => 'No se obtuvo datos: ' . $respuesta->message,
+                        'data' => [],
+                        'status' => Response::HTTP_NOT_FOUND,
+                    ];
+                }
             }
             $respuestaFormateada = $this->formatearRespuestaDni($respuesta->data);
-            $iPersId = PersonasService::actualizarPersonaConDataApi($respuestaFormateada);
+            $datosPersona = PersonasService::actualizarPersonaConDataApi($respuestaFormateada, $persona);
             return [
                 'message' => 'Se obtuvo la información del servicio ',
-                'data' => $respuestaFormateada,
-                'status' => $respuesta->status,
-                'iPersId' => $iPersId //$iPersId  se agrego
+                'data' => $datosPersona['parametros'] ?? [],
+                'status' => $respuesta->status ?? Response::HTTP_OK,
+                'iPersId' => $datosPersona['iPersId'] ?? null
             ];
         } catch (Exception $ex) {
             return [
