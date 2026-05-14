@@ -85,6 +85,19 @@ class Usuario extends Model
         return DB::statement("EXEC [seg].[Sp_DEL_credenciales_entidades_perfiles] @_iCredEntPerfId=?", [$iCredEntPerfId]);
     }
 
+    public static function insPerfil($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iCredId,
+            $request->iPerfilId,
+            $request->iSedeId,
+            $request->iUgelId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC seg.Sp_INS_perfil $placeholders", $parametros);
+    }
+
     public static function insPerfilDremo($iCredId, $request)
     {
         $cTipo = $request->iPerfilId == 2 ? 'EspecialistaDremo' : 'PerfilModuloDremo';
