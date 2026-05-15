@@ -65,9 +65,15 @@ class Usuario extends Model
         return DB::statement("UPDATE seg.credenciales SET dtCredCaduca=? WHERE iCredId=?", [$dtCredCaduca, $iCredId]);
     }
 
-    public static function updiCredEstadoCredencialesXiCredId($parametros)
+    public static function updCredencialEstado(Object $datos)
     {
-        return DB::statement("EXEC [seg].[Sp_UPD_iCredEstado_credencialesXiCredId] @_iCredId=?, @_iCredEstado=?, @_iCredSesionId=?", $parametros);
+        $parametros = [
+            $datos->iCredId,
+            $datos->iCredEstado,
+            $datos->iCredEntPerfId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::statement("EXEC seg.Sp_UPD_credencialEstado $placeholders", $parametros);
     }
 
     public static function selPerfilesUsuario($iCredId)

@@ -54,11 +54,11 @@ class UsuarioController
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
             $parametros = [
-                $iCredId,
-                $request->iCredEstado,
-                Auth::user()->iCredId
+                'iCredId' => $iCredId,
+                'iCredEstado' => $request->iCredEstado,
+                'iCredEntPerfId' => $request->header('iCredEntPerfId'),
             ];
-            $mensaje = UsuariosService::cambiarEstadoUsuario($parametros);
+            $mensaje = Usuario::updCredencialEstado((object) $parametros);
             return FormatearMensajeHelper::ok($mensaje, null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
