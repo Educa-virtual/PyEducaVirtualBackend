@@ -42,7 +42,7 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $data = UsuariosService::obtenerPerfilesUsuario($iCredId);
+            $data = Usuario::selPerfilesUsuario($iCredId);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -80,12 +80,16 @@ class UsuarioController
         }
     }
 
-    public function eliminarPerfilUsuario($iCredId, $iCredEntPerfId)
+    public function actualizarPerfilUsuario($iCredId, $iCredEntPerfId, Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            UsuariosService::eliminarPerfilUsuario($iCredId, $iCredEntPerfId);
-            return FormatearMensajeHelper::ok('El perfil del usuario ha sido eliminado', null, Response::HTTP_OK);
+            $parametros = [
+                'iCredEntPerfId' => $iCredEntPerfId,
+                'iCredEntPerfEstado' => $request->iCredEntPerfEstado,
+            ];
+            Usuario::updPerfilEstado((object) $parametros);
+            return FormatearMensajeHelper::ok('El perfil del usuario ha sido actualizado', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -118,8 +122,8 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            UsuariosService::asignarPerfilUsuario($iCredId, $request);
-            return FormatearMensajeHelper::ok('Se ha asignado el perfil', null, Response::HTTP_CREATED);
+            $data = Usuario::insPerfil($request);
+            return FormatearMensajeHelper::ok('Se ha asignado el perfil', $data, Response::HTTP_CREATED);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }

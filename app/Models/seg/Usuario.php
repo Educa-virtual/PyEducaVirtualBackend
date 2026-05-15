@@ -72,7 +72,11 @@ class Usuario extends Model
 
     public static function selPerfilesUsuario($iCredId)
     {
-        return DB::select("EXEC [seg].[SP_SEL_PerfilesUsuario] @iCredId=?", [$iCredId]);
+        $parametros = [
+            $iCredId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC seg.SP_SEL_PerfilesUsuario $placeholders", $parametros);
     }
 
     public static function updReseteoClaveCredencialesXiCredId($parametros)
@@ -220,5 +224,15 @@ class Usuario extends Model
 INNER JOIN seg.credenciales_entidades AS ce ON ce.iCredEntId=cep.iCredEntId
 INNER JOIN seg.credenciales AS c ON c.iCredId=ce.iCredId
 WHERE iCredEntPerfId=?", [$iCredEntPerfId]);
+    }
+
+    public static function updPerfilEstado(Object $datos)
+    {
+        $parametros = [
+            $datos->iCredEntPerfId,
+            $datos->iCredEntPerfEstado,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC seg.Sp_UPD_perfilEstado $placeholders", $parametros);
     }
 }

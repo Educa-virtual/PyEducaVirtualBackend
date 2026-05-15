@@ -15,7 +15,7 @@ use App\Http\Controllers\seg\UsuarioController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::class]], function () {
+Route::group(['prefix' => 'seg', 'middleware' => ['auth:api']], function () {
 
     Route::group(['prefix' => 'acceso_modulos'], function () {
         Route::post('list', [CredencialModuloController::class, 'list']);
@@ -51,7 +51,7 @@ Route::group(['prefix' => 'seg', 'middleware' => ['auth:api', RefreshToken::clas
         Route::group(['prefix' => '{iCredId}'], function () {
             Route::get('perfiles', [UsuarioController::class, 'obtenerPerfilesUsuario']);
             Route::post('perfiles', [UsuarioController::class, 'agregarPerfilUsuario']);
-            Route::delete('perfiles/{iCredEntPerfId}', [UsuarioController::class, 'eliminarPerfilUsuario']);
+            Route::post('perfiles/{iCredEntPerfId}', [UsuarioController::class, 'actualizarPerfilUsuario']);
             Route::patch('estado', [UsuarioController::class, 'cambiarEstadoUsuario']);
             Route::patch('password', [UsuarioController::class, 'restablecerClaveUsuario']);
             Route::patch('vigencia', [UsuarioController::class, 'actualizarFechaVigenciaUsuario']);
