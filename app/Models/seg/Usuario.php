@@ -42,6 +42,7 @@ class Usuario extends Model
             $request->fechaHasta,
             $request->columnaOrdenar,
             $request->direccionOrdenar,
+            $request->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC seg.SP_SEL_usuarios $placeholders", $parametros);
@@ -82,18 +83,24 @@ class Usuario extends Model
         return DB::statement("EXEC seg.Sp_UPD_credencialEstado $placeholders", $parametros);
     }
 
-    public static function selPerfilesUsuario($iCredId)
+    public static function selPerfilesUsuario($iCredId, $request)
     {
         $parametros = [
             $iCredId,
+            $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC seg.SP_SEL_PerfilesUsuario $placeholders", $parametros);
     }
 
-    public static function updReseteoClaveCredencialesXiCredId($parametros)
+    public static function updReseteoClaveCredencialesXiCredId($datos)
     {
-        return DB::statement("EXEC [seg].[Sp_UPD_ReseteoClave_credencialesXiCredId] @_iCredId=?, @_iCredSesionId=?", $parametros);
+        $parametros = [
+            $datos->iCredId,
+            $datos->iCredEntPerfId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::statement("EXEC seg.Sp_UPD_ReseteoClave_credencialesXiCredId $placeholders", $parametros);
     }
 
     public static function delCredencialesEntidadesPerfiles($iCredId, $iCredEntPerfId)

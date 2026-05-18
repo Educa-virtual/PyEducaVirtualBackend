@@ -26,6 +26,7 @@ class UsuariosService
     public static function generarParametrosParaObtenerUsuarios($tipo, Request $request)
     {
         $parametros = [
+            'iCredEntPerfId' => $request->header('iCredEntPerfId'),
             'soloTotal' => $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
             'offset' => $request->get('offset', 0),
             'limit' => $request->get('limit', 20),

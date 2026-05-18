@@ -17,9 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'seg', 'middleware' => ['auth:api']], function () {
 
-    Route::group(['prefix' => 'acceso_modulos'], function () {
-        Route::post('list', [CredencialModuloController::class, 'list']);
-    });
     Route::group(['prefix' => 'database'], function () {
         Route::group(['prefix' => 'backups'], function () {
             Route::post('', [DatabaseController::class, 'realizarBackupBd']);

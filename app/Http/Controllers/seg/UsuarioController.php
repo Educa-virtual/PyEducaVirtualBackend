@@ -30,7 +30,7 @@ class UsuarioController
     function listarUsuarios(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = UsuariosService::obtenerUsuarios($request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data, Response::HTTP_OK);
         } catch (Exception $ex) {
@@ -38,11 +38,11 @@ class UsuarioController
         }
     }
 
-    public function obtenerPerfilesUsuario($iCredId)
+    public function obtenerPerfilesUsuario($iCredId, Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            $data = Usuario::selPerfilesUsuario($iCredId);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            $data = Usuario::selPerfilesUsuario($iCredId, $request);
             return FormatearMensajeHelper::ok('Datos obtenidos', $data, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -65,13 +65,13 @@ class UsuarioController
         }
     }
 
-    public function restablecerClaveUsuario($iCredId)
+    public function restablecerClaveUsuario($iCredId, Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $parametros = [
                 $iCredId,
-                Auth::user()->iCredId
+                $request->header('iCredEntPerfId'),
             ];
             UsuariosService::restablecerClaveUsuario($parametros);
             return FormatearMensajeHelper::ok('La contraseña del usuario ha sido restablecida a su nombre de usuario.', null, Response::HTTP_OK);
@@ -83,7 +83,7 @@ class UsuarioController
     public function actualizarPerfilUsuario($iCredId, $iCredEntPerfId, Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $parametros = [
                 'iCredEntPerfId' => $iCredEntPerfId,
                 'iCredEntPerfEstado' => $request->iCredEntPerfEstado,
@@ -114,7 +114,7 @@ class UsuarioController
     public function registrarUsuario(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             PersonasService::actualizarPersonaConDataApi($request, $request);
             $resultado = Usuario::insPerfil($request);
             return FormatearMensajeHelper::ok($resultado['mensaje'], $resultado['data']);
@@ -126,7 +126,7 @@ class UsuarioController
     public function agregarPerfilUsuario($iCredId, Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Usuario::insPerfil($request);
             return FormatearMensajeHelper::ok('Se ha asignado el perfil', $data, Response::HTTP_CREATED);
         } catch (Exception $e) {
