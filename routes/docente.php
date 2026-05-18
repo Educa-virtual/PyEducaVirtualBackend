@@ -28,7 +28,7 @@ use App\Http\Controllers\doc\PortafoliosController;
 use App\Http\Controllers\doc\TiposCargaNoLectivasController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'docente'], function () {
+Route::group(['prefix' => 'docente', 'middleware' => ['auth:api']], function () {
   Route::group(['prefix' => 'docente-cursos'], function () {
     Route::post('list', [DocenteCursosController::class, 'list']);
   });

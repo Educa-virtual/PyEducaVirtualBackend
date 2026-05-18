@@ -82,7 +82,7 @@ class DocenteCursosController extends Controller
             [
             "portafolio" => $portafolio, 
             "nombre" => $nombre,
-            "ruta" => $ruta,
+            "ruta" => $ruta ?? NULL,
             "extension" => $extension,
             "peso" => $peso,
             ]
