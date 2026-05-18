@@ -60,9 +60,15 @@ class Usuario extends Model
         WHERE cred.cCredUsuario=?", [$cCredUsuario]);
     }
 
-    public static function updFechaVigenciaCuenta($iCredId, $dtCredCaduca)
+    public static function updFechaVigenciaCuenta(Object $datos)
     {
-        return DB::statement("UPDATE seg.credenciales SET dtCredCaduca=? WHERE iCredId=?", [$dtCredCaduca, $iCredId]);
+        $parametros = [
+            $datos->iCredId,
+            $datos->dtCredCaduca,
+            $datos->iCredEntPerfId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::statement("EXEC seg.Sp_UPD_credencialVigencia $placeholders", $parametros);
     }
 
     public static function updCredencialEstado(Object $datos)

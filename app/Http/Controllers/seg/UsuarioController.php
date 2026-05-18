@@ -99,8 +99,13 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
-            UsuariosService::actualizarFechaVigenciaUsuario($iCredId, $request);
-            return FormatearMensajeHelper::ok('Se ha actualizado la fecha de vigencia de la cuenta', null, Response::HTTP_OK);
+            $datos = [
+                'iCredId' => $iCredId,
+                'dtCredCaduca' => $request->dtCredCaduca,
+                'iCredEntPerfId' => $request->header('iCredEntPerfId'),
+            ];
+            Usuario::updFechaVigenciaCuenta((object) $datos);
+            return FormatearMensajeHelper::ok('Se ha actualizado la fecha de vigencia', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
