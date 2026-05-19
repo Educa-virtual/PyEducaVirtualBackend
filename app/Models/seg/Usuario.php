@@ -83,6 +83,16 @@ class Usuario extends Model
         return DB::statement("EXEC seg.Sp_UPD_credencialEstado $placeholders", $parametros);
     }
 
+    public static function updCredencialPassword($request)
+    {
+        $parametros = [
+            $request->iCredId,
+            $request->header('iCredEntPerfId'),
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::statement("EXEC seg.Sp_UPD_credencialPassword $placeholders", $parametros);
+    }
+
     public static function selPerfilesUsuario($iCredId, $request)
     {
         $parametros = [
@@ -93,7 +103,7 @@ class Usuario extends Model
         return DB::select("EXEC seg.SP_SEL_PerfilesUsuario $placeholders", $parametros);
     }
 
-    public static function updReseteoClaveCredencialesXiCredId($datos)
+    public static function updReseteoClaveCredencialesXiCredId(Object $datos)
     {
         $parametros = [
             $datos->iCredId,

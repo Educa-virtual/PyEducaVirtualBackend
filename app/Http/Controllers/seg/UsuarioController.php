@@ -69,11 +69,10 @@ class UsuarioController
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
-            $parametros = [
-                $iCredId,
-                $request->header('iCredEntPerfId'),
-            ];
-            UsuariosService::restablecerClaveUsuario($parametros);
+            $request->merge([
+                'iCredId' => $iCredId,
+            ]);
+            Usuario::updCredencialPassword($request);
             return FormatearMensajeHelper::ok('La contraseña del usuario ha sido restablecida a su nombre de usuario.', null, Response::HTTP_OK);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -98,7 +97,7 @@ class UsuarioController
     public function actualizarFechaVigenciaUsuario($iCredId, Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $datos = [
                 'iCredId' => $iCredId,
                 'dtCredCaduca' => $request->dtCredCaduca,

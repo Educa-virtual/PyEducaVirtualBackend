@@ -115,7 +115,7 @@ class UsuariosService
         Usuario::delCredencialesEntidadesPerfiles($iCredId, $parametros);
     }
 
-    public static function restablecerClaveUsuario($parametros)
+    public static function restablecerClaveUsuario(Object $parametros)
     {
         Usuario::updReseteoClaveCredencialesXiCredId($parametros);
     }
