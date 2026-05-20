@@ -48,6 +48,17 @@ class Apoderado extends Model
         return DB::selectOne("EXEC apo.SP_UPD_apoderado $placeholders", $parametros);
     }
 
+    public static function updApoderadoEstado(Object $request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iApoderadoId,
+            $request->iHabilitado,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC apo.Sp_UPD_apoderadoEstado $placeholders", $parametros);
+    }
+
     public static function delApoderado(Object $request)
     {
         $parametros = [

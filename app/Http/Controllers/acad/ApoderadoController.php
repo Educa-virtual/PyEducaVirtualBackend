@@ -26,6 +26,7 @@ class ApoderadoController extends Controller
     public function listarApoderados(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
             $data = Apoderado::selApoderados($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $ex) {
@@ -95,9 +96,21 @@ class ApoderadoController extends Controller
         }
     }
 
+    public function actualizarApoderadoEstado(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            $data = Apoderado::updApoderadoEstado($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
+        } catch (\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function verApoderado(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
             $data = Apoderado::selApoderado($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
@@ -108,6 +121,7 @@ class ApoderadoController extends Controller
     public function borrarApoderado(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Apoderado::delApoderado($request);
             return FormatearMensajeHelper::ok('Se eliminó la información', $data);
         } catch (\Exception $e) {
@@ -118,6 +132,7 @@ class ApoderadoController extends Controller
     public function buscarPersonaApoderado(Request $request)
     {
         try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Apoderado::selPersonaApoderado($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $ex) {

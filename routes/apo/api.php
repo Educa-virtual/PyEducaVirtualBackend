@@ -10,5 +10,6 @@ Route::group(['prefix' => 'apo', 'middleware' => ['auth:api', RefreshToken::clas
     Route::post('verApoderado', [ApoderadoController::class, 'verApoderado']);
     Route::post('guardarApoderado', [ApoderadoController::class, 'guardarApoderado']);
     Route::post('actualizarApoderado', [ApoderadoController::class, 'actualizarApoderado']);
+    Route::post('actualizarApoderadoEstado', [ApoderadoController::class, 'actualizarApoderadoEstado']);
     Route::post('borrarApoderado', [ApoderadoController::class, 'borrarApoderado']);
 });
