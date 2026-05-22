@@ -120,7 +120,6 @@ Route::group(['prefix' => 'ere'], function () {
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
-        Route::get('obtenerUltimaEvaluacion', [EvaluacionesController::class, 'obtenerUltimaEvaluacion']);
         Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
         Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
         //Agregando participacion y eliminando participacion, IE

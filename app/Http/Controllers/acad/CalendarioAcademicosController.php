@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Models\acad\CalendarioAcademico;
+use Exception;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class CalendarioAcademicosController extends Controller
@@ -158,6 +163,17 @@ class CalendarioAcademicosController extends Controller
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
+        }
+    }
+
+    public function insCalendarioAcademico(Request $request)
+    {   
+        try {
+             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            $data = CalendarioAcademico::insCalendarioAcademico($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 }

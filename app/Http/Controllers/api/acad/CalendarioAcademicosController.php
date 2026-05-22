@@ -386,30 +386,30 @@ class CalendarioAcademicosController extends Controller
     }
 
     public function addCalAcademico(Request $request)
-{
-    try {
-        $solicitud = [
-            $request->json,
-            $request->_opcion
-        ];
+    {
+        try {
+            $solicitud = [
+                $request->json,
+                $request->_opcion
+            ];
 
-        $query = DB::select(
-            "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
-            $solicitud
-        );
+            $query = DB::select(
+                "EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+                $solicitud
+            );
 
-        $response = [
-            'validated' => true,
-            'message' => 'Se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'Se obtuvo la información',
+                'data' => $query,
+            ];
 
-        return response()->json($response, 201);
+            return response()->json($response, 201);
 
-    } catch (Exception $e) {
-        return FormatearMensajeHelper::error($e);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
     }
-}
 
 public function searchAcademico(Request $request)
 {
@@ -500,7 +500,7 @@ public function searchAcademico(Request $request)
             $request->campos,
             $request->condicion
         ];
-        //@json = N'[{  "jmod": "acad", "jtable": "calendario_academicos"}]'
+       
         $query = DB::select(
             "EXEC grl.sp_SEL_DesdeTabla_Where ?,?,?,? ",
             $solicitud

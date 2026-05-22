@@ -26,15 +26,23 @@ class UsuariosService
     public static function generarParametrosParaObtenerUsuarios($tipo, Request $request)
     {
         $parametros = [
-            $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
-            $request->get('offset', 0),
-            $request->get('limit', 20),
-            $request->get('opcionSeleccionada'),
-            $request->get('criterioBusqueda') ?? '',
-            $request->get('institucionSeleccionada'),
-            $request->get('perfilSeleccionado'),
-            $request->get('iUgelSeleccionada'),
-            $request->get('ieSedeSeleccionada')
+            'iCredEntPerfId' => $request->header('iCredEntPerfId'),
+            'soloTotal' => $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
+            'offset' => $request->get('offset', 0),
+            'limit' => $request->get('limit', 20),
+            'opcionBusqueda' => $request->get('opcionSeleccionada'),
+            'criterioBusqueda' => $request->get('criterioBusqueda') ?? '',
+            'institucionSeleccionada' => $request->get('institucionSeleccionada'),
+            'perfilSeleccionado' => $request->get('perfilSeleccionado'),
+            'iUgelSeleccionada' => $request->get('iUgelSeleccionada'),
+            'ieSedeSeleccionada' => $request->get('ieSedeSeleccionada'),
+            'iPersId' => $request->get('iPersId', null),
+            'nivelSeleccionado' => $request->get('nivelSeleccionado', null),
+            'estadoSeleccionado' => $request->get('estadoSeleccionado', null),
+            'fechaDesde' => $request->get('fechaDesde', null),
+            'fechaHasta' => $request->get('fechaHasta', null),
+            'columnaOrdenar' => $request->get('columnaOrdenar', null),
+            'direccionOrdenar' => $request->get('direccionOrdenar', null),
         ];
         return $parametros;
     }
@@ -42,9 +50,9 @@ class UsuariosService
     public static function obtenerUsuarios(Request $request)
     {
         $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('data', $request);
-        $dataUsuarios = Usuario::selUsuarios($parametros);
+        $dataUsuarios = Usuario::selUsuarios((object) $parametros);
         $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('cantidad', $request);
-        $dataCantidad = Usuario::selUsuarios($parametros);
+        $dataCantidad = Usuario::selUsuarios((object) $parametros);
         $resultado = [
             'totalFilas' => $dataCantidad[0]->totalFilas,
             'dataUsuarios' => $dataUsuarios,
@@ -53,14 +61,18 @@ class UsuariosService
         return $resultado;
     }
 
-    public static function registrarUsuario($request, $iCredId)
+    public static function registrarUsuario($request)
     {
         $request->validate([
-            'data' => 'required|array',
-            'data.cPersNombre' => 'required'
+            'cPersDocumento' => 'required|string|size:8',
         ]);
-        $persona = PersonasService::obtenerPersonaPorDocumento($request->data['cPersDocumento']);
-        Usuario::insCredenciales($persona->iPersId, $iCredId);
+        $persona = PersonasService::obtenerPersonaPorDocumento($request->cPersDocumento);
+        $parametros = [
+            'iEntId' => 10,
+            'iPersId' => $persona->iPersId,
+            'iCredEntPerfId' => $request->header('iCredEntPerfId'),
+        ];
+        Usuario::insCredenciales((object) $parametros);
 
         $persona = Usuario::selUsuarioPorIdPersona($persona->iPersId);
         return [
@@ -103,12 +115,7 @@ class UsuariosService
         Usuario::delCredencialesEntidadesPerfiles($iCredId, $parametros);
     }
 
-    public static function obtenerPerfilesUsuario($iCredId)
-    {
-        return Usuario::selPerfilesUsuario($iCredId);
-    }
-
-    public static function restablecerClaveUsuario($parametros)
+    public static function restablecerClaveUsuario(Object $parametros)
     {
         Usuario::updReseteoClaveCredencialesXiCredId($parametros);
     }
