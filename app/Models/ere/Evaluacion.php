@@ -70,6 +70,16 @@ class Evaluacion
         return DB::select("EXEC ere.SP_SEL_participaciones $placeholders", $params);
     }
 
+    public static function selHojaRespuestas($request)
+    {
+        $params = [
+            $request->header('iCredEntPerfId'),
+            $request->iExamCurId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($params), '?'));
+        return DB::selectOne("EXEC ere.SP_SEL_hojaRespuestas $placeholders", $params);
+    }
+
     public static function actualizarEvaluacion(array $params)
     {
         // Ejecutar el procedimiento almacenado para actualizar la evaluación

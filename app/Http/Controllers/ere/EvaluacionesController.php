@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\Ere\ActualizarEvaluacionRequest;
 use App\Models\acad\Curso;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class EvaluacionesController extends ApiController
 {
@@ -538,6 +540,38 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e->getMessage(), 'Error al obtener los datos.');
         }
     }
+
+    public function obtenerHojaRespuestas(Request $request)
+    {
+        try {
+            $parametros = Evaluacion::selHojaRespuestas($request);
+
+            gc_collect_cycles();
+
+            $pdf = App::make('snappy.pdf.wrapper');
+
+            $htmlcontent = view('ere.ere_hoja_respuestas', compact('parametros'))->render();
+            $headerHtml = view('ere.ere_hoja_respuestas_header')->render();
+
+            $pdf->loadHtml($htmlcontent)
+                ->setPaper('a4', 'portrait')
+                ->setOption('disable-external-links', true)
+                ->setOption('enable-local-file-access', true)
+                ->setOption('disable-smart-shrinking', true)
+                ->setOption('margin-top', '3cm')
+                ->setOption('margin-bottom', '2cm')
+                ->setOption('footer-left', "PAGINA [page] DE [toPage]")
+                ->setOption('footer-font-size', 10)
+                ->setOption('header-html', $headerHtml)
+                ->setOption('dpi', 300);
+
+            // return view('ere.pdf.resultados', compact('parametros'));
+            return $pdf->stream('HOJA-RESPUESTAS-'.date('Ymdhis').'.pdf');
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function generarPdfMatrizbyEvaluacionId(Request $request)
     {
 
