@@ -33,6 +33,9 @@ use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
+    Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
+    Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
+    Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
     Route::get('fechas-importantes/tipos', [FechasImportantesController::class, 'obtenerTiposFechas']);
     Route::group(['prefix' => 'instituciones-educativas'], function () {
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
@@ -100,6 +103,18 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
             Route::get('progreso/{iMatrId}', [ReporteAcademicoProgresoController::class, 'obtenerDataReporteApoderado']);
         });
     });
+
+    Route::group(['prefix' => 'feriados-importantes'], function () {
+        Route::get('selFechasImportantes/{iYAcadId?}/{iSedeId?}', [FeriadoImportanteController::class, 'selFechasImportantes']);
+        Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
+        Route::delete('delFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'delFechasImportantes']);
+        Route::get('selDependenciaFechas/{iFechaImpId?}', [FeriadoImportanteController::class, 'selDependenciaFechas']);
+    });
+
+    Route::group(['prefix' => 'calendarioAcademico'], function () {
+        Route::post('insCalendarioAcademico', [CalendarioAcademicosController::class, 'insCalendarioAcademico']);
+    });
+
 });
 
 Route::group(['prefix' => 'acad'], function () {
@@ -154,7 +169,7 @@ Route::group(['prefix' => 'acad'], function () {
     Route::group(['prefix' => 'feriados-importantes'], function () {
         Route::get('getFechasImportantes/{iYAcadId?}/{iSedeId?}', [FeriadoImportanteController::class, 'getFechasImportantes']);
         Route::get('getDependenciaFechas/{iFechaImpId?}', [FeriadoImportanteController::class, 'getDependenciaFechas']);
-        Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
+        // Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
         Route::put('updFechasImportantes', [FeriadoImportanteController::class, 'updFechasImportantes']);
         Route::delete('deleteFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'deleteFechasImportantes']);
     });
