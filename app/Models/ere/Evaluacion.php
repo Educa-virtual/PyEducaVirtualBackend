@@ -1,56 +1,12 @@
 <?php
 
-// namespace App\Models\ere;
 namespace App\Models\ere;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\DB;
 
-class Evaluacion extends Model
+class Evaluacion
 {
-    // use HasFactory;
-
-    // //protected $table = 'evaluacion'; // Nombre de la tabla
-    // protected $table = 'evaluacion';
-    // //protected $primaryKey = 'ere.sp_SEL_iEvaluacionId'; // Clave primaria
-
-    // // Si las columnas no siguen la convención de pluralización de Laravel, se especifican aquí
-    // protected $fillable = [
-    //     'iEvaluacionId',
-    //     'idTipoEvalId',
-    //     'iNivelEvalId',
-    //     'dtEvaluacionCreacion',
-    //     'cEvaluacionNombre',
-    //     'cEvaluacionDescripcion',
-    //     'cEvaluacionUrlDrive',
-    //     'cEvaluacionUrlPlantilla',
-    //     'cEvaluacionUrlManual',
-    //     'cEvaluacionUrlMatriz',
-    //     'cEvaluacionObs',
-    //     'dtEvaluacionLiberarMatriz',
-    //     'dtEvaluacionLiberarCuadernillo',
-    //     'dtEvaluacionLiberarResultados',
-    // ];
-
-    // // public static function obtenerTodas()
-    // // {
-    // //     return self::all();
-    // // }
-
-
-    //ESTA PARTE DEL CODIGO USA PROCEDIMIENTO ALMACENADO: PROCEDIMIENTO
-
-    protected $table = 'evaluacion'; // Nombre de la tabla
-
-    // Si la tabla tiene una clave primaria diferente a 'id', defínela aquí
-    protected $primaryKey = 'iEvaluacionId';
-
-    // Deshabilitar las marcas de tiempo si no se usan
-    public $timestamps = false;
-
-    // Aquí puedes definir un método para ejecutar el procedimiento almacenado
-    public static function obtenerEvaluaciones($request)
+    public static function selEvaluaciones($request)
     {
         $params = [
             $request->header('iCredEntPerfId'),
@@ -61,11 +17,59 @@ class Evaluacion extends Model
         return DB::select("EXEC ere.SP_SEL_evaluaciones $placeholders", $params);
     }
 
-    public static function guardarEvaluaciones($params)
+    public static function selEvaluacion($request)
     {
+        $params = [
+            $request->header('iCredEntPerfId'),
+            $request->iEvaluacionId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($params), '?'));
+        return DB::selectOne("EXEC ere.SP_SEL_evaluacion $placeholders", $params);
+    }
+
+    public static function insEvaluaciones($request)
+    {
+        $params = [
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+            $request->cEvaluacionNombre,
+            $request->cEvaluacionDescripcion,
+            $request->cEvaluacionUrlDrive,
+            $request->dtEvaluacionFechaInicio,
+            $request->dtEvaluacionFechaFin,
+            $request->iEstado,
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+        ];
         $placeholders = implode(',', array_fill(0, count($params), '?'));
         return DB::select("EXEC ere.SP_INS_evaluaciones $placeholders", $params);
     }
+
+    public static function updEvaluaciones($request)
+    {
+        $params = [
+            $request->iEvaluacionId,
+            $request->idTipoEvalId,
+            $request->iNivelEvalId,
+            $request->cEvaluacionNombre,
+            $request->cEvaluacionDescripcion,
+            $request->cEvaluacionUrlDrive,
+            $request->dtEvaluacionFechaInicio,
+            $request->dtEvaluacionFechaFin,
+        ];
+        $placeholders = implode(',', array_fill(0, count($params), '?'));
+        return DB::insert("EXEC ere.SP_UPD_evaluaciones $placeholders", $params);
+    }
+
+    public static function selParticipaciones($request)
+    {
+        $params = [
+            $request->iEvaluacionId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($params), '?'));
+        return DB::select("EXEC ere.SP_SEL_participaciones $placeholders", $params);
+    }
+
     public static function actualizarEvaluacion(array $params)
     {
         // Ejecutar el procedimiento almacenado para actualizar la evaluación
