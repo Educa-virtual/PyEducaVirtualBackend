@@ -561,10 +561,6 @@ class AsistenciaController extends Controller
         $years = date('Y', $convertir_year);
 
         $fechas = [];
-
-        $fecha_inicio = new DateTime($inicio);
-        $fecha_fin = new DateTime($fin);
-
         $solicitud = [
             $request->opcion ?? 'REPORTE_PERSONALIZADO',
             $request->iCursoId ?? NULL,
@@ -622,7 +618,7 @@ class AsistenciaController extends Controller
         foreach ($json_asistencia as $key => $indice) {
             $datos["lista"][$key][] = $indice["completoalumno"];
             $valor = $indice["diasAsistencia"] ?? NULL;
-            $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["cTipoAsiLetra"];
+            $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["asistencia"];
         }
 
 
@@ -641,13 +637,36 @@ class AsistenciaController extends Controller
             "area_curricular" => strtolower($query[0]->curso),
             "fecha_actual" => $fecha_fija,
             "dias" => $dias,
-            "respuesta" => $datos,
-            "logo" => $logo
+            "datos" => $datos,
+            "logo" => $logo,
+            "yearAcademico" => $query[0]->yearAcademico,
+            "nombreUgel" => $json_institucion[0]["cUgelNombre"]
         ];
 
-        $pdf = Pdf::loadView('asistencia_reporte_diario', $respuesta)
-        ->stream('reporte_asistencia.pdf');
-        return $pdf;
+        $htmlcontent = view("asistencia_reporte_diario",compact('respuesta'))->render();
+
+        $archivoBlade = 'asistencia_reporte_diario';
+        $archivoHtml = $archivoBlade . '.html';
+
+        $tempPath = storage_path('app/' . $archivoHtml);
+        file_put_contents($tempPath, $htmlcontent);
+
+        $exePath = env('WEASYPRINT_PATH');
+        $inputHtml = storage_path('app/' . $archivoHtml);
+        $outputPdf = storage_path('app/' . $archivoBlade . '.pdf');
+
+        $cmd = "\"{$exePath}\" \"{$inputHtml}\" \"{$outputPdf}\"";
+        $output = shell_exec($cmd . ' 2>&1');
+
+        if (!file_exists($outputPdf)) {
+            throw new Exception("Error generando PDF: {$output}");
+        }
+
+        if (file_exists($inputHtml)) {
+            unlink($inputHtml);
+        }
+
+        return response()->download($outputPdf)->deleteFileAfterSend(true);
     }
     public function reporte_personalizado(Request $request)
     {
