@@ -7,6 +7,79 @@ use Illuminate\Support\Facades\DB;
 
 class Estudiante extends Model
 {
+    public static function selEstudiantes(Object $request)
+    {
+        $parametros = [
+            $request->iEstudianteId,
+            $request->iPersId,
+            $request->iCurrId,
+            $request->cEstCodigo,
+            $request->dtEstIngreso,
+            $request->cEstNombres,
+            $request->cEstPaterno,
+            $request->cEstMaterno,
+            $request->dtEstFechaNacimiento,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC acad.Sp_SEL_estudiantes $placeholders", $parametros);
+    }
+
+    public static function selEstudiante(Object $request)
+    {
+        $parametros = [
+            $request->iEstudianteId,
+            $request->iPersId,
+            $request->cEstCodigo,
+            $request->iTipoIdentId,
+            $request->cPersDocumento,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_SEL_estudiante $placeholders", $parametros);
+    }
+
+    public static function insEstudiante(Object $request)
+    {
+        $parametros = [
+            $request->iPersId,
+            $request->iCurrId ?? 1,
+            $request->cPersNombre,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->dPersNacimiento,
+            $request->cPersCertificado,
+            $request->cPersDomicilio,
+            $request->header('iCredEntPerfId'),
+            $request->cEstCodigo,
+            $request->cEstUbigeo,
+            $request->cEstTelefono,
+            $request->cEstCorreo,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_INS_estudiante $placeholders", $parametros);
+    }
+
+    public static function updEstudiante(Object $request)
+    {
+        $parametros = [
+            $request->iEstudianteId,
+            $request->iPersId,
+            $request->iCurrId,
+            $request->cPersNombre,
+            $request->cPersPaterno,
+            $request->cPersMaterno,
+            $request->dPersNacimiento,
+            $request->cEstPartidaNacimiento,
+            $request->cPersDomicilio,
+            $request->header('iCredEntPerfId'),
+            $request->cEstCodigo,
+            $request->cEstUbideo,
+            $request->cEstTelefono,
+            $request->cEstCorreo,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_UPD_estudiante $placeholders", $parametros);
+    }
+
     public static function selIdEstudiantePorIdPersona($iEstudianteId)
     {
         return DB::selectOne("SELECT iEstudianteId FROM acad.estudiantes WHERE iPersId=?", [$iEstudianteId]);

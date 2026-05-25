@@ -6,6 +6,16 @@ use Illuminate\Support\Facades\DB;
 
 class Matricula
 {
+    public static function selMatriculaParametros($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("exec acad.Sp_SEL_matriculaParametros $placeholders", $parametros);
+    }
+
     public static function selGradoSeccionTurnoConf($request)
     {
         $parametros = [
@@ -21,30 +31,6 @@ class Matricula
         return DB::select("exec acad.Sp_SEL_gradoSeccionTurnoConf $placeholders", $parametros);
     }
 
-    public static function selNivelGrado($request)
-    {
-        $data = DB::select("SELECT ng.iNivelGradoId, n.cNivelNombre, nt.cNivelTipoNombre, c.cCicloNombre, g.cGradoAbreviacion, g.cGradoNombre
-                FROM acad.nivel_grados ng
-                    JOIN acad.grados g ON ng.iGradoId = g.iGradoId
-                    JOIN acad.nivel_ciclos nc ON nc.iNivelCicloId = ng.iNivelCicloId
-                    JOIN acad.ciclos c ON nc.iCicloId = c.iCicloId
-                    JOIN acad.nivel_tipos nt ON nc.iNivelTipoId = nt.iNivelTipoId
-                    JOIN acad.niveles n ON nt.iNivelId = n.iNivelId");
-        return $data;
-    }
-
-    public static function selDeterminarGradoEstudiante($request)
-    {
-        $parametros = [
-            $request->header('iCredEntPerfId'),
-            $request->iEstudianteId,
-            $request->iYAcadId,
-            $request->iSedeId,
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("exec acad.Sp_SEL_determinarGradoEstudiante $placeholders", $parametros);
-    }
-
     public static function insMatricula($request)
     {
         $parametros = [
@@ -56,11 +42,37 @@ class Matricula
             $request->iTurnoId,
             $request->iSeccionId,
             $request->dtMatrFecha,
-            $request->cMatrObservacion,
+            $request->cMatrObservaciones,
             $request->header('iCredEntPerfId'),
+            $request->iMatrEstado,
+            $request->iMatrNEE,
+            $request->iSemAcadId,
+            $request->iCurrId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert("exec acad.Sp_INS_matricula $placeholders", $parametros);
+        return DB::selectOne("exec acad.Sp_INS_matricula $placeholders", $parametros);
+    }
+
+    public static function updMatricula($request)
+    {
+        $parametros = [
+            $request->iMatrId,
+            $request->iEstudianteId,
+            $request->iTipoMatrId,
+            $request->iSedeId,
+            $request->iNivelGradoId,
+            $request->iTurnoId,
+            $request->iSeccionId,
+            $request->dtMatrFecha,
+            $request->cMatrObservaciones,
+            $request->header('iCredEntPerfId'),
+            $request->iMatrEstado,
+            $request->iMatrNEE,
+            $request->iSemAcadId,
+            $request->iCurrId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("exec acad.Sp_UPD_matricula $placeholders", $parametros);
     }
 
     public static function selMatriculas($request)

@@ -18,15 +18,6 @@ class FichaFamiliar
         return DB::select('EXEC obe.Sp_SEL_fichasFamiliaresPersonas ' . $placeholders, $parametros);
     }
 
-    public static function insPersonas($request)
-    {
-        $parametros = [
-            
-        ];
-        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC grl.Sp_INS_personas ' . $placeholders, $parametros);
-    }
-
     public static function insfichaFamiliar($request)
     {
         $parametros = [

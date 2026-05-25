@@ -5,6 +5,7 @@ namespace App\Http\Controllers\acad;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Models\acad\Curso;
 use App\Services\acad\ReportesAcademicosService;
 use Exception;
 use Illuminate\Http\Request;
@@ -27,53 +28,16 @@ class CursosController extends Controller
 
     public function list(Request $request)
     {
-        $request->validate(
-            [
-                'opcion' => 'required',
-            ],
-            [
-                'opcion.required' => 'Hubo un problema al obtener la acción',
-            ]
-        );
-        if ($request->iCursoId) {
-            $iCursoId = $this->hashids->decode($request->iCursoId);
-            $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
-        }
-
-        $parametros = [
-            $request->opcion,
-            $request->valorBusqueda ?? '-',
-
-            $iCursoId                                              ??  NULL,
-            $request->iCurrId                                      ??  NULL,
-            $request->iTipoCursoId                                 ??  NULL,
-            $request->cCursoNombre                                 ??  NULL,
-            $request->nCursoCredTeoria                             ??  NULL,
-            $request->nCursoCredPractica                           ??  NULL,
-            $request->cCursoDescripcion                            ??  NULL,
-            $request->nCursoTotalCreditos                          ??  NULL,
-            $request->cCursoPerfilDocente                          ??  NULL,
-            $request->iCursoTotalHoras                             ??  NULL,
-            $request->iCursoEstado                                 ??  NULL,
-            $request->iEstado                                      ??  NULL,
-            $request->iSesionId                                    ??  NULL,
-
-            $request->iCredId
-
-        ];
-
         try {
-            $data = DB::select('exec acad.Sp_SEL_cursos
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            if ($request->iCursoId) {
+                $iCursoId = $this->hashids->decode($request->iCursoId);
+                $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : null;
+            }
+            $data = Curso::selCursos($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function listarCursosPorNivel(Request $request)

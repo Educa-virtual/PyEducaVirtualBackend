@@ -1,6 +1,7 @@
 
 <?php
 
+use App\Http\Controllers\acad\ApoderadoController;
 use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\acad\PeriodoEvaluacionesController;
 use App\Http\Controllers\acad\ReporteAcademicoProgresoController;
 use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\acad\TurnosController;
+use App\Http\Controllers\acad\DesercionController;
 use App\Http\Controllers\api\acad\AdministradorController;
 use App\Http\Controllers\api\acad\DistribucionBloqueController;
 use App\Http\Controllers\api\acad\FeriadoImportanteController;
@@ -29,6 +31,7 @@ use App\Http\Controllers\VacantesController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
+use App\Http\Controllers\FileController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
@@ -113,6 +116,38 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
         Route::post('insCalendarioAcademico', [CalendarioAcademicosController::class, 'insCalendarioAcademico']);
+    });
+
+
+    Route::group(['prefix' => 'matricula'], function () {
+        Route::post('searchGradoSeccionTurnoConf', [MatriculaController::class, 'searchGradoSeccionTurnoConf']);
+        Route::post('crearMatricula', [MatriculaController::class, 'crearMatricula']);
+        Route::post('listarMatriculas', [MatriculaController::class, 'listarMatriculas']);
+        Route::post('verMatricula', [MatriculaController::class, 'verMatricula']);
+        Route::post('guardarMatricula', [MatriculaController::class, 'guardarMatricula']);
+        Route::post('actualizarMatricula', [MatriculaController::class, 'actualizarMatricula']);
+        Route::post('borrarMatricula', [MatriculaController::class, 'borrarMatricula']);
+    });
+
+    Route::group(['prefix' => 'estudiante'], function () {
+
+        Route::post('guardarEstudiante', [EstudiantesController::class, 'save']);
+        Route::post('actualizarEstudiante', [EstudiantesController::class, 'update']);
+        Route::post('listarEstudiantes', [EstudiantesController::class, 'listarEstudiantes']);
+        Route::post('verEstudiante', [EstudiantesController::class, 'verEstudiante']);
+
+        Route::post('importarEstudiantesPadresExcel', [EstudiantesController::class, 'importarEstudiantesPadresExcel'])->middleware(['auth:api', RefreshToken::class]);
+        Route::post('importarEstudiantesMatriculasExcel', [EstudiantesController::class, 'importarEstudiantesMatriculasExcel']);
+
+        Route::post('importarEstudiantesMatriculasExcelPlatform', [FileController::class, 'importarEstudiantesMatriculasExcel']);
+    });
+
+    Route::group(['prefix' => 'desercion'], function () {
+        Route::post('listarDeserciones', [DesercionController::class, 'listarDeserciones']);
+        Route::post('verDesercion', [DesercionController::class, 'verDesercion']);
+        Route::post('guardarDesercion', [DesercionController::class, 'guardarDesercion']);
+        Route::post('actualizarDesercion', [DesercionController::class, 'actualizarDesercion']);
+        Route::post('borrarDesercion', [DesercionController::class, 'borrarDesercion']);
     });
 
 });

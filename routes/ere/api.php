@@ -186,6 +186,8 @@ Route::group(['prefix' => 'ere', 'middleware' => ['auth:api', RefreshToken::clas
         Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
         //Agregando CopiarEvaluacion
         Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
+        // Obtener Hoja de Respuestas
+        Route::post('obtenerHojaRespuestas', [EvaluacionesController::class, 'obtenerHojaRespuestas']);
         //ObtenerMatrizCompetencia
         Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
         //ObtenerMatrizCapacidad

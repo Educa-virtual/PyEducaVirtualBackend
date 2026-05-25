@@ -4,135 +4,130 @@ namespace App\Http\Controllers\acad;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
-use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
-use App\Services\acad\MatriculasService;
-use App\Services\apo\ApoderadosService;
-use App\Services\ParseSqlErrorService;
+use App\Models\apo\Apoderado;
+use App\Models\grl\Persona;
+use App\Models\seg\Usuario;
 use Exception;
-use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Services\seg\UsuariosService;
 
 class ApoderadoController extends Controller
 {
-    protected $hashids;
-    protected $parseSqlErrorService;
-
-    public function __construct()
+    public function listarApoderados(Request $request)
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
-        $this->parseSqlErrorService = new ParseSqlErrorService();
-    }
-
-    public function save(Request $request)
-    {
-        // primero guardar como persona
-        $request->merge([
-            'iTipoPersId' => 1, // Siempre persona natural
-        ]);
-
-        $parametros = [
-            $request->iEstudianteId,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersDomicilio,
-            $request->iCredId,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-            $request->cPersContacto,
-        ];
-
         try {
-            $data = DB::select('EXEC acad.Sp_INS_apoderado ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
+            $data = Apoderado::selApoderados($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
-        return new JsonResponse($response, $codeResponse);
     }
 
-    public function show(Request $request)
+    public function guardarApoderado(Request $request)
     {
-        $parametros = [
-            $request->iEstudianteId,
-            $request->iPersId,
-            $request->iApoderadoId,
-            $request->cEstCodigo,
-        ];
-
         try {
-            $data = DB::select("execute acad.Sp_SEL_apoderado ?,?,?,?", $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            DB::beginTransaction();
+
+            if ($request->iPersId == null || $request->iPersId == 0) {
+                $persona = Persona::insPersonas($request);
+                $request->merge([
+                    'iPersId' => $persona['iPersId'],
+                ]);
+            } else {
+                Persona::updPersonas($request);
+            }
+
+            $persona = UsuariosService::registrarUsuario($request);
+            $request->merge([
+                'iCredId' => $persona['data']->iCredId,
+                'iPerfilId' => Perfil::APODERADO->value,
+            ]);
+            Usuario::insPerfil($request);
+
+            $data = Apoderado::insApoderado($request);
+            DB::commit();
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->parse($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            DB::rollBack();
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
-    public function update(Request $request)
+    public function actualizarApoderado(Request $request)
     {
-        $parametros = [
-            $request->iEstudianteId,
-            $request->iPersApoderadoId,
-            $request->iTipoIdentId,
-            $request->cPersDocumento,
-            $request->cPersPaterno,
-            $request->cPersMaterno,
-            $request->cPersNombre,
-            $request->cPersSexo,
-            $request->dPersNacimiento,
-            $request->iTipoEstCivId,
-            $request->cPersFotografia,
-            $request->cPersDomicilio,
-            $request->iNacionId,
-            $request->iPaisId,
-            $request->iDptoId,
-            $request->iPrvnId,
-            $request->iDsttId,
-            $request->iCredId,
-            $request->cContacto,
-        ];
-
         try {
-            $data = DB::select('execute acad.Sp_UPD_apoderado ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            DB::beginTransaction();
+
+            if ($request->iPersId == null || $request->iPersId == 0) {
+                $persona = Persona::insPersonas($request);
+                $request->merge([
+                    'iPersId' => $persona['iPersId'],
+                ]);
+            } else {
+                Persona::updPersonas($request);
+            }
+
+            $credencial = Usuario::insCredencial($request);
+            $request->merge([
+                'iCredId' => $credencial['iCredId'],
+                'iPerfilId' => Perfil::APODERADO,
+            ]);
+            Usuario::insPerfil($request);
+
+            $data = Apoderado::updApoderado($request);
+            DB::commit();
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (\Exception $e) {
-            $error_message = $this->parseSqlErrorService->__invoke($e->getMessage());
-            $response = ['validated' => false, 'message' => $error_message, 'data' => []];
-            $codeResponse = 500;
+            DB::rollBack();
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
-    public function obtenerEstudiantes()
+    public function actualizarApoderadoEstado(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            $data = ApoderadosService::obtenerEstudiantesPorApoderado(Auth::user()->iPersId);
-            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            $data = Apoderado::updApoderadoEstado($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
+        } catch (\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function verApoderado(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
+            $data = Apoderado::selApoderado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function borrarApoderado(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            $data = Apoderado::delApoderado($request);
+            return FormatearMensajeHelper::ok('Se eliminó la información', $data);
+        } catch (\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function buscarPersonaApoderado(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
+            $data = Apoderado::selPersonaApoderado($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
