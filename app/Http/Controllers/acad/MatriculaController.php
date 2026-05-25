@@ -25,7 +25,7 @@ class MatriculaController extends Controller
     public function crearMatricula(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::APODERADO, Perfil::ESTUDIANTE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::APODERADO, Perfil::ESTUDIANTE, Perfil::DOCENTE]]);
             $data = Matricula::selMatriculaParametros($request);
             return FormatearMensajeHelper::ok('Se obtuvó la información', $data);
         } catch (Exception $e) {
