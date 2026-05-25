@@ -48,18 +48,6 @@ class Usuario extends Model
         return DB::selectOne("EXEC seg.Sp_UPD_credencial $placeholders", $params);
     }
 
-    public static function insPerfil(Object $request)
-    {
-        $params = [
-            $request->header('iCredEntPerfId'),
-            $request->iCredId,
-            $request->iPerfilId,
-            $request->iSedeId,
-        ];
-        $placeholders = implode(',', array_fill(0, count($params), '?'));
-        return DB::selectOne("EXEC seg.Sp_INS_Perfil $placeholders", $params);
-    }
-
     public static function obtenerIdPersonaPorIdCred($iCredId)
     {
         $data = DB::selectOne("SELECT TOP 1 iPersId FROM seg.credenciales WHERE iCredId=?", [$iCredId]);
@@ -91,9 +79,15 @@ class Usuario extends Model
         return DB::select("EXEC seg.SP_SEL_usuarios $placeholders", $parametros);
     }
 
-    public static function selUsuarioPorIdPersona($iPersId)
+    public static function selUsuario($request)
     {
-        return DB::selectOne('EXEC [seg].[SP_SEL_usuarios] @iPersId=?', [$iPersId]);
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iCredId,
+            $request->iPersId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC seg.SP_SEL_usuario $placeholders", $parametros);
     }
 
     public static function selUsuarioPorCredencial($cCredUsuario)

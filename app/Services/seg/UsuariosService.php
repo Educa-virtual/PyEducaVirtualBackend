@@ -2,24 +2,12 @@
 
 namespace App\Services\seg;
 
-use App\Helpers\ProteccionCorreoHelper;
-use App\Helpers\VerifyHash;
 use App\Http\Requests\seg\CambiarContrasenaRequest;
-use App\Http\Requests\seg\SolicitarRegistroUsuarioRequest;
-use App\Mail\RecuperarPasswordMail;
-use App\Mail\seg\SolicitudRegistroUsuarioMail;
-use App\Models\grl\Persona;
-use App\Models\seg\PasswordReset;
-use App\Models\seg\SolicitudRegistroUsuario;
 use App\Models\seg\Usuario;
 use App\Services\grl\PersonasService;
 use Carbon\Carbon;
 use Exception;
-use Faker\Calculator\Ean;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 
 class UsuariosService
 {
@@ -67,14 +55,13 @@ class UsuariosService
             'cPersDocumento' => 'required|string|size:8',
         ]);
         $persona = PersonasService::obtenerPersonaPorDocumento($request->cPersDocumento);
-        $parametros = [
+        $request->merge([
             'iEntId' => 10,
             'iPersId' => $persona->iPersId,
-            'iCredEntPerfId' => $request->header('iCredEntPerfId'),
-        ];
-        Usuario::insCredenciales((object) $parametros);
+        ]);
+        Usuario::insCredenciales($request);
 
-        $persona = Usuario::selUsuarioPorIdPersona($persona->iPersId);
+        $persona = Usuario::selUsuario($request);
         return [
             'data' => $persona,
             'mensaje' => 'Se ha registrado el usuario'

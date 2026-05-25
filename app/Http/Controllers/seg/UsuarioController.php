@@ -115,7 +115,7 @@ class UsuarioController
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             PersonasService::actualizarPersonaConDataApi($request, $request);
-            $resultado = Usuario::insPerfil($request);
+            $resultado = UsuariosService::registrarUsuario($request);
             return FormatearMensajeHelper::ok($resultado['mensaje'], $resultado['data']);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

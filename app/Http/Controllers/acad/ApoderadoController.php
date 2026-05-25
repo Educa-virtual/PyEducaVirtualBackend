@@ -4,22 +4,15 @@ namespace App\Http\Controllers\acad;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
-use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use App\Models\apo\Apoderado;
 use App\Models\grl\Persona;
 use App\Models\seg\Usuario;
-use App\Services\acad\MatriculasService;
-use App\Services\apo\ApoderadosService;
-use App\Services\ParseSqlErrorService;
 use Exception;
-use Hashids\Hashids;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use PhpParser\Node\UseItem;
+use App\Services\seg\UsuariosService;
 
 class ApoderadoController extends Controller
 {
@@ -49,10 +42,10 @@ class ApoderadoController extends Controller
                 Persona::updPersonas($request);
             }
 
-            $credencial = Usuario::insCredencial($request);
+            $persona = UsuariosService::registrarUsuario($request);
             $request->merge([
-                'iCredId' => $credencial['iCredId'],
-                'iPerfilId' => Perfil::APODERADO,
+                'iCredId' => $persona['data']->iCredId,
+                'iPerfilId' => Perfil::APODERADO->value,
             ]);
             Usuario::insPerfil($request);
 

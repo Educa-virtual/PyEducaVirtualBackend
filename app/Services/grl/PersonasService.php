@@ -87,58 +87,18 @@ class PersonasService
             'cPersCorreo' => $item->cPersCorreo ?? $persona->cPersCorreo ?? NULL,
         ];
         if ($persona) {
-            //Actualizar persona
-            $parametros = [
-                'iPersId' => $persona->iPersId,
-                'cPersDocumento' => $item['cPersDocumento'],
-                'cPersPaterno' => $item['cPersPaterno'],
-                'cPersMaterno' => isset($item['cPersMaterno']) ? $item['cPersMaterno'] : '',
-                'cPersNombre' => $item['cPersNombre'],
-                'cPersSexo' => isset($item['cPersSexo']) ? $item['cPersSexo'] : "M",
-                'dPersNacimiento' => isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
-                'iTipoEstCivId' => isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
-                'cPersFotografia' => NULL,
-                'cPersRazonSocialNombre' => $item['cPersRazonSocialNombre'] ?? '',
-                'cPersRazonSocialCorto' => '',
-                'cPersRazonSocialSigla' => '',
-                'cPersDomicilio' => $item['cPersDomicilio'],
-                'iPersRepresentanteLegalId' => null,
-                'iCredId' => isset($iCredId) ? $iCredId : null,
-                'iNacionId' => isset($item['iNacionId']) ? $item['iNacionId'] : null,
-                'iPaisId' => isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
-                'iDptoId' => isset($item['iDptoId']) ? (trim($item['iDptoId']) ?: null) : null,
-                'iPrvnId' => isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
-                'iDsttId' => isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
-            ];
-            Persona::updPersonas((object) $parametros);
+            // Actualizar persona
+            $parametros['iPersId'] = $persona->iPersId;
+            Usuario::updPersonas((object) $parametros);
             $iPersId = $persona->iPersId;
         } else {
-            $parametros = [
-                'iTipoPersId' => isset($iTipoPersId) ? $iTipoPersId : null,
-                'iTipoIdentId' => $item['iTipoIdentId'],
-                'cPersDocumento' => $item['cPersDocumento'],
-                'cPersPaterno' => $item['cPersPaterno'],
-                'cPersMaterno' => isset($item['cPersMaterno']) ? $item['cPersMaterno'] : null,
-                'cPersNombre' => $item['cPersNombre'],
-                'cPersSexo' => isset($item['cPersSexo']) ? $item['cPersSexo'] : "M",
-                'dPersNacimiento' => isset($item['dPersNacimiento']) ? $item['dPersNacimiento'] : null,
-                'iTipoEstCivId' => isset($item['iTipoEstCivId']) ? $item['iTipoEstCivId'] : 1,
-                'cPersFotografia' => NULL,
-                'cPersRazonSocialNombre' => $item['cPersRazonSocialNombre'] ?? '',
-                'cPersRazonSocialCorto' => '',
-                'cPersRazonSocialSigla' => '',
-                'cPersDomicilio' => $item['cPersDomicilio'],
-                'iPersRepresentanteLegalId' => null,
-                'iCredId' => isset($iCredId) ? $iCredId : null,
-                'iNacionId' => isset($item['iNacionId']) ? $item['iNacionId'] : null,
-                'iPaisId' => isset($item['iPaisId']) ? (trim($item['iPaisId']) ?: null) : null,
-                'iDptoId' => isset($item['iDptoId']) ? (trim($item['iDptoId']) ?: null) : null,
-                'iPrvnId' => isset($item['iPrvnId']) ? (trim($item['iPrvnId']) ?: null) : null,
-                'iDsttId' => isset($item['iDsttId']) ? (trim($item['iDsttId']) ?: null) : null,
-            ];
-            $data = Persona::insPersonas((object) $parametros);
-            $iPersId = !empty($data) ? $data[0]->iPersId : null;
+            // Insertar persona
+            $data = Usuario::insPersonas((object) $parametros);
+            $iPersId = !empty($data) ? $data->iPersId : null;
         }
-        return $iPersId;
+        return [
+            'iPersId' => $iPersId,
+            'parametros' => $parametros,
+        ];
     }
 }
