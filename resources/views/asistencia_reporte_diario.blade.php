@@ -103,12 +103,11 @@
         }
     </style>
 </head>
-<body>
 
     <div class="cabecera" style="width: 100%">
         <table class="table table-condensed text-center table-sm py-2 sin-borde">
             <tbody>
-               <tr>
+                <tr>
                     <td style="width: 15%" class="text-left align-middle"><img
                             src="{{ ImagenABase64::convertir(public_path('images/logo-dremo.png')) }}"></td>
                     <td style="width: 70%" class="text-center align-middle">{{$respuesta['yearAcademico']}}<br></td>
