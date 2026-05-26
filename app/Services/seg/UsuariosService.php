@@ -61,11 +61,12 @@ class UsuariosService
         ]);
         Usuario::insCredenciales($request);
 
-        $persona = Usuario::selUsuario($request);
-        return [
-            'data' => $persona,
-            'mensaje' => 'Se ha registrado el usuario'
-        ];
+        return Usuario::selUsuario($request);
+    }
+
+    public static function insPerfil($request)
+    {
+        return Usuario::insPerfil($request);
     }
 
     public static function cambiarEstadoUsuario($parametros)
