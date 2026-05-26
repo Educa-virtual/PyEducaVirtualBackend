@@ -65,10 +65,6 @@ class AulaVirtual extends Model
         $ie = InstitucionesEducativasService::obtenerIeNivel($request->iIieeId);
         $yearAcademico = YearAcademicosService::obtenerYearAcademico($request->iYAcadId);
 
-        $persona = PersonasRepository::obtenerPersonaPorId($iPersId);
-        $ie = InstitucionesEducativasService::obtenerIeNivel($request->iIieeId);
-        $yearAcademico = YearAcademicosService::obtenerYearAcademico($request->iYAcadId);
-
         $htmlcontent = view('aula.reporte_actividades_academicas', compact('persona','ie','yearAcademico','grado','seccion','actividades','area','periodo'))->render();
 
         $archivoBlade = 'reporte_actividades_academicas';

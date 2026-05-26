@@ -431,10 +431,12 @@ class AsistenciaController extends Controller
         $primerDia = $primera_fecha->modify("first day of this month");
         $ultima_fecha = new DateTime($combinar);
         $ultimoDia = $ultima_fecha->modify("last day of this month");
+        
 
         $primera_fecha = $primerDia->format('Y-m-d');
         $tiempo = strtotime($primera_fecha);
         $ultimo = $ultimoDia->format('d');
+        $finMes = $year_actual . "-" . $fecha_inicial ."-". $ultimo;
 
         $nombre_dia = date("l", $tiempo);
 
@@ -472,12 +474,11 @@ class AsistenciaController extends Controller
             $request->iIieeId ?? NULL,
             $request->idDocCursoId ?? null,
             $request->inicio ?? $combinar,
-            $request->fin ?? NULL,
+            $finMes ?? NULL,
         ];
-
+  
         $consulta = "execute asi.Sp_SEL_control_asistencias ".str_repeat('?,',count($solicitud)-1).'?';
         $query = DB::select($consulta, $solicitud);
-
         $json_registro = [];
 
         for ($i = 1; $i <= $ultimo; $i++) {
@@ -540,15 +541,38 @@ class AsistenciaController extends Controller
             "ultimodia"         => $ultimo,
             "dias_Semana"       => $unir_dias,
             "mes"               => $meses[$inicio-1],
-            "inicio"            => "2024-10-01",
-            "fin"               => "2024-10-31",
+            "inicio"            => $combinar,
+            "fin"               => $finMes,
             "ciclo"             => $request->cCicloRomanos,
+            "yearAcademico"     => $query[0]->yearAcademico,
+            "nombreUgel"        => $json_institucion[0]["cUgelNombre"]
         ];
 
-        $pdf = Pdf::loadView('asistencia_reporte_mensual', $respuesta)
-            ->setPaper('a4', 'landscape')
-            ->stream('silabus.pdf');
-        return $pdf;
+        $htmlcontent = view("asistencia_reporte_mensual",compact('respuesta'))->render();
+
+        $archivoBlade = 'asistencia_reporte_mensual';
+        $archivoHtml = $archivoBlade . '.html';
+
+        $tempPath = storage_path('app/' . $archivoHtml);
+        file_put_contents($tempPath, $htmlcontent);
+
+        $exePath = env('WEASYPRINT_PATH');
+        $inputHtml = storage_path('app/' . $archivoHtml);
+        $outputPdf = storage_path('app/' . $archivoBlade . '.pdf');
+
+        $cmd = "\"{$exePath}\" \"{$inputHtml}\" \"{$outputPdf}\"";
+        $output = shell_exec($cmd . ' 2>&1');
+
+        if (!file_exists($outputPdf)) {
+            throw new Exception("Error generando PDF: {$output}");
+        }
+
+        if (file_exists($inputHtml)) {
+            unlink($inputHtml);
+        }
+
+        return response()->download($outputPdf)->deleteFileAfterSend(true);
+
     }
     public function reporte_diario(Request $request)
     {
@@ -561,10 +585,6 @@ class AsistenciaController extends Controller
         $years = date('Y', $convertir_year);
 
         $fechas = [];
-
-        $fecha_inicio = new DateTime($inicio);
-        $fecha_fin = new DateTime($fin);
-
         $solicitud = [
             $request->opcion ?? 'REPORTE_PERSONALIZADO',
             $request->iCursoId ?? NULL,
@@ -622,7 +642,7 @@ class AsistenciaController extends Controller
         foreach ($json_asistencia as $key => $indice) {
             $datos["lista"][$key][] = $indice["completoalumno"];
             $valor = $indice["diasAsistencia"] ?? NULL;
-            $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["cTipoAsiLetra"];
+            $datos["lista"][$key][] = $valor == null ? "" : $valor[0]["asistencia"];
         }
 
 
@@ -641,18 +661,41 @@ class AsistenciaController extends Controller
             "area_curricular" => strtolower($query[0]->curso),
             "fecha_actual" => $fecha_fija,
             "dias" => $dias,
-            "respuesta" => $datos,
-            "logo" => $logo
+            "datos" => $datos,
+            "logo" => $logo,
+            "yearAcademico" => $query[0]->yearAcademico,
+            "nombreUgel" => $json_institucion[0]["cUgelNombre"]
         ];
 
-        $pdf = Pdf::loadView('asistencia_reporte_diario', $respuesta)
-        ->stream('reporte_asistencia.pdf');
-        return $pdf;
+        $htmlcontent = view("asistencia_reporte_diario",compact('respuesta'))->render();
+
+        $archivoBlade = 'asistencia_reporte_diario';
+        $archivoHtml = $archivoBlade . '.html';
+
+        $tempPath = storage_path('app/' . $archivoHtml);
+        file_put_contents($tempPath, $htmlcontent);
+
+        $exePath = env('WEASYPRINT_PATH');
+        $inputHtml = storage_path('app/' . $archivoHtml);
+        $outputPdf = storage_path('app/' . $archivoBlade . '.pdf');
+
+        $cmd = "\"{$exePath}\" \"{$inputHtml}\" \"{$outputPdf}\"";
+        $output = shell_exec($cmd . ' 2>&1');
+
+        if (!file_exists($outputPdf)) {
+            throw new Exception("Error generando PDF: {$output}");
+        }
+
+        if (file_exists($inputHtml)) {
+            unlink($inputHtml);
+        }
+
+        return response()->download($outputPdf)->deleteFileAfterSend(true);
     }
     public function reporte_personalizado(Request $request)
     {
 
-        $iDocenteId = VerifyHash::decodesxId($request->iDocenteId);
+        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
 
         $inicio = $request['id'][0];
         $fin = $request['id'][1];
@@ -712,9 +755,8 @@ class AsistenciaController extends Controller
             foreach ($json_asistencia as $key => $sql) {
 
                 $fechas[0]["nombre"][$key] = $sql["completoalumno"];
-                $verificar = $sql["diasAsistencia"];
+                $verificar = $sql["diasAsistencia"] ?? [];
                 $ver = array_column($verificar, "diaMes");
-
                 for ($j = 1; $j <= $fechas[0]["ultimo_dia"]; $j++) {
                     $analizar = $mes . "-" . str_pad($j, 2, "0", STR_PAD_LEFT);
 
@@ -727,7 +769,6 @@ class AsistenciaController extends Controller
                 }
             }
         }else {
-
             for ($i = 0; $i <= $meses_restantes; $i++) {
 
                 $numero_mes = intval(date("m", strtotime($inicio . "+ " . $i . " month")));    // Se extrae el mes y se aumenta 1 mes
@@ -747,12 +788,8 @@ class AsistenciaController extends Controller
                 foreach ($json_asistencia as $key => $sql) {
 
                     $fechas[$i]["nombre"][$key] = $sql["completoalumno"];
-                    $verificar = $sql["diasAsistencia"];
-                    if(!is_array($verificar)){
-                        $verificar = [];
-                    }
+                    $verificar = $sql["diasAsistencia"] ?? [];
                     $ver = array_column($verificar, "diaMes");
-
                     for ($j = 1; $j <= $fechas[$i]["ultimo_dia"]; $j++) {
                         $analizar = $mes . "-" . str_pad($j, 2, "0", STR_PAD_LEFT);
 
@@ -797,13 +834,35 @@ class AsistenciaController extends Controller
             "area_curricular" => strtolower($query[0]->curso),
             "fecha_actual" => "2024-11-15",
             "dias" => $dias,
-            "respuesta" => $fechas
+            "fechas" => $fechas,
+            "yearAcademico" => $query[0]->yearAcademico,
+            "nombreUgel" => $json_institucion[0]["cUgelNombre"],
         ];
 
-        $pdf = Pdf::loadView('asistencia_reporte_personalizado', $respuesta)
-            ->setPaper('a4', 'landscape')
-            ->stream('reporte_asistencia.pdf');
-        return $pdf;
+        $htmlcontent = view("asistencia_reporte_personalizado",compact('respuesta'))->render();
+
+        $archivoBlade = 'asistencia_reporte_personalizado';
+        $archivoHtml = $archivoBlade . '.html';
+
+        $tempPath = storage_path('app/' . $archivoHtml);
+        file_put_contents($tempPath, $htmlcontent);
+
+        $exePath = env('WEASYPRINT_PATH');
+        $inputHtml = storage_path('app/' . $archivoHtml);
+        $outputPdf = storage_path('app/' . $archivoBlade . '.pdf');
+
+        $cmd = "\"{$exePath}\" \"{$inputHtml}\" \"{$outputPdf}\"";
+        $output = shell_exec($cmd . ' 2>&1');
+
+        if (!file_exists($outputPdf)) {
+            throw new Exception("Error generando PDF: {$output}");
+        }
+
+        if (file_exists($inputHtml)) {
+            unlink($inputHtml);
+        }
+
+        return response()->download($outputPdf)->deleteFileAfterSend(true);
     }
     public function descargarJustificacion(Request $request){
         $cJustificar = $request->cJustificar;
