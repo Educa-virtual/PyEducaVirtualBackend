@@ -129,6 +129,8 @@ Route::group(['prefix' => 'docente', 'middleware' => ['auth:api']], function () 
     Route::post('store', [CargaNoLectivasController::class, 'store']);
     Route::post('update', [CargaNoLectivasController::class, 'update']);
     Route::post('delete', [CargaNoLectivasController::class, 'delete']);
+    Route::post('aprobar', [CargaNoLectivasController::class, 'aprobar']);
+    Route::post('observar', [CargaNoLectivasController::class, 'observar']);
   });
   Route::group(['prefix' => 'portafolios'], function () {
     Route::post('obtenerPortafolios', [PortafoliosController::class, 'portafolios']);

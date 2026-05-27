@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\doc;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use App\Models\doc\ActividadesGestion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Gate;
 
 class CargaNoLectivasController extends Controller
 {
@@ -79,120 +83,67 @@ class CargaNoLectivasController extends Controller
 
     public function list(Request $request)
     {
-        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
-        $parametros = [
-            $request->opcion,
-            $request->valorBusqueda      ?? '-',
-            $iDocenteId                  ?? NULL,
-            $request->iCredId            ?? NULL,
-            $request->iSedeId            ?? NULL,
-        ];
-
         try {
-            $data = DB::select('exec doc.Sp_SEL_cargaNoLectivas
-                ?,?,?,?,?', $parametros);
-            $response = ['validated' => true, 'mensaje' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE, Perfil::DIRECTOR_IE]]);
+            $data = ActividadesGestion::obtenerActividades($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function store(Request $request)
     {
-        $iDocenteId = VerifyHash::decodes($request->iDocenteId);
-        $parametros = [
-            $request->opcion,
-            $request->valorBusqueda      ?? NULL,
-            $request->iYAcadId           ?? NULL,
-            $iDocenteId                  ?? NULL,
-            $request->iCredId            ?? NULL,
-            $request->iSedeId            ?? NULL,
-        ];
-
-        $solicitud = str_repeat('?,', count($parametros)-1).'?';
-        $procedimiento = 'exec doc.Sp_INS_cargaNoLectivas '.$solicitud;
-
         try {
-            $data = DB::select($procedimiento, $parametros);
-            switch ($request->opcion) {
-                case 'GUARDARxDetalleCargaNoLectiva':
-                    if ($data[0]->iCargaNoLectivaId > 0) {
-                        $request['iCargaNoLectivaId'] = $data[0]->iCargaNoLectivaId;
-                        $resp = new DetalleCargaNoLectivasController();
-                    }
-                    return $resp->store($request);
-                    break;
-                default:
-                    if ($data[0]->iCargaNoLectivaId > 0) {
-
-                        $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                        $codeResponse = 200;
-                    } else {
-                        $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                        $codeResponse = 500;
-                    }
-                    break;
-            }
-            
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE, Perfil::DIRECTOR_IE]]);
+            $data = ActividadesGestion::guardarActividades($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function update(Request $request)
     {
-        $resp = new CargaNoLectivasController();
-        $parametros = $resp->validate($request);
-
         try {
-            $data = DB::select('exec doc.Sp_UPD_cargaNoLectivas
-                ?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
-            if ($data[0]->iCargaNoLectivaId > 0) {
-
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
+            $data = ActividadesGestion::editarActividades($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function delete(Request $request)
     {
-        $resp = new CargaNoLectivasController();
-        $parametros = $resp->validate($request);
-
         try {
-            $data = DB::select('exec doc.Sp_DEL_cargaNoLectivas
-                ?,?,?,?,?,?,?,?,?,?,?', $parametros);
-
-            if ($data[0]->iCargaNoLectivaId > 0) {
-
-                $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
-                $codeResponse = 200;
-            } else {
-                $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
-                $codeResponse = 500;
-            }
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
+            $data = ActividadesGestion::eliminarActividades($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
-            $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
-            $codeResponse = 500;
+            return FormatearMensajeHelper::error($e);
         }
+    }
 
-        return new JsonResponse($response, $codeResponse);
+    public function aprobar(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            $data = ActividadesGestion::aprobarActividades($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function observar(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            $data = ActividadesGestion::observarActividades($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
     }
 }
