@@ -5,6 +5,7 @@ namespace App\Models\seg;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Usuario extends Model
 {
@@ -164,6 +165,7 @@ class Usuario extends Model
             $request->iSedeId,
             $request->iUgelId,
         ];
+        Log::info($parametros);
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC seg.Sp_INS_perfil $placeholders", $parametros);
     }

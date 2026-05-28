@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\apo\Apoderado;
 use App\Models\grl\Persona;
 use App\Models\seg\Usuario;
+use App\Services\acad\MatriculasService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -32,24 +33,7 @@ class ApoderadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             DB::beginTransaction();
-
-            if ($request->iPersId == null || $request->iPersId == 0) {
-                $persona = Persona::insPersonas($request);
-                $request->merge([
-                    'iPersId' => $persona['iPersId'],
-                ]);
-            } else {
-                Persona::updPersonas($request);
-            }
-
-            $persona = UsuariosService::registrarUsuario($request);
-            $request->merge([
-                'iCredId' => $persona['data']->iCredId,
-                'iPerfilId' => Perfil::APODERADO->value,
-            ]);
-            Usuario::insPerfil($request);
-
-            $data = Apoderado::insApoderado($request);
+            $data = MatriculasService::registrarApoderado($request);
             DB::commit();
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (\Exception $e) {
@@ -63,24 +47,7 @@ class ApoderadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             DB::beginTransaction();
-
-            if ($request->iPersId == null || $request->iPersId == 0) {
-                $persona = Persona::insPersonas($request);
-                $request->merge([
-                    'iPersId' => $persona['iPersId'],
-                ]);
-            } else {
-                Persona::updPersonas($request);
-            }
-
-            $credencial = Usuario::insCredencial($request);
-            $request->merge([
-                'iCredId' => $credencial['iCredId'],
-                'iPerfilId' => Perfil::APODERADO,
-            ]);
-            Usuario::insPerfil($request);
-
-            $data = Apoderado::updApoderado($request);
+            $data = MatriculasService::actualizarApoderado($request);
             DB::commit();
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (\Exception $e) {

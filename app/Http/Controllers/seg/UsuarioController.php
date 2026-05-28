@@ -38,7 +38,7 @@ class UsuarioController
         }
     }
 
-    public function obtenerPerfilesUsuario($iCredId, Request $request)
+    public function obtenerPerfilesUsuario(Request $request, $iCredId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
@@ -49,7 +49,7 @@ class UsuarioController
         }
     }
 
-    public function cambiarEstadoUsuario($iCredId, Request $request)
+    public function cambiarEstadoUsuario(Request $request, $iCredId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR]]);
@@ -65,7 +65,7 @@ class UsuarioController
         }
     }
 
-    public function restablecerClaveUsuario($iCredId, Request $request)
+    public function restablecerClaveUsuario(Request $request, $iCredId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
@@ -79,7 +79,7 @@ class UsuarioController
         }
     }
 
-    public function actualizarPerfilUsuario($iCredId, $iCredEntPerfId, Request $request)
+    public function actualizarPerfilUsuario(Request $request, $iCredId, $iCredEntPerfId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
@@ -94,7 +94,7 @@ class UsuarioController
         }
     }
 
-    public function actualizarFechaVigenciaUsuario($iCredId, Request $request)
+    public function actualizarFechaVigenciaUsuario(Request $request, $iCredId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
@@ -116,13 +116,13 @@ class UsuarioController
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             PersonasService::actualizarPersonaConDataApi($request, $request);
             $resultado = UsuariosService::registrarUsuario($request);
-            return FormatearMensajeHelper::ok($resultado['mensaje'], $resultado['data']);
+            return FormatearMensajeHelper::ok('Se ha registrado el usuario', $resultado);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
 
-    public function agregarPerfilUsuario($iCredId, Request $request)
+    public function agregarPerfilUsuario(Request $request, $iCredId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR, Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
