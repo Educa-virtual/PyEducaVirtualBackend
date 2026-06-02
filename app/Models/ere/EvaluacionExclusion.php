@@ -14,7 +14,7 @@ class EvaluacionExclusion
 
         $parametros = [
             $request->iCredEntPerfId,
-            is_numeric($id_cifrado) ? $id_cifrado : ($hashids->decode($id_cifrado)[0] ?? null),
+            'iEvaluacionId' => $id_cifrado == null || is_numeric($id_cifrado) ? $id_cifrado : ($hashids->decode($id_cifrado)[0] ?? null),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("exec ere.Sp_SEL_evaluacionExclusiones $placeholders", $parametros);

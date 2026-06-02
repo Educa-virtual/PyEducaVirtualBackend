@@ -17,7 +17,7 @@ class ReporteEvaluacionesController extends Controller
             $hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
             $id_cifrado = $request->iEvaluacionId ?? null;
             $request->merge([
-                'iEvaluacionId' => is_numeric($id_cifrado) ? $id_cifrado : ($hashids->decode($id_cifrado)[0] ?? null),
+                'iEvaluacionId' => $id_cifrado == null || is_numeric($id_cifrado) ? $id_cifrado : ($hashids->decode($id_cifrado)[0] ?? null),
             ]);
             $data = EvaluacionInforme::selEvaluacionesInformeOpt($request);
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
