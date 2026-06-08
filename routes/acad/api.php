@@ -32,10 +32,18 @@ use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\acad\ConfiguracionController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
+
+    Route::post('crearConfiguracion', [ConfiguracionController::class, 'crearConfiguracion']);
+    Route::post('verConfiguracion', [ConfiguracionController::class, 'verConfiguracion']);
+    Route::post('guardarConfiguracion', [ConfiguracionController::class, 'guardarConfiguracion']);
+    Route::post('actualizarConfiguracion', [ConfiguracionController::class, 'actualizarConfiguracion']);
+    Route::post('descargarAprobacion', [ConfiguracionController::class, 'descargarAprobacion']);
+
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
     Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
