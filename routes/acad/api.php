@@ -1,6 +1,7 @@
 
 <?php
 
+use App\Http\Controllers\acad\AmbienteController;
 use App\Http\Controllers\acad\ApoderadoController;
 use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
@@ -43,6 +44,12 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('guardarConfiguracion', [ConfiguracionController::class, 'guardarConfiguracion']);
     Route::post('actualizarConfiguracion', [ConfiguracionController::class, 'actualizarConfiguracion']);
     Route::post('descargarAprobacion', [ConfiguracionController::class, 'descargarAprobacion']);
+
+    Route::post('listarAmbientes', [AmbienteController::class, 'listarAmbientes']);
+    Route::post('verAmbiente', [AmbienteController::class, 'verAmbiente']);
+    Route::post('guardarAmbiente', [AmbienteController::class, 'guardarAmbiente']);
+    Route::post('actualizarAmbiente', [AmbienteController::class, 'actualizarAmbiente']);
+    Route::post('borrarAmbiente', [AmbienteController::class, 'borrarAmbiente']);
 
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
