@@ -34,6 +34,7 @@ use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\acad\ConfiguracionController;
+use App\Http\Controllers\acad\GradoSeccionController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,12 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('guardarAmbiente', [AmbienteController::class, 'guardarAmbiente']);
     Route::post('actualizarAmbiente', [AmbienteController::class, 'actualizarAmbiente']);
     Route::post('borrarAmbiente', [AmbienteController::class, 'borrarAmbiente']);
+
+    Route::post('listarGradosSecciones', [GradoSeccionController::class, 'listarGradosSecciones']);
+    Route::post('verGradoSeccion', [GradoSeccionController::class, 'verGradoSeccion']);
+    Route::post('guardarGradoSeccion', [GradoSeccionController::class, 'guardarGradoSeccion']);
+    Route::post('actualizarGradoSeccion', [GradoSeccionController::class, 'actualizarGradoSeccion']);
+    Route::post('borrarGradoSeccion', [GradoSeccionController::class, 'borrarGradoSeccion']);
 
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
