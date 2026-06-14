@@ -35,6 +35,7 @@ use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\acad\ConfiguracionController;
 use App\Http\Controllers\acad\GradoSeccionController;
+use App\Http\Controllers\acad\IeCursoController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,12 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('guardarGradoSeccion', [GradoSeccionController::class, 'guardarGradoSeccion']);
     Route::post('actualizarGradoSeccion', [GradoSeccionController::class, 'actualizarGradoSeccion']);
     Route::post('borrarGradoSeccion', [GradoSeccionController::class, 'borrarGradoSeccion']);
+
+    Route::post('listarIeCursos', [IeCursoController::class, 'listarIeCursos']);
+    Route::post('verIeCurso', [IeCursoController::class, 'verIeCurso']);
+    Route::post('guardarIeCurso', [IeCursoController::class, 'guardarIeCurso']);
+    Route::post('actualizarIeCurso', [IeCursoController::class, 'actualizarIeCurso']);
+    Route::post('actualizarIeCursoEstado', [IeCursoController::class, 'actualizarIeCursoEstado']);
 
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
