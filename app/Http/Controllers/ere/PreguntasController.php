@@ -101,7 +101,8 @@ class PreguntasController extends ApiController
                 $fechaConHora,
                 $iPreguntaId === 0 ? 0 : null,
                 $pregunta['cPreguntaClave'],
-                $iEncabPregId
+                $iEncabPregId,
+                $pregunta['iPreguntaPuntaje'],
             ];
 
 
@@ -123,6 +124,7 @@ class PreguntasController extends ApiController
                 , @_bPreguntaEstado = ?
                 , @_cPreguntaClave = ?
                 , @_iEncabPregId = ?
+                , @_iPreguntaPuntaje = ?
             ', $params);
                 $respPregunta = $respPregunta[0];
             } catch (Exception $e) {
@@ -512,7 +514,8 @@ class PreguntasController extends ApiController
             'iEspecialistaId',
             'iNivelGradoId',
             'iEncabPregId',
-            'iCursosNivelGradId'
+            'iCursosNivelGradId',
+            'iPreguntaPuntaje',
 
         ];
 
@@ -538,7 +541,8 @@ class PreguntasController extends ApiController
             $request->iNivelGradoId         ??  NULL,
             $request->iEncabPregId          ??  NULL,
             $request->iCursosNivelGradId    ??  NULL,
-            $request->iCredId               ??  NULL
+            $request->iCredId               ??  NULL,
+            $request->iPreguntaPuntaje      ??  NULL,
         ];
     }
 
@@ -553,7 +557,8 @@ class PreguntasController extends ApiController
             'iEspecialistaId',
             'iNivelGradoId',
             'iEncabPregId',
-            'iCursosNivelGradId'
+            'iCursosNivelGradId',
+            'iPreguntaPuntaje',
         ];
 
         foreach ($fieldsToEncode as $field) {
@@ -652,20 +657,20 @@ class PreguntasController extends ApiController
         try {
             switch ($request->opcion) {
                 case 'ACTUALIZARxiPreguntaIdxbPreguntaEstado':
-                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     return FormatearMensajeHelper::ok('La pregunta se ha eliminado correctamente');
 
                     break;
                 case 'ACTUALIZARxiPreguntaId':
                     $parametros[5] = ExtraerBase64::extraer($request->cPregunta, $request->iPreguntaId, 'simple');
                     $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
-                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     $resp = new AlternativasController();
                     return $resp->handleCrudOperation($request);
                     break;
                 case 'GUARDAR-PREGUNTAS':
                     array_push($parametros,$request->iPreguntaOrden);
-                    DB::statement('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+                    DB::statement('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     return FormatearMensajeHelper::ok('Se agregó la pregunta');
                     break;
             }

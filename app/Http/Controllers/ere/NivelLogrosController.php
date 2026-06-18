@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Ere;
 
 use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Repositories\ere\NivelLogrosRepository;
 use Exception;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use App\Models\ere\NivelLogro;
 
 class NivelLogrosController extends Controller
 {
@@ -27,15 +29,18 @@ class NivelLogrosController extends Controller
         return response()->json(['status' => 'Success', 'message' => 'Se obtuvo la información', 'data' => $data], Response::HTTP_OK);
     }
 
-    public function obtenerNivelLogrosPorCurso($evaluacionId, $cursoId)
+    public function obtenerNivelLogrosPorCurso(Request $request, $evaluacionId, $cursoId)
     {
-        $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
-        $iCursosNivelGradIdDescifrado = $this->hashids->decode($cursoId);
-        if (empty($evaluacionIdDescifrado) || empty($iCursosNivelGradIdDescifrado)) {
-            return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
+        try {
+            $request->merge([
+                'iCursosNivelGradId' => $cursoId,
+                'iEvaluacionId' => $evaluacionId,
+            ]);
+            $data = NivelLogro::selNivelLogroEvalCurso($request);
+            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
         }
-        $data = NivelLogrosRepository::obtenerNivelLogrosPorCurso($iCursosNivelGradIdDescifrado[0], $evaluacionIdDescifrado[0]);
-        return response()->json(['status' => 'Success', 'message' => 'Se obtuvo la información', 'data' => $data], Response::HTTP_OK);
     }
 
     public function registrarNivelLogroPorCurso($evaluacionId, $cursoId, Request $request)
