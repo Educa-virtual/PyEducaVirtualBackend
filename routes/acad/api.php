@@ -2,7 +2,7 @@
 <?php
 
 use App\Http\Controllers\acad\AmbienteController;
-use App\Http\Controllers\acad\ApoderadoController;
+use App\Http\Controllers\acad\DocenteController;
 use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
@@ -64,6 +64,13 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('guardarIeCurso', [IeCursoController::class, 'guardarIeCurso']);
     Route::post('actualizarIeCurso', [IeCursoController::class, 'actualizarIeCurso']);
     Route::post('actualizarIeCursoEstado', [IeCursoController::class, 'actualizarIeCursoEstado']);
+
+    Route::post('buscarDocente', [DocenteController::class, 'buscarDocente']);
+    Route::post('listarDocentes', [DocenteController::class, 'listarDocentes']);
+    Route::post('guardarDocente', [DocenteController::class, 'guardarDocente']);
+    Route::post('actualizarDocente', [DocenteController::class, 'actualizarDocente']);
+    Route::post('actualizarDocenteEstado', [DocenteController::class, 'actualizarDocenteEstado']);
+    Route::post('borrarDocente', [DocenteController::class, 'borrarDocente']);
 
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);

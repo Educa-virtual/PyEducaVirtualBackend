@@ -57,9 +57,7 @@ class IeCurso
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iConfigId,
             $request->iIeCursoId,
-            $request->iProgId,
             $request->iCursosNivelGradId,
             $request->iHorasSemPresencial,
             $request->iHorasSemDomicilio,
@@ -76,7 +74,7 @@ class IeCurso
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iIeCursoId,
-            $request->iEstadoId,
+            $request->bActivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC acad.Sp_UPD_ieCursoEstado $placeholders", $parametros);
