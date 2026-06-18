@@ -4,11 +4,8 @@ namespace App\Http\Controllers\acad;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Enums\Perfil;
-use App\Helpers\ResponseHandler;
 use App\Http\Controllers\Controller;
 use App\Models\acad\Estudiante;
-use App\Models\User;
-use App\Services\acad\FechasImportantesService;
 use App\Services\acad\MatriculasService;
 use App\Services\acad\TiposActividadService;
 use App\Services\acad\YearAcademicosService;
@@ -16,77 +13,37 @@ use App\Services\apo\ApoderadosService;
 use App\Services\aula\ProgramacionActividadesService;
 use App\Services\FormatearExcelMatriculasService;
 use App\Services\LeerExcelService;
-use App\Services\FormatearExcelPadresService;
 use App\Services\ParseSqlErrorService;
 use App\Services\seg\UsuariosService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use PhpOffice\PhpSpreadsheet\Calculation\MathTrig\Exp;
-use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 use Illuminate\Support\Facades\Gate;
 
 class EstudiantesController extends Controller
 {
-    protected $hashids;
-    protected $iEstudianteId;
     protected $leerExcelService;
-    protected $formatearExcelPadresService;
     protected $parseSqlErrorService;
     protected $formatearExcelMatriculasService;
 
     public function __construct()
     {
-        $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
         $this->leerExcelService = new LeerExcelService();
-        $this->formatearExcelPadresService = new FormatearExcelPadresService();
         $this->parseSqlErrorService = new ParseSqlErrorService();
         $this->formatearExcelMatriculasService = new FormatearExcelMatriculasService();
     }
 
     public function obtenerCursosXEstudianteAnioSemestre(Request $request)
     {
-        $request->validate(
-            [
-                'iEstudianteId' => 'required',
-                'iYAcadId' => 'required',
-                'iSedeId' => 'required',
-                'iIieeId' => 'required',
-            ],
-            [
-                'iEstudianteId.required' => 'Hubo un problema al obtener el iEstudianteId',
-                'iYAcadId.required' => 'Hubo un problema al obtener el iYAcadId',
-                'iSedeId.required' => 'Hubo un problema al obtener el iSedeId',
-                'iIieeId.required' => 'Hubo un problema al obtener el iIieeId',
-            ]
-        );
-
-        $parametros = [
-            $request->iEstudianteId,
-            $request->iYAcadId,
-            $request->iSedeId,
-            $request->iIieeId
-        ];
-
         try {
-            $data = DB::select("execute acad.Sp_SEL_cursosXEstudianteAnioSemestre ?,?,?,?", $parametros);
-
-            foreach ($data as $key => $value) {
-                $value->iCursoId = $this->hashids->encode($value->iCursoId);
-                $value->iSilaboId = $this->hashids->encode($value->iSilaboId);
-            }
-
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
-            $codeResponse = 200;
-        } catch (\Exception $e) {
-            $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
-            $codeResponse = 500;
+            Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
+            $data = Estudiante::selObtenerCursoEstudiante($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
-
-        return new JsonResponse($response, $codeResponse);
     }
 
     public function guardarEstudiante(Request $request)

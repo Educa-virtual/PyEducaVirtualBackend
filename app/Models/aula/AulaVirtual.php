@@ -91,4 +91,21 @@ class AulaVirtual extends Model
         return $outputPdf;
         
     }
+
+    public static function selAulaDetalle(Request $request){
+
+        $iCursoId = VerifyHash::decodes($request->iCursoId);
+
+        $parametros = [
+            $iCursoId,
+            $request->header('iCredEntPerfId'),
+            $request->iSedeId,
+            $request->iYAcadId,
+        ];
+
+        $procedimiento = "EXEC aula.SP_SEL_aulaDetalle ?,?,?,?";
+        $data = DB::select($procedimiento, $parametros);
+
+        return $data;
+    }
 }

@@ -45,6 +45,8 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
         Route::get('{iIieeId}/sedes', [InstitucionEducativaController::class, 'obtenerSedesIe']);
     });
 
+    Route::post('obtenerCalendario', [CalendarioAcademicosController::class, 'obtenerCalendario']);
+
     Route::group(['prefix' => 'estudiantes'], function () {
 
         Route::get('{iEstudianteId}/matriculas', [MatriculaController::class, 'obtenerMatriculasEstudiante']);

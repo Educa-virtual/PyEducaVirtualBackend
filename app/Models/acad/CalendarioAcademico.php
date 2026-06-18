@@ -2,6 +2,7 @@
 
 namespace App\Models\acad;
 
+use App\Helpers\VerifyHash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -49,5 +50,17 @@ class CalendarioAcademico extends Model
         
         $cantidad = str_repeat('?,', count($parametros) - 1).'?';
         return DB::selectOne("EXEC acad.Sp_INS_merito ".$cantidad, $parametros);
+    }
+
+    public static function selCalendarioAcademico(Request $request){
+
+        $parametros = [
+            VerifyHash::decodes($request->iDocenteId),
+            $request->iYAcadId,
+            $request->iSedeId,
+        ];
+
+        $cantidad = str_repeat('?,', count($parametros) - 1).'?';
+        return DB::selectOne("EXEC acad.Sp_SEL_calendarioAcademico ".$cantidad, $parametros);
     }
 }

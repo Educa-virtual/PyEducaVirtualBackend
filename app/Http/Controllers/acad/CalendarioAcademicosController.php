@@ -176,4 +176,15 @@ class CalendarioAcademicosController extends Controller
             return FormatearMensajeHelper::error($e);
         }
     }
+
+    public function obtenerCalendario(Request $request)
+    {
+        try {
+             Gate::authorize('tiene-perfil', [[Perfil::DOCENTE,Perfil::ESTUDIANTE,Perfil::DIRECTOR_IE]]);
+            $data = CalendarioAcademico::selCalendarioAcademico($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
 }

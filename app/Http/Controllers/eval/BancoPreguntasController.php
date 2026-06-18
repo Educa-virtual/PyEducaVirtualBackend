@@ -149,12 +149,14 @@ class BancoPreguntasController extends Controller
             'iTipoPregId' => ['required'],
             'iCursoId' => ['required'],
             'iNivelCicloId' => ['required'],
+            'iNivelGradoId' => ['required'],
             'cBancoPregunta' => ['required']
         ], [
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
             'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
             'iCursoId.required' => 'No se encontró el identificador iCursoId',
             'iNivelCicloId.required' => 'No se encontró el identificador iNivelCicloId',
+            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
             'cBancoPregunta.required' => 'Debe ingresar el enunciado de la pregunta',
         ]);
 
@@ -177,15 +179,17 @@ class BancoPreguntasController extends Controller
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iDocenteId                  ??  NULL,
-                $request->iTipoPregId                 ??  NULL,
-                $request->iCursoId                    ??  NULL,
-                $request->iNivelCicloId               ??  NULL,
-                $request->idEncabPregId               ??  NULL,
-                $request->cBancoPregunta              ??  NULL,
-                $request->cBancoTextoAyuda            ??  NULL,
-                $request->jsonAlternativas            ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iDocenteId                  ??    NULL,
+                $request->iTipoPregId                 ??    NULL,
+                $request->iCursoId                    ??    NULL,
+                $request->iNivelCicloId               ??    NULL,
+                $request->idEncabPregId               ??    NULL,
+                $request->cBancoPregunta              ??    NULL,
+                $request->cBancoTextoAyuda            ??    NULL,
+                $request->jsonAlternativas            ??    NULL,
+                $request->iCredId                     ??    NULL,
+                $request->header('iCredEntPerfId')    ??    NULL,
+                $request->iNivelGradoId               ??    NULL,
             ];
 
             $data = DB::select(
@@ -198,7 +202,9 @@ class BancoPreguntasController extends Controller
                     @_cBancoPregunta=?,   
                     @_cBancoTextoAyuda=?,   
                     @_jsonAlternativas=?,   
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_iCredEntPerfId=?,
+                    @_iNivelGradoId=?',
                 $parametros
             );
 

@@ -2,7 +2,9 @@
 
 namespace App\Models\acad;
 
+use App\Helpers\VerifyHash;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class Estudiante extends Model
@@ -105,5 +107,23 @@ INNER JOIN grl.personas AS per ON per.iPersId=est.iPersId
 INNER JOIN acad.matricula AS mat ON mat.iEstudianteId=est.iEstudianteId
 WHERE per.cPersDocumento=? AND mat.iSedeId=? AND mat.iYAcadId=?
 AND mat.iEstado=1", [$cPersDocumento, $iSedeId, $iYAcadId]);
+    }
+
+    public static function selObtenerCursoEstudiante(Request $request){
+
+        $parametros = [
+            $request->iEstudianteId,
+            $request->iYAcadId,
+            $request->iSedeId,
+        ];
+
+        $data = DB::select("execute acad.Sp_SEL_cursosXEstudianteAnioSemestre ?,?,?", $parametros);
+
+        foreach ($data as $value) {
+            $value->iCursoId = VerifyHash::encodexId($value->iCursoId);
+            $value->iSilaboId = VerifyHash::encodexId($value->iSilaboId);
+        }
+
+        return $data;
     }
 }
