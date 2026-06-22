@@ -3,6 +3,7 @@
 namespace App\Models\acad;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class IeCurso
 {
@@ -57,6 +58,7 @@ class IeCurso
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
+            $request->iConfigId,
             $request->iIeCursoId,
             $request->iCursosNivelGradId,
             $request->iHorasSemPresencial,
