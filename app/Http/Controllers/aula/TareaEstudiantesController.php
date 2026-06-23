@@ -132,11 +132,12 @@ class TareaEstudiantesController extends Controller
             $request->iTareaId,
             $request->iEstudianteId,
             $request->cTareaEstudianteUrlEstudiante,
+            $request->header('iCredEntPerfId')
         ];
 
         try {
             $data = DB::select('exec aula.SP_UPD_tareaEstudiantesxEntregarEstudianteTarea
-                ?,?,?', $parametros);
+                ?,?,?,?', $parametros);
 
             if ($data[0]->iTareaEstudianteId > 0) {
 

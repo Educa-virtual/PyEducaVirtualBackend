@@ -24,6 +24,9 @@ use App\Http\Controllers\aula\TipoPreguntasController;
 use Illuminate\Notifications\Notification;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
+
+    Route::post('aulaDetalle', [AulaVirtualController::class, 'obtenerAulaDetalle']);
+
     Route::group(['prefix' => 'contenidos'], function () {
         Route::resource('tipo-actividad', TipoActividadController::class);
         Route::group(['prefix' => 'actividad'], function () {
@@ -63,7 +66,6 @@ Route::group(['prefix' => 'aula-virtual'], function () {
         Route::post('', [TareasController::class, 'guardarTareas']);
         Route::put('{iTareaId}', [TareasController::class, 'actualizarTareasxiTareaId']);
 
-        ////
         Route::post('list', [TareasController::class, 'list']);
         Route::post('store', [TareasController::class, 'store']);
         Route::post('getTareasxiCursoId', [TareasController::class, 'getTareasxiCursoId']);

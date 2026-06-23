@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\evaluaciones;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\ApiController;
 use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
@@ -29,14 +30,21 @@ class BancoPreguntasController extends ApiController
     public function obtenerBancoPreguntas(Request $request)
     {
         $params = [
-            // iCursoId
-            $request->iCursoId === 0 || $request->iCursoId === '0' ? null : (is_string($request->iCursoId) ? $this->decodeId($request->iCursoId) : (int) $request->iCursoId),
-
-            // iDocenteId
-            is_string($request->iDocenteId ?? null)
-                ? $this->decodeId($request->iDocenteId)
-                : (is_numeric($request->iDocenteId) ? (int) $request->iDocenteId : null),
+            $request->iCursoId == 0  ? NULL : VerifyHash::decodes($request->iCursoId),
+            $request->iDocenteId == 0 ? NULL : veRifyHash::decodes($request->iDocenteId),
         ];
+
+        // $params = [
+        //     // iCursoId
+        //     $request->iCursoId == 0
+        //         ? null : (is_string($request->iCursoId)
+        //         ? VerifyHash::decodes($request->iCursoId) : (int) $request->iCursoId),
+
+        //     // iDocenteId
+        //     is_string($request->iDocenteId ?? null)
+        //         ? VerifyHash::decodes($request->iDocenteId) : (is_numeric($request->iDocenteId)
+        //         ? (int) $request->iDocenteId : null),
+        // ];
         
         try {
             $result = DB::selectOne(

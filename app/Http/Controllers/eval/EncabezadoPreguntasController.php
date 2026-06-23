@@ -215,13 +215,15 @@ class EncabezadoPreguntasController extends Controller
             'iCursoId' => ['required'],
             'iNivelCicloId' => ['required'],
             'cEncabPregTitulo' => ['required'],
-            'cEncabPregContenido' => ['required']
+            'cEncabPregContenido' => ['required'],
+            'iNivelGradoId' => ['required'],
         ], [
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
             'iCursoId.required' => 'No se encontró el identificador iCursoId',
             'iNivelCicloId.required' => 'No se encontró el identificador iNivelCicloId',
             'cEncabPregTitulo.required' => 'Debe ingresar el título',
             'cEncabPregContenido.required' => 'Debe ingresar la descripción',
+            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
         ]);
 
         if ($validator->fails()) {
@@ -237,6 +239,7 @@ class EncabezadoPreguntasController extends Controller
                 'iNivelCicloId',
                 'iCursoId',
                 'iCredId',
+                'iNivelGradoId',
             ];
             $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
@@ -246,7 +249,9 @@ class EncabezadoPreguntasController extends Controller
                 $request->iCursoId                    ??  NULL,
                 $request->cEncabPregTitulo            ??  NULL,
                 $request->cEncabPregContenido         ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCredId                     ??  NULL,
+                $request->iNivelGradoId               ??  NULL,
+                $request->header('iCredEntPerfId')    ??  NULL,
             ];
 
             $data = DB::select(
@@ -256,7 +261,9 @@ class EncabezadoPreguntasController extends Controller
                     @_iCursoId=?,   
                     @_cEncabPregTitulo=?,   
                     @_cEncabPregContenido=?,   
-                    @_iCredId=?',
+                    @_iCredId=?,
+                    @_iNivelGradoId=?,
+                    @_iCredEntPerfId=?',
                 $parametros
             );
 

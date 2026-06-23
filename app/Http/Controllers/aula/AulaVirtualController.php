@@ -788,4 +788,15 @@ class AulaVirtualController extends ApiController
             return FormatearMensajeHelper::error($e);
         }
     }
+
+    public function obtenerAulaDetalle(Request $request)
+    {
+        try {
+            // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
+            $data = AulaVirtual::selAulaDetalle($request);
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
 }
