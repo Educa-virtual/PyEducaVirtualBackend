@@ -39,7 +39,7 @@ class CurriculasController extends Controller
         ];
 
         try {
-            $data = DB::select('exec acad.Sp_SEL_docenteCursos
+            $data = DB::select('exec acad.Sp_SEL_docenteCursosOpciones
                 ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
 
             

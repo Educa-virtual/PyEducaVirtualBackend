@@ -182,7 +182,7 @@ class DocenteCursosController extends Controller
         $parametros = $this->validateRequest($request);
 
         try {
-            $data = DB::select('exec acad.Sp_SEL_docenteCursos ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+            $data = DB::select('exec acad.Sp_SEL_docenteCursosOpciones ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $data = $this->encodeId($data);
             
             return new JsonResponse(
