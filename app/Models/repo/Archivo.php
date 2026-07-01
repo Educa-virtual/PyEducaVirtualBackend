@@ -10,7 +10,6 @@ class Archivo extends Model
 {
     public static function insArchivos($request)
     {
-        try {
         $parametros = [
             $request->header('iCredEntPerfId') ?? NULL,
             $request->iCarpetaId ?? NULL,
@@ -23,25 +22,16 @@ class Archivo extends Model
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC repo.SP_INS_archivo $placeholders", $parametros);
-        } catch (\Exception $e) {
-            Log::error($e);
-            return null;
-        }
     }
 
     public static function selArchivo($request)
     {
-        try{
         $parametros = [
             $request->header('iCredEntPerfId') ?? NULL,
             $request->iArchivoId ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC repo.Sp_SEL_archivo $placeholders", $parametros);
-        } catch (\Exception $e) {
-            Log::error($e);
-            return null;
-        }
     }
 
     public static function delArchivos($request)

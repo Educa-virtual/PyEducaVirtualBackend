@@ -9,6 +9,7 @@ use Exception;
 use App\Http\Requests\repo\GuardarArchivoRequest;
 use App\Models\repo\Archivo;
 use App\Models\repo\Carpeta;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ArchivosController extends Controller
@@ -20,18 +21,20 @@ class ArchivosController extends Controller
             if (!$file or !$file->isValid()) {
                 throw new Exception('El archivo no es válido', 400);
             }
+            $ruta_persona = 'repositorio/' . $request->iPersId;
+            $nombre_extension = hash('sha256', uniqid()) . '.' . $file->getClientOriginalExtension();
             $request->merge([
                 'cNombreOriginal' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
                 'cExtension' => $file->getClientOriginalExtension(),
                 'iCarpetaId' => $request->iCarpetaId,
-                'cNombre' => hash('sha256', uniqid()),
+                'cNombre' => $nombre_extension,
                 'iTamano' => $file->getSize(),
             ]);
             $data = Archivo::insArchivos($request);
 
             if ($data->iArchivoId > 0) {
-                $this->subirArchivo($file, $request->cRuta);
-                FormatearMensajeHelper::ok('Se ha guardado exitosamente ', $data);
+                $this->subirArchivo($file, $ruta_persona, $nombre_extension);
+                return FormatearMensajeHelper::ok('Se ha guardado exitosamente ', $data);
             } else {
                 throw new Exception('No se ha podido guardar', 500);
             }
@@ -39,7 +42,7 @@ class ArchivosController extends Controller
             if(file_exists($request->cRuta . '/' . $request->cNombreOriginal)) {
                 Storage::disk('local')->delete($request->cRuta . '/' . $request->cNombreOriginal);
             }
-            FormatearMensajeHelper::error($e);
+            return FormatearMensajeHelper::error($e);
         }
     }
 
@@ -50,7 +53,6 @@ class ArchivosController extends Controller
             if (empty($archivo)) {
                 throw new Exception('No se encontró el archivo', 404);
             }
-
             $path = 'repositorio/' . $archivo->iPersId . '/' . $archivo->cRuta;
             if (!Storage::exists($path)) {
                 throw new Exception('El archivo no existe en el servidor', 404);
@@ -66,7 +68,7 @@ class ArchivosController extends Controller
                 'base64' => $contenido,
             ]);
         } catch (\Exception $e) {
-            FormatearMensajeHelper::error($e);
+            return FormatearMensajeHelper::error($e);
         }
     }
 
@@ -88,7 +90,19 @@ class ArchivosController extends Controller
                 throw new Exception('No se ha podido eliminar', 500);
             }
         } catch (\Exception $e) {
-            FormatearMensajeHelper::error($e);
+            return FormatearMensajeHelper::error($e);
         }
+    }
+
+    private function subirArchivo($archivo, $ruta, $nombre_archivo)
+    {
+        if(!Storage::disk('local')->exists($ruta)) {
+            Storage::disk('local')->makeDirectory($ruta, 0755, true);
+        }
+        $archivo->move(Storage::disk('local')->path($ruta), $nombre_archivo);
+        if (Storage::disk('local')->exists($ruta . '/' . $nombre_archivo)) {
+            return $nombre_archivo;
+        }
+        return null;
     }
 }
