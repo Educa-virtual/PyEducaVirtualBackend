@@ -5,12 +5,8 @@ namespace App\Http\Controllers\repo;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
 use App\Http\Requests\repo\ActualizarCarpetaRequest;
 use App\Http\Requests\repo\GuardarCarpetaRequest;
-use Illuminate\Http\Response;
 use App\Models\repo\Carpeta;
 
 class CarpetasController extends Controller
@@ -65,44 +61,15 @@ class CarpetasController extends Controller
 
     public function eliminarCarpeta(Request $request)
     {
-
         try {
-            $fieldsToDecode = [
-                'iCarpetaId',
-                'iCredId',
-            ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iCarpetaId        ??  NULL,
-
-                $request->iCredId           ??  NULL
-
-            ];
-
-            $data = DB::select(
-                'exec repo.SP_DEL_carpetas
-                    @_iCarpetaId=?,
-                    @_iCredId=?',
-                $parametros
-            );
-
-            if ($data[0]->iCarpetaId > 0) {
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se ha eliminado exitosamente ', 'data' => null],
-                    Response::HTTP_OK
-                );
+            $data = Carpeta::delCarpeta($request);
+            if ($data->iCarpetaId > 0) {
+                return FormatearMensajeHelper::ok('Se ha eliminado exitosamente ', $data);
             } else {
-                return new JsonResponse(
-                    ['validated' => false, 'message' => 'No se ha podido eliminar', 'data' => null],
-                    Response::HTTP_OK
-                );
+                throw new \Exception('No se ha podido eliminar', 500);
             }
         } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return FormatearMensajeHelper::error($e);
         }
     }
 }

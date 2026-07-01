@@ -4,7 +4,6 @@ namespace App\Models\repo;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Helpers\VerifyHash;
 
 class Carpeta extends Model
 {
@@ -46,10 +45,21 @@ class Carpeta extends Model
     {
         $parametros = [
             $request->header('iCredEntPerfId') ?? NULL,
+            $request->iParentCarpetaId ?? NULL,
             $request->iCarpetaId ?? NULL,
             $request->cNombre ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC repo.SP_UPD_carpeta $placeholders", $parametros);
+    }
+
+    public static function delCarpeta($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId') ?? NULL,
+            $request->iCarpetaId ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC repo.SP_DEL_carpeta $placeholders", $parametros);
     }
 }

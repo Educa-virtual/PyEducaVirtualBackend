@@ -4,7 +4,6 @@ namespace App\Models\repo;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class Archivo extends Model
 {
@@ -34,7 +33,7 @@ class Archivo extends Model
         return DB::selectOne("EXEC repo.Sp_SEL_archivo $placeholders", $parametros);
     }
 
-    public static function delArchivos($request)
+    public static function delArchivo($request)
     {
         $parametros = [
             $request->header('iCredEntPerfId') ?? NULL,

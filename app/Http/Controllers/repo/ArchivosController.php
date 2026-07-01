@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Exception;
 use App\Http\Requests\repo\GuardarArchivoRequest;
 use App\Models\repo\Archivo;
-use App\Models\repo\Carpeta;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ArchivosController extends Controller
@@ -80,7 +78,7 @@ class ArchivosController extends Controller
                 throw new Exception('No se encontró el archivo', 404);
             }
 
-            $data = Archivo::delArchivos($request);
+            $data = Archivo::delArchivo($request);
             if ($data->iArchivoId > 0) {
                 if (Storage::exists($archivo->cRuta)) {
                     Storage::delete($archivo->cRuta);
