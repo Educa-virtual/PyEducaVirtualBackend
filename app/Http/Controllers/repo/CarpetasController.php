@@ -2,145 +2,64 @@
 
 namespace App\Http\Controllers\repo;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Requests\repo\ActualizarCarpetaRequest;
+use App\Http\Requests\repo\GuardarCarpetaRequest;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Validator;
+use App\Models\repo\Carpeta;
 
 class CarpetasController extends Controller
 {
-    public function guardarCarpeta(Request $request)
+    public function listarCarpetas(Request $request)
     {
         try {
-            $fieldsToDecode = [
-                'iCarpetaId',
-                'iPersId',
-                'iParentCarpetaId',
-                'iCredId',
-            ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->cNombre           ??  NULL,
-                $request->iPersId           ??  NULL,
-                $request->iParentCarpetaId  ??  NULL,
-
-                $request->iCredId           ??  NULL
-
-            ];
-
-            $data = DB::select(
-                'exec repo.SP_INS_carpetas
-                    @_cNombre=?,
-                    @_iPersId=?,
-                    @_iParentCarpetaId=?,
-                    @_iCredId=?',
-                $parametros
-            );
-
-            if ($data[0]->iCarpetaId > 0) {
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
-                    Response::HTTP_OK
-                );
-            } else {
-                return new JsonResponse(
-                    ['validated' => false, 'message' => 'No se ha podido guardar', 'data' => null],
-                    Response::HTTP_OK
-                );
-            }
+            $data = Carpeta::selCarpetas($request);
+            return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
         } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function obtenerCarpetas(Request $request)
+    public function verCarpeta(Request $request)
     {
         try {
-            $fieldsToDecode = [
-                'iCarpetaId',
-                'iPersId',
-                'iParentCarpetaId',
-                'iCredId',
-                'iId', //iCarpetaId o iArchivoId
-            ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iCarpetaId           ??  NULL,
-                $request->iPersId              ??  NULL,
-                $request->iCredId              ??  NULL,
-            ];
-
-            $data = DB::select(
-                'exec repo.SP_SEL_carpetas
-                 @_iCarpetaId=?,
-                 @_iPersId=?,
-                 @_iCredId=?',
-                $parametros
-            );
-            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-
-            return new JsonResponse(
-                ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
-                Response::HTTP_OK
-            );
+            $data = Carpeta::selCarpeta($request);
+            return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
         } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function actualizarCarpeta(Request $request)
+    public function actualizarCarpeta(ActualizarCarpetaRequest $request)
     {
         try {
-            $fieldsToDecode = [
-                'iCarpetaId',
-                'iCredId',
-            ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iCarpetaId        ??  NULL,
-                $request->cNombre           ??  NULL,
-
-                $request->iCredId           ??  NULL
-
-            ];
-
-            $data = DB::select(
-                'exec repo.SP_UPD_carpetas
-                    @_iCarpetaId=?,
-                    @_cNombre=?,
-                    @_iCredId=?',
-                $parametros
-            );
-
-            if ($data[0]->iCarpetaId > 0) {
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se ha actualizado exitosamente ', 'data' => null],
-                    Response::HTTP_OK
-                );
+            $data = Carpeta::updCarpeta($request);
+            if ($data->iCarpetaId > 0) {
+                return FormatearMensajeHelper::ok('Se ha actualizado exitosamente ', $data);
             } else {
-                return new JsonResponse(
-                    ['validated' => false, 'message' => 'No se ha podido actualizar', 'data' => null],
-                    Response::HTTP_OK
-                );
+                throw new \Exception('No se ha podido actualizar', 500);
             }
         } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarCarpeta(GuardarCarpetaRequest $request)
+    {
+        try {
+            $data = Carpeta::insCarpeta($request);
+            if ($data->iCarpetaId > 0) {
+                return FormatearMensajeHelper::ok('Se ha guardado exitosamente ', $data);
+            } else {
+                throw new \Exception('No se ha podido guardar', 500);
+            }
+        } catch (\Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
