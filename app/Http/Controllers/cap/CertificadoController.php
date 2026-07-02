@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Services\cap\CertificadoService;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -58,8 +59,12 @@ class CertificadoController extends Controller
             if (count($data) > 0) {
                 $data = $data[0];
                 if (isset($data->bFinalizado) && $data->bFinalizado == 1) {
-                    $html = view('cap.certificado', compact('data'))->render();
-                    $pdf = PDF::loadHTML($html)->setPaper('a4', 'landscape');
+                    $certificadoService = new CertificadoService();
+                    $pdf = $certificadoService->generarCertificado(
+                        $data,
+                        (int) $request->iCapacitacionId,
+                        (int) $request->iPersId
+                    );
                     return $pdf->stream("certificado_{$request->iCapacitacionId}.pdf");
                 } else {
                     $message = 'La capacitación aún está en proceso, no se puede emitir el certificado.';
