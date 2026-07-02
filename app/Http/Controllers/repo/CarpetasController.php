@@ -21,6 +21,16 @@ class CarpetasController extends Controller
         }
     }
 
+    public function verReporteCarpetas(Request $request)
+    {
+        try {
+            $data = Carpeta::selCarpetasReporte($request);
+            return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
+        } catch (\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function verCarpeta(Request $request)
     {
         try {

@@ -18,6 +18,16 @@ class Carpeta extends Model
         return DB::select("EXEC repo.SP_SEL_carpetas $placeholders", $parametros);
     }
 
+    public static function selCarpetasReporte($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId') ?? NULL,
+            $request->iPersId ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC repo.SP_SEL_carpetasReporte $placeholders", $parametros);
+    }
+
     public static function selCarpeta($request)
     {
         $parametros = [
