@@ -175,14 +175,14 @@ class ResultadoController extends Controller
     {
         // Validación de los parámetros de entrada
         $validator = Validator::make($request->all(), [
-            'iIeCursoId' => ['required'],
+            'iCursoId' => ['required'],
             'iYAcadId' => ['required'],
             'iSedeId' => ['required'],
             'iSeccionId' => ['required'],
             'iNivelGradoId' => ['required'],
             'iEstudianteId' => ['required'],
         ], [
-            'iIeCursoId.required' => 'No se encontró el identificador iIeCursoId',
+            'iCursoId.required' => 'No se encontró el identificador iCursoId',
             'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
             'iSedeId.required' => 'No se encontró el identificador iSedeId',
             'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
@@ -198,7 +198,7 @@ class ResultadoController extends Controller
         }
 
         $fieldsToDecode = [
-            'iIeCursoId',
+            'iCursoId',
             'iYAcadId',
             'iSedeId',
             'iSeccionId',
@@ -209,7 +209,7 @@ class ResultadoController extends Controller
         $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iIeCursoId            ??      NULL,
+            $request->iCursoId            ??      NULL,
             $request->iYAcadId              ??      NULL,
             $request->iSedeId               ??      NULL,
             $request->iSeccionId            ??      NULL,
@@ -222,7 +222,7 @@ class ResultadoController extends Controller
 
             $data = DB::select(
                 'EXEC [acad].[Sp_SEL_reporteFinalDeNotas] 
-                    @_iIeCursoId=?,
+                    @_iCursoId=?,
                     @_iYAcadId=?,
                     @_iSedeId=?,
                     @_iSeccionId=?,

@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use App\Models\acad\Grado;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Gate;
 
 class GradosController extends Controller
 {
@@ -96,4 +102,16 @@ class GradosController extends Controller
             );
         }
     }
+
+    public function selGradoDocente(Request $request){
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
+            $data = Grado::selGradoDocente($request);
+            return FormatearMensajeHelper::ok('Se obtuvó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+        
+    }
+
 }

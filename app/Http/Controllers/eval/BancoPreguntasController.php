@@ -143,7 +143,6 @@ class BancoPreguntasController extends Controller
     }
 
     public function guardarBancoPreguntas(Request $request){
-
         $validator = Validator::make($request->all(), [
             'iDocenteId' => ['required'],
             'iTipoPregId' => ['required'],

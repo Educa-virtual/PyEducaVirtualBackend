@@ -154,7 +154,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
 
 });
 
-Route::group(['prefix' => 'acad'], function () {
+Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::group(['prefix' => 'vacantes'], function () {
         Route::post('guardar', [VacantesController::class, 'guardarVacantes']);
         //vacantes convenciones de nombre para APIs
@@ -162,6 +162,7 @@ Route::group(['prefix' => 'acad'], function () {
 
     Route::group(['prefix' => 'grados'], function () {
         Route::post('handleCrudOperation', [GradosController::class, 'handleCrudOperation']);
+        Route::post('selGradoDocente', [GradosController::class, 'selGradoDocente']);
     });
 
     Route::group(['prefix' => 'especialistas-dremo'], function () {
