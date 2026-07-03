@@ -101,6 +101,6 @@ class Apoderado extends Model
             $request->iPersId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne("EXEC apo.SP_SEL_apoderadoEstudiantes $placeholders", $parametros);
+        return DB::select("EXEC apo.SP_SEL_apoderadoEstudiantes $placeholders", $parametros);
     }
 }
