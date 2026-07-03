@@ -100,5 +100,14 @@ class ApoderadoController extends Controller
         }
     }
 
-
+    public function listarEstudiantes(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::APODERADO]]);
+            $data = Apoderado::selApoderadoEstudiantes($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $ex) {
+            return FormatearMensajeHelper::error($ex);
+        }
+    }
 }
