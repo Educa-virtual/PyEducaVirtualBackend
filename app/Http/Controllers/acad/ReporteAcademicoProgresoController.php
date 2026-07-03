@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class ReporteAcademicoProgresoController extends Controller
 {
@@ -95,7 +96,8 @@ class ReporteAcademicoProgresoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            $params = [NULL, NULL, NULL, VerifyHash::decodesxId($iMatrId)];
+            $iMatrId = is_numeric($iMatrId) ? $iMatrId : VerifyHash::decodesxId($iMatrId);
+            $params = [NULL, NULL, NULL, $iMatrId];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             // ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
             $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($matricula);
