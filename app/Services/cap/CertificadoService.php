@@ -14,6 +14,7 @@ class CertificadoService
 {
     public function generarCertificado(object $data, int $iCapacitacionId, int $iPersId)
     {
+        try {
         $uniqueId = hash('sha256', $data->iInscripId);
         $filename = "certificado_{$uniqueId}.pdf";
 
@@ -24,13 +25,17 @@ class CertificadoService
         $qrBase64 = $this->generarQRBase64($qrData);
         $qrBase64 = preg_replace('/\s+/', '', $qrBase64) ?: $qrBase64;
 
-        $html = view('cap.certificado', compact('data', 'qrBase64', $uniqueId))->render();
+        $html = view('cap.certificado', compact('data', 'qrBase64', 'uniqueId'))->render();
 
         $pdf = PDF::loadHTML($html)->setPaper('a4', 'landscape');
 
         Storage::disk('public')->put($storagePath, $pdf->output());
 
         return $pdf;
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return null;
+        }
     }
 
     private function generarDatosQR(string $uniqueId): string
