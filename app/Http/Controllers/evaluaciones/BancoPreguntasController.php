@@ -30,22 +30,10 @@ class BancoPreguntasController extends ApiController
     public function obtenerBancoPreguntas(Request $request)
     {
         $params = [
-            $request->iCursoId == 0  ? NULL : VerifyHash::decodes($request->iCursoId),
+            NULL,
             $request->iDocenteId == 0 ? NULL : veRifyHash::decodes($request->iDocenteId),
         ];
-
-        // $params = [
-        //     // iCursoId
-        //     $request->iCursoId == 0
-        //         ? null : (is_string($request->iCursoId)
-        //         ? VerifyHash::decodes($request->iCursoId) : (int) $request->iCursoId),
-
-        //     // iDocenteId
-        //     is_string($request->iDocenteId ?? null)
-        //         ? VerifyHash::decodes($request->iDocenteId) : (is_numeric($request->iDocenteId)
-        //         ? (int) $request->iDocenteId : null),
-        // ];
-        
+    
         try {
             $result = DB::selectOne(
                 'EXEC eval.SP_SEL_bancoPreguntasxiCursoIdxiDocenteId @_iCursoId = ?, @_iDocenteId = ?',
