@@ -116,13 +116,12 @@
       margin: 20px 0;
     }
 
-    .qr {
-      margin-top: 30px;
-    }
-
-    .qr img {
-      width: 100px;
-      height: 100px;
+    .qr-img {
+      display: block;
+      margin: 25px auto 0;
+      width: 140px;
+      height: 140px;
+      border: 0;
     }
   </style>
 </head>
@@ -186,9 +185,9 @@
         Moquegua, {{ \Carbon\Carbon::now()->translatedFormat('d \d\e F \d\e\l Y') }}
       </div>
 
-      <!-- <div class="qr">
-        
-      </div> -->
+      <div class="qr">
+        <img src="{{ $qrBase64 }}" alt="Código QR de verificación" class="qr-img" style="display:block; margin:25px auto 0; width:100px; height:100px; border:0;">
+      </div>
 
     </div>
   </main>

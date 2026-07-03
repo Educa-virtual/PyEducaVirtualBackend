@@ -29,7 +29,7 @@ ORDER BY cCursoNombre", [$iSedeId, $iYAcadId, $iNivelGradoId]);
 
     public static function selCompetenciasPorCurso($iNivelTipoId, $iCursoId)
     {
-        return DB::select("SELECT compcur.iCompetenciaId, cCompetenciaNombre
+        return DB::select("SELECT DISTINCT compcur.iCompetenciaId, cCompetenciaNombre
 FROM acad.competencias_cursos AS compcur
 INNER JOIN acad.curriculo_competencias AS curcomp ON curcomp.iCompetenciaId=compcur.iCompetenciaId
 WHERE compcur.iEstado=1 AND compcur.iNivelTipoId=? AND compcur.iCursoId=?", [$iNivelTipoId, $iCursoId]);

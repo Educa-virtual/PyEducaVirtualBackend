@@ -1,7 +1,8 @@
 
 <?php
 
-use App\Http\Controllers\acad\ApoderadoController;
+use App\Http\Controllers\acad\AmbienteController;
+use App\Http\Controllers\acad\DocenteController;
 use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
@@ -32,10 +33,53 @@ use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\acad\ConfiguracionController;
+use App\Http\Controllers\acad\GradoSeccionController;
+use App\Http\Controllers\acad\IeCursoController;
+use App\Http\Controllers\acad\DocenteCursoController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
+
+    Route::post('crearConfiguracion', [ConfiguracionController::class, 'crearConfiguracion']);
+    Route::post('verConfiguracion', [ConfiguracionController::class, 'verConfiguracion']);
+    Route::post('guardarConfiguracion', [ConfiguracionController::class, 'guardarConfiguracion']);
+    Route::post('actualizarConfiguracion', [ConfiguracionController::class, 'actualizarConfiguracion']);
+    Route::post('descargarAprobacion', [ConfiguracionController::class, 'descargarAprobacion']);
+
+    Route::post('listarAmbientes', [AmbienteController::class, 'listarAmbientes']);
+    Route::post('verAmbiente', [AmbienteController::class, 'verAmbiente']);
+    Route::post('guardarAmbiente', [AmbienteController::class, 'guardarAmbiente']);
+    Route::post('actualizarAmbiente', [AmbienteController::class, 'actualizarAmbiente']);
+    Route::post('borrarAmbiente', [AmbienteController::class, 'borrarAmbiente']);
+
+    Route::post('listarGradosSecciones', [GradoSeccionController::class, 'listarGradosSecciones']);
+    Route::post('verGradoSeccion', [GradoSeccionController::class, 'verGradoSeccion']);
+    Route::post('guardarGradoSeccion', [GradoSeccionController::class, 'guardarGradoSeccion']);
+    Route::post('actualizarGradoSeccion', [GradoSeccionController::class, 'actualizarGradoSeccion']);
+    Route::post('borrarGradoSeccion', [GradoSeccionController::class, 'borrarGradoSeccion']);
+
+    Route::post('listarIeCursos', [IeCursoController::class, 'listarIeCursos']);
+    Route::post('verIeCurso', [IeCursoController::class, 'verIeCurso']);
+    Route::post('guardarIeCurso', [IeCursoController::class, 'guardarIeCurso']);
+    Route::post('actualizarIeCurso', [IeCursoController::class, 'actualizarIeCurso']);
+    Route::post('actualizarIeCursoEstado', [IeCursoController::class, 'actualizarIeCursoEstado']);
+
+    Route::post('buscarDocente', [DocenteController::class, 'buscarDocente']);
+    Route::post('listarDocentes', [DocenteController::class, 'listarDocentes']);
+    Route::post('guardarDocente', [DocenteController::class, 'guardarDocente']);
+    Route::post('actualizarDocente', [DocenteController::class, 'actualizarDocente']);
+    Route::post('actualizarDocenteEstado', [DocenteController::class, 'actualizarDocenteEstado']);
+    Route::post('borrarDocente', [DocenteController::class, 'borrarDocente']);
+
+    Route::post('listarDocenteCurso', [DocenteCursoController::class, 'listarDocenteCurso']);
+    Route::post('verDocenteCursoHistorial', [DocenteCursoController::class, 'verDocenteCursoHistorial']);
+    Route::post('guardarDocenteCurso', [DocenteCursoController::class, 'guardarDocenteCurso']);
+    Route::post('actualizarDocenteCurso', [DocenteCursoController::class, 'actualizarDocenteCurso']);
+    Route::post('actualizarDocenteCursoEstado', [DocenteCursoController::class, 'actualizarDocenteCursoEstado']);
+    Route::post('borrarDocenteCurso', [DocenteCursoController::class, 'borrarDocenteCurso']);
+
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
     Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
