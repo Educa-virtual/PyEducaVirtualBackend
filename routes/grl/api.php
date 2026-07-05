@@ -31,12 +31,12 @@ Route::group(['prefix' => 'grl', 'middleware' => ['auth:api']], function () {
     Route::post('verificarCodVerificarCorreo', [PersonasContactosController::class, 'verificarCodVerificarCorreo']);
   });
   Route::group(['prefix' => 'feriados-nacionales'], function () {
-    Route::get('getFeriadosNacionales/{iYearId?}', [FeriadosNacionalesController::class, 'getFeriadosNacionales']);
-    Route::post('insFeriadosNacionales', [FeriadosNacionalesController::class, 'insFeriadosNacionales']);
-    Route::post('insFeriadosNacionalesMasivo', [FeriadosNacionalesController::class, 'insFeriadosNacionalesMasivo']);
-    Route::put('updFeriadosNacionales', [FeriadosNacionalesController::class, 'updFeriadosNacionales']);
-    Route::put('syncFeriadosNacionales', [FeriadosNacionalesController::class, 'syncFeriadosNacionales']);
-    Route::delete('deleteFeriadosNacionales/{iFeriadoId}', [FeriadosNacionalesController::class, 'deleteFeriadosNacionales']);
+    Route::post('listarFeriadosNacionales', [FeriadosNacionalesController::class, 'listarFeriadosNacionales']);
+    Route::post('guardarFeriadoNacional', [FeriadosNacionalesController::class, 'guardarFeriadoNacional']);
+    Route::post('guardarFeriadoNacionalMasivo', [FeriadosNacionalesController::class, 'guardarFeriadoNacionalMasivo']);
+    Route::post('actualizarFeriadoNacional', [FeriadosNacionalesController::class, 'actualizarFeriadoNacional']);
+    Route::post('aplicarFeriadosNacionales', [FeriadosNacionalesController::class, 'aplicarFeriadosNacionales']);
+    Route::post('borrarFeriadoNacional', [FeriadosNacionalesController::class, 'borrarFeriadoNacional']);
   });
   Route::group(['prefix' => 'years'], function () {
     Route::get('getYears/{iYearId?}/', [YearController::class, 'getYears']);
