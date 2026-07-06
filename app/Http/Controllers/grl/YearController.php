@@ -2,87 +2,67 @@
 
 namespace App\Http\Controllers\grl;
 
-use App\Helpers\CollectionStrategy;
-use App\Helpers\ResponseHandler;
-use App\Http\Controllers\ApiController;
+use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\grl\ActualizarYearRequest;
+use App\Http\Requests\grl\GuardarYearRequest;
+use App\Models\grl\Year;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class YearController extends Controller
 {
-  const schema = 'grl';
-
-  public function getYears(Request $request)
+  public function listarYears(Request $request)
   {
     try {
-      $query = DB::select("EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion", [
-        'json' => json_encode([
-          'iYearId' => $request->route('iYearId')
-        ]),
-        'opcion' => 'getYears'
-      ]);
-
-      $query = collect($query)->sortByDesc('iYearId')->values();
-
-      return ResponseHandler::success($query, 'Años obtenidos correctamente.');
+      $data = Year::selYears($request);
+      return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
     } catch (\Exception $e) {
-      return ResponseHandler::error(
-        'Error al obtener los años.',
-        500,
-        $e->getMessage()
-      );
+      return FormatearMensajeHelper::error($e);
     }
   }
 
-
-  public function insYears(Request $request)
+  public function verYear(Request $request)
   {
-    $query = DB::select(
-      "EXEC grl.SP_INS_TablaYearXopcion @json = :json, @_opcion = :opcion",
-      [
-        'json' => json_encode(
-          [
-            'cYearNombre' => $request->input('cYearNombre'),
-            'cYearOficial' => $request->input('cYearOficial'),
-            'iYearEstado' => $request->input('iYearEstado'),
-          ]
-        ),
-        'opcion' => 'addYear'
-      ]
-    );
-
-    return ResponseHandler::success($query, 'Año registrado correctamente.');
+    try {
+      $data = Year::selYear($request);
+      return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+    } catch (\Exception $e) {
+      return FormatearMensajeHelper::error($e);
+    }
   }
 
-  public function updYears(Request $request)
+  public function guardarYear(GuardarYearRequest $request)
   {
-    $query = DB::select("EXEC grl.SP_UPD_TablaYearXopcion @json = :json, @_opcion = :opcion", [
-      'json' => json_encode([
-        'iYearId' => $request->input('iYearId'),
-        'cYearNombre' => $request->input('cYearNombre'),
-        'cYearOficial' => $request->input('cYearOficial'),
-        // 'iYearEstado' => $request->input('iYearEstado'), 
-      ]),
-      'opcion' => 'updateYear',
-    ]);
-
-    return ResponseHandler::success($query, 'Año actualizado correctamente.');
+    try {
+      Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+      $data = Year::insYear($request);
+      return FormatearMensajeHelper::ok('Se guardó la información', $data);
+    } catch (\Exception $e) {
+      return FormatearMensajeHelper::error($e);
+    }
   }
 
-  public function deleteYears(Request $request)
+  public function actualizarYear(ActualizarYearRequest $request)
   {
+    try {
+      Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+      $data = Year::updYear($request);
+      return FormatearMensajeHelper::ok('Se actualizó la información', $data);
+    } catch (\Exception $e) {
+      return FormatearMensajeHelper::error($e);
+    }
+  }
 
-    $query = DB::select("EXEC grl.SP_DEL_TablaYearXopcion @json = :json, @_opcion = :opcion", [
-      'json' => json_encode([
-        'iYearId' => $request->route('iYearId'),
-      ]),
-      'opcion' => 'deleteYear',
-    ]);
-
-    return ResponseHandler::success($query, 'Año eliminado correctamente.');
+  public function borrarYear(Request $request)
+  {
+    try {
+      Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+      $data = Year::delYear($request);
+      return FormatearMensajeHelper::ok('Se eliminó la información', $data);
+    } catch (\Exception $e) {
+      return FormatearMensajeHelper::error($e);
+    }
   }
 }

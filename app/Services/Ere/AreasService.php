@@ -6,18 +6,14 @@ use App\Helpers\VerifyHash;
 use App\Models\acad\Area;
 use App\Models\ere\Evaluacion;
 use App\Repositories\acad\AreasRepository;
-use App\Repositories\acad\DocentesRepository;
 use App\Repositories\ere\EvaluacionesRepository;
 use App\Repositories\grl\PersonasRepository;
-use App\Repositories\grl\YearsRepository;
 use App\Repositories\PreguntasRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Models\grl\Year;
 
 class AreasService
 {
@@ -122,7 +118,9 @@ class AreasService
         if (empty($evaluacionIdDescifrado) || empty($areaIdDescifrado)) {
             throw new Exception('El ID enviado no se pudo descifrar.');
         }
-        $year = YearsRepository::obtenerYearPorId(date('Y'));
+        $year = Year::selYear((object) [
+            'iYearId' => date('Y'),
+        ]);
 
         $persona = PersonasRepository::obtenerPersonaPorId($usuario->iPersId);
         $evaluacion = EvaluacionesRepository::obtenerEvaluacionPorId($evaluacionIdDescifrado);

@@ -39,10 +39,10 @@ Route::group(['prefix' => 'grl', 'middleware' => ['auth:api']], function () {
     Route::post('borrarFeriadoNacional', [FeriadosNacionalesController::class, 'borrarFeriadoNacional']);
   });
   Route::group(['prefix' => 'years'], function () {
-    Route::get('getYears/{iYearId?}/', [YearController::class, 'getYears']);
-    Route::post('insYears', [YearController::class, 'insYears']);
-    Route::put('updYears', [YearController::class, 'updYears']);
-    Route::delete('deleteYears/{iYearId}', [YearController::class, 'deleteYears']);
+    Route::post('listarYears', [YearController::class, 'listarYears']);
+    Route::post('guardarYear', [YearController::class, 'guardarYear']);
+    Route::post('actualizarYear', [YearController::class, 'actualizarYear']);
+    Route::post('borrarYear', [YearController::class, 'borrarYear']);
   });
 
 
