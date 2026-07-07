@@ -6,10 +6,9 @@ use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Services\Ere\ExtraerBase64;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class AlternativasController extends Controller
 {
@@ -25,6 +24,7 @@ class AlternativasController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -39,7 +39,7 @@ class AlternativasController extends Controller
             'valorBusqueda',
 
             'iAlternativaId',
-            'iPreguntaId'
+            'iPreguntaId',
         ];
 
         foreach ($fieldsToDecode as $field) {
@@ -49,15 +49,15 @@ class AlternativasController extends Controller
         return [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $request->iAlternativaId              ??  NULL,
-            $request->iPreguntaId                 ??  NULL,
-            $request->cAlternativaDescripcion     ??  NULL,
-            $request->cAlternativaLetra           ??  NULL,
-            $request->bAlternativaCorrecta        ??  NULL,
-            $request->cAlternativaExplicacion     ??  NULL,
+            $request->iAlternativaId ?? null,
+            $request->iPreguntaId ?? null,
+            $request->cAlternativaDescripcion ?? null,
+            $request->cAlternativaLetra ?? null,
+            $request->bAlternativaCorrecta ?? null,
+            $request->cAlternativaExplicacion ?? null,
 
-            $request->iCredId                     ??  NULL,
-            $request->json_alternativas           ??  NULL
+            $request->iCredId ?? null,
+            $request->json_alternativas ?? null,
         ];
     }
 
@@ -65,7 +65,7 @@ class AlternativasController extends Controller
     {
         $fieldsToEncode = [
             'iAlternativaId',
-            'iPreguntaId'
+            'iPreguntaId',
         ];
 
         foreach ($fieldsToEncode as $field) {

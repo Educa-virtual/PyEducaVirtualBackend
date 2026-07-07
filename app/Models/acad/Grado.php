@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class Grado extends Model
 {
-    public static function selGradoDocente(Request $request) {
-        
+    public static function selGradoDocente(Request $request)
+    {
+
         $iDocenteId = VerifyHash::decodes($request->iDocenteId);
+
         return DB::select(
-                "SELECT
+            "SELECT
                 DISTINCT
                 ag.iGradoId
                 ,ag.cGradoNombre+' ('+ant.cNivelTipoNombre+')' AS cGrado 
@@ -34,7 +36,7 @@ class Grado extends Model
                 ON aic.iCursosNivelGradId = acng.iCursosNivelGradId
                 INNER JOIN acad.docente_cursos AS adc
                 ON adc.iIeCursoId = aic.iIeCursoId
-                AND adc.iDocenteId = ?",[$iDocenteId]
+                AND adc.iDocenteId = ?", [$iDocenteId]
         );
 
     }

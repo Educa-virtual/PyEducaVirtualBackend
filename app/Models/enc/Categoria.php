@@ -2,13 +2,11 @@
 
 namespace App\Models\enc;
 
-use App\Helpers\VerifyHash;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Categoria extends Model
 {
-
     public static function selCategorias($request)
     {
         try {
@@ -17,8 +15,9 @@ class Categoria extends Model
                 $request->iYAcadId,
             ];
             $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
             return DB::select("EXEC enc.Sp_SEL_categorias $placeholders", $parametros);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // Manejar error en caso de que no se devuelva ningún resultado
             if (str_contains($e->getMessage(), 'contains no fields')) {
                 return [];
@@ -35,6 +34,7 @@ class Categoria extends Model
             $request->iCateId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_categoria $placeholders", $parametros);
     }
 
@@ -50,6 +50,7 @@ class Categoria extends Model
             $request->bCatePermisoDirector,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_categoria $placeholders", $parametros);
     }
 
@@ -66,6 +67,7 @@ class Categoria extends Model
             $request->bCatePermisoDirector,
         ];
         $placeholders = implode(',', array_fill(0, count($params), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_categoria $placeholders", $params);
     }
 
@@ -76,6 +78,7 @@ class Categoria extends Model
             $request->iCateId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_DEL_categoria $placeholders", $parametros);
     }
 }

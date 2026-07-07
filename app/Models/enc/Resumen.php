@@ -29,6 +29,7 @@ class Resumen extends Model
             $request->iCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC enc.Sp_SEL_resumen $placeholders", $parametros);
     }
 }

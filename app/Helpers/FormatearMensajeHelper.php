@@ -10,7 +10,8 @@ class FormatearMensajeHelper
 {
     /**
      * Formatea los mensajes de error de excepciones.
-     * @param Exception $exception mensaje de error a formatear.
+     *
+     * @param  Exception  $exception  mensaje de error a formatear.
      * @return \Illuminate\Http\JsonResponse Mensaje de error formateado en JSON.
      */
     public static function error(Exception $exception)
@@ -31,10 +32,11 @@ class FormatearMensajeHelper
                 $posicionCierre = stripos($mensajeError, '(Connection: sqlsrv');
                 $message = substr($mensajeError, $posicionInicio, $posicionCierre - $posicionInicio);
             } else {
-                $codigo = $exception->getCode()=='0' ? Response::HTTP_BAD_REQUEST : $exception->getCode();
+                $codigo = $exception->getCode() == '0' ? Response::HTTP_BAD_REQUEST : $exception->getCode();
                 $message = $exception->getMessage();
             }
         }
+
         return response()->json(['status' => 'Error', 'message' => $message, 'data' => ''], $codigo);
     }
 

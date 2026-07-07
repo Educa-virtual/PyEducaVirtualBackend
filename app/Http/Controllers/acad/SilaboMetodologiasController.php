@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class SilaboMetodologiasController extends Controller
 {
     protected $hashids;
-    protected $idSilMetId;
-    protected $iTipoMetId;
-    protected $iSilaboId;
 
+    protected $idSilMetId;
+
+    protected $iTipoMetId;
+
+    protected $iSilaboId;
 
     public function __construct()
     {
@@ -44,17 +46,16 @@ class SilaboMetodologiasController extends Controller
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $idSilMetId                     ?? NULL,
-            $iTipoMetId                     ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cSilMetDescripcion    ?? NULL,
+            $idSilMetId ?? null,
+            $iTipoMetId ?? null,
+            $iSilaboId ?? null,
+            $request->cSilMetDescripcion ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -77,6 +78,7 @@ class SilaboMetodologiasController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
     public function store(Request $request)
     {
         $request->validate(
@@ -104,34 +106,34 @@ class SilaboMetodologiasController extends Controller
             switch ($request->opcion) {
                 case 'GUARDARxiSilaboId':
                     $parametros = [
-                        $iTipoMetId                     ?? NULL,
-                        $iSilaboId                      ?? NULL,
-                        $request->cSilMetDescripcion    ?? NULL,      
-                        $request->iCredId
+                        $iTipoMetId ?? null,
+                        $iSilaboId ?? null,
+                        $request->cSilMetDescripcion ?? null,
+                        $request->iCredId,
                     ];
                     $data = DB::select('exec acad.Sp_INS_silaboMetodologias
                 ?,?,?,?', $parametros);
                     break;
                 case 'ACTUALIZARxidSilMetId':
                     $parametros = [
-                        $idSilMetId                     ?? NULL,
-                        $iTipoMetId                     ?? NULL,
-                        $request->cSilMetDescripcion    ?? NULL,
-                        $request->iCredId
+                        $idSilMetId ?? null,
+                        $iTipoMetId ?? null,
+                        $request->cSilMetDescripcion ?? null,
+                        $request->iCredId,
                     ];
                     $data = DB::select('exec acad.Sp_UPD_silaboMetodologias
                 ?,?,?,?', $parametros);
                     break;
                 case 'ELIMINARxidSilMetId':
                     $parametros = [
-                        $idSilMetId                     ?? NULL,
+                        $idSilMetId ?? null,
                         $request->iCredId,
                     ];
                     $data = DB::select('exec acad.Sp_DEL_silaboMetodologias
                 ?,?', $parametros);
                     break;
             }
-           
+
             if ($data[0]->idSilMetId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];

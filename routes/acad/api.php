@@ -2,41 +2,41 @@
 <?php
 
 use App\Http\Controllers\acad\AmbienteController;
-use App\Http\Controllers\acad\DocenteController;
 use App\Http\Controllers\acad\BandejaCotnroller;
 use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
 use App\Http\Controllers\acad\CalendarioAcademicosController;
 use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
+use App\Http\Controllers\acad\ConfiguracionController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
+use App\Http\Controllers\acad\DesercionController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
 use App\Http\Controllers\acad\DirectorController;
+use App\Http\Controllers\acad\DocenteController;
+use App\Http\Controllers\acad\DocenteCursoController;
 use App\Http\Controllers\acad\DocenteCursosController;
 use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\acad\FechasImportantesController;
 use App\Http\Controllers\acad\GradosController;
+use App\Http\Controllers\acad\GradoSeccionController;
+use App\Http\Controllers\acad\IeCursoController;
 use App\Http\Controllers\acad\InstitucionEducativaController;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\acad\PeriodoEvaluacionesController;
 use App\Http\Controllers\acad\ReporteAcademicoProgresoController;
 use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\acad\TurnosController;
-use App\Http\Controllers\acad\DesercionController;
 use App\Http\Controllers\api\acad\AdministradorController;
 use App\Http\Controllers\api\acad\DistribucionBloqueController;
 use App\Http\Controllers\api\acad\FeriadoImportanteController;
 use App\Http\Controllers\api\acad\TipoFechaController;
 use App\Http\Controllers\asi\AsistenciaController;
-use App\Http\Controllers\VacantesController;
 use App\Http\Controllers\ere\EspecialistasDremoController;
 use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\FileController;
-use App\Http\Controllers\acad\ConfiguracionController;
-use App\Http\Controllers\acad\GradoSeccionController;
-use App\Http\Controllers\acad\IeCursoController;
-use App\Http\Controllers\acad\DocenteCursoController;
+use App\Http\Controllers\VacantesController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
@@ -96,18 +96,18 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
         Route::get('{iEstudianteId}/matriculas', [MatriculaController::class, 'obtenerMatriculasEstudiante']);
         Route::prefix('calendario-academico')->group(function () {
 
-           // Calendario general por año
+            // Calendario general por año
             Route::get(
                 'anio/{iYAcadId}',
                 [EstudiantesController::class, 'obtenerCalendario']
             );
-              // Calendario del estudiante / apoderado
+            // Calendario del estudiante / apoderado
             Route::get(
                 'apoderado/{iYAcadId}/{iPersId}/{iSedeId}',
                 [EstudiantesController::class, 'obtenerCalendarioEstudiante']
             );
         });
-            
+
         Route::group(['prefix' => 'buzon-sugerencias'], function () {
             Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerencias']);
@@ -115,9 +115,9 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
                 Route::delete('', [BuzonSugerenciaEstudianteController::class, 'eliminarSugerencia']);
                 Route::get('archivos', [BuzonSugerenciaEstudianteController::class, 'obtenerArchivosSugerencia']);
                 Route::get('archivos/{nombreArchivo}', [BuzonSugerenciaEstudianteController::class, 'descargarArchivosSugerencia']);
-                //Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerenciasEstudiante']);
-                //Route::get('{id}', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerenciaConRespuesta']);
-                //Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
+                // Route::get('', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerenciasEstudiante']);
+                // Route::get('{id}', [BuzonSugerenciaEstudianteController::class, 'obtenerListaSugerenciaConRespuesta']);
+                // Route::post('', [BuzonSugerenciaEstudianteController::class, 'registrarSugerencia']);
             });
         });
         Route::group(['prefix' => 'matriculas'], function () {
@@ -164,7 +164,6 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
         Route::post('insCalendarioAcademico', [CalendarioAcademicosController::class, 'insCalendarioAcademico']);
     });
 
-
     Route::group(['prefix' => 'matricula'], function () {
         Route::post('searchGradoSeccionTurnoConf', [MatriculaController::class, 'searchGradoSeccionTurnoConf']);
         Route::post('crearMatricula', [MatriculaController::class, 'crearMatricula']);
@@ -201,7 +200,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::group(['prefix' => 'vacantes'], function () {
         Route::post('guardar', [VacantesController::class, 'guardarVacantes']);
-        //vacantes convenciones de nombre para APIs
+        // vacantes convenciones de nombre para APIs
     });
 
     Route::group(['prefix' => 'grados'], function () {
@@ -306,12 +305,12 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
         Route::put('updNiveles', [AdministradorController::class, 'updNiveles']);
         Route::post('insertarIntituciones', [AdministradorController::class, 'insertarIntituciones']);
         Route::post('insertarSedes', [AdministradorController::class, 'insertarSedes']);
-        Route::post('insertarCompetenciasCurso', [AdministradorController::class,'insertarCompetenciasCurso']);
-        Route::post('insertarAreas', [AdministradorController::class,'insertarAreas']);
-        Route::post('insertarCompetencia', [AdministradorController::class,'insertarCompetencia']);
-        Route::post('insertarCompetenciaCapacidad', [AdministradorController::class,'insertarCompetenciaCapacidad']);
-        Route::post('aperturarSede', [AdministradorController::class,'aperturarSede']);
- 
+        Route::post('insertarCompetenciasCurso', [AdministradorController::class, 'insertarCompetenciasCurso']);
+        Route::post('insertarAreas', [AdministradorController::class, 'insertarAreas']);
+        Route::post('insertarCompetencia', [AdministradorController::class, 'insertarCompetencia']);
+        Route::post('insertarCompetenciaCapacidad', [AdministradorController::class, 'insertarCompetenciaCapacidad']);
+        Route::post('aperturarSede', [AdministradorController::class, 'aperturarSede']);
+
         Route::post('mensaje', [AdministradorController::class, 'mensaje']);
     });
 });

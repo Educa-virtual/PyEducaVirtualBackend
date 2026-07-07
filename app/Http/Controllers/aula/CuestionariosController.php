@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\aula;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CuestionariosController extends Controller
@@ -21,8 +21,8 @@ class CuestionariosController extends Controller
             'cTitulo' => ['required', 'max:250'],
             'cSubtitulo' => ['nullable', 'max:250'],
             'cDescripcion' => ['required'],
-            'dtInicio'     => ['required'],
-            'dtFin'        => ['required'],
+            'dtInicio' => ['required'],
+            'dtFin' => ['required'],
 
             'iContenidoSemId' => ['required'],
             'iActTipoId' => ['required'],
@@ -33,8 +33,8 @@ class CuestionariosController extends Controller
             'cTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cSubtitulo.max' => 'El subtítulo no debe exceder los 250 caracteres.',
             'cDescripcion.required' => 'No se encontró el identificador cDescripcion',
-            'dtInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtInicio.required' => 'La fecha y hora de inicio es obligatoria',
+            'dtFin.required' => 'La fecha y hora de fin es obligatoria',
 
             'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
             'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
@@ -44,7 +44,7 @@ class CuestionariosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -58,24 +58,24 @@ class CuestionariosController extends Controller
                 'iCapacitacionId',
                 'iYAcadId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iDocenteId        ?? NULL,
-                $request->cTitulo           ?? NULL,
-                $request->cSubtitulo        ?? NULL,
-                $request->cDescripcion      ?? NULL,
-                $request->dtInicio          ?? NULL,
-                $request->dtFin             ?? NULL,
-                $request->cArchivoAdjunto   ?? NULL,
-                $request->iContenidoSemId           ?? NULL,
-                $request->iActTipoId                ?? NULL,
-                $request->idDocCursoId              ?? NULL,
-                $request->iCapacitacionId           ?? NULL,
-                $request->iYAcadId                  ?? NULL,
+                $request->iDocenteId ?? null,
+                $request->cTitulo ?? null,
+                $request->cSubtitulo ?? null,
+                $request->cDescripcion ?? null,
+                $request->dtInicio ?? null,
+                $request->dtFin ?? null,
+                $request->cArchivoAdjunto ?? null,
+                $request->iContenidoSemId ?? null,
+                $request->iActTipoId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->iYAcadId ?? null,
 
-                $request->iCredId           ?? NULL
-                //$request->jCompetencias               ?? NULL
+                $request->iCredId ?? null,
+                // $request->jCompetencias               ?? NULL
             ];
 
             $data = DB::select(
@@ -126,8 +126,8 @@ class CuestionariosController extends Controller
             'cTitulo' => ['required', 'max:250'],
             'cSubtitulo' => ['nullable', 'max:250'],
             'cDescripcion' => ['required'],
-            'dtInicio'     => ['required'],
-            'dtFin'        => ['required'],
+            'dtInicio' => ['required'],
+            'dtFin' => ['required'],
         ], [
             'iCuestionarioId.required' => 'No se encontró el identificador iCuestionarioId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
@@ -135,14 +135,14 @@ class CuestionariosController extends Controller
             'cTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cSubtitulo.max' => 'El subtítulo no debe exceder los 250 caracteres.',
             'cDescripcion.required' => 'No se encontró el identificador cDescripcion',
-            'dtInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtInicio.required' => 'La fecha y hora de inicio es obligatoria',
+            'dtFin.required' => 'La fecha y hora de fin es obligatoria',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -151,19 +151,19 @@ class CuestionariosController extends Controller
                 'iCuestionarioId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCuestionarioId   ?? NULL,
-                $request->cTitulo           ?? NULL,
-                $request->cSubtitulo        ?? NULL,
-                $request->cDescripcion      ?? NULL,
-                $request->dtInicio          ?? NULL,
-                $request->dtFin             ?? NULL,
-                $request->cArchivoAdjunto   ?? NULL,
+                $request->iCuestionarioId ?? null,
+                $request->cTitulo ?? null,
+                $request->cSubtitulo ?? null,
+                $request->cDescripcion ?? null,
+                $request->dtInicio ?? null,
+                $request->dtFin ?? null,
+                $request->cArchivoAdjunto ?? null,
 
-                $request->iCredId           ?? NULL
-                //$request->jCompetencias               ?? NULL
+                $request->iCredId ?? null,
+                // $request->jCompetencias               ?? NULL
             ];
             $data = DB::select(
                 'exec aula.SP_UPD_cuestionarios 
@@ -196,6 +196,7 @@ class CuestionariosController extends Controller
             );
         }
     }
+
     public function eliminarCuestionario(Request $request, $iCuestionarioId)
     {
         $request->merge(['iCuestionarioId' => $iCuestionarioId]);
@@ -209,7 +210,7 @@ class CuestionariosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -219,11 +220,11 @@ class CuestionariosController extends Controller
                 'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCuestionarioId      ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iCuestionarioId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -252,7 +253,6 @@ class CuestionariosController extends Controller
         }
     }
 
-
     public function obtenerCuestionarioxiCuestionarioId(Request $request, $iCuestionarioId)
     {
         $request->merge(['iCuestionarioId' => $iCuestionarioId]);
@@ -266,7 +266,7 @@ class CuestionariosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -276,11 +276,11 @@ class CuestionariosController extends Controller
                 'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCuestionarioId      ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iCuestionarioId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

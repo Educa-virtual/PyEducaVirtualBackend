@@ -12,6 +12,7 @@ class YearsRepository
             'EXEC grl.Sp_SEL_yearsXiYearId @_iYearId = ?',
             [$id]
         );
+
         return $year;
     }
 }

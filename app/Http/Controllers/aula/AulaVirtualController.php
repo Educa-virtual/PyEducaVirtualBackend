@@ -3,21 +3,19 @@
 namespace App\Http\Controllers\aula;
 
 use App\Helpers\FormatearMensajeHelper;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\ApiController;
+use App\Models\aula\AulaVirtual;
 use App\Repositories\aula\ProgramacionActividadesRepository;
 use App\Repositories\evaluaciones\BancoRepository;
 use DateTime;
-use DateTimeZone;
 use Exception;
 use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Throwable;
-use function PHPUnit\Framework\isNull;
-use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
-use App\Models\aula\AulaVirtual;
-use Illuminate\Http\Response;
 
 class AulaVirtualController extends ApiController
 {
@@ -40,7 +38,7 @@ class AulaVirtualController extends ApiController
         $horaInicioaux = new DateTime($horaInicio);
         $horaString1 = $horaInicioaux->format('H:i:s');
         // Combinar fecha y hora en un solo string con formato ISO 8601
-        $fechaHoraCompletaInicio = $dateString1 . 'T' . $horaString1 . 'Z';
+        $fechaHoraCompletaInicio = $dateString1.'T'.$horaString1.'Z';
 
         // Obtener la fecha y hora de fin de la evaluación de la solicitud
         $fechaFin = $request->input('dFechaEvaluacionPublicacionFin');
@@ -52,7 +50,7 @@ class AulaVirtualController extends ApiController
         $horaFinaux = new DateTime($horaFin);
         $horaString = $horaFinaux->format('H:i:s');
         // Combinar fecha y hora en un solo string con formato ISO 8601
-        $fechaHoraCompletaFin = $dateString . 'T' . $horaString . 'Z';
+        $fechaHoraCompletaFin = $dateString.'T'.$horaString.'Z';
 
         // Obtener y decodificar el identificador de programación de actividades
         $iProgActId = (int) $request->iProgActId ?? 0;
@@ -71,7 +69,7 @@ class AulaVirtualController extends ApiController
             'dtProgActPublicacion' => $fechaHoraCompletaFin,
             'cProgActTituloLeccion' => $request->cTareaTitulo,
             'cProgActDescripcion' => $request->cTareaDescripcion,
-            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto
+            'cTareaArchivoAdjunto' => $request->cTareaArchivoAdjunto,
         ];
 
         try {
@@ -85,6 +83,7 @@ class AulaVirtualController extends ApiController
             // En caso de error, deshacer la transacción y registrar el error
             DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+
             return $this->errorResponse(null, $message);
         }
 
@@ -105,7 +104,7 @@ class AulaVirtualController extends ApiController
             1,     // Estado activo
             null,  // Sin sesión asociada
             $iContenidoSemId,
-            $request->iActTipoId
+            $request->iActTipoId,
         ];
 
         try {
@@ -154,8 +153,8 @@ class AulaVirtualController extends ApiController
     public function contenidoSemanasProgramacionActividades(Request $request)
     {
 
-        $iSilaboId =  VerifyHash::decodes($request->iSilaboId);
-        $iContenidoSemId =  VerifyHash::decodes($request->iContenidoSemId);
+        $iSilaboId = VerifyHash::decodes($request->iSilaboId);
+        $iContenidoSemId = VerifyHash::decodes($request->iContenidoSemId);
         $params = [$iSilaboId, $request->perfil, $iContenidoSemId];
 
         $contenidos = [];
@@ -163,6 +162,7 @@ class AulaVirtualController extends ApiController
             $contenidos = DB::select('exec aula.SP_SEL_contenidoSemanaProgramacionActividades @_iSilaboId = ?, @_perfil = ?, @_iContenidoSemId = ?', $params);
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+
             return $this->errorResponse(null, $message);
         }
 
@@ -173,11 +173,11 @@ class AulaVirtualController extends ApiController
             $dtProgActPublicacion = $row->dtProgActPublicacion;
             $actividades = $row->actividadesJSON;
 
-            if (!isset($result[$iContenidoSemId])) {
+            if (! isset($result[$iContenidoSemId])) {
                 $result[$iContenidoSemId] = [
                     'cContenidoSemTitulo' => $row->cContenidoSemTitulo,
                     'cContenidoSemNumero' => $row->cContenidoSemNumero,
-                    'iContenidoSemId' =>  $this->hashids->encode($row->iContenidoSemId),
+                    'iContenidoSemId' => $this->hashids->encode($row->iContenidoSemId),
                     'fechas' => [],
                     'iCursoId' => $this->hashids->encode($row->iCursoId),
                     'idDocCursoId' => $this->hashids->encode($row->idDocCursoId),
@@ -188,29 +188,31 @@ class AulaVirtualController extends ApiController
                 ];
             }
 
-            if (!isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && !is_null($dtProgActPublicacion)) {
+            if (! isset($result[$iContenidoSemId]['fechas'][$dtProgActPublicacion]) && ! is_null($dtProgActPublicacion)) {
                 $contenido = $actividades ? json_decode($actividades, true) : [];
                 foreach ($contenido as $key => $contenidoItem) {
                     // if (isset($contenido[$key]['ixActivadadId'])) {
                     //     $contenido[$key]['ixActivadadId'] = $this->hashids->encode($contenidoItem['ixActivadadId']);
                     // }
                 }
-                $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] =  [
+                $result[$iContenidoSemId]['fechas'][$dtProgActPublicacion] = [
                     'fecha' => $dtProgActPublicacion,
-                    'actividades' => $contenido
+                    'actividades' => $contenido,
                 ];
             }
         }
 
-        $finalResult =  array_values($result);
+        $finalResult = array_values($result);
         $finalResult = array_map(function ($item) {
             $item['fechas'] = array_values($item['fechas']);
+
             return $item;
         }, $finalResult);
 
         return $this->successResponse($finalResult, 'Datos obtenidos correctamente');
     }
-    //funcion eliminarActividad
+
+    // funcion eliminarActividad
     public function eliminarActividad(Request $request)
     {
         $iProgActId = (int) $this->decodeId($request->iProgActId);
@@ -225,6 +227,7 @@ class AulaVirtualController extends ApiController
             } catch (Throwable $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al eliminar');
+
                 return $this->errorResponse(null, $message);
             }
         }
@@ -235,9 +238,11 @@ class AulaVirtualController extends ApiController
         } catch (Throwable $e) {
             DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al eliminar');
+
             return $this->errorResponse(null, $message);
         }
         DB::commit();
+
         return $this->successResponse(null, 'Eliminado correctamente');
         // eliminar archivos
     }
@@ -252,9 +257,9 @@ class AulaVirtualController extends ApiController
         if ($iActTipoId === 3) {
             // Obtiene el ID de la evaluación desde el parámetro de solicitud y lo decodifica usando Hashids
             $fieldsToDecode = [
-                'ixActivadadId'
+                'ixActivadadId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             // Inicializa la variable de evaluación como null
             $iEvaluacionId = $request->ixActivadadId;
             $evaluacion = null;
@@ -276,6 +281,7 @@ class AulaVirtualController extends ApiController
             } catch (Throwable $e) {
                 // Maneja cualquier error que ocurra durante la obtención de datos y retorna un mensaje de error
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+
                 return $this->errorResponse(null, $message);
             }
 
@@ -288,6 +294,7 @@ class AulaVirtualController extends ApiController
             } catch (Throwable $e) {
                 // Maneja errores durante la obtención de las preguntas y retorna un mensaje de error
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+
                 return $this->errorResponse(null, $message);
             }
 
@@ -304,13 +311,14 @@ class AulaVirtualController extends ApiController
         try {
             $preguntas = DB::select('EXEC aula.Sp_SEL_categoriasXiForoCatId');
 
-            //return $preguntas;
+            // return $preguntas;
             return $this->successResponse($preguntas);
         } catch (Exception $e) {
 
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
+
     public function obtenerEstudiantesMatricula(Request $request)
     {
         $iCursoId = '1';
@@ -325,13 +333,14 @@ class AulaVirtualController extends ApiController
         try {
             $preguntas = DB::select('EXEC acad.Sp_SEL_consulta_matriculados ?', [$iCursoId], [$iSemAcadId], [$iYAcadId]);
 
-            //return $preguntas;
+            // return $preguntas;
             return $this->successResponse($preguntas);
         } catch (Exception $e) {
 
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
+
     public function guardarForo(Request $request)
     {
 
@@ -341,9 +350,9 @@ class AulaVirtualController extends ApiController
             'cForoDescripcion' => 'required|string',
             'iForoCatId' => 'required|integer',
             'cForoUrl' => 'required|string',
-            //'dtForoInicio' => 'required|date',
+            // 'dtForoInicio' => 'required|date',
             'iEstado' => 'required|integer',
-            //'dtForoFin' => 'required|date'
+            // 'dtForoFin' => 'required|date'
         ]);
         $iProgActId = (int) $request->iProgActId ?? 0;
         $iContenidoSemId = $request->iContenidoSemId;
@@ -361,7 +370,7 @@ class AulaVirtualController extends ApiController
             'dtProgActFin' => $request->dtForoFin,
             'cProgActTituloLeccion' => $request->cForoTitulo,
             'cProgActDescripcion' => $request->cForoDescripcion,
-            'iEstado' => $request->iEstado
+            'iEstado' => $request->iEstado,
 
         ];
 
@@ -374,6 +383,7 @@ class AulaVirtualController extends ApiController
         } catch (Throwable $e) {
             DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+
             return $this->errorResponse(null, $message);
         }
 
@@ -408,20 +418,23 @@ class AulaVirtualController extends ApiController
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
         }
+
         return new JsonResponse($response, $codeResponse);
 
         // $preguntas = DB::select('EXEC [aula].[SP_INS_Foro] ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?', $data);
     }
+
     public function eliminarRptEstudiante(Request $request)
     {
         $validated = $request->validate([
             'iForoRptaId' => 'required|string',
         ]);
         $params = [$request['iForoRptaId']];
-        //return $params;
+        // return $params;
         try {
             // Llamar al procedimiento almacenado
             DB::select('exec aula.SP_DEL_respuestaXidEstudiante @iForoRptaId = ?', $params);
+
             // Responder con éxito
             return response()->json([
                 'success' => true,
@@ -430,23 +443,25 @@ class AulaVirtualController extends ApiController
         } catch (Throwable $e) {
             // Manejo de errores
             $message = $this->handleAndLogError($e, 'Error al eliminar');
+
             return response()->json([
                 'success' => false,
                 'message' => $message,
             ], 500);
         }
     }
+
     // Guardar respuesta de Foro
     public function guardarRespuesta(Request $request)
     {
-        //return $request -> all();
+        // return $request -> all();
         $request->validate(
             [
-                //'iEstudianteId' => 'required|integer',
+                // 'iEstudianteId' => 'required|integer',
                 'cForoRptaRespuesta' => 'required|string',
-                'iForoId' => 'required|string'
+                'iForoId' => 'required|string',
             ],
-            ['cForoRptaRespuesta.required' => 'El comentario es obligatorio',]
+            ['cForoRptaRespuesta.required' => 'El comentario es obligatorio']
         );
         $fieldsToDecode = [
             'iDocenteId',
@@ -455,20 +470,20 @@ class AulaVirtualController extends ApiController
             'iForoRptaId',
             'iCredId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         if (isset($request->iForoRptaId)) {
             $request->merge(['iForoRptaPadre' => $request->iForoRptaId]);
         }
         $data = [
-            $request->iEstudianteId            ?? NULL,
-            $request->iForoId                  ?? NULL,
-            $request->iForoRptaPadre           ?? NULL,
-            $request->iDocenteId               ?? NULL,
-            $request->cForoRptaRespuesta       ?? NULL,
-            $request->nForoRptaNota            ?? NULL,
-            $request->cForoRptaDocente         ?? NULL,
-            $request->iEscalaCalifId           ?? NULL
+            $request->iEstudianteId ?? null,
+            $request->iForoId ?? null,
+            $request->iForoRptaPadre ?? null,
+            $request->iDocenteId ?? null,
+            $request->cForoRptaRespuesta ?? null,
+            $request->nForoRptaNota ?? null,
+            $request->cForoRptaDocente ?? null,
+            $request->iEscalaCalifId ?? null,
 
         ];
 
@@ -484,15 +499,16 @@ class AulaVirtualController extends ApiController
                 @_cForoRptaDocente = ?,
                 @_iEscalaCalifId = ?', $data);
 
-
             if ($resp[0]->iForoRptaId > 0) {
                 $message = 'Se ha guardado correctamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => $data],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -508,8 +524,10 @@ class AulaVirtualController extends ApiController
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
+
         return new JsonResponse($response, $codeResponse);
     }
+
     public function obtenerCalificacion()
     {
         try {
@@ -524,24 +542,25 @@ class AulaVirtualController extends ApiController
             return $this->errorResponse($e, 'Error Upssss!');
         }
     }
+
     public function obtenerForo(Request $request)
     {
 
         $fieldsToDecode = [
             'ixActivadadId',
-            'iActTipoId'
+            'iActTipoId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         if ($request->iActTipoId === '2') {
 
             $params = [
-                $request->ixActivadadId
+                $request->ixActivadadId,
             ];
             try {
 
-                $data =  DB::select('exec aula.SP_SEL_Foro ?', $params);
+                $data = DB::select('exec aula.SP_SEL_Foro ?', $params);
 
                 $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
                 $estado = 200;
@@ -555,14 +574,15 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($response, $estado, 'Datos obtenidos correctamente');
         }
     }
+
     public function obtenerRespuestaForo(Request $request)
     {
         $fieldsToDecode = [
             'ixActivadadId',
-            'iActTipoId'
+            'iActTipoId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         // Verificar si el tipo de actividad es 2 (específico para foros)
         if ($request->iActTipoId === '2') {
@@ -584,6 +604,7 @@ class AulaVirtualController extends ApiController
             } catch (Throwable $e) {
                 // En caso de excepción, manejar y registrar el error
                 $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+
                 // Devolver la respuesta de error con el mensaje generado
                 return $this->errorResponse(null, $message);
             }
@@ -592,6 +613,7 @@ class AulaVirtualController extends ApiController
             return $this->successResponse($foro, 'Datos obtenidos correctamente');
         }
     }
+
     public function calificarForoDocente(Request $request)
     {
 
@@ -599,16 +621,15 @@ class AulaVirtualController extends ApiController
             'iEstudianteId',
             'iForoId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
         $request->merge(['cForoRptaDocente' => $request->cForoRptDocente]);
 
         $params = [
-            $request->iEstudianteId      ??  NULL,
-            $request->iForoId            ??  NULL,
-            $request->cForoRptaDocente    ??  NULL,
-            $request->nForoRptaNota    ??  NULL
+            $request->iEstudianteId ?? null,
+            $request->iForoId ?? null,
+            $request->cForoRptaDocente ?? null,
+            $request->nForoRptaNota ?? null,
         ];
-
 
         try {
             // Llama al procedimiento almacenado 'Sp_UPD_calificarDocenteForoRespuestas' en la base de datos,
@@ -638,24 +659,25 @@ class AulaVirtualController extends ApiController
         // Retorna una respuesta JSON con el mensaje y el código HTTP correspondiente.
         return new JsonResponse($response, $codeResponse);
     }
+
     // Obtener retrolimentación del docente del foro
     public function obtenerReptdocente(Request $request)
     {
         // return $request->all();
         $request->validate([
             'iEstudianteId' => 'required|string',
-            'iForoId' => 'required|string'
+            'iForoId' => 'required|string',
         ]);
 
         $iEstudianteId = $request->iEstudianteId;
         $iForoId = $request->iForoId;
         $params = [
             $iEstudianteId,
-            $iForoId
+            $iForoId,
         ];
 
         // return $params;
-        //return $params;
+        // return $params;
         try {
             $data = DB::select('EXEC aula.SP_SEL_obtenerForoRespuestasXidEstudiante ?,?', $params);
 
@@ -670,12 +692,13 @@ class AulaVirtualController extends ApiController
 
         return new JsonResponse($response, $estado);
     }
+
     public function guardarComentarioRespuesta(Request $request)
     {
 
         $request->validate([
             'cForoRptaPadre' => 'required|string',
-            'iForoRptaId' => 'required|string'
+            'iForoRptaId' => 'required|string',
         ]);
 
         $request['iEstudianteId'] = is_null($request->iEstudianteId)
@@ -697,12 +720,12 @@ class AulaVirtualController extends ApiController
                 : ($this->hashids->decode($request->iForoRptaId)[0] ?? null));
 
         $data = [
-            $request->iEstudianteId     ?? NULL,
-            $request->iDocenteId        ?? NULL,
-            $request->iForoRptaId       ?? NULL,
-            $request->cForoRptaPadre    ?? NULL
+            $request->iEstudianteId ?? null,
+            $request->iDocenteId ?? null,
+            $request->iForoRptaId ?? null,
+            $request->cForoRptaPadre ?? null,
         ];
-        //return $data;
+        // return $data;
         try {
             $resp = DB::select('EXEC [aula].[SP_INS_RespuestaPadre]
                ?,?,?,?', $data);
@@ -720,23 +743,25 @@ class AulaVirtualController extends ApiController
             $response = ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []];
             $codeResponse = 500;
         }
+
         return new JsonResponse($response, $codeResponse);
     }
+
     public function maestroDetalle(Request $request)
     {
         $solicitud = [
 
-            $request->Esquema,       //-- Esquema de la tabla maestra
-            $request->TablaMaestra, //NVARCHAR(128),   -- Nombre de la tabla maestra
+            $request->Esquema,       // -- Esquema de la tabla maestra
+            $request->TablaMaestra, // NVARCHAR(128),   -- Nombre de la tabla maestra
             $request->DatosJSONMaestro, // NVARCHAR(MAX), -- Datos en formato JSON para la tabla maestra
             $request->TablaDetalle, // NVARCHAR(128),   -- Nombre de la tabla detalle
             $request->DatosJSONDetalles, // NVARCHAR(MAX), -- Datos en formato JSON (array) para los detalles
-            $request->campoFK // NVARCHAR(128)
+            $request->campoFK, // NVARCHAR(128)
 
         ];
 
         $query = DB::select(
-            "EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?", //actualizado
+            'EXEC grl.SP_INS_EnTablaMaestroDetalleDesdeJSON ?,?,?,?,?,?', // actualizado
             $solicitud
         );
 
@@ -759,30 +784,39 @@ class AulaVirtualController extends ApiController
 
         return new JsonResponse($response, $estado);
     }
-    public function sesionesAprendizaje(Request $request){
+
+    public function sesionesAprendizaje(Request $request)
+    {
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AulaVirtual::obtenerSesiones($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
-    public function sesionesArea(Request $request){
+
+    public function sesionesArea(Request $request)
+    {
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AulaVirtual::obtenerSesionesArea($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
-    public function actividadesContenido(Request $request){
+
+    public function actividadesContenido(Request $request)
+    {
         // generar reporte de actividades
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
             $outputPdf = AulaVirtual::obtenerProgramacionActividadArea($request);
-            //return FormatearMensajeHelper::ok('Datos obtenidos', $outputPdf);
+
+            // return FormatearMensajeHelper::ok('Datos obtenidos', $outputPdf);
             return response()->download($outputPdf)->deleteFileAfterSend(true);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -794,6 +828,7 @@ class AulaVirtualController extends ApiController
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::AUXILIAR]]);
             $data = AulaVirtual::selAulaDetalle($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

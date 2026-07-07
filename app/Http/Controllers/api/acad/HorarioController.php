@@ -3,24 +3,18 @@
 namespace App\Http\Controllers\api\acad;
 
 use App\Http\Controllers\Controller;
-use DateTime;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use Barryvdh\DomPDF\Facade\Pdf;
-use Dompdf\Options;
-
 class HorarioController extends Controller
 {
-    
     // no tocar
     public function listarHorarioIes(Request $request)
     {
-       $iSedeId=  $request->iSedeId;
-       $iTurnoId= $request->iTurnoId;
-      
+        $iSedeId = $request->iSedeId;
+        $iTurnoId = $request->iTurnoId;
 
         $query = DB::select(
             "   SELECT hi.cHorarioIeNombre, hi.iHorarioIeId 
@@ -36,31 +30,26 @@ class HorarioController extends Controller
 
             from acad.horarios_ie as hi
              where hi.iSedeId= $iSedeId and hi.iTurnoId=$iTurnoId"
-                      
+
         );
 
         try {
-        $response = [
-            'validated' => true,
-            'message' => 'se obtuvo la información',
-            'data' => $query,
-        ];
+            $response = [
+                'validated' => true,
+                'message' => 'se obtuvo la información',
+                'data' => $query,
+            ];
 
-        $estado = 201;
+            $estado = 201;
         } catch (Exception $e) {
-        $response = [
-            'validated' => false,
-            'message' => $e->getMessage(),
-            'data' => [],
-        ];
-        $estado = 500;
+            $response = [
+                'validated' => false,
+                'message' => $e->getMessage(),
+                'data' => [],
+            ];
+            $estado = 500;
         }
 
         return new JsonResponse($response, $estado);
     }
-
-    
 }
-
-
-

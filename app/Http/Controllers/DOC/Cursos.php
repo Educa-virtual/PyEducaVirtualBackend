@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\doc;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class Cursos extends Controller
 {
     protected $hashids;
+
     protected $iCursoId;
 
     public function __construct()
@@ -37,28 +38,28 @@ class Cursos extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iCursoId                                              ??  NULL,
-            $request->iCurrId                                      ??  NULL,
-            $request->iTipoCursoId                                 ??  NULL,
-            $request->cCursoNombre                                 ??  NULL,
-            $request->nCursoCredTeoria                             ??  NULL,
-            $request->nCursoCredPractica                           ??  NULL,
-            $request->cCursoDescripcion                            ??  NULL,
-            $request->nCursoTotalCreditos                          ??  NULL,
-            $request->cCursoPerfilDocente                          ??  NULL,
-            $request->iCursoTotalHoras                             ??  NULL,
-            $request->iCursoEstado                                 ??  NULL,
-            $request->iEstado                                      ??  NULL,
-            $request->iSesionId                                    ??  NULL,
+            $iCursoId ?? null,
+            $request->iCurrId ?? null,
+            $request->iTipoCursoId ?? null,
+            $request->cCursoNombre ?? null,
+            $request->nCursoCredTeoria ?? null,
+            $request->nCursoCredPractica ?? null,
+            $request->cCursoDescripcion ?? null,
+            $request->nCursoTotalCreditos ?? null,
+            $request->cCursoPerfilDocente ?? null,
+            $request->iCursoTotalHoras ?? null,
+            $request->iCursoEstado ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
         try {
             $data = DB::select('exec acad.Sp_ACAD_CRUD_CURSOS
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-            
+
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {

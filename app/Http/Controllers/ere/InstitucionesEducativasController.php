@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\ere;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class InstitucionesEducativasController extends ApiController
@@ -20,6 +19,7 @@ class InstitucionesEducativasController extends ApiController
             ];
             $placeholders = implode(',', array_fill(0, count($params), '?'));
             $preguntas = DB::select("EXEC ere.SP_SEL_instituciones $placeholders", $params);
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

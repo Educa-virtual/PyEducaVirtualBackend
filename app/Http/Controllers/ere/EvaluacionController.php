@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers\ere;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
-use Illuminate\Support\Facades\Gate;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
 use App\Models\ere\Evaluacion;
-use App\Services\acad\EstudiantesService;
 use App\Services\ere\EvaluacionesService;
 use App\Services\ParseSqlErrorService;
 use Exception;
-use Illuminate\Support\Facades\Auth;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class EvaluacionController extends Controller
 {
@@ -30,8 +28,8 @@ class EvaluacionController extends Controller
     /**
      * Obtiene la cantidad máxima de preguntas para una evaluación y un curso específico.
      *
-     * @param int $iEvaluacionId ID de la evaluación (cifrado).
-     * @param int $iCursosNivelGradId ID del curso y nivel de grado (cifrado).
+     * @param  int  $iEvaluacionId  ID de la evaluación (cifrado).
+     * @param  int  $iCursosNivelGradId  ID del curso y nivel de grado (cifrado).
      * @return \Illuminate\Http\JsonResponse Cantidad de preguntas máximas o un mensaje de error.
      */
     public function obtenerCantidadMaximaPreguntas($evaluacionId, $areaId)
@@ -40,6 +38,7 @@ class EvaluacionController extends Controller
             $evaluacionDescifrado = VerifyHash::decodesxId($evaluacionId);
             $areaDescifrada = VerifyHash::decodesxId($areaId);
             $cantidad = Evaluacion::selCantidadMaxPreguntas($evaluacionDescifrado, $areaDescifrada) ?? 20;
+
             return FormatearMensajeHelper::ok('Cantidad máxima de preguntas obtenida correctamente', $cantidad);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -51,6 +50,7 @@ class EvaluacionController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -65,32 +65,32 @@ class EvaluacionController extends Controller
             $request[$field] = $this->decodeValue($request->$field);
         }
 
-        return !$completo ? $request : [
+        return ! $completo ? $request : [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->idTipoEvalId              ??  NULL,
-            $request->iNivelEvalId              ??  NULL,
-            $request->dtEvaluacionCreacion      ??  NULL,
-            $request->cEvaluacionNombre         ??  NULL,
-            $request->cEvaluacionDescripcion    ??  NULL,
-            $request->cEvaluacionUrlDrive       ??  NULL,
-            $request->cEvaluacionUrlPlantilla   ??  NULL,
-            $request->cEvaluacionUrlManual      ??  NULL,
-            $request->cEvaluacionUrlMatriz      ??  NULL,
-            $request->cEvaluacionObs            ??  NULL,
-            $request->dtEvaluacionLiberarMatriz ??  NULL,
-            $request->dtEvaluacionLiberarCuadernillo    ??  NULL,
-            $request->dtEvaluacionLiberarResultados     ??  NULL,
-            $request->iEstado                           ??  NULL,
-            $request->iSesionId                         ??  NULL,
-            $request->iEvaluacionId                     ??  NULL,
-            $request->cEvaluacionIUrlCuadernillo        ??  NULL,
-            $request->cEvaluacionUrlHojaRespuestas      ??  NULL,
-            $request->dtEvaluacionFechaInicio           ??  NULL,
-            $request->dtEvaluacionFechaFin              ??  NULL,
+            $request->idTipoEvalId ?? null,
+            $request->iNivelEvalId ?? null,
+            $request->dtEvaluacionCreacion ?? null,
+            $request->cEvaluacionNombre ?? null,
+            $request->cEvaluacionDescripcion ?? null,
+            $request->cEvaluacionUrlDrive ?? null,
+            $request->cEvaluacionUrlPlantilla ?? null,
+            $request->cEvaluacionUrlManual ?? null,
+            $request->cEvaluacionUrlMatriz ?? null,
+            $request->cEvaluacionObs ?? null,
+            $request->dtEvaluacionLiberarMatriz ?? null,
+            $request->dtEvaluacionLiberarCuadernillo ?? null,
+            $request->dtEvaluacionLiberarResultados ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->iEvaluacionId ?? null,
+            $request->cEvaluacionIUrlCuadernillo ?? null,
+            $request->cEvaluacionUrlHojaRespuestas ?? null,
+            $request->dtEvaluacionFechaInicio ?? null,
+            $request->dtEvaluacionFechaFin ?? null,
 
-            $request->iCredId                       ??  NULL
+            $request->iCredId ?? null,
         ];
     }
 
@@ -129,17 +129,18 @@ class EvaluacionController extends Controller
                 'iEstudianteId',
                 'iEvaluacionId',
                 'iYAcadId',
-                'iIieeId'
+                'iIieeId',
             ];
             $parametro = $this->validateRequest($request, $fieldsToDecode, false);
             $parametros = [
-                $parametro->iEstudianteId              ??  NULL,
-                $parametro->iEvaluacionId              ??  NULL,
-                $parametro->iYAcadId                   ??  NULL,
-                $parametro->iIieeId                    ??  NULL
+                $parametro->iEstudianteId ?? null,
+                $parametro->iEvaluacionId ?? null,
+                $parametro->iYAcadId ?? null,
+                $parametro->iIieeId ?? null,
             ];
             $data = DB::select('exec ere.SP_SEL_EstudianteEvaluacion ?,?,?,?', $parametros);
             $data = $this->encodeId($data);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
@@ -160,18 +161,19 @@ class EvaluacionController extends Controller
                 'iCursoNivelGradId',
                 'iEstudianteId',
                 'iIieeId',
-                'iYAcadId'
+                'iYAcadId',
             ];
             $parametro = $this->validateRequest($request, $fieldsToDecode, false);
             $parametros = [
-                $parametro->iEvaluacionId              ??  NULL,
-                $parametro->iCursoNivelGradId          ??  NULL,
-                $parametro->iEstudianteId              ??  NULL,
-                $parametro->iIieeId                    ??  NULL,
-                $parametro->iYAcadId                   ??  NULL
+                $parametro->iEvaluacionId ?? null,
+                $parametro->iCursoNivelGradId ?? null,
+                $parametro->iEstudianteId ?? null,
+                $parametro->iIieeId ?? null,
+                $parametro->iYAcadId ?? null,
             ];
             $data = DB::select('exec ere.SP_SEL_iEstudianteIdxiEvaluacionIdxiCursoNivelGradId ?,?,?,?,?', $parametros);
-            //$data = $this->encodeId($data);
+
+            // $data = $this->encodeId($data);
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
@@ -190,15 +192,16 @@ class EvaluacionController extends Controller
             $fieldsToDecode = [
                 'iEvaluacionId',
                 'iCursoNivelGradId',
-                'iIieeId'
+                'iIieeId',
             ];
             $parametro = $this->validateRequest($request, $fieldsToDecode, false);
             $parametros = [
-                $parametro->iEvaluacionId              ??  NULL,
-                $parametro->iCursoNivelGradId          ??  NULL,
-                $parametro->iIieeId                    ??  NULL
+                $parametro->iEvaluacionId ?? null,
+                $parametro->iCursoNivelGradId ?? null,
+                $parametro->iIieeId ?? null,
             ];
             $data = DB::select('exec ere.SP_SEL_verificacionInicioxiEvaluacionIdxiCursoNivelGradIdxiIieeId ?,?,?', $parametros);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
@@ -221,12 +224,13 @@ class EvaluacionController extends Controller
             ];
             $parametro = $this->validateRequest($request, $fieldsToDecode, false);
             $parametros = [
-                $parametro->iEvaluacionId              ??  NULL,
-                $parametro->iCursoNivelGradId          ??  NULL,
-                $parametro->iIieeId                    ??  NULL
+                $parametro->iEvaluacionId ?? null,
+                $parametro->iCursoNivelGradId ?? null,
+                $parametro->iIieeId ?? null,
             ];
             $data = DB::select('exec ere.SP_SEL_obtenerEvaluacionxiEvaluacionIdxiCursoNivelGradIdxiIieeId ?,?,?', $parametros);
             $data = $this->encodeId($data);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
@@ -251,7 +255,8 @@ class EvaluacionController extends Controller
         }
     }*/
 
-    public function obtenerVistaPreviaEvaluacionPorArea($evaluacionId, $areaId) {
+    public function obtenerVistaPreviaEvaluacionPorArea($evaluacionId, $areaId)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_DREMO, Perfil::ESPECIALISTA_UGEL]]);
             $evaluacionIdDescifrado = VerifyHash::decodesxId($evaluacionId);
@@ -260,8 +265,9 @@ class EvaluacionController extends Controller
             $preguntas = EvaluacionesService::obtenerPreguntasPorEvaluacionArea($evaluacionIdDescifrado, $areaIdDescifrado);
             $data = [
                 'evaluacion' => $evaluacion,
-                'preguntas' => $preguntas
+                'preguntas' => $preguntas,
             ];
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -276,7 +282,7 @@ class EvaluacionController extends Controller
             'idTipoEvalId',
             'iNivelEvalId',
             'iEvaluacionId',
-            'iBancoAltCorrecta'
+            'iBancoAltCorrecta',
 
         ];
 
@@ -291,6 +297,7 @@ class EvaluacionController extends Controller
                 case 'CONSULTAR-ESTADO-ULTIMO-ACTIVOxiIieeId':
                     $data = DB::select('exec ere.Sp_SEL_evaluacionPorCriterios ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
+
                     return new JsonResponse(
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200
@@ -298,7 +305,7 @@ class EvaluacionController extends Controller
                     break;
                 case 'ELIMINARxiEvaluacionId':
                     $data = DB::update('exec ere.SP_DEL_evaluacion ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    //return $data;
+                    // return $data;
                     if ($data) {
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'Se eliminó la información', 'data' => null],
@@ -322,7 +329,8 @@ class EvaluacionController extends Controller
 
     /**
      * Obtiene la cantidad de preguntas de una evaluación segun curso y grado
-     * @param Request $request con id de evaluación, curso y grado
+     *
+     * @param  Request  $request  con id de evaluación, curso y grado
      * @return JsonResponse con cantidad de preguntas o error
      */
     public function obtenerCantidadPreguntas(Request $request)
@@ -343,6 +351,7 @@ class EvaluacionController extends Controller
             $response = ['validated' => false, 'mensaje' => $error_message];
             $codeResponse = 500;
         }
+
         return response()->json($response, $codeResponse);
     }
 }

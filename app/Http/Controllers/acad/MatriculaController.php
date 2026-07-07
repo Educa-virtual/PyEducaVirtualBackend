@@ -10,8 +10,6 @@ use App\Models\acad\CompetenciaCurso;
 use App\Models\acad\Estudiante;
 use App\Models\acad\Matricula;
 use App\Models\acad\YearAcademico;
-use App\Models\apo\Apoderado;
-use App\Models\grl\Persona;
 use App\Services\acad\MatriculasService;
 use App\Services\seg\UsuariosService;
 use Exception;
@@ -27,6 +25,7 @@ class MatriculaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::APODERADO, Perfil::ESTUDIANTE, Perfil::DOCENTE]]);
             $data = Matricula::selMatriculaParametros($request);
+
             return FormatearMensajeHelper::ok('Se obtuvó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -38,6 +37,7 @@ class MatriculaController extends Controller
         try {
             // LIBRE PARA TODOS LOS PERFILES
             $data = Matricula::selGradoSeccionTurnoConf($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -49,6 +49,7 @@ class MatriculaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
             $data = Matricula::selMatriculas($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -60,6 +61,7 @@ class MatriculaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::APODERADO, Perfil::ESTUDIANTE]]);
             $data = Matricula::selMatricula($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -73,9 +75,11 @@ class MatriculaController extends Controller
             DB::beginTransaction();
             $data = MatriculasService::registrarMatricula($request);
             DB::commit();
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
             DB::rollback();
+
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -87,9 +91,11 @@ class MatriculaController extends Controller
             DB::beginTransaction();
             $data = MatriculasService::actualizarMatricula($request);
             DB::commit();
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
             DB::rollback();
+
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -102,9 +108,11 @@ class MatriculaController extends Controller
             $data = Matricula::delMatriculaPorId($request);
             // TODO: Desactivar perfil de estudiante
             DB::commit();
+
             return FormatearMensajeHelper::ok('Se eliminó la información', $data);
         } catch (Exception $e) {
             DB::rollback();
+
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -113,9 +121,10 @@ class MatriculaController extends Controller
     {
         try {
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
-            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $cursos = CompetenciaCurso::selCursosPorIe($matricula->iSedeId, $iYAcadId, $matricula->iNivelGradoId);
+
             return FormatearMensajeHelper::ok('Se eliminó la información', $cursos);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -130,6 +139,7 @@ class MatriculaController extends Controller
             $request->merge(['iEstudianteId' => VerifyHash::decodesxId($iEstudianteId)]);
             $request->merge(['iYAcadId' => $anioAcademico->iYAcadId]);
             $data = MatriculasService::obtenerMatriculasEstudiante($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

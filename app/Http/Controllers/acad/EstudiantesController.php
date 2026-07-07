@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\acad;
 
-use App\Helpers\FormatearMensajeHelper;
 use App\Enums\Perfil;
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\acad\Estudiante;
 use App\Services\acad\MatriculasService;
@@ -16,23 +16,25 @@ use App\Services\LeerExcelService;
 use App\Services\ParseSqlErrorService;
 use App\Services\seg\UsuariosService;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class EstudiantesController extends Controller
 {
     protected $leerExcelService;
+
     protected $parseSqlErrorService;
+
     protected $formatearExcelMatriculasService;
 
     public function __construct()
     {
-        $this->leerExcelService = new LeerExcelService();
-        $this->parseSqlErrorService = new ParseSqlErrorService();
-        $this->formatearExcelMatriculasService = new FormatearExcelMatriculasService();
+        $this->leerExcelService = new LeerExcelService;
+        $this->parseSqlErrorService = new ParseSqlErrorService;
+        $this->formatearExcelMatriculasService = new FormatearExcelMatriculasService;
     }
 
     public function obtenerCursosXEstudianteAnioSemestre(Request $request)
@@ -40,6 +42,7 @@ class EstudiantesController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $data = Estudiante::selObtenerCursoEstudiante($request);
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -50,6 +53,7 @@ class EstudiantesController extends Controller
     {
         try {
             $data = Estudiante::insEstudiante($request);
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -60,6 +64,7 @@ class EstudiantesController extends Controller
     {
         try {
             $data = Estudiante::updEstudiante($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -70,6 +75,7 @@ class EstudiantesController extends Controller
     {
         try {
             $data = Estudiante::selEstudiantes($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -80,6 +86,7 @@ class EstudiantesController extends Controller
     {
         try {
             $data = Estudiante::selEstudiante($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -91,6 +98,7 @@ class EstudiantesController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             ApoderadosService::importarDesdeArchivoExcel($request, Auth::user()->iPersId);
+
             return FormatearMensajeHelper::ok('Se han importado los apoderados correctamente');
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -117,7 +125,6 @@ class EstudiantesController extends Controller
             $datos_hoja['codigo_modular'],
         ];
 
-
         if (count($datos_hoja['estudiantes']) === 0) {
             return new JsonResponse(['message' => 'No se encontraron estudiantes', 'data' => []], 500);
         }
@@ -141,9 +148,10 @@ class EstudiantesController extends Controller
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
 
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
-            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
-            $matricula =  MatriculasService::obtenerDetalleMatriculaEstudiante($params);
-            return FormatearMensajeHelper::ok("Existe", ['existe' => $matricula != null]);
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, null];
+            $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
+
+            return FormatearMensajeHelper::ok('Existe', ['existe' => $matricula != null]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -154,40 +162,43 @@ class EstudiantesController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
-            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
             $tiposActividad = TiposActividadService::obtenerTiposActividad();
             $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
 
             $calendario = ProgramacionActividadesService::obtenerCalendarioAcademicoEstudiante($matricula);
+
             return FormatearMensajeHelper::ok('Se obtuvo el calendario académico', [
                 'calendario' => $calendario,
                 'cursos' => $cursos,
                 'tiposActividad' => $tiposActividad,
-                'anioAcademico' => $anioAcademico
+                'anioAcademico' => $anioAcademico,
             ]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
-    public function obtenerCalendarioEstudiante($iYAcadId,$iPersId,$iSedeId)
+
+    public function obtenerCalendarioEstudiante($iYAcadId, $iPersId, $iSedeId)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            //$detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
-            $params = [Auth::user()->$iPersId, $iYAcadId, $iSedeId, NULL];
+            // $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
+            $params = [Auth::user()->$iPersId, $iYAcadId, $iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
             $tiposActividad = TiposActividadService::obtenerTiposActividad();
             $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
 
             $calendario = ProgramacionActividadesService::obtenerCalendarioAcademicoEstudiante($matricula);
+
             return FormatearMensajeHelper::ok('Se obtuvo el calendario académico', [
                 'calendario' => $calendario,
                 'cursos' => $cursos,
                 'tiposActividad' => $tiposActividad,
-                'anioAcademico' => $anioAcademico
+                'anioAcademico' => $anioAcademico,
             ]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\eval;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -31,7 +31,7 @@ class BancoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -42,15 +42,14 @@ class BancoPreguntasController extends Controller
                 'iDocenteId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId          ??  NULL,
-                $request->iCursoId               ??  NULL,
-                $request->iDocenteId             ??  NULL,
-                $request->iCredId                ??  NULL
+                $request->iEvaluacionId ?? null,
+                $request->iCursoId ?? null,
+                $request->iDocenteId ?? null,
+                $request->iCredId ?? null,
             ];
-
 
             $data = DB::select(
                 'exec eval.SP_SEL_bancoPreguntasxiEvaluacionIdxiCursoIdxiDocenteId
@@ -90,7 +89,7 @@ class BancoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -101,14 +100,14 @@ class BancoPreguntasController extends Controller
                 'iEvaluacionId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCursoId                    ??  NULL,
-                $request->iDocenteId                  ??  NULL,
-                $request->iEvaluacionId               ??  NULL,
-                $request->jsonData                    ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCursoId ?? null,
+                $request->iDocenteId ?? null,
+                $request->iEvaluacionId ?? null,
+                $request->jsonData ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -123,12 +122,14 @@ class BancoPreguntasController extends Controller
 
             if ($data[0]->iEvaluacionId > 0) {
                 $message = 'Se ha importado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido importar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -142,14 +143,15 @@ class BancoPreguntasController extends Controller
         }
     }
 
-    public function guardarBancoPreguntas(Request $request){
+    public function guardarBancoPreguntas(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'iDocenteId' => ['required'],
             'iTipoPregId' => ['required'],
             'iCursoId' => ['required'],
             'iNivelCicloId' => ['required'],
             'iNivelGradoId' => ['required'],
-            'cBancoPregunta' => ['required']
+            'cBancoPregunta' => ['required'],
         ], [
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
             'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
@@ -162,7 +164,7 @@ class BancoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -175,20 +177,20 @@ class BancoPreguntasController extends Controller
                 'idEncabPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iDocenteId                  ??    NULL,
-                $request->iTipoPregId                 ??    NULL,
-                $request->iCursoId                    ??    NULL,
-                $request->iNivelCicloId               ??    NULL,
-                $request->idEncabPregId               ??    NULL,
-                $request->cBancoPregunta              ??    NULL,
-                $request->cBancoTextoAyuda            ??    NULL,
-                $request->jsonAlternativas            ??    NULL,
-                $request->iCredId                     ??    NULL,
-                $request->header('iCredEntPerfId')    ??    NULL,
-                $request->iNivelGradoId               ??    NULL,
+                $request->iDocenteId ?? null,
+                $request->iTipoPregId ?? null,
+                $request->iCursoId ?? null,
+                $request->iNivelCicloId ?? null,
+                $request->idEncabPregId ?? null,
+                $request->cBancoPregunta ?? null,
+                $request->cBancoTextoAyuda ?? null,
+                $request->jsonAlternativas ?? null,
+                $request->iCredId ?? null,
+                $request->header('iCredEntPerfId') ?? null,
+                $request->iNivelGradoId ?? null,
             ];
 
             $data = DB::select(
@@ -209,12 +211,14 @@ class BancoPreguntasController extends Controller
 
             if ($data[0]->iBancoId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -235,7 +239,7 @@ class BancoPreguntasController extends Controller
         $validator = Validator::make($request->all(), [
             'iBancoId' => ['required'],
             'iTipoPregId' => ['required'],
-            'cBancoPregunta' => ['required']
+            'cBancoPregunta' => ['required'],
         ], [
             'iBancoId.required' => 'No se encontró el identificador iBancoId',
             'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
@@ -245,7 +249,7 @@ class BancoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -255,15 +259,15 @@ class BancoPreguntasController extends Controller
                 'iTipoPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iBancoId                 ??  NULL,
-                $request->iTipoPregId                 ??  NULL,
-                $request->cBancoPregunta           ??  NULL,
-                $request->cBancoTextoAyuda         ??  NULL,
-                $request->jsonAlternativas            ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iBancoId ?? null,
+                $request->iTipoPregId ?? null,
+                $request->cBancoPregunta ?? null,
+                $request->cBancoTextoAyuda ?? null,
+                $request->jsonAlternativas ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -279,12 +283,14 @@ class BancoPreguntasController extends Controller
 
             if ($data[0]->iBancoId > 0) {
                 $message = 'Se ha actualizado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido actualizar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -311,21 +317,21 @@ class BancoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $fieldsToDecode = [
                 'iBancoId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iBancoId      ??  NULL,
-                $request->iCredId      ??  NULL
+                $request->iBancoId ?? null,
+                $request->iCredId ?? null,
             ];
             $data = DB::select(
                 'exec eval.SP_DEL_bancoPreguntasxiBancoId
@@ -336,12 +342,14 @@ class BancoPreguntasController extends Controller
 
             if ($data[0]->iBancoId > 0) {
                 $message = 'Se ha eliminado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido eliminar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -365,24 +373,24 @@ class BancoPreguntasController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iBancoId          ??  NULL,
-            $request->iDocenteId        ??  NULL,
-            $request->iTipoPregId       ??  NULL,
-            $request->iCurrContId       ??  NULL,
-            $request->dtBancoCreacion   ??  NULL,
-            $request->cBancoPregunta    ??  NULL,
-            $request->dtBancoTiempo     ??  NULL,
-            $request->cBancoTextoAyuda  ??  NULL,
-            $request->nBancoPuntaje     ??  NULL,
-            $request->iEstado           ??  NULL,
-            $request->iSesionId         ??  NULL,
-            $request->dtCreado          ??  NULL,
-            $request->dtActualizado     ??  NULL,
-            $request->idEncabPregId     ??  NULL,
-            $request->iCursoId          ??  NULL,
-            $request->iNivelCicloId     ??  NULL,
+            $request->iBancoId ?? null,
+            $request->iDocenteId ?? null,
+            $request->iTipoPregId ?? null,
+            $request->iCurrContId ?? null,
+            $request->dtBancoCreacion ?? null,
+            $request->cBancoPregunta ?? null,
+            $request->dtBancoTiempo ?? null,
+            $request->cBancoTextoAyuda ?? null,
+            $request->nBancoPuntaje ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
+            $request->idEncabPregId ?? null,
+            $request->iCursoId ?? null,
+            $request->iNivelCicloId ?? null,
 
-            $request->iCredId           ??  NULL
+            $request->iCredId ?? null,
         ];
 
         try {
@@ -390,7 +398,8 @@ class BancoPreguntasController extends Controller
                 case 'CONSULTARxiEvaluacionId':
                 case 'CONSULTARxiBancoId':
                     $data = DB::select('exec eval.Sp_SEL_bancoPreguntasxiCredId ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    //$data = $this->encodeId($data);
+
+                    // $data = $this->encodeId($data);
                     return new JsonResponse(
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200
@@ -401,7 +410,8 @@ class BancoPreguntasController extends Controller
                     if ($data[0]->iBancoId > 0) {
                         if ($request->iTipoPregId < 3) {
                             $request['iBancoId'] = VerifyHash::encodexId($data[0]->iBancoId);
-                            $resp = new EvaluacionPreguntasController();
+                            $resp = new EvaluacionPreguntasController;
+
                             return $resp->handleCrudOperation($request);
                         } else {
                             return new JsonResponse(
@@ -434,7 +444,8 @@ class BancoPreguntasController extends Controller
                     if ($data[0]->iBancoId > 0) {
                         if ($request->iTipoPregId < 3) {
                             $request['iBancoId'] = VerifyHash::encodexId($data[0]->iBancoId);
-                            $resp = new EvaluacionPreguntasController();
+                            $resp = new EvaluacionPreguntasController;
+
                             return $resp->handleCrudOperation($request);
                         } else {
                             return new JsonResponse(

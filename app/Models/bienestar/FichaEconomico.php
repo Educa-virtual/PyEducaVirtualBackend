@@ -13,7 +13,8 @@ class FichaEconomico
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaEconomico ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichaEconomico '.$placeholders, $parametros);
     }
 
     public static function updFichaEconomico($request)
@@ -35,6 +36,7 @@ class FichaEconomico
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_UPD_fichaEconomico ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_UPD_fichaEconomico '.$placeholders, $parametros);
     }
 }

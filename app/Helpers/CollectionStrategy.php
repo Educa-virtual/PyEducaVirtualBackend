@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Helpers;
 
 use App\Contracts\DataReturnStrategy;
@@ -11,5 +12,3 @@ class CollectionStrategy implements DataReturnStrategy
         return $data;
     }
 }
-
-?>

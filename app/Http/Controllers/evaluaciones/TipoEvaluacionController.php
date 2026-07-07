@@ -18,7 +18,7 @@ class TipoEvaluacionController extends ApiController
             'eval',
             'tipo_evaluaciones',
             $campos,
-            $where
+            $where,
         ];
 
         try {
@@ -30,6 +30,7 @@ class TipoEvaluacionController extends ApiController
                 @condicionWhere = ?',
                 $params
             );
+
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             return $this->errorResponse($e, 'Error al obtener los datos');

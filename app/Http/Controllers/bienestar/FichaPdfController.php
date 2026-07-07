@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Http\Controllers\bienestar;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
-use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use App\Models\bienestar\Ficha;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -82,7 +83,7 @@ class FichaPdfController extends Controller
                 'departamento' => $datos_generales->cDptoNombre ?? '',
                 'provincia' => $datos_generales->cPrvnNombre ?? '',
                 'distrito' => $datos_generales->cDsttNombre ?? '',
-                'referencia' => $datos_generales->cFichaDGDireccionReferencia ?? ''
+                'referencia' => $datos_generales->cFichaDGDireccionReferencia ?? '',
             ],
 
             'persona' => [
@@ -116,7 +117,7 @@ class FichaPdfController extends Controller
 
         ];
 
-        //--------------------------- Familiares ------------------------------------------------
+        // --------------------------- Familiares ------------------------------------------------
 
         $datos['familiares'] = [];
 
@@ -251,6 +252,7 @@ class FichaPdfController extends Controller
 
         //  dd($datos); // Verifica que contiene lo esperado
         $pdf = Pdf::loadView('bienestar.ficha_socioeconomica_pdf', $datos)->setPaper('A4');
+
         return $pdf->stream("ficha_socioeconomica_{$iFichaDGId}.pdf");
         // return view('pdfFicha.ficha', $datos);
     }

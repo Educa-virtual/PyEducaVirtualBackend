@@ -9,7 +9,6 @@ use App\Models\bienestar\SeguimientoBienestar;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SeguimientoBienestarController extends Controller
@@ -28,6 +27,7 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::selSeguimientoParametros($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -39,6 +39,7 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::selSeguimientosPersona($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -50,6 +51,7 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::selSeguimientos($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -62,7 +64,7 @@ class SeguimientoBienestarController extends Controller
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
 
             // Subir archivo
-            if( $request->hasFile('archivo') ) {
+            if ($request->hasFile('archivo')) {
                 $archivo = $request->file('archivo');
                 $iYAcadId = $request->iYAcadId;
                 $iPersId = $request->iPersId;
@@ -73,6 +75,7 @@ class SeguimientoBienestarController extends Controller
             }
 
             $data = SeguimientoBienestar::insSeguimiento($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -84,6 +87,7 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::updSeguimiento($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -104,6 +108,7 @@ class SeguimientoBienestarController extends Controller
             ]);
 
             $data = SeguimientoBienestar::updSeguimientoArchivo($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -115,6 +120,7 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::selSeguimiento($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -135,6 +141,7 @@ class SeguimientoBienestarController extends Controller
                     Storage::disk('local')->delete($ruta);
                 }
             }
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -146,6 +153,7 @@ class SeguimientoBienestarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = SeguimientoBienestar::selDatosPersona($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -154,14 +162,15 @@ class SeguimientoBienestarController extends Controller
 
     private function subirArchivo($archivo, $ruta)
     {
-        $nombre_archivo = hash('sha256', uniqid()) . '.' . $archivo->getClientOriginalExtension();
-        if(!Storage::disk('local')->exists($ruta)) {
+        $nombre_archivo = hash('sha256', uniqid()).'.'.$archivo->getClientOriginalExtension();
+        if (! Storage::disk('local')->exists($ruta)) {
             Storage::disk('local')->makeDirectory($ruta, 0755, true);
         }
         $archivo->move(Storage::disk('local')->path($ruta), $nombre_archivo);
-        if (Storage::disk('local')->exists($ruta . '/' . $nombre_archivo)) {
+        if (Storage::disk('local')->exists($ruta.'/'.$nombre_archivo)) {
             return $nombre_archivo;
         }
+
         return null;
     }
 
@@ -174,12 +183,13 @@ class SeguimientoBienestarController extends Controller
             $iYAcadId = $data->iYAcadId;
             $iPersId = $data->iPersId;
             $ruta = Storage::disk('local')->path("bienestar/seguimiento/$iYAcadId/$iPersId/$nombre_archivo");
-            if (!file_exists($ruta)) {
+            if (! file_exists($ruta)) {
                 abort(404, 'Archivo no encontrado');
             }
+
             return response()->download($ruta, $nombre_archivo, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $nombre_archivo . '"',
+                'Content-Disposition' => 'inline; filename="'.$nombre_archivo.'"',
             ]);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

@@ -21,9 +21,10 @@ class AsistenciaControlController extends Controller
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
             $fechaCarbon = Carbon::parse($fecha);
             $yearAcademico = YearAcademicosService::obtenerYearAcademicoPorAnio($fechaCarbon->year());
-            $params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $asistencia = AsistenciaControlService::obtenerAsistenciaEstudiantePorFecha($matricula->iEstudianteId, $matricula->iYAcadId, $matricula->iSedeId, $fechaCarbon->format('Ymd'));
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $asistencia);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

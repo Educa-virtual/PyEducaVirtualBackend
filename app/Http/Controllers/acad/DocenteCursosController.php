@@ -6,10 +6,10 @@ use App\Helpers\ResponseHandler;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use Exception;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 use Illuminate\Support\Facades\Storage;
 
 class DocenteCursosController extends Controller
@@ -21,18 +21,21 @@ class DocenteCursosController extends Controller
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
 
-    public function descargarArchivos(Request $request){
+    public function descargarArchivos(Request $request)
+    {
         $archivo = $request->archivo;
-        
-        if (!Storage::disk('public')->exists($archivo)) {
+
+        if (! Storage::disk('public')->exists($archivo)) {
             throw new Exception('El archivo no existe');
         }
-        
+
         $archivo = Storage::disk('public')->get($archivo);
+
         return $archivo;
     }
 
-    public function guardarPortafolioDocumento(Request $request){
+    public function guardarPortafolioDocumento(Request $request)
+    {
 
         $tipo = [
             'itinerario',
@@ -46,10 +49,10 @@ class DocenteCursosController extends Controller
         $tipoPortafolio = $request->tipoPortafolio;
         $cIieeCodigoModular = $request->cIieeCodigoModular;
         $years = $request->years;
-        $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$tipo[$tipoPortafolio];      
-        $generado = Storage::disk('public')->putFile($folder,$documento);
+        $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$tipo[$tipoPortafolio];
+        $generado = Storage::disk('public')->putFile($folder, $documento);
         $ruta = $folder.'/'.basename($generado);
-         try {
+        try {
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $ruta],
                 200
@@ -61,7 +64,9 @@ class DocenteCursosController extends Controller
             );
         }
     }
-    public function guardarProgramacionCurricular(Request $request){
+
+    public function guardarProgramacionCurricular(Request $request)
+    {
         $iPersId = VerifyHash::decodes($request->iPersId);
         $cIieeCodigoModular = $request->cIieeCodigoModular;
         $years = $request->years;
@@ -69,40 +74,41 @@ class DocenteCursosController extends Controller
         $nombre = $documento->getClientOriginalName();
         $extension = $documento->getClientOriginalExtension();
         $peso = $documento->getSize();
-        $carpeta = 'programacionCurricular';;
-        $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$carpeta;  
+        $carpeta = 'programacionCurricular';
+        $folder = $years.'/'.$cIieeCodigoModular.'/'.$iPersId.'/'.$carpeta;
         $portafolio = $request->portafolio;
-        
+
         if ($documento) {
-            $generado = Storage::disk('public')->put($folder,$documento);
+            $generado = Storage::disk('public')->put($folder, $documento);
             $ruta = $folder.'/'.basename($generado);
         }
 
         $folder = [
             [
-            "portafolio" => $portafolio, 
-            "nombre" => $nombre,
-            "ruta" => $ruta ?? NULL,
-            "extension" => $extension,
-            "peso" => $peso,
-            ]
+                'portafolio' => $portafolio,
+                'nombre' => $nombre,
+                'ruta' => $ruta ?? null,
+                'extension' => $extension,
+                'peso' => $peso,
+            ],
         ];
-        
+
         $convertir = json_encode($folder);
-      
+
         $parametros = [
             $request->idDocCursoId,
             $request->iSilaboId == 'null' ? null : $request->iSilaboId,
             $request->iYAcadId,
             $convertir,
         ];
-        
+
         try {
             $data = DB::select('exec acad.Sp_UPD_programacionCurricular ?,?,?,?', $parametros);
             $datos = [
-                "estado" => $data[0]->resultado,
-                "documento" => $convertir,
+                'estado' => $data[0]->resultado,
+                'documento' => $convertir,
             ];
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $datos],
                 200
@@ -120,6 +126,7 @@ class DocenteCursosController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -132,7 +139,7 @@ class DocenteCursosController extends Controller
 
         $fieldsToDecode = [
             'valorBusqueda', 'idDocCursoId', 'iSemAcadId',
-            'iYAcadId', 'iDocenteId', 'iIeCursoId'
+            'iYAcadId', 'iDocenteId', 'iIeCursoId',
         ];
 
         foreach ($fieldsToDecode as $field) {
@@ -151,7 +158,7 @@ class DocenteCursosController extends Controller
             $request->iDocCursoHorasLectivas ?? null,
             $request->iEstado ?? null,
             $request->iSesionId ?? null,
-            $request->iCredId
+            $request->iCredId,
         ];
     }
 
@@ -160,7 +167,7 @@ class DocenteCursosController extends Controller
         $fieldsToEncode = [
             'idDocCursoId', 'iSemAcadId', 'iYAcadId', 'iIeCursoId',
             'iSilaboId', 'iCursoId', 'iNivelGradoId', 'iSeccionId',
-            'iGradoId', 'iDocenteId'
+            'iGradoId', 'iDocenteId',
         ];
 
         foreach ($fieldsToEncode as $field) {
@@ -184,7 +191,7 @@ class DocenteCursosController extends Controller
         try {
             $data = DB::select('exec acad.Sp_SEL_docenteCursosOpciones ?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $data = $this->encodeId($data);
-            
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
@@ -196,49 +203,51 @@ class DocenteCursosController extends Controller
             );
         }
     }
-    public function buscarDocenteCurso(Request $request){
 
-        $opcion=$request->opcion;
-        $iDocenteId=$request->iDocenteId;
-        $iYAcadId=$request->iYAcadId;
-        $iSedeId=$request->iSedeId;
-        $iIieeId=$request->iIieeId;
-        
+    public function buscarDocenteCurso(Request $request)
+    {
+
+        $opcion = $request->opcion;
+        $iDocenteId = $request->iDocenteId;
+        $iYAcadId = $request->iYAcadId;
+        $iSedeId = $request->iSedeId;
+        $iIieeId = $request->iIieeId;
+
         $docente = VerifyHash::decodesxId($iDocenteId);
 
         $solicitud = [
-            $opcion
-            ,$docente
-            ,$iYAcadId
-            ,$iSedeId
-            ,$iIieeId
+            $opcion, $docente, $iYAcadId, $iSedeId, $iIieeId,
         ];
-        
-        $query = 'EXEC acad.Sp_SEL_docentexcursoxgradoxseccion '.str_repeat('?,',count($solicitud)-1).'?';
+
+        $query = 'EXEC acad.Sp_SEL_docentexcursoxgradoxseccion '.str_repeat('?,', count($solicitud) - 1).'?';
         try {
             $data = DB::select($query, $solicitud);
+
             return ResponseHandler::success($data);
         } catch (Exception $e) {
-            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+            return ResponseHandler::error('Error para obtener Datos ', 500, $e->getMessage());
         }
     }
-    public function importarSilabos(Request $request){
 
-        $iSilaboId=$request->iSilaboId;
-        $idDocCursoId=$request->idDocCursoId;
+    public function importarSilabos(Request $request)
+    {
+
+        $iSilaboId = $request->iSilaboId;
+        $idDocCursoId = $request->idDocCursoId;
 
         $solicitud = [
             VerifyHash::decodesxId($iSilaboId),
             VerifyHash::decodesxId($idDocCursoId),
         ];
-        
-        $query = 'EXEC acad.Sp_INS_importarSilabos '.str_repeat('?,',count($solicitud)-1).'?';
-    
+
+        $query = 'EXEC acad.Sp_INS_importarSilabos '.str_repeat('?,', count($solicitud) - 1).'?';
+
         try {
             $data = DB::select($query, $solicitud);
+
             return ResponseHandler::success($data);
         } catch (Exception $e) {
-            return ResponseHandler::error("Error para obtener Datos ",500,$e->getMessage());
+            return ResponseHandler::error('Error para obtener Datos ', 500, $e->getMessage());
         }
     }
 }

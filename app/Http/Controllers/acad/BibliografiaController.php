@@ -4,18 +4,20 @@ namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Hashids\Hashids;
 
 class BibliografiaController extends Controller
 {
     protected $hashids;
-    protected $iBiblioId;
-    protected $iTipoBiblioId;
-    protected $iSilaboId;
 
+    protected $iBiblioId;
+
+    protected $iTipoBiblioId;
+
+    protected $iSilaboId;
 
     public function __construct()
     {
@@ -47,19 +49,19 @@ class BibliografiaController extends Controller
 
         $parametros = [
             $request->opcion,
-            $iBiblioId                      ?? NULL,
-            $iTipoBiblioId                  ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cBiblioAutor          ?? NULL,
-            $request->cBiblioTitulo         ?? NULL,
-            $request->cBiblioAnioEdicion    ?? NULL,
-            $request->cBiblioEditorial      ?? NULL,
-            $request->cBiblioUrl            ?? NULL,
+            $iBiblioId ?? null,
+            $iTipoBiblioId ?? null,
+            $iSilaboId ?? null,
+            $request->cBiblioAutor ?? null,
+            $request->cBiblioTitulo ?? null,
+            $request->cBiblioAnioEdicion ?? null,
+            $request->cBiblioEditorial ?? null,
+            $request->cBiblioUrl ?? null,
         ];
 
         try {
             $query = DB::select(
-                "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?",
+                'EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?',
                 $parametros
             );
 
@@ -113,22 +115,22 @@ class BibliografiaController extends Controller
 
         $parametros = [
             $request->opcion,
-            $iBiblioId                      ?? NULL,
-            $iTipoBiblioId                  ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cBiblioAutor          ?? NULL,
-            $request->cBiblioTitulo         ?? NULL,
-            $request->cBiblioAnioEdicion    ?? NULL,
-            $request->cBiblioEditorial      ?? NULL,
-            $request->cBiblioUrl            ?? NULL,
+            $iBiblioId ?? null,
+            $iTipoBiblioId ?? null,
+            $iSilaboId ?? null,
+            $request->cBiblioAutor ?? null,
+            $request->cBiblioTitulo ?? null,
+            $request->cBiblioAnioEdicion ?? null,
+            $request->cBiblioEditorial ?? null,
+            $request->cBiblioUrl ?? null,
         ];
 
         try {
             $query = DB::select(
-                "EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?",
+                'EXECUTE acad.Sp_INS_bibliografia ?,?,?,?,?,?,?,?,?',
                 $parametros
             );
-           
+
             if ($query[0]->iBiblioId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];

@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CapacidadesController extends ApiController
 {
-
     public function obtenerCapacidades(Request $request)
     {
         $campos = 'iCapacidadId, cCapacidadDescripcion';
@@ -19,7 +17,7 @@ class CapacidadesController extends ApiController
             'ere',
             'capacidades',
             $campos,
-            $where
+            $where,
         ];
 
         $iCompentenciaId = (int) $request->iCompentenciaId;
@@ -35,6 +33,7 @@ class CapacidadesController extends ApiController
                 @campos = ?,        
                 @condicionWhere = ?
             ', $params);
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

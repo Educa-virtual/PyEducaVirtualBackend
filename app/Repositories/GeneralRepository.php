@@ -6,15 +6,15 @@ use Illuminate\Support\Facades\DB;
 
 class GeneralRepository
 {
-
     public static function actualizar($schema, $tabla, $jsonParams, $jsonWhere)
     {
         $params = [
             $schema,
             $tabla,
             $jsonParams,
-            $jsonWhere
+            $jsonWhere,
         ];
+
         return DB::select(
             'exec grl.SP_UPD_EnTablaConJSON 
             @Esquema = ?, 
@@ -36,6 +36,7 @@ class GeneralRepository
         // return $params;
         $resp = DB::select('exec grl.SP_INS_EnTablaDesdeJSON    @Esquema = ?, @Tabla = ?, @DatosJSON = ?
             ', $params);
+
         return $resp;
     }
 }

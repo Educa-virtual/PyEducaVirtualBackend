@@ -3,10 +3,7 @@
 namespace App\Mail\seg;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class RecuperarPasswordMail extends Mailable
@@ -16,8 +13,8 @@ class RecuperarPasswordMail extends Mailable
     /**
      * Create a new message instance.
      */
-
     public $usuario;
+
     public $token;
 
     public function __construct($usuario, $token)
@@ -29,10 +26,10 @@ class RecuperarPasswordMail extends Mailable
     public function build()
     {
         return $this->subject('Recuperación de contraseña')
-                    ->view('emails.seg.password_recovery')
-                    ->with([
-                        'usuario' => $this->usuario,
-                        'token' => $this->token
-                    ]);
+            ->view('emails.seg.password_recovery')
+            ->with([
+                'usuario' => $this->usuario,
+                'token' => $this->token,
+            ]);
     }
 }

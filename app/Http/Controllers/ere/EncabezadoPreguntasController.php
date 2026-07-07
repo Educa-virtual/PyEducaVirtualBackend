@@ -4,10 +4,10 @@ namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\Controller;
 use App\Services\Ere\ExtraerBase64;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class EncabezadoPreguntasController extends Controller
 {
@@ -23,6 +23,7 @@ class EncabezadoPreguntasController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -50,14 +51,14 @@ class EncabezadoPreguntasController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iEncabPregId                ??  NULL,
-            $request->iNivelGradoId               ??  NULL,
-            $request->cEncabPregTitulo            ??  NULL,
-            $request->cEncabPregContenido         ??  NULL,
-            $request->iCursosNivelGradId          ??  NULL,
-            $request->iEspecialistaIdDRE          ??  NULL,
+            $request->iEncabPregId ?? null,
+            $request->iNivelGradoId ?? null,
+            $request->cEncabPregTitulo ?? null,
+            $request->cEncabPregContenido ?? null,
+            $request->iCursosNivelGradId ?? null,
+            $request->iEspecialistaIdDRE ?? null,
 
-            $request->iCredId                     ??  NULL
+            $request->iCredId ?? null,
         ];
     }
 
@@ -67,7 +68,7 @@ class EncabezadoPreguntasController extends Controller
             'iEncabPregId',
             'iNivelGradoId',
             'iCursosNivelGradId',
-            'iEspecialistaIdDRE'
+            'iEspecialistaIdDRE',
         ];
 
         foreach ($fieldsToEncode as $field) {
@@ -95,7 +96,8 @@ class EncabezadoPreguntasController extends Controller
                     if ($data[0]->iEncabPregId > 0) {
                         $request['opcion'] = 'GUARDAR-PREGUNTAS';
                         $request['iEncabPregId'] = $data[0]->iEncabPregId;
-                        $resp = new PreguntasController();
+                        $resp = new PreguntasController;
+
                         return $resp->handleCrudOperation($request);
                     } else {
                         return new JsonResponse(
@@ -109,7 +111,8 @@ class EncabezadoPreguntasController extends Controller
                     $data = DB::select('exec ere.Sp_UPD_encabezadoPreguntas ?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEncabPregId > 0) {
                         $request['opcion'] = 'ACTUALIZARxiDesempenoId';
-                        $resp = new DesempenosController();
+                        $resp = new DesempenosController;
+
                         return $resp->handleCrudOperation($request);
                     } else {
                         return new JsonResponse(

@@ -3,7 +3,6 @@
 namespace App\Models\bienestar;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class FichaDiscapacidad
 {
@@ -14,7 +13,8 @@ class FichaDiscapacidad
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaDiscapacidad ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichaDiscapacidad '.$placeholders, $parametros);
     }
 
     public static function updFichaDiscapacidad($request)
@@ -30,6 +30,7 @@ class FichaDiscapacidad
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_UPD_fichaDiscapacidad '.$placeholders, $parametros);
     }
 }

@@ -9,15 +9,14 @@ class EliminarSugerenciaRequest extends GeneralFormRequest
     public function rules(): array
     {
         return [
-            'iSugerenciaId' => 'required|integer'
+            'iSugerenciaId' => 'required|integer',
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'iSugerenciaId' => 'ID de la sugerencia'
+            'iSugerenciaId' => 'ID de la sugerencia',
         ];
     }
 }
-

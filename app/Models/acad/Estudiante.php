@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class Estudiante extends Model
 {
-    public static function selEstudiantes(Object $request)
+    public static function selEstudiantes(object $request)
     {
         $parametros = [
             $request->iEstudianteId,
@@ -23,10 +23,11 @@ class Estudiante extends Model
             $request->dtEstFechaNacimiento,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.Sp_SEL_estudiantes $placeholders", $parametros);
     }
 
-    public static function selEstudiante(Object $request)
+    public static function selEstudiante(object $request)
     {
         $parametros = [
             $request->iEstudianteId,
@@ -36,10 +37,11 @@ class Estudiante extends Model
             $request->cPersDocumento,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.Sp_SEL_estudiante $placeholders", $parametros);
     }
 
-    public static function insEstudiante(Object $request)
+    public static function insEstudiante(object $request)
     {
         $parametros = [
             $request->iPersId,
@@ -57,10 +59,11 @@ class Estudiante extends Model
             $request->cEstCorreo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.Sp_INS_estudiante $placeholders", $parametros);
     }
 
-    public static function updEstudiante(Object $request)
+    public static function updEstudiante(object $request)
     {
         $parametros = [
             $request->iEstudianteId,
@@ -79,37 +82,39 @@ class Estudiante extends Model
             $request->cEstCorreo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.Sp_UPD_estudiante $placeholders", $parametros);
     }
 
     public static function selIdEstudiantePorIdPersona($iEstudianteId)
     {
-        return DB::selectOne("SELECT iEstudianteId FROM acad.estudiantes WHERE iPersId=?", [$iEstudianteId]);
+        return DB::selectOne('SELECT iEstudianteId FROM acad.estudiantes WHERE iPersId=?', [$iEstudianteId]);
     }
 
     public static function selIdCredIdPersEstudiantePorIeDocumento($cPersDocumento, $iSedeId)
     {
-        return DB::selectOne("SELECT TOP 1 iCredEntPerfId, per.iPersId
+        return DB::selectOne('SELECT TOP 1 iCredEntPerfId, per.iPersId
 FROM seg.credenciales_entidades_perfiles AS cep
 INNER JOIN seg.credenciales_entidades AS ce ON ce.iCredEntId=cep.iCredEntId
 INNER JOIN seg.credenciales AS cred ON cred.iCredId=ce.iCredId
 INNER JOIN acad.estudiantes AS est ON est.iPersId=cred.iPersId
 INNER JOIN acad.matricula AS mat ON mat.iEstudianteId=est.iEstudianteId
 INNER JOIN grl.personas AS per ON per.iPersId=est.iPersId
-WHERE per.cPersDocumento=? AND mat.iSedeId=?", [$cPersDocumento, $iSedeId]);
+WHERE per.cPersDocumento=? AND mat.iSedeId=?', [$cPersDocumento, $iSedeId]);
     }
 
     public static function selEstudiantePorIeDocumentoAnio($cPersDocumento, $iSedeId, $iYAcadId)
     {
-        return DB::selectOne("SELECT per.cPersDocumento, est.iEstudianteId, mat.iMatrId, cPersPaterno, cPersMaterno, cPersNombre
+        return DB::selectOne('SELECT per.cPersDocumento, est.iEstudianteId, mat.iMatrId, cPersPaterno, cPersMaterno, cPersNombre
 FROM acad.estudiantes AS est
 INNER JOIN grl.personas AS per ON per.iPersId=est.iPersId
 INNER JOIN acad.matricula AS mat ON mat.iEstudianteId=est.iEstudianteId
 WHERE per.cPersDocumento=? AND mat.iSedeId=? AND mat.iYAcadId=?
-AND mat.iEstado=1", [$cPersDocumento, $iSedeId, $iYAcadId]);
+AND mat.iEstado=1', [$cPersDocumento, $iSedeId, $iYAcadId]);
     }
 
-    public static function selObtenerCursoEstudiante(Request $request){
+    public static function selObtenerCursoEstudiante(Request $request)
+    {
 
         $parametros = [
             $request->iEstudianteId,
@@ -117,7 +122,7 @@ AND mat.iEstado=1", [$cPersDocumento, $iSedeId, $iYAcadId]);
             $request->iSedeId,
         ];
 
-        $data = DB::select("execute acad.Sp_SEL_cursosXEstudianteAnioSemestre ?,?,?", $parametros);
+        $data = DB::select('execute acad.Sp_SEL_cursosXEstudianteAnioSemestre ?,?,?', $parametros);
 
         foreach ($data as $value) {
             $value->iCursoId = VerifyHash::encodexId($value->iCursoId);

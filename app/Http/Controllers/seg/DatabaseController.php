@@ -9,10 +9,7 @@ use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class DatabaseController extends Controller
 {
@@ -30,10 +27,10 @@ class DatabaseController extends Controller
 
         // 2. Parámetros de entorno y backup
         $server = env('DB_HOST', 'localhost');
-        $db     = env('DB_DATABASE');
-        $user   = env('DB_USERNAME');
-        $pass   = env('DB_PASSWORD');
-        $dest   = "D:\\BackupBD\\respaldo_" . now()->format('Ymd_His') . ".bak";
+        $db = env('DB_DATABASE');
+        $user = env('DB_USERNAME');
+        $pass = env('DB_PASSWORD');
+        $dest = 'D:\\BackupBD\\respaldo_'.now()->format('Ymd_His').'.bak';
 
         // 3. Construye el array de comando
         $cmd = [
@@ -47,7 +44,7 @@ class DatabaseController extends Controller
             '-b',           // fuerza errorlevel != 0 en fallo
             '-r1',          // manda errores graves a stderr
             '-Q',
-            "BACKUP DATABASE [{$db}] TO DISK = N'{$dest}' WITH INIT, NAME='BackupLaravel'"
+            "BACKUP DATABASE [{$db}] TO DISK = N'{$dest}' WITH INIT, NAME='BackupLaravel'",
         ];
 
         // 4. Ejecútalo y captura TODO
@@ -62,9 +59,9 @@ class DatabaseController extends Controller
         }
 
         return response()->json([
-            'ok'        => true,
+            'ok' => true,
             'backup_at' => $dest,
-            'output'    => explode("\n", trim($process->getOutput())),
+            'output' => explode("\n", trim($process->getOutput())),
         ]);
         /*try {
             $cmd = [

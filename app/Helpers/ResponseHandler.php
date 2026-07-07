@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 namespace App\Helpers;
 
 use Illuminate\Http\JsonResponse;
@@ -8,10 +9,7 @@ class ResponseHandler
     /**
      * Formatea una respuesta exitosa.
      *
-     * @param mixed $data
-     * @param string $message
-     * @param int $statusCode
-     * @return JsonResponse
+     * @param  mixed  $data
      */
     public static function success($data = [], string $message = 'Operación exitosa', int $statusCode = 200): JsonResponse
     {
@@ -25,10 +23,7 @@ class ResponseHandler
     /**
      * Formatea una respuesta de error.
      *
-     * @param string $message
-     * @param int $statusCode
-     * @param mixed $errors
-     * @return JsonResponse
+     * @param  mixed  $errors
      */
     public static function error(string $message = 'Ha ocurrido un error', int $statusCode = 500, $errors = null): JsonResponse
     {
@@ -39,5 +34,3 @@ class ResponseHandler
         ], $statusCode);
     }
 }
-
-?>

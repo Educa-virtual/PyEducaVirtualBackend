@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class CredencialModuloController extends Controller
 {
-    public function list(Request $request){
+    public function list(Request $request)
+    {
         $iCredEntId = $request->iCredEntId;
-        $query = DB::select('seg.Sp_SEL_accesos_modulos_padresXiCredEntId ?',[$iCredEntId]);
+        $query = DB::select('seg.Sp_SEL_accesos_modulos_padresXiCredEntId ?', [$iCredEntId]);
 
-        try{
+        try {
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
@@ -23,7 +24,7 @@ class CredencialModuloController extends Controller
 
             $estado = 200;
 
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $response = [
                 'validated' => true,
                 'message' => $e->getMessage(),
@@ -33,6 +34,6 @@ class CredencialModuloController extends Controller
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
 }

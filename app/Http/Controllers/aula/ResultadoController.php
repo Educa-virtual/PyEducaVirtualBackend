@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers\aula;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Hashids\Hashids;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use Dompdf\Options;
-use App\Helpers\VerifyHash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ResultadoController extends Controller
 {
-    //private apiUrl = 'http://localhost:8000/api'; // Backend URL
+    // private apiUrl = 'http://localhost:8000/api'; // Backend URL
     protected $hashids;
 
     public function __construct()
@@ -35,7 +33,7 @@ class ResultadoController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -44,15 +42,14 @@ class ResultadoController extends Controller
             'iEstudianteId',
             'iCapacitacionId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         try {
             $params = [
-                $request->idDocCursoId      ??  NULL,
-                $request->iCapacitacionId   ??  NULL,
-                $request->iEstudianteId     ??  NULL
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->iEstudianteId ?? null,
             ];
-
 
             $data = DB::select('EXEC aula.Sp_SEL_obtenerResultadosxidDocCursoIdxiEstudianteId ?,?,?', $params);
 
@@ -60,10 +57,10 @@ class ResultadoController extends Controller
             $tarea = json_decode($data[0]->tarea, true);
             $evaluacion = json_decode($data[0]->evaluacion, true);
 
-            $mapEncrypted = fn($item) => [
+            $mapEncrypted = fn ($item) => [
                 ...$item,
-                'iProgActId'         => VerifyHash::encodexId($item['iProgActId'] ?? null),
-                'iContenidoSemId'    => VerifyHash::encodexId($item['iContenidoSemId'] ?? null),
+                'iProgActId' => VerifyHash::encodexId($item['iProgActId'] ?? null),
+                'iContenidoSemId' => VerifyHash::encodexId($item['iContenidoSemId'] ?? null),
                 'iPeriodoEvalAperId' => VerifyHash::encodexId($item['iPeriodoEvalAperId'] ?? null),
             ];
 
@@ -71,10 +68,10 @@ class ResultadoController extends Controller
             $tarea = collect($tarea)->map($mapEncrypted);
             $evaluacion = collect($evaluacion)->map($mapEncrypted);
 
-            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data'      => [
-                'foro'        => $foro,
-                'tarea'       => $tarea,
-                'evaluacion'  => $evaluacion,
+            $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => [
+                'foro' => $foro,
+                'tarea' => $tarea,
+                'evaluacion' => $evaluacion,
             ]];
             $estado = 200;
 
@@ -86,9 +83,10 @@ class ResultadoController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+
     public function guardarCalfcEstudiante(Request $request)
     {
-        //$esquema='grl';
+        // $esquema='grl';
         // Validar los datos recibidos
         $request->validate([
             'esquema' => 'required|string',
@@ -121,21 +119,23 @@ class ResultadoController extends Controller
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $estado = 500;
         }
+
         return new JsonResponse($response, $estado);
     }
+
     public function obtenerCalificacionesFinalesReporte(Request $request)
     {
         // Validar los datos de entrada
         $request->validate([
             'tabla' => 'required|string',
             'campos' => 'nullable|string',
-            'where' => 'nullable|string'
+            'where' => 'nullable|string',
         ]);
         $esquema = 'acad';
         $tabla = $request->input('tabla');
         $campos = $request->input('campos', '*'); // Usar todos los campos si no se especifica
         $where = $request->input('where', '1=1'); // Condición por defecto si no se proporciona
-        //$where = addslashes($request->input('where', '1=1'));
+        // $where = addslashes($request->input('where', '1=1'));
         try {
             // Ejecutar el procedimiento almacenado usando DB::select
             $data = DB::select(
@@ -152,11 +152,13 @@ class ResultadoController extends Controller
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $estado = 500;
         }
+
         return new JsonResponse($response, $estado);
     }
+
     public function habilitarCalificacion(Request $request)
     {
-        //return 1;
+        // return 1;
         try {
             $data = DB::select('EXEC acad.SP_SEL_obtenerPeriodosEvaluacion ?,?', [$request->iYAcadId, $request->iCredId]);
 
@@ -171,6 +173,7 @@ class ResultadoController extends Controller
 
         return new JsonResponse($response, $estado);
     }
+
     public function obtenerReporteFinalNotas(Request $request)
     {
         // Validación de los parámetros de entrada
@@ -187,13 +190,13 @@ class ResultadoController extends Controller
             'iSedeId.required' => 'No se encontró el identificador iSedeId',
             'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
             'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
-            'iEstudianteId.required' => 'No se encontró el identificador iEstudianteId'
+            'iEstudianteId.required' => 'No se encontró el identificador iEstudianteId',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -203,18 +206,18 @@ class ResultadoController extends Controller
             'iSedeId',
             'iSeccionId',
             'iNivelGradoId',
-            'iEstudianteId'
+            'iEstudianteId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iCursoId            ??      NULL,
-            $request->iYAcadId              ??      NULL,
-            $request->iSedeId               ??      NULL,
-            $request->iSeccionId            ??      NULL,
-            $request->iNivelGradoId         ??      NULL,
-            $request->iEstudianteId         ??      NULL,
+            $request->iCursoId ?? null,
+            $request->iYAcadId ?? null,
+            $request->iSedeId ?? null,
+            $request->iSeccionId ?? null,
+            $request->iNivelGradoId ?? null,
+            $request->iEstudianteId ?? null,
         ];
 
         try {
@@ -247,14 +250,16 @@ class ResultadoController extends Controller
             // Manejo de excepción y respuesta de error
             $response = [
                 'validated' => false,
-                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'message' => $e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(),
                 'data' => [],
             ];
             $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return new JsonResponse($response, $estado);
         }
     }
-    //Para imprimir el reporte de logros alcanzados por trimestre
+
+    // Para imprimir el reporte de logros alcanzados por trimestre
     public function reporteDeLogros(Request $request)
     {
         // Validación de los parámetros de entrada
@@ -262,7 +267,7 @@ class ResultadoController extends Controller
             'iIeCursoId' => 'required|string ',
             'idDocCursoId' => 'required|string ',
         ]);
-        //return $request->iCursoId;
+        // return $request->iCursoId;
 
         $idDocCursoId = $request->idDocCursoId;
         if ($request->idDocCursoId) {
@@ -276,20 +281,20 @@ class ResultadoController extends Controller
             $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : $iCursoId;
         }
 
-        //$cPersNombreLargo = "Docente";
-        //CARGAR LOGOS 
+        // $cPersNombreLargo = "Docente";
+        // CARGAR LOGOS
         $imagePath = public_path('images\logo_IE\dremo.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $region = 'data:image/jpeg;base64,' . $imageData;
+        $region = 'data:image/jpeg;base64,'.$imageData;
 
         $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $insignia = 'data:image/jpeg;base64,' . $imageData;
-        //'data:image/jpeg;base64,' . $imageData;
+        $insignia = 'data:image/jpeg;base64,'.$imageData;
+        // 'data:image/jpeg;base64,' . $imageData;
 
         $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $virtual = 'data:image/jpeg;base64,' . $imageData;
+        $virtual = 'data:image/jpeg;base64,'.$imageData;
 
         // $data_curso = DB:: select('EXEC aula.SP_SEL_listarDatosXidDocCursoId',[$idDocente]);
         // return $data_curso;
@@ -307,7 +312,7 @@ class ResultadoController extends Controller
             ];
         }
 
-        //return $datos1;
+        // return $datos1;
         $data = DB::select('EXEC acad.Sp_SEL_reporteFinalDeNotas ?', [$iCursoId]);
         $datos = [];
         foreach ($data as $key => $pregunta) {
@@ -326,11 +331,11 @@ class ResultadoController extends Controller
         $data = [
             'headers' => $datos1,
             'preguntas' => $datos['data'],
-            "imageLogo" => $region, // Ruta absoluta
-            "logoVirtual" => $virtual, // Ruta absoluta
-            "logoInsignia" => $insignia, // Ruta absoluta
-            "cPersNombreLargo" => $pregunta->completoalumno,
-            "imageLogo" => $region,
+            'imageLogo' => $region, // Ruta absoluta
+            'logoVirtual' => $virtual, // Ruta absoluta
+            'logoInsignia' => $insignia, // Ruta absoluta
+            'cPersNombreLargo' => $pregunta->completoalumno,
+            'imageLogo' => $region,
         ];
 
         $pdf = PDF::loadView('aula.nivelDeLogrosReporte', $data)
@@ -339,7 +344,8 @@ class ResultadoController extends Controller
 
         return $pdf;
     }
-    //para imprimir el reporte de logros alcanzados durante el año
+
+    // para imprimir el reporte de logros alcanzados durante el año
     public function reporteDeLogroFinalXYear(Request $request)
     {
         // @iSedeId INT,
@@ -354,7 +360,7 @@ class ResultadoController extends Controller
             $iSedeId,
             $iSeccionId,
             $iYAcadId,
-            $iNivelGradoId
+            $iNivelGradoId,
         ];
 
         try {
@@ -369,17 +375,19 @@ class ResultadoController extends Controller
             // Manejo de excepción y respuesta de error
             $response = [
                 'validated' => false,
-                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'message' => $e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(),
                 'data' => [],
             ];
             $estado = 500;
+
             return new JsonResponse($response, $estado);
         }
     }
-    //para descargar el reporte final de logros alcanzados durante el año
+
+    // para descargar el reporte final de logros alcanzados durante el año
     public function generarReporteDeLogrosAlcanzadosXYear(Request $request)
     {
-        //return $request ->all();
+        // return $request ->all();
         // Decodificar el JSON a un array asociativo
 
         $datosEstudiante = $request->datosEstudiante;
@@ -390,20 +398,20 @@ class ResultadoController extends Controller
 
         $idDocCursoId = 1;
 
-        //CARGAR LOGOS 
+        // CARGAR LOGOS
         $imagePath = public_path('images\logo_IE\dremo.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $region = 'data:image/jpeg;base64,' . $imageData;
+        $region = 'data:image/jpeg;base64,'.$imageData;
 
         $imagePath = public_path('images\logo_IE\juan_XXIII.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $insignia = 'data:image/jpeg;base64,' . $imageData;
-        //'data:image/jpeg;base64,' . $imageData;
+        $insignia = 'data:image/jpeg;base64,'.$imageData;
+        // 'data:image/jpeg;base64,' . $imageData;
 
         $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $virtual = 'data:image/jpeg;base64,' . $imageData;
-        //obtener la cabecera de reporte de logros
+        $virtual = 'data:image/jpeg;base64,'.$imageData;
+        // obtener la cabecera de reporte de logros
         $data_header = DB::select('EXEC aula.SP_SEL_listarDatosXidDocCursoId ?', [$idDocCursoId]);
         $datos1 = [];
         foreach ($data_header as $header) {
@@ -418,18 +426,18 @@ class ResultadoController extends Controller
             ];
         }
 
-        //$data = DB::select('EXEC [aula].[SP_SEL_listarEstudiantesSedeSeccionYAcad] ?,?,?,?', $params);
+        // $data = DB::select('EXEC [aula].[SP_SEL_listarEstudiantesSedeSeccionYAcad] ?,?,?,?', $params);
         $data = [
             'headers' => $datos1,
-            //'preguntas' => $datos['data'],
-            "imageLogo" => $region, // Ruta absoluta
-            "logoVirtual" => $virtual, // Ruta absoluta
-            "logoInsignia" => $insignia, // Ruta absoluta
-            "estudiante" => $datosArray,
-            "imageLogo" => $region,
-            "cursos" => $datosArray01,
+            // 'preguntas' => $datos['data'],
+            'imageLogo' => $region, // Ruta absoluta
+            'logoVirtual' => $virtual, // Ruta absoluta
+            'logoInsignia' => $insignia, // Ruta absoluta
+            'estudiante' => $datosArray,
+            'imageLogo' => $region,
+            'cursos' => $datosArray01,
         ];
-        //return $data;
+        // return $data;
 
         $pdf = PDF::loadView('aula.nivelDeLogrosXYearReporte', $data)
             ->setPaper('a4', 'landscape')

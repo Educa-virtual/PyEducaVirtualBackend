@@ -17,6 +17,7 @@ class EvaluacionExclusion
             $id_cifrado == null || is_numeric($id_cifrado) ? $id_cifrado : ($hashids->decode($id_cifrado)[0] ?? null),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("exec ere.Sp_SEL_evaluacionExclusiones $placeholders", $parametros);
     }
 
@@ -31,6 +32,7 @@ class EvaluacionExclusion
 
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::insert("exec ere.Sp_INS_evaluacionExclusion $placeholders", $parametros);
     }
 
@@ -45,6 +47,7 @@ class EvaluacionExclusion
             $request->cEvalExcluArchivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("exec ere.Sp_UPD_evaluacionExclusion $placeholders", $parametros);
     }
 
@@ -55,6 +58,7 @@ class EvaluacionExclusion
             $request->iEvalExcluId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("exec ere.Sp_SEL_evaluacionExclusion $placeholders", $parametros);
     }
 
@@ -65,6 +69,7 @@ class EvaluacionExclusion
             $request->iEvalExcluId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("exec ere.Sp_DEL_evaluacionExclusion $placeholders", $parametros);
     }
 }

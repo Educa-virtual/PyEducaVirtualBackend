@@ -8,14 +8,16 @@ use Illuminate\Support\Facades\DB;
 class AsistenciaGeneral extends Model
 {
     protected $table = 'asi.asistencia_general';
+
     protected $primaryKey = 'idAsistencia';
+
     public $timestamps = false;
 
     public static function selCantidadRegistrosPorTipo($iEstudianteId, $iYAcadId, $iSedeId, $iTipoAsiId, $desde, $hasta)
     {
-        return DB::selectOne("SELECT COUNT(idAsistencia) AS cantidad
+        return DB::selectOne('SELECT COUNT(idAsistencia) AS cantidad
 FROM asi.asistencia_general WHERE iEstudianteId=? AND iYAcadId=? AND iSedeId=?
-AND iTipoAsiId=? AND CAST(dtAsistencia AS DATE) BETWEEN ? AND ?", [$iEstudianteId, $iYAcadId, $iSedeId, $iTipoAsiId, $desde, $hasta]);
+AND iTipoAsiId=? AND CAST(dtAsistencia AS DATE) BETWEEN ? AND ?', [$iEstudianteId, $iYAcadId, $iSedeId, $iTipoAsiId, $desde, $hasta]);
     }
 
     public static function selEstudiantesConFalta($fecha, $matriculas)
@@ -36,10 +38,12 @@ AND iTipoAsiId=? AND CAST(dtAsistencia AS DATE) BETWEEN ? AND ?", [$iEstudianteI
         INNER JOIN acad.sedes AS sede ON sede.iSedeId=mat.iSedeId
         INNER JOIN acad.institucion_educativas AS ie ON ie.iIieeId=sede.iIieeId
         WHERE apo.iEstado=1 AND CAST(dtAsistencia AS DATE)=? AND (bNotificado IS NULL OR bNotificado=0) AND asi.iMatrId IN ($placeholders)";
+
         return DB::select($sql, array_merge([$fecha->format('Ymd')], $matriculas));
     }
 
-    public static function selAsistenciaEstudiantePorPeriodo($iMatrId, $anio, $mes) {
-        return DB::select("EXEC [asi].[SP_SEL_asistenciaGeneralEstudiantePorPeriodo] @iMatrId=?, @anio=?, @mes=?", [$iMatrId, $anio, $mes]);
+    public static function selAsistenciaEstudiantePorPeriodo($iMatrId, $anio, $mes)
+    {
+        return DB::select('EXEC [asi].[SP_SEL_asistenciaGeneralEstudiantePorPeriodo] @iMatrId=?, @anio=?, @mes=?', [$iMatrId, $anio, $mes]);
     }
 }

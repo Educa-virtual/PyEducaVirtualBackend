@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class NotificacionEstudianteController extends Controller
 {
-
     public function mostrar_notificacion(Request $request)
     {
 

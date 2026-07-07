@@ -4,25 +4,23 @@ namespace App\Http\Controllers\ere;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\ApiController;
+use App\Repositories\PreguntasRepository;
+use App\Services\Ere\ExtraerBase64;
+use App\Services\ParseSqlErrorService;
 use DateTime;
 use Exception;
+use Hashids\Hashids;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\ApiController;
-use App\Models\ere\Evaluacion;
 use PhpOffice\PhpWord\TemplateProcessor;
-use App\Repositories\PreguntasRepository;
-use App\Repositories\AlternativaPreguntaRespository;
-use App\Services\Ere\ExtraerBase64;
-use App\Services\ParseSqlErrorService;
-use Hashids\Hashids;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\JsonResponse;
 
 class PreguntasController extends ApiController
 {
-    protected  $alternativaPreguntaRespository;
+    protected $alternativaPreguntaRespository;
+
     protected $hashids;
 
     public function __construct($alternativaPreguntaRespository = null)
@@ -36,7 +34,7 @@ class PreguntasController extends ApiController
         $iEncabPregId = $request->encabezado['iEncabPregId'];
         DB::beginTransaction();
         // Verificar si `iCursoId`, Con esto si llega el dato desde front
-        //$iCursoId = $request->iCursoId ?? null;
+        // $iCursoId = $request->iCursoId ?? null;
         $iCursosNivelGradId = $request->iCursosNivelGradId ?? null;
         $iDesempenoId = $request->iDesempenoId ?? null;
         $iNivelGradoId = $request->iNivelGradoId ?? null;
@@ -51,19 +49,20 @@ class PreguntasController extends ApiController
                 'iEncabPregId' => (int) $request->encabezado['iEncabPregId'],
                 'cEncabPregTitulo' => $request->encabezado['cEncabPregTitulo'],
                 'cEncabPregContenido' => $request->encabezado['cEncabPregContenido'],
-                //'iCursoId' => $request->iCursoId,
+                // 'iCursoId' => $request->iCursoId,
                 'iCursosNivelGradId' => $request->iCursosNivelGradId,
                 'iNivelGradoId' => $request->iNivelGradoId,
                 'iColumnValue' => $request->iEspecialistaId,
                 'cColumnName' => 'iEspecialistaId',
-                'cSchemaName'  => 'ere'
+                'cSchemaName' => 'ere',
             ];
             try {
-                $resp =  PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
+                $resp = PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
                 $resp = $resp[0];
                 $iEncabPregId = $resp->id;
             } catch (Exception $e) {
                 DB::rollBack();
+
                 return $this->errorResponse($e, 'Error al guardar el encabezado');
             }
         }
@@ -76,35 +75,34 @@ class PreguntasController extends ApiController
 
         foreach ($preguntasActualizar as $key => $pregunta) {
 
-            $fechaActual = new DateTime();
+            $fechaActual = new DateTime;
             $fechaActual->setTime(0, 0, 0);
             $hora = $pregunta['iHoras'];
             $minutos = $pregunta['iMinutos'];
             $segundos = $pregunta['iSegundos'];
             $fechaActual->setTime($hora, $minutos, $segundos);
             $fechaConHora = $fechaActual->format('d-m-Y H:i:s');
-            //$iCursoId = 1; // Cambiar esto por el curso que se quiere guardar
+            // $iCursoId = 1; // Cambiar esto por el curso que se quiere guardar
 
             $iPreguntaId = $pregunta['isLocal'] ?? false ? 0 : (int) $pregunta['iPreguntaId'];
             $params = [
                 $iPreguntaId,
-                //(int) $iCursoId, //Esto es  el iCursoId desde el front
+                // (int) $iCursoId, //Esto es  el iCursoId desde el front
                 (int) $iCursosNivelGradId,
                 (int) $iDesempenoId,
                 (int) $iNivelGradoId,
                 (int) $iEspecialistaId,
-                (int)$pregunta['iTipoPregId'],
+                (int) $pregunta['iTipoPregId'],
                 $pregunta['cPregunta'],
                 $pregunta['cPreguntaTextoAyuda'] ?? '',
-                (int)$pregunta['iPreguntaNivel'],
-                (int)$pregunta['iPreguntaPeso'],
+                (int) $pregunta['iPreguntaNivel'],
+                (int) $pregunta['iPreguntaPeso'],
                 $fechaConHora,
                 $iPreguntaId === 0 ? 0 : null,
                 $pregunta['cPreguntaClave'],
                 $iEncabPregId,
                 $pregunta['iPreguntaPuntaje'],
             ];
-
 
             // pregunta
             $respPregunta = null;
@@ -129,25 +127,27 @@ class PreguntasController extends ApiController
                 $respPregunta = $respPregunta[0];
             } catch (Exception $e) {
                 DB::rollBack();
+
                 return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
             }
 
             // alternativas
-            $alternativasActualizar  = $pregunta['alternativas'] ?? [];
-            $alternativasEliminar   = $pregunta['alternativasEliminar'] ?? [];
+            $alternativasActualizar = $pregunta['alternativas'] ?? [];
+            $alternativasEliminar = $pregunta['alternativasEliminar'] ?? [];
             // eliminar alternativas
             foreach ($alternativasEliminar as $alternativa) {
                 $paramsAlternativaEliminar = [
-                    $alternativa['iAlternativaId']
+                    $alternativa['iAlternativaId'],
                 ];
                 try {
-                    //Se cambio el nombre SP_DEL_alternativa_pregunta
+                    // Se cambio el nombre SP_DEL_alternativa_pregunta
                     $resp = DB::select('exec ere.SP_DEL_alternativaPregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
 
                     // $resp = $resp[0];
                 } catch (Exception $e) {
                     DB::rollBack();
                     $defaultMessage = $this->returnError($e, 'Error al eliminar');
+
                     return $this->errorResponse($e, $defaultMessage);
                 }
             }
@@ -162,12 +162,13 @@ class PreguntasController extends ApiController
                         $alternativa['cAlternativaDescripcion'],
                         $alternativa['cAlternativaLetra'],
                         $alternativa['bAlternativaCorrecta'] ? 1 : 0,
-                        $alternativa['cAlternativaExplicacion'] ?? ''
+                        $alternativa['cAlternativaExplicacion'] ?? '',
                     ];
                     $resp = $this->alternativaPreguntaRespository->guardarActualizarAlternativa($paramsAlternativa);
                 } catch (Exception $e) {
                     DB::rollBack();
                     $message = $this->returnError($e, 'Error al guardar los cambios de la alternativa');
+
                     return $this->errorResponse($e->getMessage(), $message);
                 }
             }
@@ -178,7 +179,7 @@ class PreguntasController extends ApiController
             $alternativasEliminar = array_merge($pregunta['alternativas'], $pregunta['alternativasEliminadas'] ?? []);
             foreach ($alternativasEliminar as $alternativa) {
                 $paramsAlternativaEliminar = [
-                    $alternativa['iAlternativaId']
+                    $alternativa['iAlternativaId'],
                 ];
                 try {
                     $resp = DB::select('exec ere.SP_DEL_alternativa_pregunta @_iAlternativaId = ?', $paramsAlternativaEliminar);
@@ -187,6 +188,7 @@ class PreguntasController extends ApiController
                 } catch (Exception $e) {
                     DB::rollBack();
                     $defaultMessage = $this->returnError($e, 'Error al eliminar');
+
                     return $this->errorResponse($e, $defaultMessage);
                 }
             }
@@ -203,6 +205,7 @@ class PreguntasController extends ApiController
             } catch (Exception $e) {
                 DB::rollBack();
                 $message = $this->returnError($e, 'Error al eliminar la pregunta');
+
                 return $this->errorResponse($e, $message);
             }
         }
@@ -216,7 +219,7 @@ class PreguntasController extends ApiController
 
         $preguntas = $request->preguntas;
 
-        if (!is_array($preguntas)) {
+        if (! is_array($preguntas)) {
             return $this->errorResponse(null, 'Datos mal formateados');
         }
 
@@ -227,9 +230,9 @@ class PreguntasController extends ApiController
 
                 $condiciones = [
                     [
-                        'COLUMN_NAME' => "iPreguntaId",
-                        'VALUE' => $pregunta['iPreguntaId']
-                    ]
+                        'COLUMN_NAME' => 'iPreguntaId',
+                        'VALUE' => $pregunta['iPreguntaId'],
+                    ],
                 ];
                 $condicionesJson = json_encode($condiciones);
 
@@ -237,7 +240,7 @@ class PreguntasController extends ApiController
                     'ere',
                     'preguntas',
                     $datosJson,
-                    $condicionesJson
+                    $condicionesJson,
                 ];
                 $resp = DB::statement(
                     'EXEC grl.SP_UPD_EnTablaConJSON
@@ -276,6 +279,7 @@ class PreguntasController extends ApiController
             $evaluacionIdDescifrado[0],
         ];
         $preguntas = PreguntasRepository::obtenerBancoPreguntasEreParaReutilizar($params);
+
         return $this->successResponse(
             $preguntas,
             'Datos obtenidos correctamente'
@@ -291,8 +295,8 @@ class PreguntasController extends ApiController
             'busqueda' => $request->busqueda ?? '',
             'iTipoPregId' => $request->iTipoPregId ?? 0,
             'bPreguntaEstado' => $request->bPreguntaEstado ?? -1,
-            'iEncabPregId' => $request->iEncabPregId  ?? 0,
-            'iPreguntaId' => $request->iPreguntaId
+            'iEncabPregId' => $request->iEncabPregId ?? 0,
+            'iPreguntaId' => $request->iPreguntaId,
         ];
         try {
             $preguntas = PreguntasRepository::obtenerBancoPreguntasByParams($params);
@@ -305,7 +309,6 @@ class PreguntasController extends ApiController
             return $this->errorResponse($e->getMessage(), 'Error al obtener los datos');
         }
     }
-
 
     public function obtenerEncabezadosPreguntas(Request $request)
     {
@@ -323,6 +326,7 @@ class PreguntasController extends ApiController
 
         try {
             $cabezeras = PreguntasRepository::obtenerCabecerasPregunta($params);
+
             return $this->successResponse($cabezeras, 'Datos obtenidos corrctamente');
         } catch (Exception $e) {
 
@@ -330,23 +334,24 @@ class PreguntasController extends ApiController
         }
     }
 
-
-    public  function eliminarEncabezadoPreguntaById($id)
+    public function eliminarEncabezadoPreguntaById($id)
     {
         $params = [
-            $id
+            $id,
         ];
 
         try {
-            //Se cambio el nombre Sp_DEL_encabezado_pregunta
+            // Se cambio el nombre Sp_DEL_encabezado_pregunta
             $resp = DB::select('exec ere.SP_DEL_encabezadoPregunta @_iEncabPregId = ?', $params);
             if (count($resp) === 0) {
                 return $this->successResponse(null, 'Error al eliminar');
             }
             $resp = $resp[0];
+
             return $this->successResponse($resp, $resp->mensaje);
         } catch (Exception $e) {
             $message = $this->returnError($e, 'Error al eliminar');
+
             return $this->errorResponse($e, $message);
         }
     }
@@ -354,7 +359,7 @@ class PreguntasController extends ApiController
     public function eliminarBancoPreguntasById(Request $request, $id)
     {
         $params = [
-            $id
+            $id,
         ];
 
         try {
@@ -370,6 +375,7 @@ class PreguntasController extends ApiController
             return $this->successResponse($resp, $resp->mensaje);
         } catch (Exception $e) {
             $message = $this->returnError($e, 'Error al eliminar la pregunta');
+
             return $this->errorResponse($e, $message);
         }
     }
@@ -382,9 +388,9 @@ class PreguntasController extends ApiController
                 'iEncabPregId' => $request->iEncabPregId,
                 'cEncabPregTitulo' => $request->cEncabPregTitulo,
                 'cEncabPregContenido' => $request->cEncabPregContenido,
-                'iCursoId' =>  $request->iCursoId,
+                'iCursoId' => $request->iCursoId,
                 'iNivelGradoId' => $request->iNivelGradoId,
-                'iColumnValue' => $request->iEspecialistaId
+                'iColumnValue' => $request->iEspecialistaId,
             ];
             if ($type === 'eval') {
                 $paramsEncabezado['cColumnName'] = 'iDocenteId';
@@ -393,15 +399,19 @@ class PreguntasController extends ApiController
             $resp = PreguntasRepository::guardarActualizarPreguntaEncabezado($paramsEncabezado);
             if (count($resp) < 1) {
                 DB::rollBack();
+
                 return $this->errorResponse(null, 'Error al guardar el encabezado');
             }
             $resp = $resp[0];
+
             return $this->successResponse($resp, 'Datos guardados correctamente');
         } catch (Exception $e) {
             DB::rollBack();
+
             return $this->errorResponse($e->getMessage(), 'Error al guardar los datos');
         }
     }
+
     public function generarWordEvaluacionByIds(Request $request)
     {
         $params = [
@@ -411,7 +421,7 @@ class PreguntasController extends ApiController
         ];
         // Obtener las preguntas desde el repositorio
         $preguntasDB = PreguntasRepository::obtenerBancoPreguntas($params);
-        
+
         // Verificar si se encontraron preguntas
         if (empty($preguntasDB)) {
             return response()->json(['error' => 'No se encontraron preguntas para los IDs proporcionados.'], 404);
@@ -447,7 +457,7 @@ class PreguntasController extends ApiController
                         'path' => $imagePath,
                         'width' => 200,
                         'height' => 200,
-                        'ratio' => false
+                        'ratio' => false,
                     ]);
 
                     // Eliminar la imagen temporal
@@ -460,7 +470,7 @@ class PreguntasController extends ApiController
             }
 
             // Manejo de las alternativas
-            if (!empty($pregunta->alternativas)) {
+            if (! empty($pregunta->alternativas)) {
                 $phpTemplateWord->cloneBlock("block_alternativas#$indice", count($pregunta->alternativas), true, true);
 
                 foreach ($pregunta->alternativas as $indexAlternativa => $alternativa) {
@@ -472,7 +482,7 @@ class PreguntasController extends ApiController
         }
 
         // Configurar respuesta HTTP para descarga
-        $response = new Response();
+        $response = new Response;
         $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         $response->headers->set('Content-Disposition', 'attachment;filename="preguntas_generated.docx"');
         $response->headers->set('Cache-Control', 'max-age=0');
@@ -486,13 +496,14 @@ class PreguntasController extends ApiController
         return $response;
     }
 
-    //Estructura : Jhonny
+    // Estructura : Jhonny
 
     private function decodeValue($value)
     {
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -527,22 +538,22 @@ class PreguntasController extends ApiController
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iPreguntaId           ??  NULL,
-            $request->iDesempenoId          ??  NULL,
-            $request->iTipoPregId           ??  NULL,
-            $request->cPregunta             ??  NULL,
-            $request->cPreguntaTextoAyuda   ??  NULL,
-            $request->iPreguntaNivel        ??  NULL,
-            $request->iPreguntaPeso         ??  NULL,
-            $request->dtPreguntaTiempo      ??  NULL,
-            $request->bPreguntaEstado       ??  NULL,
-            $request->cPreguntaClave        ??  NULL,
-            $request->iEspecialistaId       ??  NULL,
-            $request->iNivelGradoId         ??  NULL,
-            $request->iEncabPregId          ??  NULL,
-            $request->iCursosNivelGradId    ??  NULL,
-            $request->iCredId               ??  NULL,
-            $request->iPreguntaPuntaje      ??  NULL,
+            $request->iPreguntaId ?? null,
+            $request->iDesempenoId ?? null,
+            $request->iTipoPregId ?? null,
+            $request->cPregunta ?? null,
+            $request->cPreguntaTextoAyuda ?? null,
+            $request->iPreguntaNivel ?? null,
+            $request->iPreguntaPeso ?? null,
+            $request->dtPreguntaTiempo ?? null,
+            $request->bPreguntaEstado ?? null,
+            $request->cPreguntaClave ?? null,
+            $request->iEspecialistaId ?? null,
+            $request->iNivelGradoId ?? null,
+            $request->iEncabPregId ?? null,
+            $request->iCursosNivelGradId ?? null,
+            $request->iCredId ?? null,
+            $request->iPreguntaPuntaje ?? null,
         ];
     }
 
@@ -575,7 +586,6 @@ class PreguntasController extends ApiController
         return array_map([$this, 'encodeFields'], $data);
     }
 
-
     public function asignarPreguntaAEvaluacion($evaluacionId, Request $request)
     {
         $evaluacionIdDescifrado = $this->hashids->decode($evaluacionId);
@@ -585,7 +595,7 @@ class PreguntasController extends ApiController
         $request->validate([
             'preguntas' => 'required|array',
             'preguntas.*.iPreguntaId' => 'required|integer',
-            'preguntas.*.cTipoPregDescripcion' => 'required|string'
+            'preguntas.*.cTipoPregDescripcion' => 'required|string',
         ]);
         DB::beginTransaction();
         try {
@@ -612,13 +622,15 @@ class PreguntasController extends ApiController
             }
         } catch (QueryException $exception) {
             DB::rollBack();
-            $parse = new ParseSqlErrorService();
+            $parse = new ParseSqlErrorService;
+
             return response()->json(
                 ['status' => 'Error', 'message' => $parse->parse($exception->getMessage())],
                 Response::HTTP_BAD_REQUEST
             );
         } catch (Exception $exception) {
             DB::rollBack();
+
             return response()->json(['status' => 'Error', 'message' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -631,6 +643,7 @@ class PreguntasController extends ApiController
                 return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
             }
             DB::statement('exec [ere].[Sp_DEL_preguntaSimple] @_iPreguntaId=?, @_iEvaluacionId=?', [$request->iPreguntaId, $evaluacionIdDescifrado[0]]);
+
             return FormatearMensajeHelper::ok('Se ha eliminado la pregunta de la evaluación');
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -645,6 +658,7 @@ class PreguntasController extends ApiController
                 return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
             }
             DB::statement('exec [ere].[Sp_DEL_preguntaMultiple] @_iEncabPregId=?, @_iEvaluacionId=?', [$request->iEncabPregId, $evaluacionIdDescifrado[0]]);
+
             return FormatearMensajeHelper::ok('Se ha eliminado la pregunta múltiple y todas sus preguntas');
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -658,6 +672,7 @@ class PreguntasController extends ApiController
             switch ($request->opcion) {
                 case 'ACTUALIZARxiPreguntaIdxbPreguntaEstado':
                     DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+
                     return FormatearMensajeHelper::ok('La pregunta se ha eliminado correctamente');
 
                     break;
@@ -665,12 +680,14 @@ class PreguntasController extends ApiController
                     $parametros[5] = ExtraerBase64::extraer($request->cPregunta, $request->iPreguntaId, 'simple');
                     $request['opcion'] = 'GUARDAR-ACTUALIZARxPreguntas';
                     DB::statement('exec ere.Sp_UPD_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
-                    $resp = new AlternativasController();
+                    $resp = new AlternativasController;
+
                     return $resp->handleCrudOperation($request);
                     break;
                 case 'GUARDAR-PREGUNTAS':
-                    array_push($parametros,$request->iPreguntaOrden);
+                    array_push($parametros, $request->iPreguntaOrden);
                     DB::statement('exec ere.Sp_INS_preguntas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
+
                     return FormatearMensajeHelper::ok('Se agregó la pregunta');
                     break;
             }

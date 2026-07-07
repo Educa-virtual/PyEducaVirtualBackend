@@ -5,10 +5,10 @@ namespace App\Http\Controllers\acad;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\VerifyHash;
-use App\Services\acad\ReportesAcademicosService;
 use App\Http\Controllers\Controller;
 use App\Services\acad\EstudiantesService;
 use App\Services\acad\MatriculasService;
+use App\Services\acad\ReportesAcademicosService;
 use App\Services\apo\ApoderadosService;
 use App\Services\seg\UsuariosService;
 use Exception;
@@ -18,15 +18,15 @@ use Illuminate\Support\Facades\Gate;
 
 class ReporteAcademicoProgresoController extends Controller
 {
-
     public function generarReporteEstudiantePdf($iYAcadId, Request $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
-            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $outputPdf = ReportesAcademicosService::generarReporteAcademicoProgresoPdf($matricula);
+
             return response()->download($outputPdf)->deleteFileAfterSend(true);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -39,9 +39,10 @@ class ReporteAcademicoProgresoController extends Controller
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
             $dataEstudiante = EstudiantesService::obtenerIdCredIdPersEstudiantePorIeDocumento($cPersDocumento, $detallesCredencial->iSedeId);
-            $params = [$dataEstudiante->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [$dataEstudiante->iPersId, $iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $outputPdf = ReportesAcademicosService::generarReporteAcademicoProgresoPdf($matricula);
+
             return response()->download($outputPdf)->deleteFileAfterSend(true);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -52,10 +53,11 @@ class ReporteAcademicoProgresoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            $params = [NULL, NULL, NULL, VerifyHash::decodesxId($iMatrId)];
+            $params = [null, null, null, VerifyHash::decodesxId($iMatrId)];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
             $outputPdf = ReportesAcademicosService::generarReporteAcademicoProgresoPdf($matricula);
+
             return response()->download($outputPdf)->deleteFileAfterSend(true);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -67,10 +69,11 @@ class ReporteAcademicoProgresoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
-            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [Auth::user()->iPersId, $iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($matricula);
-            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
+
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -82,10 +85,11 @@ class ReporteAcademicoProgresoController extends Controller
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
             $dataEstudiante = EstudiantesService::obtenerIdCredIdPersEstudiantePorIeDocumento($cPersDocumento, $detallesCredencial->iSedeId);
-            $params = [$dataEstudiante->iPersId, $iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [$dataEstudiante->iPersId, $iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($matricula);
-            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
+
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -95,11 +99,12 @@ class ReporteAcademicoProgresoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            $params = [NULL, NULL, NULL, VerifyHash::decodesxId($iMatrId)];
+            $params = [null, null, null, VerifyHash::decodesxId($iMatrId)];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
             $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($matricula);
-            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
+
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

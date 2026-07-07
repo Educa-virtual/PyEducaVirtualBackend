@@ -6,7 +6,6 @@ use App\Helpers\VerifyHash;
 use App\Models\grl\Persona;
 use App\Models\seg\Usuario;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
 class PersonasService
@@ -16,6 +15,7 @@ class PersonasService
         $request->validate([
             'cPersCorreo' => 'nullable|email',
         ]);
+
         return Persona::updDatosPersonales($iPersId, $request);
     }
 
@@ -25,12 +25,13 @@ class PersonasService
         $archivo = $request->file('foto');
         $rutaDirectorio = self::obtenerRutaFotoPerfil($iPersId);
         $nombreArchivo = $archivo->getClientOriginalName();
-        if (!Storage::disk('public')->exists($rutaDirectorio)) {
+        if (! Storage::disk('public')->exists($rutaDirectorio)) {
             Storage::disk('public')->makeDirectory($rutaDirectorio);
         }
         $archivo->move(Storage::disk('public')->path($rutaDirectorio), $nombreArchivo);
         Persona::updFotoPerfil($iPersId, $nombreArchivo);
-        $url = 'storage/' . $rutaDirectorio . '/' . $nombreArchivo;
+        $url = 'storage/'.$rutaDirectorio.'/'.$nombreArchivo;
+
         return $url;
     }
 
@@ -46,45 +47,47 @@ class PersonasService
     public static function obtenerRutaFotoPerfil($iPersId)
     {
         $idHashed = VerifyHash::encodexId($iPersId);
+
         return "usuarios/foto-perfil/$idHashed";
     }
 
-    public static function obtenerPersonaPorDocumento($cPersDocumento) {
+    public static function obtenerPersonaPorDocumento($cPersDocumento)
+    {
         return Persona::selPersonaPorDocumento($cPersDocumento);
     }
 
     public static function actualizarPersonaConDataApi($dataServicio, $dataBD)
     {
         $iPersId = null;
-        
+
         $persona = (object) $dataBD;
         $item = (object) $dataServicio;
         $iTipoPersId = ((int) $item->iTipoIdentId == 2) ? 2 : 1;
 
         // Si servicio devuelve vacío, usar datos de BD
         $parametros = [
-            'iTipoPersId' => $iTipoPersId ?? NULL,
+            'iTipoPersId' => $iTipoPersId ?? null,
             'cPersDocumento' => $item->cPersDocumento ?? $persona->cPersDocumento,
             'cPersPaterno' => $item->cPersPaterno ?? $persona->cPersPaterno,
-            'cPersMaterno' => $item->cPersMaterno ?? $persona->cPersMaterno ?? NULL,
+            'cPersMaterno' => $item->cPersMaterno ?? $persona->cPersMaterno ?? null,
             'cPersNombre' => $item->cPersNombre ?? $persona->cPersNombre,
             'cPersSexo' => $item->cPersSexo ?? $persona->cPersSexo ?? 'M',
-            'dPersNacimiento' => $item->dPersNacimiento ?? $persona->dPersNacimiento ?? NULL,
+            'dPersNacimiento' => $item->dPersNacimiento ?? $persona->dPersNacimiento ?? null,
             'iTipoEstCivId' => $item->iTipoEstCivId ?? $persona->iTipoEstCivId ?? 1,
-            'cPersFotografia' => $persona->cPersFotografia ?? NULL,
-            'cPersRazonSocialNombre' => $item->cPersRazonSocialNombre ?? $persona->cPersRazonSocialNombre ?? NULL,
-            'cPersRazonSocialCorto' => $persona->cPersRazonSocialCorto ?? NULL,
-            'cPersRazonSocialSigla' => $persona->cPersRazonSocialSigla ?? NULL,
-            'cPersDomicilio' => $item->cPersDomicilio ?? $persona->cPersDomicilio ?? NULL,
-            'iCredSesionId'=> $iCredId ?? NULL,
-            'iPersRepresentanteLegalId'=> $persona->iPersRepresentanteLegalId ?? NULL,
-            'iNacionId' => $item->iNacionId ?? $persona->iNacionId ?? NULL,
-            'iPaisId' => $item->iPaisId ?? $persona->iPaisId ?? NULL,
-            'iDptoId' => $item->iDptoId ?? $persona->iDptoId ?? NULL,
-            'iPrvnId' => $item->iPrvnId ?? $persona->iPrvnId ?? NULL,
-            'iDsttId' => $item->iDsttId ?? $persona->iDsttId ?? NULL,
-            'cPersTelefono' => $item->cPersTelefono ?? $persona->cPersTelefono ?? NULL,
-            'cPersCorreo' => $item->cPersCorreo ?? $persona->cPersCorreo ?? NULL,
+            'cPersFotografia' => $persona->cPersFotografia ?? null,
+            'cPersRazonSocialNombre' => $item->cPersRazonSocialNombre ?? $persona->cPersRazonSocialNombre ?? null,
+            'cPersRazonSocialCorto' => $persona->cPersRazonSocialCorto ?? null,
+            'cPersRazonSocialSigla' => $persona->cPersRazonSocialSigla ?? null,
+            'cPersDomicilio' => $item->cPersDomicilio ?? $persona->cPersDomicilio ?? null,
+            'iCredSesionId' => $iCredId ?? null,
+            'iPersRepresentanteLegalId' => $persona->iPersRepresentanteLegalId ?? null,
+            'iNacionId' => $item->iNacionId ?? $persona->iNacionId ?? null,
+            'iPaisId' => $item->iPaisId ?? $persona->iPaisId ?? null,
+            'iDptoId' => $item->iDptoId ?? $persona->iDptoId ?? null,
+            'iPrvnId' => $item->iPrvnId ?? $persona->iPrvnId ?? null,
+            'iDsttId' => $item->iDsttId ?? $persona->iDsttId ?? null,
+            'cPersTelefono' => $item->cPersTelefono ?? $persona->cPersTelefono ?? null,
+            'cPersCorreo' => $item->cPersCorreo ?? $persona->cPersCorreo ?? null,
         ];
         if ($persona) {
             // Actualizar persona
@@ -94,8 +97,9 @@ class PersonasService
         } else {
             // Insertar persona
             $data = Usuario::insPersonas((object) $parametros);
-            $iPersId = !empty($data) ? $data->iPersId : null;
+            $iPersId = ! empty($data) ? $data->iPersId : null;
         }
+
         return [
             'iPersId' => $iPersId,
             'parametros' => $parametros,

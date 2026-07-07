@@ -3,7 +3,6 @@
 namespace App\Models\bienestar;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class EncuestaBienestar
 {
@@ -16,7 +15,7 @@ class EncuestaBienestar
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         try {
             return DB::select("EXEC obe.Sp_SEL_encuestas $placeholders", $parametros);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // Manejar error en caso de que no se devuelva ningún resultado
             if (str_contains($e->getMessage(), 'contains no fields')) {
                 return [];
@@ -31,6 +30,7 @@ class EncuestaBienestar
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_SEL_encuestaParametros $placeholders", $parametros);
     }
 
@@ -48,6 +48,7 @@ class EncuestaBienestar
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC obe.Sp_INS_encuesta $placeholders", $parametros);
     }
 
@@ -67,6 +68,7 @@ class EncuestaBienestar
             $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC obe.Sp_UPD_encuesta $placeholders", $parametros);
     }
 
@@ -78,6 +80,7 @@ class EncuestaBienestar
             $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC obe.Sp_UPD_encuestaEstado $placeholders", $parametros);
     }
 
@@ -88,6 +91,7 @@ class EncuestaBienestar
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_SEL_encuesta $placeholders", $parametros);
     }
 
@@ -98,6 +102,7 @@ class EncuestaBienestar
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::delete("EXEC obe.Sp_DEL_encuesta $placeholders", $parametros);
     }
 
@@ -109,8 +114,7 @@ class EncuestaBienestar
             $request->jsonPoblacion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
     }
-
-
 }

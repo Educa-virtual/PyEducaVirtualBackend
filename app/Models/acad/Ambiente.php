@@ -7,26 +7,31 @@ use Illuminate\Support\Facades\DB;
 
 class Ambiente extends Model
 {
-    public static function selAmbientes($request) {
+    public static function selAmbientes($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iConfigId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.Sp_SEL_ambientes $placeholders", $parametros);
     }
 
-    public static function selAmbiente($request) {
+    public static function selAmbiente($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iConfigId,
             $request->iIieeAmbienteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.Sp_SEL_ambiente $placeholders", $parametros);
     }
 
-    public static function insAmbiente($request) {
+    public static function insAmbiente($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iConfigId,
@@ -44,10 +49,12 @@ class Ambiente extends Model
             $request->cImagen,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::insert("EXEC acad.Sp_INS_ambiente $placeholders", $parametros);
     }
 
-    public static function updAmbiente($request) {
+    public static function updAmbiente($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iIieeAmbienteId,
@@ -65,15 +72,18 @@ class Ambiente extends Model
             $request->cImagen,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_ambiente $placeholders", $parametros);
     }
 
-    public static function delAmbiente($request) {
+    public static function delAmbiente($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iIieeAmbienteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::delete("EXEC acad.Sp_DEL_ambiente $placeholders", $parametros);
     }
 }

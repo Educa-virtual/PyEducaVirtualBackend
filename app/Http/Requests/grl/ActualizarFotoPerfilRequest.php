@@ -16,7 +16,7 @@ class ActualizarFotoPerfilRequest extends GeneralFormRequest
     public function attributes(): array
     {
         return [
-            'foto' => 'Foto de perfil'
+            'foto' => 'Foto de perfil',
         ];
     }
 

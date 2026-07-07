@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -23,11 +23,11 @@ class PreguntasController extends Controller
                 'iTipoPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCuestionarioId    ??  NULL,
-                $request->iCredId                   ??  NULL
+                $request->iCuestionarioId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -40,10 +40,10 @@ class PreguntasController extends Controller
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             foreach ($data as $pregunta) {
-                if (!empty($pregunta->jsonAlternativas)) {
+                if (! empty($pregunta->jsonAlternativas)) {
                     // Decodificamos jsonAlternativas
                     $alternativas = json_decode($pregunta->jsonAlternativas, true);
-                    //Encriptamos cada iPregAlterId
+                    // Encriptamos cada iPregAlterId
                     foreach ($alternativas as &$alternativa) {
                         if (isset($alternativa['iPregAlterId'])) {
                             $alternativa['iPregAlterId'] = VerifyHash::encodexId($alternativa['iPregAlterId']);
@@ -80,7 +80,7 @@ class PreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -90,18 +90,18 @@ class PreguntasController extends Controller
                 'iTipoPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCuestionarioId             ??  NULL,
-                $request->iTipoPregId                 ??  NULL,
-                $request->cPregunta                   ??  NULL,
-                $request->cPreguntaImg                ??  NULL,
-                $request->cIndicaciones               ??  NULL,
-                $request->cTextoAyuda                 ??  NULL,
-                $request->tTiempo                     ??  NULL,
-                $request->jsonAlternativas            ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCuestionarioId ?? null,
+                $request->iTipoPregId ?? null,
+                $request->cPregunta ?? null,
+                $request->cPreguntaImg ?? null,
+                $request->cIndicaciones ?? null,
+                $request->cTextoAyuda ?? null,
+                $request->tTiempo ?? null,
+                $request->jsonAlternativas ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -117,15 +117,17 @@ class PreguntasController extends Controller
                     @_iCredId=?',
                 $parametros
             );
-       
+
             if ($data[0]->iPregId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -155,7 +157,7 @@ class PreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -165,13 +167,12 @@ class PreguntasController extends Controller
                 'iTipoPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
-
-            if (!empty($request->jsonAlternativas)) {
+            if (! empty($request->jsonAlternativas)) {
                 // Decodificamos jsonAlternativas
                 $alternativas = json_decode($request->jsonAlternativas, true);
-                //Encriptamos cada iPregAlterId
+                // Encriptamos cada iPregAlterId
                 foreach ($alternativas as &$alternativa) {
                     if (isset($alternativa['iPregAlterId'])) {
                         $alternativa['iPregAlterId'] = VerifyHash::decodesxId($alternativa['iPregAlterId']);
@@ -181,17 +182,17 @@ class PreguntasController extends Controller
             }
 
             $parametros = [
-                $request->iPregId             ??  NULL,
-                $request->iTipoPregId                 ??  NULL,
-                $request->cPregunta                   ??  NULL,
-                $request->cPreguntaImg                ??  NULL,
-                $request->cIndicaciones               ??  NULL,
-                $request->cTextoAyuda                 ??  NULL,
-                $request->tTiempo                     ??  NULL,
-                $request->jsonAlternativas            ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iPregId ?? null,
+                $request->iTipoPregId ?? null,
+                $request->cPregunta ?? null,
+                $request->cPreguntaImg ?? null,
+                $request->cIndicaciones ?? null,
+                $request->cTextoAyuda ?? null,
+                $request->tTiempo ?? null,
+                $request->jsonAlternativas ?? null,
+                $request->iCredId ?? null,
             ];
-            
+
             $data = DB::select(
                 'exec aula.SP_UPD_preguntasxiPregId
                     @_iPregId=?,   
@@ -208,12 +209,14 @@ class PreguntasController extends Controller
 
             if ($data[0]->iPregId > 0) {
                 $message = 'Se ha actualizado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido actualizar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -240,21 +243,21 @@ class PreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $fieldsToDecode = [
                 'iPregId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iPregId      ??  NULL,
-                $request->iCredId      ??  NULL
+                $request->iPregId ?? null,
+                $request->iCredId ?? null,
             ];
             $data = DB::select(
                 'exec aula.SP_DEL_preguntasxiPregId
@@ -265,12 +268,14 @@ class PreguntasController extends Controller
 
             if ($data[0]->iPregId > 0) {
                 $message = 'Se ha eliminado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido eliminar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK

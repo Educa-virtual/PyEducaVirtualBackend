@@ -18,7 +18,8 @@ class ResultadosService
     {
         $rutaArchivo = self::obtenerRutaHojaDesarrolloEstudiante($iEvaluacionId, $iCursosNivelGradId, $iEstudianteId);
         $archivos = Storage::disk('public')->files($rutaArchivo);
-        return !empty($archivos);
+
+        return ! empty($archivos);
     }
 
     public static function guardarHojaDesarrolloEstudiante(GuardarHojaDesarrolloEstudianteRequest $request)
@@ -27,7 +28,7 @@ class ResultadosService
         $archivo = $request->file('archivo');
         $rutaDestino = self::obtenerRutaHojaDesarrolloEstudiante($request->iEvaluacionId, $request->iCursosNivelGradId, $request->iEstudianteId);
         $nombreArchivo = $archivo->getClientOriginalName();
-        if (!Storage::disk('public')->exists($rutaDestino)) {
+        if (! Storage::disk('public')->exists($rutaDestino)) {
             Storage::disk('public')->makeDirectory($rutaDestino);
         }
         $archivo->move(Storage::disk('public')->path($rutaDestino), $nombreArchivo);
@@ -40,6 +41,7 @@ class ResultadosService
         if (empty($archivos)) {
             throw new Exception('El archivo no existe');
         }
+
         return $archivos[0];
     }
 

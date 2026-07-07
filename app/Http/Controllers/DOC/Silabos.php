@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\doc;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class Silabos extends Controller
 {
     protected $hashids;
+
     protected $iSilaboId;
+
     protected $iSemAcadId;
+
     protected $iYAcadId;
+
     protected $idDocCursoId;
 
     public function __construct()
@@ -55,15 +59,15 @@ class Silabos extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iSilaboId                          ?? NULL,
-            $iSemAcadId                         ?? NULL,
-            $iYAcadId                           ?? NULL,     
-            $idDocCursoId                       ?? NULL,
-            $request->dtSilabo                  ?? NULL,
-            $request->cSilaboDescripcionCurso   ?? NULL,
-            $request->cSilaboCapacidad          ?? NULL,
+            $iSilaboId ?? null,
+            $iSemAcadId ?? null,
+            $iYAcadId ?? null,
+            $idDocCursoId ?? null,
+            $request->dtSilabo ?? null,
+            $request->cSilaboDescripcionCurso ?? null,
+            $request->cSilaboCapacidad ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 

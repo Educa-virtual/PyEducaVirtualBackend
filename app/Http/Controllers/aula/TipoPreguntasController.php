@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TipoPreguntasController extends Controller
 {
@@ -19,10 +18,10 @@ class TipoPreguntasController extends Controller
                 'iTipoPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCredId              ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -31,6 +30,7 @@ class TipoPreguntasController extends Controller
                 $parametros
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK

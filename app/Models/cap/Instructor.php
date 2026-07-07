@@ -2,7 +2,6 @@
 
 namespace App\Models\cap;
 
-use App\Helpers\VerifyHash;
 use Illuminate\Support\Facades\DB;
 
 class Instructor
@@ -14,6 +13,7 @@ class Instructor
             $request->header('iCredId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC cap.SP_SEL_instructores $placeholders", $parametros);
     }
 
@@ -24,6 +24,7 @@ class Instructor
             $request->header('iCredId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC cap.SP_INS_instructores $placeholders", $parametros);
     }
 
@@ -34,6 +35,7 @@ class Instructor
             $request->header('iCredId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC cap.SP_DEL_instructores $placeholders", $parametros);
     }
 
@@ -48,6 +50,7 @@ class Instructor
             $request->header('iCredId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC cap.SP_UPD_instructores $placeholders", $parametros);
     }
 
@@ -59,6 +62,7 @@ class Instructor
             $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC cap.SP_UPD_instructoresEstado $placeholders", $parametros);
     }
 }

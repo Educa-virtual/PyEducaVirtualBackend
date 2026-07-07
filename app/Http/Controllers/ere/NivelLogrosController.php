@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Ere;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
+use App\Models\ere\NivelLogro;
 use App\Repositories\ere\NivelLogrosRepository;
 use Exception;
 use Hashids\Hashids;
@@ -12,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use App\Models\ere\NivelLogro;
 
 class NivelLogrosController extends Controller
 {
@@ -26,6 +26,7 @@ class NivelLogrosController extends Controller
     public function obtenerNivelLogros()
     {
         $data = NivelLogrosRepository::obtenerNivelLogros();
+
         return response()->json(['status' => 'Success', 'message' => 'Se obtuvo la información', 'data' => $data], Response::HTTP_OK);
     }
 
@@ -37,7 +38,8 @@ class NivelLogrosController extends Controller
                 'iEvaluacionId' => $evaluacionId,
             ]);
             $data = NivelLogro::selNivelLogroEvalCurso($request);
-            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
+
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -54,7 +56,7 @@ class NivelLogrosController extends Controller
 
         $nivelesRegistrar = [];
         foreach ($request->formulario as $fila) {
-            if (!empty($fila['iHasta'] ?? 0) && !empty($fila['iHasta']) && !empty($fila['iNivelLogroId'])) {
+            if (! empty($fila['iHasta'] ?? 0) && ! empty($fila['iHasta']) && ! empty($fila['iNivelLogroId'])) {
 
                 if ($fila['iDesde'] > $fila['iHasta']) {
                     return response()->json(['status' => 'Error', 'message' => 'El valor de "Desde" no puede ser mayor al valor de "Hasta". Por favor cambie los valores ingresados antes de continuar'], Response::HTTP_BAD_REQUEST);
@@ -72,10 +74,12 @@ class NivelLogrosController extends Controller
             NivelLogrosRepository::eliminarNivelLogroPorCurso($iCursosNivelGradIdDescifrado[0], $evaluacionIdDescifrado[0]);
             NivelLogrosRepository::registrarNivelLogroPorCurso($nivelesRegistrar, $iCursosNivelGradIdDescifrado[0], $evaluacionIdDescifrado[0]);
             DB::commit();
+
             return response()->json(['status' => 'Success', 'message' => 'Se ha registrado la configuracion'], Response::HTTP_OK);
         } catch (Exception $ex) {
             DB::rollBack();
-            return response()->json(['status' => 'Error', 'message' => 'Error: ' . $ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+
+            return response()->json(['status' => 'Error', 'message' => 'Error: '.$ex->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

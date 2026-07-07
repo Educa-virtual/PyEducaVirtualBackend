@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class DetalleEvaluacionesController extends Controller
 {
     protected $hashids;
+
     protected $iDetEvaId;
+
     protected $iSilaboId;
 
     public function __construct()
@@ -42,18 +44,18 @@ class DetalleEvaluacionesController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iDetEvaId                              ?? NULL,
-            $iSilaboId                              ?? NULL,
-            $request->cDetEvalDetalles              ?? NULL,
+            $iDetEvaId ?? null,
+            $iSilaboId ?? null,
+            $request->cDetEvalDetalles ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
         try {
             $data = DB::select('exec acad.Sp_SEL_detalleEvaluaciones
             ?,?,?,?,?,?', $parametros);
-            
+
             foreach ($data as $key => $value) {
                 $value->iDetEvaId = $this->hashids->encode($value->iDetEvaId);
                 $value->iSilaboId = $this->hashids->encode($value->iSilaboId);
@@ -92,11 +94,11 @@ class DetalleEvaluacionesController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iDetEvaId                              ?? NULL,
-            $iSilaboId                              ?? NULL,
-            $request->cDetEvalDetalles              ?? NULL,
+            $iDetEvaId ?? null,
+            $iSilaboId ?? null,
+            $request->cDetEvalDetalles ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -111,9 +113,9 @@ class DetalleEvaluacionesController extends Controller
                     ?,?,?,?,?,?', $parametros);
                     break;
                 case 'ELIMINARxiDetEvaId':
-                    $parametros = [         
-                        $iDetEvaId                              ?? NULL,
-                        $request->iCredId
+                    $parametros = [
+                        $iDetEvaId ?? null,
+                        $request->iCredId,
                     ];
                     $data = DB::select('exec acad.Sp_DEL_detalleEvaluaciones ?,?', $parametros);
                     break;

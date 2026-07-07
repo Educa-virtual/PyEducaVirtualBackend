@@ -10,16 +10,17 @@ use Illuminate\Support\Facades\DB;
 
 class ActividadesAprendizajeController extends Controller
 {
-    public function list(Request $request){
+    public function list(Request $request)
+    {
         $iSilaboActAprendId = $request->iSilaboActAprendId ? $request->iSilaboActAprendId : 0;
         $seleccion = $request->seleccion;
 
         $opcion = [
-            0   =>  "",
-            1   =>  "WHERE iSilaboActAprendId = ".$iSilaboActAprendId,
+            0 => '',
+            1 => 'WHERE iSilaboActAprendId = '.$iSilaboActAprendId,
         ];
 
-        $sel_query = DB::select("SELECT
+        $sel_query = DB::select('SELECT
         iSilaboActAprendId,
         iSilaboId,
         iIndLogorCapId,
@@ -28,44 +29,46 @@ class ActividadesAprendizajeController extends Controller
         cSilaboActAprendElementos,
         dtSilaboActAprend,
         iHorarioId
-        FROM acad.silabo_actividad_aprendizajes ".$opcion[1]);
+        FROM acad.silabo_actividad_aprendizajes '.$opcion[1]);
 
-        try{
+        try {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'se obtuvo la información',
                 'data' => $sel_query,
             ];
 
             $estado = 200;
 
-        } catch(Exception $e){
+        } catch (Exception $e) {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
-    public function save(Request $request){
 
-        $iSilaboId                  = $request->iSilaboId;
-        $iIndLogorCapId             = $request->iIndLogorCapId;
-        $cSilaboActAprendNumero     = $request->cSilaboActAprendNumero;
-        $cSilaboActAprendNombre     = $request->cSilaboActAprendNombre;
-        $cSilaboActAprendElementos  = $request->cSilaboActAprendElementos;
-        $dtSilaboActAprend          = $request->dtSilaboActAprend;
-        $iHorarioId                 = $request->iHorarioId;
+    public function save(Request $request)
+    {
 
-        $sel_silabo = DB::select("SELECT iSilaboId FROM acad.silabos WHERE iSilaboId = ?",[$iSilaboId]);
-        $sel_indicador = DB::select("SELECT iIndLogorCapId FROM acad.iIndLogorCapId WHERE iIndLogorCapId = ?",[$iIndLogorCapId]);
+        $iSilaboId = $request->iSilaboId;
+        $iIndLogorCapId = $request->iIndLogorCapId;
+        $cSilaboActAprendNumero = $request->cSilaboActAprendNumero;
+        $cSilaboActAprendNombre = $request->cSilaboActAprendNombre;
+        $cSilaboActAprendElementos = $request->cSilaboActAprendElementos;
+        $dtSilaboActAprend = $request->dtSilaboActAprend;
+        $iHorarioId = $request->iHorarioId;
 
-        if($sel_silabo && $sel_indicador){
+        $sel_silabo = DB::select('SELECT iSilaboId FROM acad.silabos WHERE iSilaboId = ?', [$iSilaboId]);
+        $sel_indicador = DB::select('SELECT iIndLogorCapId FROM acad.iIndLogorCapId WHERE iIndLogorCapId = ?', [$iIndLogorCapId]);
 
-            $ins_query = DB::insert("INSERT INTO acad.silabo_actividad_aprendizajes
+        if ($sel_silabo && $sel_indicador) {
+
+            $ins_query = DB::insert('INSERT INTO acad.silabo_actividad_aprendizajes
             (
             iSilaboId,
             iIndLogorCapId,
@@ -76,55 +79,56 @@ class ActividadesAprendizajeController extends Controller
             iHorarioId
             )
             VALUES
-            (?,?,?,?,?,?,?)"
-            ,[
+            (?,?,?,?,?,?,?)', [
                 $iSilaboId,
                 $iIndLogorCapId,
                 $cSilaboActAprendNumero,
                 $cSilaboActAprendNombre,
                 $cSilaboActAprendElementos,
                 $dtSilaboActAprend,
-                $iHorarioId
+                $iHorarioId,
             ]);
 
-            try{
+            try {
                 $response = [
-                    'validated' => true, 
+                    'validated' => true,
                     'message' => 'se obtuvo la información',
                     'data' => $ins_query,
                 ];
 
                 $estado = 200;
 
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 $response = [
-                    'validated' => true, 
+                    'validated' => true,
                     'message' => $e->getMessage(),
                     'data' => [],
                 ];
                 $estado = 500;
             }
-            
-            return new JsonResponse($response,$estado);
+
+            return new JsonResponse($response, $estado);
         }
     }
-    public function update(Request $request){
-        
-        $iSilaboActAprendId         = $request->iSilaboActAprendId;
-        $iSilaboId                  = $request->iSilaboId;
-        $iIndLogorCapId             = $request->iIndLogorCapId;
-        $cSilaboActAprendNumero     = $request->cSilaboActAprendNumero;
-        $cSilaboActAprendNombre     = $request->cSilaboActAprendNombre;
-        $cSilaboActAprendElementos  = $request->cSilaboActAprendElementos;
-        $dtSilaboActAprend          = $request->dtSilaboActAprend;
-        $iHorarioId                 = $request->iHorarioId;
 
-        $sel_silabo = DB::select("SELECT iSilaboId FROM acad.silabos WHERE iSilaboId = ?",[$iSilaboId]);
-        $sel_indicador = DB::select("SELECT iIndLogorCapId FROM acad.iIndLogorCapId WHERE iIndLogorCapId = ?",[$iIndLogorCapId]);
+    public function update(Request $request)
+    {
 
-        if($sel_silabo && $sel_indicador){
+        $iSilaboActAprendId = $request->iSilaboActAprendId;
+        $iSilaboId = $request->iSilaboId;
+        $iIndLogorCapId = $request->iIndLogorCapId;
+        $cSilaboActAprendNumero = $request->cSilaboActAprendNumero;
+        $cSilaboActAprendNombre = $request->cSilaboActAprendNombre;
+        $cSilaboActAprendElementos = $request->cSilaboActAprendElementos;
+        $dtSilaboActAprend = $request->dtSilaboActAprend;
+        $iHorarioId = $request->iHorarioId;
 
-            $ins_query = DB::update("UPDATE acad.silabo_actividad_aprendizajes SET
+        $sel_silabo = DB::select('SELECT iSilaboId FROM acad.silabos WHERE iSilaboId = ?', [$iSilaboId]);
+        $sel_indicador = DB::select('SELECT iIndLogorCapId FROM acad.iIndLogorCapId WHERE iIndLogorCapId = ?', [$iIndLogorCapId]);
+
+        if ($sel_silabo && $sel_indicador) {
+
+            $ins_query = DB::update('UPDATE acad.silabo_actividad_aprendizajes SET
             (
             iSilaboId=?
             iIndLogorCapId=?
@@ -134,8 +138,7 @@ class ActividadesAprendizajeController extends Controller
             dtSilaboActAprend=?
             iHorarioId=?
             )
-            WHERE iSilaboActAprendId = ?"
-            ,[
+            WHERE iSilaboActAprendId = ?', [
                 $iSilaboActAprendId,
                 $iSilaboId,
                 $iIndLogorCapId,
@@ -143,31 +146,30 @@ class ActividadesAprendizajeController extends Controller
                 $cSilaboActAprendNombre,
                 $cSilaboActAprendElementos,
                 $dtSilaboActAprend,
-                $iHorarioId
+                $iHorarioId,
             ]);
 
-            try{
+            try {
                 $response = [
-                    'validated' => true, 
+                    'validated' => true,
                     'message' => 'se obtuvo la información',
                     'data' => $ins_query,
                 ];
 
                 $estado = 200;
 
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 $response = [
-                    'validated' => true, 
+                    'validated' => true,
                     'message' => $e->getMessage(),
                     'data' => [],
                 ];
                 $estado = 500;
             }
-            
-            return new JsonResponse($response,$estado);
+
+            return new JsonResponse($response, $estado);
         }
     }
-    public function delete(){
-        
-    }
+
+    public function delete() {}
 }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\cap;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TipoPublicosController extends Controller
 {
@@ -23,6 +22,7 @@ class TipoPublicosController extends Controller
                 'exec cap.SP_SEL_tipoPublicos',
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK
@@ -42,12 +42,12 @@ class TipoPublicosController extends Controller
                 'iTipoPubId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->cTipoPubNombre       ??  NULL,
+                $request->cTipoPubNombre ?? null,
 
-                $request->iCredId              ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -85,13 +85,13 @@ class TipoPublicosController extends Controller
                 'iTipoPubId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iTipoPubId           ??  NULL,
-                $request->cTipoPubNombre       ??  NULL,
+                $request->iTipoPubId ?? null,
+                $request->cTipoPubNombre ?? null,
 
-                $request->iCredId              ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -130,12 +130,12 @@ class TipoPublicosController extends Controller
                 'iTipoPubId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iTipoPubId           ??  NULL,
+                $request->iTipoPubId ?? null,
 
-                $request->iCredId              ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

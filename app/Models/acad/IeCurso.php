@@ -3,18 +3,17 @@
 namespace App\Models\acad;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class IeCurso
 {
     public static function selCursoPorIeCurso($ieCursoId)
     {
-        return DB::selectOne("
+        return DB::selectOne('
             SELECT iCursoId, cng.iCursosNivelGradId
             FROM acad.ies_cursos AS ic
                 INNER JOIN acad.cursos_niveles_grados cng ON
                     cng.iCursosNivelGradId=ic.iCursosNivelGradId
-            WHERE ic.iIeCursoId=?", [$ieCursoId]);
+            WHERE ic.iIeCursoId=?', [$ieCursoId]);
     }
 
     public static function selIeCursos($request)
@@ -24,6 +23,7 @@ class IeCurso
             $request->iConfigId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.Sp_SEL_ieCursos $placeholders", $parametros);
     }
 
@@ -34,6 +34,7 @@ class IeCurso
             $request->iIeCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.Sp_SEL_ieCurso $placeholders", $parametros);
     }
 
@@ -51,6 +52,7 @@ class IeCurso
             $request->iPorcentajeAporte,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_INS_ieCurso $placeholders", $parametros);
     }
 
@@ -68,6 +70,7 @@ class IeCurso
             $request->iPorcentajeAporte,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_ieCurso $placeholders", $parametros);
     }
 
@@ -79,6 +82,7 @@ class IeCurso
             $request->bActivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_ieCursoEstado $placeholders", $parametros);
     }
 }

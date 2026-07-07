@@ -9,6 +9,6 @@ class Prioridad extends Model
 {
     public static function selPrioridades()
     {
-        return DB::select("SELECT * FROM grl.prioridades ORDER BY iPrioridadId ASC");
+        return DB::select('SELECT * FROM grl.prioridades ORDER BY iPrioridadId ASC');
     }
 }

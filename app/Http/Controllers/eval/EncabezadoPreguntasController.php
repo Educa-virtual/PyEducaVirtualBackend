@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\eval;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +18,7 @@ class EncabezadoPreguntasController extends Controller
             'iEvaluacionId' => ['required'],
             'iDocenteId' => ['required'],
             'cEncabPregTitulo' => ['required'],
-            'cEncabPregContenido' => ['required']
+            'cEncabPregContenido' => ['required'],
         ], [
             'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
@@ -29,7 +29,7 @@ class EncabezadoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -41,18 +41,17 @@ class EncabezadoPreguntasController extends Controller
                 'iCursoId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId               ??  NULL,
-                $request->iDocenteId                  ??  NULL,
-                $request->iNivelCicloId               ??  NULL,
-                $request->iCursoId                    ??  NULL,
-                $request->cEncabPregTitulo            ??  NULL,
-                $request->cEncabPregContenido         ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iEvaluacionId ?? null,
+                $request->iDocenteId ?? null,
+                $request->iNivelCicloId ?? null,
+                $request->iCursoId ?? null,
+                $request->cEncabPregTitulo ?? null,
+                $request->cEncabPregContenido ?? null,
+                $request->iCredId ?? null,
             ];
-
 
             $data = DB::select(
                 'exec eval.SP_INS_encabezadoPreguntasxiEvaluacionId
@@ -68,12 +67,14 @@ class EncabezadoPreguntasController extends Controller
 
             if ($data[0]->idEncabPregId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -100,21 +101,21 @@ class EncabezadoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $fieldsToDecode = [
                 'idEncabPregId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->idEncabPregId      ??  NULL,
-                $request->iCredId      ??  NULL
+                $request->idEncabPregId ?? null,
+                $request->iCredId ?? null,
             ];
             $data = DB::select(
                 'exec eval.SP_DEL_encabezadoPreguntasxidEncabPregId
@@ -125,12 +126,14 @@ class EncabezadoPreguntasController extends Controller
 
             if ($data[0]->idEncabPregId > 0) {
                 $message = 'Se ha eliminado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido eliminar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -160,7 +163,7 @@ class EncabezadoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -169,13 +172,13 @@ class EncabezadoPreguntasController extends Controller
                 'idEncabPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->idEncabPregId               ??  NULL,
-                $request->cEncabPregTitulo            ??  NULL,
-                $request->cEncabPregContenido         ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->idEncabPregId ?? null,
+                $request->cEncabPregTitulo ?? null,
+                $request->cEncabPregContenido ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -189,12 +192,14 @@ class EncabezadoPreguntasController extends Controller
 
             if ($data[0]->idEncabPregId > 0) {
                 $message = 'Se ha actualizado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido actualizar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -229,7 +234,7 @@ class EncabezadoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -241,17 +246,17 @@ class EncabezadoPreguntasController extends Controller
                 'iCredId',
                 'iNivelGradoId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iDocenteId                  ??  NULL,
-                $request->iNivelCicloId               ??  NULL,
-                $request->iCursoId                    ??  NULL,
-                $request->cEncabPregTitulo            ??  NULL,
-                $request->cEncabPregContenido         ??  NULL,
-                $request->iCredId                     ??  NULL,
-                $request->iNivelGradoId               ??  NULL,
-                $request->header('iCredEntPerfId')    ??  NULL,
+                $request->iDocenteId ?? null,
+                $request->iNivelCicloId ?? null,
+                $request->iCursoId ?? null,
+                $request->cEncabPregTitulo ?? null,
+                $request->cEncabPregContenido ?? null,
+                $request->iCredId ?? null,
+                $request->iNivelGradoId ?? null,
+                $request->header('iCredEntPerfId') ?? null,
             ];
 
             $data = DB::select(
@@ -269,12 +274,14 @@ class EncabezadoPreguntasController extends Controller
 
             if ($data[0]->idEncabPregId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -305,7 +312,7 @@ class EncabezadoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -314,13 +321,13 @@ class EncabezadoPreguntasController extends Controller
                 'idEncabPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->idEncabPregId               ??  NULL,
-                $request->cEncabPregTitulo            ??  NULL,
-                $request->cEncabPregContenido         ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->idEncabPregId ?? null,
+                $request->cEncabPregTitulo ?? null,
+                $request->cEncabPregContenido ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -334,12 +341,14 @@ class EncabezadoPreguntasController extends Controller
 
             if ($data[0]->idEncabPregId > 0) {
                 $message = 'Se ha actualizado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido actualizar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -366,21 +375,21 @@ class EncabezadoPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $fieldsToDecode = [
                 'idEncabPregId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->idEncabPregId      ??  NULL,
-                $request->iCredId      ??  NULL
+                $request->idEncabPregId ?? null,
+                $request->iCredId ?? null,
             ];
             $data = DB::select(
                 'exec eval.SP_DEL_encabezadoBancoPreguntasxidEncabPregId
@@ -391,12 +400,14 @@ class EncabezadoPreguntasController extends Controller
 
             if ($data[0]->idEncabPregId > 0) {
                 $message = 'Se ha eliminado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido eliminar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -419,6 +430,7 @@ class EncabezadoPreguntasController extends Controller
                 case 'CONSULTAR':
                     $data = DB::select('exec eval.Sp_SEL_encabezadoPreguntas ?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
+
                     return new JsonResponse(
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200

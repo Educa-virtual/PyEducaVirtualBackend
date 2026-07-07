@@ -16,9 +16,11 @@ class TipoActividadController extends ApiController
     {
         try {
             $data = DB::table('aula.actividad_tipos')->get();
-            return  $this->successResponse($data, 'Datos obtenidos correctamente');
+
+            return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e,  'Error al obtener los datos');
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+
             return $this->errorResponse(null, $message);
         }
     }

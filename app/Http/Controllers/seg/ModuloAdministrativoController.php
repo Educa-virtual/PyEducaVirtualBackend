@@ -13,8 +13,9 @@ class ModuloAdministrativoController extends Controller
     public function obtenerModulos(Request $request)
     {
         try {
-            $modulos = DB::select("SELECT iModuloId, cModuloNombre, iModuloOrden,iModuloEstado,iPerfilId FROM seg.modulos
-            WHERE (iModuloId<10 and iModuloEstado=1)"); //(iModuloId=1012 and iModuloEstado=1) or
+            $modulos = DB::select('SELECT iModuloId, cModuloNombre, iModuloOrden,iModuloEstado,iPerfilId FROM seg.modulos
+            WHERE (iModuloId<10 and iModuloEstado=1)'); // (iModuloId=1012 and iModuloEstado=1) or
+
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $modulos);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

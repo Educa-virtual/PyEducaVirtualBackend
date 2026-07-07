@@ -6,7 +6,6 @@ use App\Jobs\NotificarApoderadosInasistenciaCursoJob;
 use App\Models\asi\ControlAsistencia;
 use App\Services\acad\DocentesService;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class ControlAsistenciaService
 {
@@ -14,7 +13,7 @@ class ControlAsistenciaService
     {
         $fechaCarbon = Carbon::parse($solicitud[2]);
         $data = ControlAsistencia::selEstudiantesConFalta($solicitud, $fechaCarbon);
-        $docente=DocentesService::obtenerDocentePorId($solicitud[7]);
+        $docente = DocentesService::obtenerDocentePorId($solicitud[7]);
         NotificarApoderadosInasistenciaCursoJob::dispatch($data, $fechaCarbon->format('d/m/Y'), $docente);
     }
 

@@ -4,14 +4,14 @@ namespace App\Http\Controllers\acad;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
 use App\Models\acad\CalendarioAcademico;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
@@ -35,7 +35,7 @@ class CalendarioAcademicosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -45,12 +45,12 @@ class CalendarioAcademicosController extends Controller
             'iCredId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iYAcadId              ??      NULL,
-            $request->iSedeId               ??      NULL,
-            $request->iCredId               ??      NULL
+            $request->iYAcadId ?? null,
+            $request->iSedeId ?? null,
+            $request->iCredId ?? null,
         ];
 
         try {
@@ -70,10 +70,11 @@ class CalendarioAcademicosController extends Controller
             // Manejo de excepción y respuesta de error
             $response = [
                 'validated' => false,
-                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'message' => $e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(),
                 'data' => [],
             ];
             $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return new JsonResponse($response, $estado);
         }
     }
@@ -92,7 +93,7 @@ class CalendarioAcademicosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -102,27 +103,27 @@ class CalendarioAcademicosController extends Controller
                 'iSedeId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iYAcadId                    ??  NULL,
-                $request->iSedeId                     ??  NULL,
+                $request->iYAcadId ?? null,
+                $request->iSedeId ?? null,
 
-                $request->dtCalAcadInicio             ??  NULL,
-                $request->dtCalAcadFin                ??  NULL,
-                $request->dtCalAcadMatriculaInicio    ??  NULL,
-                $request->dtCalAcadMatriculaFin       ??  NULL,
-                $request->dtCalAcadMatriculaResagados ??  NULL,
-                $request->dtFaseInicioRegular         ??  NULL,
-                $request->dtFaseFinRegular            ??  NULL,
-                $request->dtFaseInicioRecuperacion    ??  NULL,
-                $request->dtFaseFinRecuperacion       ??  NULL,
-                $request->iTurnoId                    ??  NULL,
-                $request->dtAperTurnoInicio           ??  NULL,
-                $request->dtAperTurnoFin              ??  NULL,
-                $request->jsonHorarios                ??  NULL,
+                $request->dtCalAcadInicio ?? null,
+                $request->dtCalAcadFin ?? null,
+                $request->dtCalAcadMatriculaInicio ?? null,
+                $request->dtCalAcadMatriculaFin ?? null,
+                $request->dtCalAcadMatriculaResagados ?? null,
+                $request->dtFaseInicioRegular ?? null,
+                $request->dtFaseFinRegular ?? null,
+                $request->dtFaseInicioRecuperacion ?? null,
+                $request->dtFaseFinRecuperacion ?? null,
+                $request->iTurnoId ?? null,
+                $request->dtAperTurnoInicio ?? null,
+                $request->dtAperTurnoFin ?? null,
+                $request->jsonHorarios ?? null,
 
-                $request->iCredId                     ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -146,7 +147,6 @@ class CalendarioAcademicosController extends Controller
                 $parametros
             );
 
-
             if ($data[0]->iCalAcadId > 0) {
                 return new JsonResponse(
                     ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
@@ -167,10 +167,11 @@ class CalendarioAcademicosController extends Controller
     }
 
     public function insCalendarioAcademico(Request $request)
-    {   
+    {
         try {
-             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $data = CalendarioAcademico::insCalendarioAcademico($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -180,8 +181,9 @@ class CalendarioAcademicosController extends Controller
     public function obtenerCalendario(Request $request)
     {
         try {
-             Gate::authorize('tiene-perfil', [[Perfil::DOCENTE,Perfil::ESTUDIANTE,Perfil::DIRECTOR_IE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE, Perfil::ESTUDIANTE, Perfil::DIRECTOR_IE]]);
             $data = CalendarioAcademico::selCalendarioAcademico($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

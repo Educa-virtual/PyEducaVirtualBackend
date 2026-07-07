@@ -28,8 +28,9 @@ class ConfiguracionEncuestasService
                 $request->bDirigidoEstudiantes,
                 $request->bDirigidoApoderados,
                 $request->bDirigidoEspDremo,
-                $request->bDirigidoEspUgel
+                $request->bDirigidoEspUgel,
             ]);
+
             return $iConfEncId;
         } else {
         }

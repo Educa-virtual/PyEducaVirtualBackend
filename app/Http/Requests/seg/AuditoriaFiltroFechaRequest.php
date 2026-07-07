@@ -3,7 +3,6 @@
 namespace App\Http\Requests\seg;
 
 use App\Http\Requests\GeneralFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class AuditoriaFiltroFechaRequest extends GeneralFormRequest
 {
@@ -19,7 +18,7 @@ class AuditoriaFiltroFechaRequest extends GeneralFormRequest
     {
         return [
             'filtroFechaInicio' => 'Fecha de inicio',
-            'filtroFechaFin' => 'Fecha fin'
+            'filtroFechaFin' => 'Fecha fin',
         ];
     }
 }

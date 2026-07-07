@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\ere;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -17,12 +15,11 @@ class NivelTipoController extends ApiController
         $campos = 'iNivelTipoId,cNivelTipoNombre';
         $where = 'iNivelTipoId IN (3,4)';
 
-
         $params = [
             'acad',
             'nivel_tipos',
             $campos,
-            $where
+            $where,
 
         ];
 
@@ -33,6 +30,7 @@ class NivelTipoController extends ApiController
                 @campos = ?,        
                 @condicionWhere = ?
             ', $params);
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

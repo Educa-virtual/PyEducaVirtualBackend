@@ -24,9 +24,8 @@ class TipoPreguntaController extends ApiController
             'eval',
             'tipo_preguntas',
             $campos,
-            $where
+            $where,
         ];
-
 
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
@@ -37,7 +36,7 @@ class TipoPreguntaController extends ApiController
             ', $params);
 
             foreach ($preguntas as &$pregunta) {
-                $pregunta->iTipoPregId  = (int) $pregunta->iTipoPregId;
+                $pregunta->iTipoPregId = (int) $pregunta->iTipoPregId;
             }
 
             return $this->successResponse(

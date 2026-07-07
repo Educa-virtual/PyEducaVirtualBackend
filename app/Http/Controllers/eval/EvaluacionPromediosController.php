@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\eval;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -27,7 +27,7 @@ class EvaluacionPromediosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -37,14 +37,14 @@ class EvaluacionPromediosController extends Controller
                 'iEstudianteId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId                ?? NULL,
-                $request->iEstudianteId                ?? NULL,
-                $request->cConclusionDescriptiva       ?? NULL,
-                $request->nEvalPromNota                ?? NULL,
-                $request->iCredId                      ?? NULL
+                $request->iEvaluacionId ?? null,
+                $request->iEstudianteId ?? null,
+                $request->cConclusionDescriptiva ?? null,
+                $request->nEvalPromNota ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

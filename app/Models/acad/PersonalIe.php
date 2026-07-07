@@ -16,6 +16,7 @@ class PersonalIe
             $request->iPersCargoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.Sp_SEL_personal_ies $placeholders", $parametros);
     }
 
@@ -37,6 +38,7 @@ class PersonalIe
             $request->cCodigoPlaza,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_INS_personal_ie $placeholders", $parametros);
     }
 
@@ -55,6 +57,7 @@ class PersonalIe
             $request->cCodigoPlaza,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_personal_ie $placeholders", $parametros);
     }
 
@@ -66,6 +69,7 @@ class PersonalIe
             $request->bActivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_personal_ieEstado $placeholders", $parametros);
     }
 
@@ -76,6 +80,7 @@ class PersonalIe
             $request->iPersIeId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_DEL_personal_ie $placeholders", $parametros);
     }
 }

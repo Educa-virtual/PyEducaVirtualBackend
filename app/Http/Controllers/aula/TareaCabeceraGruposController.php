@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\aula;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
 
 class TareaCabeceraGruposController extends Controller
 {
@@ -25,24 +25,24 @@ class TareaCabeceraGruposController extends Controller
         $fieldsToDecode = [
             'iTareaId',
             'iTareaCabGrupoId',
-            'iEscalaCalifId'
+            'iEscalaCalifId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         // Se definen los parámetros a pasar a la consulta almacenada (SP)
         $parametros = [
             $request->opcion,                     // Opción recibida desde la solicitud
             $request->valorBusqueda ?? '-',        // Valor de búsqueda, si no se recibe se asigna un guion
-            $request->iTareaCabGrupoId ?? NULL,             // ID de grupo de tarea cabecera, si no existe se asigna NULL
-            $request->iTareaId ?? NULL,                     // ID de tarea, si no existe se asigna NULL
-            $request->cTareaGrupoNombre ?? NULL,   // Nombre de grupo de tarea, si no existe se asigna NULL
-            $request->nTareaGrupoNota ?? NULL,     // Nota de grupo de tarea, si no existe se asigna NULL
-            $request->cTareaGrupoComentarioDocente ?? NULL, // Comentario del docente, si no existe se asigna NULL
-            $request->cTareaGrupoUrl ?? NULL,      // URL de grupo de tarea, si no existe se asigna NULL
-            $request->iEstado ?? NULL,             // Estado, si no existe se asigna NULL
-            $request->iSesionId ?? NULL,           // ID de sesión, si no existe se asigna NULL
-            $request->dtCreado ?? NULL,            // Fecha de creación, si no existe se asigna NULL
-            $request->dtActualizado ?? NULL        // Fecha de actualización, si no existe se asigna NULL
+            $request->iTareaCabGrupoId ?? null,             // ID de grupo de tarea cabecera, si no existe se asigna NULL
+            $request->iTareaId ?? null,                     // ID de tarea, si no existe se asigna NULL
+            $request->cTareaGrupoNombre ?? null,   // Nombre de grupo de tarea, si no existe se asigna NULL
+            $request->nTareaGrupoNota ?? null,     // Nota de grupo de tarea, si no existe se asigna NULL
+            $request->cTareaGrupoComentarioDocente ?? null, // Comentario del docente, si no existe se asigna NULL
+            $request->cTareaGrupoUrl ?? null,      // URL de grupo de tarea, si no existe se asigna NULL
+            $request->iEstado ?? null,             // Estado, si no existe se asigna NULL
+            $request->iSesionId ?? null,           // ID de sesión, si no existe se asigna NULL
+            $request->dtCreado ?? null,            // Fecha de creación, si no existe se asigna NULL
+            $request->dtActualizado ?? null,        // Fecha de actualización, si no existe se asigna NULL
         ];
 
         try {
@@ -81,24 +81,24 @@ class TareaCabeceraGruposController extends Controller
         $fieldsToDecode = [
             'iTareaId',
             'iTareaCabGrupoId',
-            'iEscalaCalifId'
+            'iEscalaCalifId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         // Preparación de los parámetros que se enviarán al procedimiento almacenado
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $request->iTareaCabGrupoId ?? NULL,
-            $request->iTareaId ?? NULL,
+            $request->iTareaCabGrupoId ?? null,
+            $request->iTareaId ?? null,
             $request->cTareaGrupoNombre,
-            $request->nTareaGrupoNota ?? NULL,
-            $request->cTareaGrupoComentarioDocente ?? NULL,
-            $request->cTareaGrupoUrl ?? NULL,
-            $request->iEstado ?? NULL,
-            $request->iSesionId ?? NULL,
-            $request->dtCreado ?? NULL,
-            $request->dtActualizado ?? NULL
+            $request->nTareaGrupoNota ?? null,
+            $request->cTareaGrupoComentarioDocente ?? null,
+            $request->cTareaGrupoUrl ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
         ];
 
         try {
@@ -132,7 +132,6 @@ class TareaCabeceraGruposController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-
     public function eliminarTareaCabeceraGrupos(Request $request)
     {
         // Definir los parámetros para la consulta.
@@ -140,7 +139,7 @@ class TareaCabeceraGruposController extends Controller
         $fieldsToDecode = [
             'iTareaCabGrupoId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iTareaCabGrupoId, // Parámetro enviado por el cliente a través del request
@@ -173,6 +172,7 @@ class TareaCabeceraGruposController extends Controller
         // Retornar la respuesta en formato JSON, junto con el código de respuesta adecuado.
         return new JsonResponse($response, $codeResponse);
     }
+
     // Definición de la función que recibe una solicitud
     public function guardarCalificacionTareaCabeceraGruposDocente(Request $request)
     {
@@ -181,7 +181,7 @@ class TareaCabeceraGruposController extends Controller
             'iEscalaCalifId',
             'iTareaCabGrupoId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         // Preparamos los parámetros que se pasarán al procedimiento almacenado
         $parametros = [
@@ -222,14 +222,14 @@ class TareaCabeceraGruposController extends Controller
         $fieldsToDecode = [
             'iTareaCabGrupoId',
             'iTareaEstudianteId',
-            'iEstudianteId'
+            'iEstudianteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
         // Se define un arreglo con los parámetros necesarios que se obtienen de la solicitud
         $parametros = [
             $request->iTareaCabGrupoId,       // ID del grupo de tarea
             $request->iTareaEstudianteId,     // ID de la tarea del estudiante
-            $request->iEstudianteId           // ID del estudiante
+            $request->iEstudianteId,           // ID del estudiante
         ];
 
         try {
@@ -252,6 +252,7 @@ class TareaCabeceraGruposController extends Controller
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];
             $codeResponse = 500;
         }
+
         // Retorna la respuesta en formato JSON con el código de estado
         return new JsonResponse($response, $codeResponse);
     }
@@ -260,9 +261,9 @@ class TareaCabeceraGruposController extends Controller
     {
         $fieldsToDecode = [
             'iTareaId',
-            'iEstudianteId'
+            'iEstudianteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iTareaId,

@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class SilaboActividadAprendizajesController extends Controller
 {
     protected $hashids;
-    protected $iSilaboActAprendId;
-    protected $iSilaboId;
-    protected $iIndLogorCapId;
 
+    protected $iSilaboActAprendId;
+
+    protected $iSilaboId;
+
+    protected $iIndLogorCapId;
 
     public function __construct()
     {
@@ -44,23 +46,22 @@ class SilaboActividadAprendizajesController extends Controller
             $iIndLogorCapId = count($iIndLogorCapId) > 0 ? $iIndLogorCapId[0] : $iIndLogorCapId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iSilaboActAprendId            ?? NULL,
-            $iSilaboId                     ?? NULL,
-            $iIndLogorCapId                ?? NULL,
-            $request->cSilaboActAprendNumero        ?? NULL,
-            $request->cSilaboActAprendNombre        ?? NULL,
-            $request->cSilaboActAprendElementos     ?? NULL,
-            $request->dtSilaboActAprend             ?? NULL,
-            $request->cSilaboActIndLogro            ?? NULL,
-            $request->iSilaboActAprendSemanaEval    ?? NULL,
-            $request->iSilaboActHoras               ?? NULL,
+            $iSilaboActAprendId ?? null,
+            $iSilaboId ?? null,
+            $iIndLogorCapId ?? null,
+            $request->cSilaboActAprendNumero ?? null,
+            $request->cSilaboActAprendNombre ?? null,
+            $request->cSilaboActAprendElementos ?? null,
+            $request->dtSilaboActAprend ?? null,
+            $request->cSilaboActIndLogro ?? null,
+            $request->iSilaboActAprendSemanaEval ?? null,
+            $request->iSilaboActHoras ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -107,21 +108,20 @@ class SilaboActividadAprendizajesController extends Controller
             $iIndLogorCapId = count($iIndLogorCapId) > 0 ? $iIndLogorCapId[0] : $iIndLogorCapId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $iSilaboActAprendId            ?? NULL,
-            $iSilaboId                     ?? NULL,
-            $iIndLogorCapId                ?? NULL,
-            $request->cSilaboActAprendNumero        ?? NULL,
-            $request->cSilaboActAprendNombre        ?? NULL,
-            $request->cSilaboActAprendElementos     ?? NULL,
-            $request->dtSilaboActAprend             ?? NULL,
-            $request->cSilaboActIndLogro            ?? NULL,
-            $request->iSilaboActAprendSemanaEval    ?? NULL,
-            $request->iSilaboActHoras               ?? NULL,
-            $request->iCredId
+            $iSilaboActAprendId ?? null,
+            $iSilaboId ?? null,
+            $iIndLogorCapId ?? null,
+            $request->cSilaboActAprendNumero ?? null,
+            $request->cSilaboActAprendNombre ?? null,
+            $request->cSilaboActAprendElementos ?? null,
+            $request->dtSilaboActAprend ?? null,
+            $request->cSilaboActIndLogro ?? null,
+            $request->iSilaboActAprendSemanaEval ?? null,
+            $request->iSilaboActHoras ?? null,
+            $request->iCredId,
         ];
 
         try {
@@ -136,9 +136,9 @@ class SilaboActividadAprendizajesController extends Controller
                     break;
                 case 'ELIMINARxiSilaboActAprendId':
                     $parametros = [
-                        $request->opcion,        
-                        $iSilaboActAprendId            ?? NULL,
-                        $request->iCredId
+                        $request->opcion,
+                        $iSilaboActAprendId ?? null,
+                        $request->iCredId,
                     ];
                     $data = DB::select('exec acad.Sp_DEL_silaboActividadAprendizajes ?,?,?', $parametros);
                     break;

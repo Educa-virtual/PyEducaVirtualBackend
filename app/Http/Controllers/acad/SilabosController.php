@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Helpers\VerifyHash;
-use Exception;
 
 class SilabosController extends Controller
 {
     protected $hashids;
-   
+
     public function __construct()
     {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
@@ -25,6 +24,7 @@ class SilabosController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -40,25 +40,25 @@ class SilabosController extends Controller
             'iSilaboId',
             'iSemAcadId',
             'iYAcadId',
-            'idDocCursoId'
+            'idDocCursoId',
         ];
 
         foreach ($fieldsToDecode as $field) {
             $request[$field] = $this->decodeValue($request->$field);
         }
 
-        return  [
+        return [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $request->iSilaboId                 ?? NULL,
-            $request->iSemAcadId                ?? NULL,
-            $request->iYAcadId                  ?? NULL,
-            $request->idDocCursoId              ?? NULL,
-            $request->dtSilabo                  ?? NULL,
-            $request->cSilaboDescripcionCurso   ?? NULL,
-            $request->cSilaboCapacidad          ?? NULL,
+            $request->iSilaboId ?? null,
+            $request->iSemAcadId ?? null,
+            $request->iYAcadId ?? null,
+            $request->idDocCursoId ?? null,
+            $request->dtSilabo ?? null,
+            $request->cSilaboDescripcionCurso ?? null,
+            $request->cSilaboCapacidad ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
     }
@@ -70,7 +70,7 @@ class SilabosController extends Controller
             'iSilaboId',
             'iSemAcadId',
             'iYAcadId',
-            'idDocCursoId'
+            'idDocCursoId',
         ];
 
         foreach ($fieldsToEncode as $field) {
@@ -90,11 +90,11 @@ class SilabosController extends Controller
     public function list(Request $request)
     {
         $parametros = $this->validateRequest($request);
-      
+
         try {
             $data = DB::select('exec acad.Sp_SEL_silabos
                 ?,?,?,?,?,?,?,?,?,?', $parametros);
-            
+
             $data = $this->encodeId($data);
 
             return new JsonResponse(
@@ -109,17 +109,19 @@ class SilabosController extends Controller
         }
 
     }
-    public function actualizar(Request $request){
+
+    public function actualizar(Request $request)
+    {
         $iSilaboId = $this->decodeValue($request->iSilaboId);
         $parametros = [
             $iSilaboId,
             $request->columna,
             $request->valor,
         ];
-        
+
         try {
             $data = DB::select('exec acad.Sp_UPD_silabos ?,?,?', $parametros);
-            
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                 200
@@ -131,24 +133,26 @@ class SilabosController extends Controller
             );
         }
     }
+
     public function report(Request $request)
     {
         $request['opcion'] = 2;
         $parametros = $this->validateRequest($request);
-        
+
         $query = DB::select(
-            "EXECUTE acad.Sp_SEL_silabos ?,?,?,?,?,?,?,?,?,?",
+            'EXECUTE acad.Sp_SEL_silabos ?,?,?,?,?,?,?,?,?,?',
             $parametros
         );
-        
+
         $formato = $query[0];
 
         $respuesta = [
-            "query" => $formato,
+            'query' => $formato,
         ];
-        
+
         $pdf = Pdf::loadView('silabus_reporte', $respuesta)
             ->stream('silabus.pdf');
+
         return $pdf;
     }
 }

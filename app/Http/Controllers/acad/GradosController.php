@@ -4,14 +4,13 @@ namespace App\Http\Controllers\acad;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
-use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use App\Models\acad\Grado;
 use Exception;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 use Illuminate\Support\Facades\Gate;
 
 class GradosController extends Controller
@@ -28,6 +27,7 @@ class GradosController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -40,7 +40,7 @@ class GradosController extends Controller
 
         $fieldsToDecode = [
             'valorBusqueda',
-            'iGradoId'
+            'iGradoId',
         ];
 
         foreach ($fieldsToDecode as $field) {
@@ -51,19 +51,19 @@ class GradosController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iGradoId                      ??  NULL,
-            $request->cGradoNombre                  ??  NULL,
-            $request->cGradoAbreviacion             ??  NULL,
-            $request->cGradoRomanos                 ??  NULL,
+            $request->iGradoId ?? null,
+            $request->cGradoNombre ?? null,
+            $request->cGradoAbreviacion ?? null,
+            $request->cGradoRomanos ?? null,
 
-            $request->iCredId                       ??  NULL
+            $request->iCredId ?? null,
         ];
     }
 
     private function encodeFields($item)
     {
         $fieldsToEncode = [
-            'iGradoId'
+            'iGradoId',
         ];
 
         foreach ($fieldsToEncode as $field) {
@@ -89,6 +89,7 @@ class GradosController extends Controller
                 case 'CONSULTAR':
                     $data = DB::select('exec acad.Sp_SEL_grados ?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
+
                     return new JsonResponse(
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200
@@ -103,15 +104,16 @@ class GradosController extends Controller
         }
     }
 
-    public function selGradoDocente(Request $request){
+    public function selGradoDocente(Request $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
             $data = Grado::selGradoDocente($request);
+
             return FormatearMensajeHelper::ok('Se obtuvó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
-        
-    }
 
+    }
 }

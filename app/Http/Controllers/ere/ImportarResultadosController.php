@@ -3,19 +3,14 @@
 namespace App\Http\Controllers\Ere;
 
 use App\Http\Controllers\Controller;
-use App\Services\LeerExcelService;
 use App\Services\ParseSqlErrorService;
 use Carbon\Carbon;
 use Exception;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Reader\IReader;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class ImportarResultadosController extends Controller
@@ -32,6 +27,7 @@ class ImportarResultadosController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -39,25 +35,24 @@ class ImportarResultadosController extends Controller
     {
 
         $iCursosNivelGradId = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
-       
-        
+
         $parametros = [
-            !empty($request->iSedeId) ? $request->iSedeId : null,
-            !empty($request->iSemAcadId) ? $request->iSemAcadId : null,
-            !empty($request->iYAcadId) ? $request->iYAcadId : null,
-            !empty($request->iCredId) ? $request->iCredId : null,
+            ! empty($request->iSedeId) ? $request->iSedeId : null,
+            ! empty($request->iSemAcadId) ? $request->iSemAcadId : null,
+            ! empty($request->iYAcadId) ? $request->iYAcadId : null,
+            ! empty($request->iCredId) ? $request->iCredId : null,
             $this->decodeValue($request->iEvaluacionIdHashed),
             $this->decodeValue($iCursosNivelGradId),
-            !empty($request->codigo_modular) ? $request->codigo_modular : null,
-            !empty($request->curso) ? $request->curso : null,
-            !empty($request->nivel) ? $request->nivel : null,
-            !empty($request->grado) ? $request->grado : null,
-            !empty($request->json_resultados) ? $request->json_resultados : null,
+            ! empty($request->codigo_modular) ? $request->codigo_modular : null,
+            ! empty($request->curso) ? $request->curso : null,
+            ! empty($request->nivel) ? $request->nivel : null,
+            ! empty($request->grado) ? $request->grado : null,
+            ! empty($request->json_resultados) ? $request->json_resultados : null,
         ];
         try {
-     
+
             $data = DB::select('EXEC ere.Sp_INS_importarResultados ?,?,?,?,?,?,?,?,?,?,?', $parametros);
-    
+
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -65,13 +60,15 @@ class ImportarResultadosController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-       // return   $parametros;
+
+        // return   $parametros;
         return new JsonResponse($response, $codeResponse);
     }
 
     /**
      * Importar resultados de 1 solo estudiante desde formulario (TODO)
-     * @param Request $request con ids y json de respuestas
+     *
+     * @param  Request  $request  con ids y json de respuestas
      * @return JsonResponse con success o error
      */
     public function importarResultadosEstudiante(Request $request)
@@ -79,15 +76,15 @@ class ImportarResultadosController extends Controller
         $iCursosNivelGradId = in_array($request->iCursosNivelGradId, ['undefined', 'null', null, '', false, 0]) ? null : $request->iCursosNivelGradId;
         $parametros = [
             $request->header('iCredEntPerfId'),
-            !empty($request->iYAcadId) ? $request->iYAcadId : null,
+            ! empty($request->iYAcadId) ? $request->iYAcadId : null,
             $this->decodeValue($request->iEvaluacionIdHashed),
             $this->decodeValue($iCursosNivelGradId),
-            !empty($request->json_resultados) ? $request->json_resultados : null,
+            ! empty($request->json_resultados) ? $request->json_resultados : null,
         ];
         try {
             $placeholders = implode(',', array_fill(0, count($parametros), '?'));
             $data = DB::select("EXEC ere.Sp_INS_importarResultado $placeholders", $parametros);
-    
+
             $response = ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -95,13 +92,15 @@ class ImportarResultadosController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
-       // return   $parametros;
+
+        // return   $parametros;
         return new JsonResponse($response, $codeResponse);
     }
 
     /**
      * Importar resultados de estudiantes desde archivo excel (DEPRECATED)
-     * @param Request $request con datos del excel y json de respuestas
+     *
+     * @param  Request  $request  con datos del excel y json de respuestas
      * @return JsonResponse con success o error
      */
     public function importar(Request $request)
@@ -144,6 +143,7 @@ class ImportarResultadosController extends Controller
             $response = ['validated' => false, 'message' => $error_message, 'data' => []];
             $codeResponse = 500;
         }
+
         return new JsonResponse($response, $codeResponse);
     }
 
@@ -179,6 +179,7 @@ class ImportarResultadosController extends Controller
                 $fila = array_map('strtoupper', $fila);
                 $fila = array_map(function ($string) {
                     $simbolos_invalidos = ['.', ',', '+', '(', ')', ':', ';', '=', '_'];
+
                     return str_replace($simbolos_invalidos, '', $string);
                 }, $fila);
                 $fila = array_map('trim', $fila);
@@ -191,7 +192,7 @@ class ImportarResultadosController extends Controller
                 // }
 
                 // Ignorar filas sin apellido y nombres
-                if ((!isset($fila['D'])) || (!isset($fila['F']))) {
+                if ((! isset($fila['D'])) || (! isset($fila['F']))) {
                     continue;
                 } else {
                     if (($fila['D'] == '') && ($fila['F'] == '')) {
@@ -202,7 +203,7 @@ class ImportarResultadosController extends Controller
                 // Formatear resultados de estudiantes en nuevo array
                 $fecha = isset($fila['B']) ? Date::excelToDateTimeObject($fila['B']) : null;
                 $sexo = isset($fila['I']) ? ($sexos[$fila['I']] ?? null) : null;
-                $resultados[] = array(
+                $resultados[] = [
                     // 'fecha' => Carbon::createFromFormat('d/m/Y', $fila['B'])->format('Y-m-d'),
                     'fecha' => isset($fecha) ? $fecha->format('Y-m-d') : null,
                     'documento' => isset($fila['C']) ? $fila['C'] : null,
@@ -234,7 +235,7 @@ class ImportarResultadosController extends Controller
                     'respuesta19' => isset($fila['AI']) ? $fila['AI'] : null,
                     'respuesta20' => isset($fila['AJ']) ? $fila['AJ'] : null,
                     'documento_docente' => isset($fila['AN']) ? $fila['AN'] : null,
-                );
+                ];
             }
         }
 
@@ -248,19 +249,19 @@ class ImportarResultadosController extends Controller
         if ($request->has('archivo')) {
             try {
                 $archivo = $request->file('archivo');
-                $nombreArchivo = str_replace('.', '', $request->cCursoNombre . '-' . $request->cGradoAbreviacion);
-                $rutaDestino = 'resultados/' . $request->iSedeId . '/';
+                $nombreArchivo = str_replace('.', '', $request->cCursoNombre.'-'.$request->cGradoAbreviacion);
+                $rutaDestino = 'resultados/'.$request->iSedeId.'/';
 
                 // if (!Storage::disk('public')->exists($rutaDestino)) {
                 //     Storage::disk('public')->makeDirectory($rutaDestino);
                 // }
-                Storage::disk('public')->put($rutaDestino . $nombreArchivo, $archivo);
+                Storage::disk('public')->put($rutaDestino.$nombreArchivo, $archivo);
             } catch (Exception $e) {
                 return false;
             }
         }
 
-        if (Storage::disk('public')->exists($rutaDestino . $nombreArchivo)) {
+        if (Storage::disk('public')->exists($rutaDestino.$nombreArchivo)) {
             return true;
         } else {
             return false;

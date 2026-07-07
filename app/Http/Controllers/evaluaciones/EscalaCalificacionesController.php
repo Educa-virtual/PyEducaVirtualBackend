@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\evaluaciones;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\ApiController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EscalaCalificacionesController extends ApiController
 {
@@ -17,12 +17,14 @@ class EscalaCalificacionesController extends ApiController
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
+
     public function index(Request $request)
     {
-        $data =  DB::table('eval.escala_calificaciones')->get();
+        $data = DB::table('eval.escala_calificaciones')->get();
         foreach ($data as $key => $item) {
             $data[$key]->iEscalaCalifId = (int) $item->iEscalaCalifId;
         }
+
         return $this->successResponse($data, 'Datos obtenidos correctamente');
     }
 
@@ -30,7 +32,7 @@ class EscalaCalificacionesController extends ApiController
     {
 
         try {
-            $data =  DB::select('
+            $data = DB::select('
             SELECT
              iEscalaCalifId
             ,cEscalaCalifNombre
@@ -38,11 +40,10 @@ class EscalaCalificacionesController extends ApiController
             ');
 
             $fieldsToDecode = [
-                'iEscalaCalifId'
+                'iEscalaCalifId',
             ];
 
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
-
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;

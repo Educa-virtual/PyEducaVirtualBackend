@@ -19,14 +19,17 @@ class EvaluacionesService
                 $res->iEnBlanco = intval($res->iCantidadPreguntas) - (intval($res->iCantidadCorrectas) + intval($res->iCantidadIncorrectas));
             }
         }
+
         return $resultado;
     }
 
-    public static function obtenerEvaluacionPorArea($iEvaluacionId, $iCursoNivelGradId) {
+    public static function obtenerEvaluacionPorArea($iEvaluacionId, $iCursoNivelGradId)
+    {
         return Evaluacion::selEvaluacionPorArea($iEvaluacionId, $iCursoNivelGradId);
     }
 
-    public static function obtenerPreguntasPorEvaluacionArea($iEvaluacionId, $iCursoNivelGradId) {
+    public static function obtenerPreguntasPorEvaluacionArea($iEvaluacionId, $iCursoNivelGradId)
+    {
         return Evaluacion::selPreguntasPorEvaluacionArea($iEvaluacionId, $iCursoNivelGradId);
     }
 }

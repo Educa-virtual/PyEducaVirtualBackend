@@ -14,6 +14,7 @@ class EvaluacionExclusionesController extends Controller
     {
         try {
             $data = EvaluacionExclusion::selEvaluacionExclusiones($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -24,6 +25,7 @@ class EvaluacionExclusionesController extends Controller
     {
         try {
             $data = EvaluacionExclusion::insEvaluacionExclusion($request);
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -34,6 +36,7 @@ class EvaluacionExclusionesController extends Controller
     {
         try {
             $data = EvaluacionExclusion::updEvaluacionExclusion($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -44,6 +47,7 @@ class EvaluacionExclusionesController extends Controller
     {
         try {
             $data = EvaluacionExclusion::selEvaluacionExclusion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -54,6 +58,7 @@ class EvaluacionExclusionesController extends Controller
     {
         try {
             $data = EvaluacionExclusion::delEvaluacionExclusion($request);
+
             return FormatearMensajeHelper::ok('Se eliminó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

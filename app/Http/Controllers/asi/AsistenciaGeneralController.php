@@ -23,9 +23,10 @@ class AsistenciaGeneralController extends Controller
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
             $yearAcademico = YearAcademicosService::obtenerYearAcademicoPorAnio($anio);
-            $params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, NULL];
+            $params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, null];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $asistencia = AsistenciaGeneralService::obtenerAsistenciaEstudiantePorPeriodo($matricula, $anio, $mes);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $asistencia);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -36,13 +37,14 @@ class AsistenciaGeneralController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            //$detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
-            //$yearAcademico = YearAcademicosService::obtenerYearAcademicoPorAnio($anio);
-            //$params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, NULL];
-            //$matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
-            $params = [NULL, NULL, NULL, VerifyHash::decodesxId($iMatrId)];
+            // $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
+            // $yearAcademico = YearAcademicosService::obtenerYearAcademicoPorAnio($anio);
+            // $params = [Auth::user()->iPersId, $yearAcademico->iYAcadId, $detallesCredencial->iSedeId, NULL];
+            // $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
+            $params = [null, null, null, VerifyHash::decodesxId($iMatrId)];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $asistencia = AsistenciaGeneralService::obtenerAsistenciaEstudiantePorPeriodo($matricula, $anio, $mes);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $asistencia);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

@@ -10,31 +10,32 @@ use Illuminate\Support\Facades\DB;
 
 class FeriadoImportanteController extends Controller
 {
-    public function list(Request $request){
-        $opcion                 = $request->opcion;
-        $iGradoAcadId           = NULL;
-        $cGradoAcadNombre       = NULL;
-        $cGradoAcadAbreviado    = NULL;
-        $query=DB::select("execute acad.Sp_crud_grado_academicos ?,?,?,?",[$opcion,$iGradoAcadId,$cGradoAcadNombre,$cGradoAcadAbreviado]);
-        
-        try{
+    public function list(Request $request)
+    {
+        $opcion = $request->opcion;
+        $iGradoAcadId = null;
+        $cGradoAcadNombre = null;
+        $cGradoAcadAbreviado = null;
+        $query = DB::select('execute acad.Sp_crud_grado_academicos ?,?,?,?', [$opcion, $iGradoAcadId, $cGradoAcadNombre, $cGradoAcadAbreviado]);
+
+        try {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => 'se obtuvo la información',
                 'data' => $query,
             ];
 
             $estado = 200;
 
-        } catch(Exception $e){
+        } catch (Exception $e) {
             $response = [
-                'validated' => true, 
+                'validated' => true,
                 'message' => $e->getMessage(),
                 'data' => [],
             ];
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
 }

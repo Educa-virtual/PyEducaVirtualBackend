@@ -27,8 +27,10 @@ class Respuesta
             $request->iCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC enc.Sp_SEL_respuestas $placeholders", $parametros);
     }
+
     /**
      * Muestra las respuestas de una persona
      */
@@ -40,6 +42,7 @@ class Respuesta
             $request->iPersId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_respuesta $placeholders", $parametros);
     }
 
@@ -52,6 +55,7 @@ class Respuesta
             $request->jsonPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC enc.Sp_INS_respuesta $placeholders", $parametros);
     }
 
@@ -64,6 +68,7 @@ class Respuesta
             $request->jsonPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC enc.Sp_UPD_respuesta $placeholders", $parametros);
     }
 
@@ -86,6 +91,7 @@ class Respuesta
             $request->iCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectResultSets("EXEC enc.Sp_SEL_respuestasDetalle $placeholders", $parametros);
     }
 }

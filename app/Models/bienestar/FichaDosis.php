@@ -14,7 +14,8 @@ class FichaDosis
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichasDosis ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichasDosis '.$placeholders, $parametros);
     }
 
     public static function selFichaDosis($request)
@@ -23,7 +24,8 @@ class FichaDosis
             $request->iPanDFichaId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaDosis ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichaDosis '.$placeholders, $parametros);
     }
 
     public static function insFichaDosis($request)
@@ -36,7 +38,8 @@ class FichaDosis
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert('EXEC obe.Sp_INS_fichaDosis ' . $placeholders, $parametros);
+
+        return DB::insert('EXEC obe.Sp_INS_fichaDosis '.$placeholders, $parametros);
     }
 
     public static function updFichaDosis($request)
@@ -50,7 +53,8 @@ class FichaDosis
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::update('EXEC obe.Sp_UPD_fichaDosis ' . $placeholders, $parametros);
+
+        return DB::update('EXEC obe.Sp_UPD_fichaDosis '.$placeholders, $parametros);
     }
 
     public static function borrarFichaDosis($request)
@@ -60,6 +64,7 @@ class FichaDosis
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::delete('EXEC obe.Sp_DEL_fichaDosis ' . $placeholders, $parametros);
+
+        return DB::delete('EXEC obe.Sp_DEL_fichaDosis '.$placeholders, $parametros);
     }
 }

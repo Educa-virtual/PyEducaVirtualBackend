@@ -5,7 +5,6 @@ namespace App\Http\Controllers\bienestar;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\bienestar\FichaAlimentacionSaveRequest;
 use App\Models\bienestar\FichaAlimentacion;
 use Exception;
 use Illuminate\Http\Request;
@@ -27,9 +26,9 @@ class FichaAlimentacionController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaAlimentacion::updfichaAlimentacion($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -39,9 +38,9 @@ class FichaAlimentacionController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaAlimentacion::selfichaAlimentacion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }

@@ -25,10 +25,10 @@ class EncuestaBienestarResumenController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->visualizan]);
             $data = EncuestaBienestarResumen::verResumen($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
-
 }

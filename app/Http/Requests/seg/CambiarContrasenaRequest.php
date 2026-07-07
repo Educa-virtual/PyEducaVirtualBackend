@@ -3,7 +3,6 @@
 namespace App\Http\Requests\seg;
 
 use App\Http\Requests\GeneralFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class CambiarContrasenaRequest extends GeneralFormRequest
 {

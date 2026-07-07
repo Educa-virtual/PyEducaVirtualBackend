@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class RecursoSilabosController extends Controller
 {
     protected $hashids;
-    protected $iRecSilaboId;
-    protected $iSilaboId;
-    protected $iRecDidacticoId;
 
+    protected $iRecSilaboId;
+
+    protected $iSilaboId;
+
+    protected $iRecDidacticoId;
 
     public function __construct()
     {
@@ -44,17 +46,16 @@ class RecursoSilabosController extends Controller
             $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iRecSilaboId                           ?? NULL,
-            $iSilaboId                              ?? NULL,
-            $iRecDidacticoId                        ?? NULL,
-            $request->cRecSilaboDescripcion         ?? NULL,
+            $iRecSilaboId ?? null,
+            $iSilaboId ?? null,
+            $iRecDidacticoId ?? null,
+            $request->cRecSilaboDescripcion ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -101,17 +102,16 @@ class RecursoSilabosController extends Controller
             $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iRecSilaboId                           ?? NULL,
-            $iSilaboId                              ?? NULL,
-            $iRecDidacticoId                        ?? NULL,
-            $request->cRecSilaboDescripcion         ?? NULL,
+            $iRecSilaboId ?? null,
+            $iSilaboId ?? null,
+            $iRecDidacticoId ?? null,
+            $request->cRecSilaboDescripcion ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 

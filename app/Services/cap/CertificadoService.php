@@ -3,12 +3,11 @@
 namespace App\Services\cap;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Storage;
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
 use chillerlan\QRCode\Common\EccLevel;
 use chillerlan\QRCode\Output\QRGdImagePNG;
-use Illuminate\Support\Facades\Log;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+use Illuminate\Support\Facades\Storage;
 
 class CertificadoService
 {
@@ -36,6 +35,7 @@ class CertificadoService
     private function generarDatosQR(string $uniqueId): string
     {
         $baseUrl = config('app.url');
+
         return "{$baseUrl}/api/cap/certificado/verificar/{$uniqueId}";
     }
 
@@ -43,9 +43,9 @@ class CertificadoService
     {
         $options = new QROptions([
             'outputInterface' => QRGdImagePNG::class,
-            'eccLevel'        => EccLevel::M,
-            'scale'           => 5,
-            'outputBase64'    => true,
+            'eccLevel' => EccLevel::M,
+            'scale' => 5,
+            'outputBase64' => true,
         ]);
 
         $qrcode = new QRCode($options);

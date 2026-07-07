@@ -28,6 +28,7 @@ class RecordarioFechasController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = RecordatorioFechas::selCumpleanios($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -39,6 +40,7 @@ class RecordarioFechasController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = RecordatorioFechas::selRecordatorioPeriodos($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -50,6 +52,7 @@ class RecordarioFechasController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = RecordatorioFechas::selCumpleaniosConfiguracion($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -61,6 +64,7 @@ class RecordarioFechasController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->perfiles_permitidos]);
             $data = RecordatorioFechas::updCumpleaniosConfiguracion($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

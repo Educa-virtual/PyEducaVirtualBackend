@@ -3,10 +3,7 @@
 namespace App\Mail\seg;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 class PasswordCambiadoMail extends Mailable
@@ -16,8 +13,8 @@ class PasswordCambiadoMail extends Mailable
     /**
      * Create a new message instance.
      */
-
     public $usuario;
+
     public $token;
 
     public function __construct($usuario)
@@ -30,7 +27,7 @@ class PasswordCambiadoMail extends Mailable
         return $this->subject('Contraseña actualizada')
             ->view('emails.seg.password_cambiado')
             ->with([
-                'usuario' => $this->usuario
+                'usuario' => $this->usuario,
             ]);
     }
 }

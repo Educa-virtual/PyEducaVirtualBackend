@@ -19,6 +19,7 @@ class MaterialEducativoRequest extends GeneralFormRequest
             'cMatEducativoUrl' => 'nullable',
         ];
     }
+
     public function messages(): array
     {
         return [

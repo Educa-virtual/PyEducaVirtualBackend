@@ -7,25 +7,30 @@ use Illuminate\Support\Facades\DB;
 
 class PlantillaSeccion extends Model
 {
-    public static function selPlantillaSecciones($request) {
+    public static function selPlantillaSecciones($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC enc.Sp_SEL_plantillaSecciones $placeholders", $parametros);
     }
 
-    public static function selPlantillaSeccion($request) {
+    public static function selPlantillaSeccion($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanSeccionId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_plantillaSeccion $placeholders", $parametros);
     }
 
-    public static function insPlantillaSeccion($request) {
+    public static function insPlantillaSeccion($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanId,
@@ -34,10 +39,12 @@ class PlantillaSeccion extends Model
             $request->cPlanSeccionDescripcion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_plantillaSeccion $placeholders", $parametros);
     }
 
-    public static function updPlantillaSeccion($request) {
+    public static function updPlantillaSeccion($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanSeccionId,
@@ -46,15 +53,18 @@ class PlantillaSeccion extends Model
             $request->cPlanSeccionDescripcion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_plantillaSeccion $placeholders", $parametros);
     }
 
-    public static function delPlantillaSeccion($request) {
+    public static function delPlantillaSeccion($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanSeccionId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_DEL_plantillaSeccion $placeholders", $parametros);
     }
 }

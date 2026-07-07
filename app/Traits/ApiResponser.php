@@ -1,9 +1,6 @@
 <?php
 
-
 namespace App\Traits;
-
-use Illuminate\Http\JsonResponse;
 
 trait ApiResponser
 {
@@ -12,7 +9,7 @@ trait ApiResponser
         return response()->json([
             'status' => 'Success',
             'message' => $message,
-            'data' => $data
+            'data' => $data,
         ], $code);
     }
 
@@ -21,7 +18,7 @@ trait ApiResponser
         return response()->json([
             'status' => 'Error',
             'message' => $message,
-            'data' => $data
+            'data' => $data,
         ], $code);
     }
 }

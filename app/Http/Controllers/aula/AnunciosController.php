@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class AnunciosController extends Controller
 {
@@ -20,14 +19,14 @@ class AnunciosController extends Controller
                 'idDocCursoId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCapacitacionId          ??  NULL,
-                $request->idDocCursoId                ??  NULL,
-                $request->cTitulo                     ??  NULL,
-                $request->cContenido                  ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCapacitacionId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->cTitulo ?? null,
+                $request->cContenido ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -67,11 +66,11 @@ class AnunciosController extends Controller
                 'idDocCursoId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iCapacitacionId          ??  NULL,
-                $request->idDocCursoId                ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCapacitacionId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -82,6 +81,7 @@ class AnunciosController extends Controller
                 $parametros
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK
@@ -103,10 +103,10 @@ class AnunciosController extends Controller
                 'iAnuncioId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iAnuncioId                  ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iAnuncioId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -141,10 +141,10 @@ class AnunciosController extends Controller
                 'iAnuncioId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iAnuncioId                  ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iAnuncioId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

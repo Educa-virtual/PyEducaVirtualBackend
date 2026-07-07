@@ -9,6 +9,7 @@ use Throwable;
 class Evaluacion
 {
     protected $schema = 'eval';
+
     protected $table = 'evaluaciones';
 
     public function guardarPreguntas($evaluacionId, $preguntas)
@@ -22,6 +23,7 @@ class Evaluacion
             $this->actualizarTotalPreguntas($evaluacionId, count($preguntas));
 
             DB::commit();
+
             return $preguntas;
         } catch (Throwable $e) {
             DB::rollBack();
@@ -33,14 +35,14 @@ class Evaluacion
     {
         $camposJson = json_encode([
             'iEvaluacionId' => $evaluacionId,
-            'iBancoId' => $pregunta['iPreguntaId']
+            'iBancoId' => $pregunta['iPreguntaId'],
         ]);
 
-        if (!$this->existePregunta($evaluacionId, $pregunta['iPreguntaId'])) {
+        if (! $this->existePregunta($evaluacionId, $pregunta['iPreguntaId'])) {
             $params = [
                 'eval',
                 'evaluacion_preguntas',
-                $camposJson
+                $camposJson,
             ];
 
             $resp = DB::select('exec grl.SP_INS_EnTablaDesdeJSON @Esquema = ?, @Tabla = ?, @DatosJSON = ?', $params);
@@ -53,9 +55,10 @@ class Evaluacion
     protected function existePregunta($evaluacionId, $bancoId)
     {
         $existe = DB::select(
-            "select 1 from eval.evaluacion_preguntas where iEvaluacionId = ? AND iBancoId = ?",
+            'select 1 from eval.evaluacion_preguntas where iEvaluacionId = ? AND iBancoId = ?',
             [$evaluacionId, $bancoId]
         );
+
         return count($existe) > 0;
     }
 
@@ -63,9 +66,9 @@ class Evaluacion
     {
         $where = [
             [
-                'COLUMN_NAME' => "iEvaluacionId",
-                'VALUE' => $evaluacionId
-            ]
+                'COLUMN_NAME' => 'iEvaluacionId',
+                'VALUE' => $evaluacionId,
+            ],
         ];
 
         GeneralRepository::actualizar(
@@ -78,12 +81,13 @@ class Evaluacion
 
     public function actualizarEvaluacion($datos, $where)
     {
-        $resp =  GeneralRepository::actualizar(
+        $resp = GeneralRepository::actualizar(
             $this->schema,
             $this->table,
             json_encode($datos),
             json_encode($where)
         );
+
         return $resp;
     }
 }

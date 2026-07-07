@@ -10,7 +10,6 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RefreshToken
 {
-
     /**
      * Middleware para refrescar el token JWT en cada solicitud autenticada.
      *
@@ -18,8 +17,8 @@ class RefreshToken
      * Si el usuario está autenticado, genera un nuevo token JWT con un tiempo de vida renovado
      * y lo incluye en los encabezados de la respuesta.
      *
-     * @param \Illuminate\Http\Request $request La solicitud HTTP entrante.
-     * @param \Closure $next La siguiente acción en la cadena de middleware.
+     * @param  \Illuminate\Http\Request  $request  La solicitud HTTP entrante.
+     * @param  \Closure  $next  La siguiente acción en la cadena de middleware.
      * @return \Symfony\Component\HttpFoundation\Response La respuesta HTTP con el token actualizado, si aplica.
      *
      * @throws \Exception Si ocurre un error al intentar refrescar el token.
@@ -39,6 +38,7 @@ class RefreshToken
         } catch (\Exception $e) {
             // Si el token ya no es válido, se ignora y se deja expirar normalmente
         }
+
         return $response;
     }
 }

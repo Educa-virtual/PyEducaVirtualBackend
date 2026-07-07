@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Helpers;
 
 use App\Contracts\DataReturnStrategy;
-use App\Helpers\ResponseHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 
@@ -13,6 +13,3 @@ class JsonResponseStrategy implements DataReturnStrategy
         return ResponseHandler::success($data);
     }
 }
-
-
-?>

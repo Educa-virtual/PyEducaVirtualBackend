@@ -5,10 +5,10 @@ namespace App\Http\Controllers\doc;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CuadernosCampoController extends Controller
 {
@@ -21,17 +21,17 @@ class CuadernosCampoController extends Controller
 
     public function obtenerCuadernosCampo(Request $request)
     {
-      
+
         $iYAcadId = $request->iYAcadId;
         $iDocenteId = VerifyHash::decodes($request->iDocenteId);
-        
+
         $solicitud = [
-                $iYAcadId,
-                $iDocenteId,
+            $iYAcadId,
+            $iDocenteId,
         ];
 
         try {
-            $data = DB::select("EXECUTE [doc].[Sp_SEL_docenteCuadernoCampo] ?,?",$solicitud);
+            $data = DB::select('EXECUTE [doc].[Sp_SEL_docenteCuadernoCampo] ?,?', $solicitud);
             $response = ['validated' => true, 'mensaje' => 'Se octuvo la información exitosamente.', 'data' => $data];
             $codeResponse = 200;
         } catch (Exception $e) {
@@ -42,7 +42,7 @@ class CuadernosCampoController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-    public function guardarFichasCuadernosCampo (Request $request)
+    public function guardarFichasCuadernosCampo(Request $request)
     {
         $request['iSilaboId'] = is_null($request->iSilaboId)
             ? null
@@ -70,14 +70,13 @@ class CuadernosCampoController extends Controller
 					LEFT JOIN doc.cuadernos_campo AS cc ON cc.iSilaboId = asil.iSilaboId 
 					WHERE asil.iSilaboId = '".$request->iSilaboId."'
             ");
-            if($data[0]->iCuadernoId > 0){
+            if ($data[0]->iCuadernoId > 0) {
                 $query = DB::update("
                 UPDATE doc.cuadernos_campo 
                 SET cCuadernoUrl = '".$request->cCuadernoUrl."'
                 WHERE iCuadernoId = '".$data[0]->iCuadernoId."'
             ");
-            }
-            else{
+            } else {
                 $query = DB::update("
                     INSERT INTO doc.cuadernos_campo (cCuadernoUrl,iSilaboId)
                     VALUES ('".$request->cCuadernoUrl."','".$request->iSilaboId."')

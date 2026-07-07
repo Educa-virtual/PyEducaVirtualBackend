@@ -19,6 +19,7 @@ class NivelLogro
             is_numeric($iCursosNivelGradId) ? $iCursosNivelGradId : ($hashids->decode($iCursosNivelGradId)[0] ?? null),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC ere.Sp_SEL_nivelLogroEvalCurso $placeholders", $parametros);
     }
 }

@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\acad\BuzonSugerencia;
 use App\Models\User;
-use App\Policies\BuzonSugerenciaPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 

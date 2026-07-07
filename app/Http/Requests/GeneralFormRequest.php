@@ -23,7 +23,6 @@ abstract class GeneralFormRequest extends FormRequest
     /**
      * Devolver mensaje de error formateado
      *
-     * @param  Validator  $validator
      * @throws JsonResponse Mensaje de error formateado
      */
     protected function failedValidation(Validator $validator)
@@ -33,7 +32,7 @@ abstract class GeneralFormRequest extends FormRequest
             [
                 'status' => 'Error',
                 'data' => '',
-                'message' => 'Al menos uno de los campos es inválido: ' . $errors
+                'message' => 'Al menos uno de los campos es inválido: '.$errors,
             ],
             Response::HTTP_UNPROCESSABLE_ENTITY
         );

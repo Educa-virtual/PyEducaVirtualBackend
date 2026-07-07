@@ -3,7 +3,6 @@
 namespace App\Services\enc;
 
 use App\Models\enc\TipoAcceso;
-use Illuminate\Http\Request;
 
 class TiposAccesoService
 {

@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class IndicadorActividadesController extends Controller
 {
     protected $hashids;
+
     protected $iIndActId;
+
     protected $iSilaboActAprendId;
+
     protected $iTipoIndLogId;
 
     public function __construct()
@@ -55,20 +58,20 @@ class IndicadorActividadesController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iIndActId                        ?? NULL,
-            $request->cIndActNumero           ?? NULL,
-            $request->iIndActSemanaEval       ?? NULL,
-            $request->cIndActDescripcion      ?? NULL,
-            $request->bIndActEsEvaluado       ?? NULL,
-            $iSilaboActAprendId               ?? NULL,
-            $request->cIndActProcedimientos   ?? NULL,
-            $request->cIndActActitudes        ?? NULL,
-            $request->cIndActConceptual       ?? NULL,
-            $request->IndActHoras             ?? NULL,
-            $iTipoIndLogId                    ?? NULL,
-            $request->cIndActNombre           ?? NULL,
+            $iIndActId ?? null,
+            $request->cIndActNumero ?? null,
+            $request->iIndActSemanaEval ?? null,
+            $request->cIndActDescripcion ?? null,
+            $request->bIndActEsEvaluado ?? null,
+            $iSilaboActAprendId ?? null,
+            $request->cIndActProcedimientos ?? null,
+            $request->cIndActActitudes ?? null,
+            $request->cIndActConceptual ?? null,
+            $request->IndActHoras ?? null,
+            $iTipoIndLogId ?? null,
+            $request->cIndActNombre ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -122,20 +125,20 @@ class IndicadorActividadesController extends Controller
 
         $parametros = [
             $request->opcion,
-            $request->valorBusqueda           ?? '-',
-            $iIndActId                        ?? NULL,
-            $request->cIndActNumero           ?? NULL,
-            $request->iIndActSemanaEval       ?? NULL,
-            $request->cIndActDescripcion      ?? NULL,
-            $request->bIndActEsEvaluado       ?? NULL,
-            $iSilaboActAprendId               ?? NULL,
-            $request->cIndActProcedimientos   ?? NULL,
-            $request->cIndActActitudes        ?? NULL,
-            $request->cIndActConceptual       ?? NULL,
-            $request->IndActHoras             ?? NULL,
-            $iTipoIndLogId                    ?? NULL,
-            $request->cIndActNombre           ?? NULL,
-            $request->iCredId
+            $request->valorBusqueda ?? '-',
+            $iIndActId ?? null,
+            $request->cIndActNumero ?? null,
+            $request->iIndActSemanaEval ?? null,
+            $request->cIndActDescripcion ?? null,
+            $request->bIndActEsEvaluado ?? null,
+            $iSilaboActAprendId ?? null,
+            $request->cIndActProcedimientos ?? null,
+            $request->cIndActActitudes ?? null,
+            $request->cIndActConceptual ?? null,
+            $request->IndActHoras ?? null,
+            $iTipoIndLogId ?? null,
+            $request->cIndActNombre ?? null,
+            $request->iCredId,
         ];
 
         try {
@@ -150,13 +153,12 @@ class IndicadorActividadesController extends Controller
                     break;
                 case 'ELIMINARxiIndActId':
                     $parametros = [
-                        $iIndActId                        ?? NULL,
-                        $request->iCredId
+                        $iIndActId ?? null,
+                        $request->iCredId,
                     ];
                     $data = DB::select('exec acad.Sp_DEL_indicadorActividades ?,?', $parametros);
                     break;
             }
-
 
             if ($data[0]->iIndActId > 0) {
 

@@ -7,16 +7,19 @@ use Illuminate\Support\Facades\DB;
 
 class PlantillaPregunta extends Model
 {
-    public static function selPlantillaPregunta($request) {
+    public static function selPlantillaPregunta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_plantillaPregunta $placeholders", $parametros);
     }
 
-    public static function insPlantillaPregunta($request) {
+    public static function insPlantillaPregunta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanSeccionId,
@@ -27,10 +30,12 @@ class PlantillaPregunta extends Model
             $request->jsonAlternativas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_plantillaPregunta $placeholders", $parametros);
     }
 
-    public static function updPlantillaPregunta($request) {
+    public static function updPlantillaPregunta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanPregId,
@@ -42,15 +47,18 @@ class PlantillaPregunta extends Model
             $request->jsonAlternativas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_plantillaPregunta $placeholders", $parametros);
     }
 
-    public static function delPlantillaPregunta($request) {
+    public static function delPlantillaPregunta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_DEL_plantillaPregunta $placeholders", $parametros);
     }
 }

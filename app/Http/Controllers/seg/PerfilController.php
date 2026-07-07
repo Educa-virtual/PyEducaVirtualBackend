@@ -25,7 +25,8 @@ class PerfilController extends Controller
                     break;
             }
             $perfiles = DB::select('SELECT iPerfilId, cPerfilNombre,iPerfilOrden FROM seg.perfiles
-WHERE iTipoPerfilId IN (' . $in . ') ORDER BY cPerfilNombre');
+WHERE iTipoPerfilId IN ('.$in.') ORDER BY cPerfilNombre');
+
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $perfiles);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

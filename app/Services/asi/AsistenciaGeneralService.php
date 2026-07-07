@@ -39,13 +39,14 @@ class AsistenciaGeneralService
         }
     }
 
-     public static function obtenerAsistenciaEstudiantePorPeriodo($matricula, $anio, $mes)
+    public static function obtenerAsistenciaEstudiantePorPeriodo($matricula, $anio, $mes)
     {
         $data = AsistenciaGeneral::selAsistenciaEstudiantePorPeriodo($matricula->iMatrId, $anio, $mes);
         foreach ($data as $fila) {
-            $fechaCarbon=Carbon::parse($fila->dtAsistencia);
+            $fechaCarbon = Carbon::parse($fila->dtAsistencia);
             $fila->cursos = AsistenciaControlService::obtenerAsistenciaEstudiantePorFecha($matricula, $fechaCarbon->format('Ymd'));
         }
+
         return $data;
     }
 }

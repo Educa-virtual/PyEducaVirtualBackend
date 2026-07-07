@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\evaluaciones;
 
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AlternativaPreguntaController extends ApiController
 {
-
     public function obtenerAlternativaByPreguntaId(Request $request, $id)
     {
         $campos = 'iPreguntaId,iAlternativaId,cAlternativaDescripcion,cAlternativaLetra,bAlternativaCorrecta,cAlternativaExplicacion';
@@ -20,7 +18,7 @@ class AlternativaPreguntaController extends ApiController
             'ere',
             'alternativas',
             $campos,
-            $where
+            $where,
         ];
 
         try {
@@ -49,7 +47,7 @@ class AlternativaPreguntaController extends ApiController
             $request->cAlternativaDescripcion,
             $request->cAlternativaLetra,
             $request->bAlternativaCorrecta ? 1 : 0,
-            $request->cAlternativaExplicacion
+            $request->cAlternativaExplicacion,
         ];
 
         try {
@@ -63,9 +61,11 @@ class AlternativaPreguntaController extends ApiController
             ', $params);
 
             $resp = $resp[0];
+
             return $this->successResponse($resp, $resp->mensaje);
         } catch (Exception $e) {
             $defaultMessage = $this->returnError($e, 'Error al guardar los cambios');
+
             return $this->errorResponse($e, $defaultMessage);
         }
     }
@@ -73,15 +73,17 @@ class AlternativaPreguntaController extends ApiController
     public function eliminarAlternativaById(Request $request, $id)
     {
         $params = [
-            $id
+            $id,
         ];
         try {
             $resp = DB::select('exec ere.SP_DEL_alternativa_pregunta @_iAlternativaId = ?', $params);
 
             $resp = $resp[0];
+
             return $this->successResponse($resp, $resp->mensaje);
         } catch (Exception $e) {
             $defaultMessage = $this->returnError($e, 'Error al eliminar');
+
             return $this->errorResponse($e, $defaultMessage);
         }
     }

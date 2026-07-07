@@ -3,8 +3,6 @@
 namespace App\Services\enc;
 
 use App\Helpers\VerifyHash;
-use App\Http\Requests\enc\RegistrarCategoriaRequest;
-use App\Models\enc\Categoria;
 use App\Models\enc\Encuesta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +16,7 @@ class EncuestasService
         foreach ($data as $encuesta) {
             $encuesta->iConfEncId = VerifyHash::encodexId($encuesta->iConfEncId);
         }
+
         return $data;
     }
 

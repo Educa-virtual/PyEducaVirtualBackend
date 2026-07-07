@@ -7,13 +7,9 @@ use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\bienestar\FichaFamiliarSaveRequest;
 use App\Models\bienestar\FichaFamiliar;
-use App\Services\ParseSqlErrorService;
 use Exception;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 
 class FichaFamiliarController extends Controller
 {
@@ -31,9 +27,9 @@ class FichaFamiliarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::selfichasFamiliaresPersonas($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -43,6 +39,7 @@ class FichaFamiliarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::insfichaFamiliar($request);
+
             return FormatearMensajeHelper::ok('Se guardo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -54,6 +51,7 @@ class FichaFamiliarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::updFichaFamiliar($request);
+
             return FormatearMensajeHelper::ok('Se actualizo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -65,6 +63,7 @@ class FichaFamiliarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::selFichaFamiliar($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -76,6 +75,7 @@ class FichaFamiliarController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaFamiliar::delFichaFamiliar($request);
+
             return FormatearMensajeHelper::ok('Se elimino la ficha familiar', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

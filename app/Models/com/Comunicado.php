@@ -10,36 +10,43 @@ use Illuminate\Support\Str;
 
 class Comunicado extends Model
 {
-    public static function selComunicados($request) {
+    public static function selComunicados($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iYAcadId,
             $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC com.Sp_SEL_comunicados $placeholders", $parametros);
     }
 
-    public static function selComunicadoParametros($request) {
+    public static function selComunicadoParametros($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.Sp_SEL_comunicadoParametros $placeholders", $parametros);
     }
 
-    public static function selComunicado($request) {
+    public static function selComunicado($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iComunicadoId,
             $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.Sp_SEL_comunicado $placeholders", $parametros);
     }
 
-    public static function insComunicado($request) {
+    public static function insComunicado($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iYAcadId,
@@ -53,10 +60,12 @@ class Comunicado extends Model
             $request->cComunicadoAdjunto,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.Sp_INS_comunicado $placeholders", $parametros);
     }
 
-    public static function updComunicado($request) {
+    public static function updComunicado($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iComunicadoId,
@@ -70,15 +79,18 @@ class Comunicado extends Model
             $request->cComunicadoAdjunto,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.Sp_UPD_comunicado $placeholders", $parametros);
     }
 
-    public static function delComunicado($request) {
+    public static function delComunicado($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iComunicadoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.Sp_DEL_comunicado $placeholders", $parametros);
     }
 
@@ -90,6 +102,7 @@ class Comunicado extends Model
             $request->jsonGrupo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.Sp_SEL_grupoCantidad $placeholders", $parametros);
     }
 
@@ -101,17 +114,18 @@ class Comunicado extends Model
             $request->jsonDatos,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.Sp_SEL_buscarPersona $placeholders", $parametros);
     }
 
     public static function subirDocumento($request)
     {
-        if (!$request->hasFile('archivo')) {
-            throw new Exception("No se envió ningún archivo.");
+        if (! $request->hasFile('archivo')) {
+            throw new Exception('No se envió ningún archivo.');
         }
         $nombreOriginal = pathinfo($request->nombreArchivo, PATHINFO_FILENAME);
         $nombreArchivo = Str::slug($nombreOriginal);
-        $documento = $request->file("archivo");
+        $documento = $request->file('archivo');
         $extension = $documento->getClientOriginalExtension();
         $nombreRuta = $request->nombreRuta;
         $ruta = Storage::disk('local')->put($nombreRuta, $documento);
@@ -124,14 +138,16 @@ class Comunicado extends Model
 
         return $archivoGnerado;
     }
+
     public static function insRecepcionarComunicado($request)
     {
-     
+
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iComunicadoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC com.SEL_INS_RecepcionComunicados $placeholders", $parametros);
     }
 }

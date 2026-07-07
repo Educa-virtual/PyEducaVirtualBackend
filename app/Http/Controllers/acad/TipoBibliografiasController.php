@@ -4,16 +4,16 @@ namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
 use Exception;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class TipoBibliografiasController extends Controller
 {
     protected $hashids;
+
     protected $iTipoBiblioId;
-   
 
     public function __construct()
     {
@@ -35,15 +35,14 @@ class TipoBibliografiasController extends Controller
             $iTipoBiblioId = count($iTipoBiblioId) > 0 ? $iTipoBiblioId[0] : $iTipoBiblioId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTipoBiblioId                         ?? NULL,
-            $request->cTipoBiblioNombre            ?? NULL,
+            $iTipoBiblioId ?? null,
+            $request->cTipoBiblioNombre ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 

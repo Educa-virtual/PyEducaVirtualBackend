@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Enums;
 
 enum Perfil: int
@@ -16,4 +17,3 @@ enum Perfil: int
     case APODERADO = 90;
     case ASISTENTE_SOCIAL = 100;
 }
-

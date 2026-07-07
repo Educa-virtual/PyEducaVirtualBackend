@@ -1,10 +1,9 @@
 <?php
 
 use App\Http\Controllers\com\ComunicadoController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\com\ComunicadosController;
 use App\Http\Controllers\com\GruposController;
-use App\Http\Middleware\RefreshToken;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'com'], function () {
     Route::group(['prefix' => 'comunicado'], function () {

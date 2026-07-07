@@ -1,61 +1,44 @@
 <?php
 
-use App\Http\Controllers\acad\ApoderadoController;
-use App\Http\Controllers\acad\EstudiantesController;
-use App\Http\Controllers\acad\GradosController;
-use App\Http\Controllers\acad\MatriculaController;
-
-use App\Http\Controllers\ere\InstitucionesEducativasController;
-use App\Http\Controllers\ere\CapacidadesController;
-use App\Http\Controllers\ere\CompetenciasController;
-use App\Http\Controllers\ere\DesempenosController;
-
 use App\Http\Controllers\api\acad\ActividadesAprendizajeController;
-use App\Http\Controllers\api\acad\BibliografiaController;
+use App\Http\Controllers\api\acad\AdministradorController;
+use App\Http\Controllers\api\acad\AutenticarUsurioController;
 use App\http\Controllers\api\acad\CalendarioAcademicosController;
 use App\http\Controllers\api\acad\GestionInstitucionalController;
 use App\http\Controllers\api\acad\HorarioController;
-use App\http\Controllers\api\acad\PeriodoAcademicosController;
-use App\Http\Controllers\api\acad\AdministradorController;
-use App\Http\Controllers\CredencialController;
-
-use App\Http\Controllers\seg\ListarCursosController;
-use App\Http\Controllers\api\acad\AutenticarUsurioController;
 use App\Http\Controllers\api\acad\InstitucionesEducativasController as AcadInstitucionesEducativasController;
+use App\Http\Controllers\api\acad\SelectPerfilesController;
 use App\Http\Controllers\api\grl\PersonaController;
 use App\Http\Controllers\api\grl\TipoIdentificacionController;
-use App\Http\Controllers\api\acad\SelectPerfilesController;
-use App\Http\Controllers\MailController;
+use App\Http\Controllers\bienestar\EstudianteController;
+use App\Http\Controllers\ere\CapacidadesController;
+use App\Http\Controllers\ere\CompetenciasController;
 use App\Http\Controllers\ere\cursoController;
+use App\Http\Controllers\ere\DesempenosController;
 use App\Http\Controllers\ere\EvaluacionesController;
+use App\Http\Controllers\ere\InstitucionesEducativasController;
 use App\Http\Controllers\ere\NivelEvaluacionController;
 use App\Http\Controllers\ere\NivelTipoController;
 use App\Http\Controllers\ere\TipoEvaluacionController;
 use App\Http\Controllers\ere\UgelesController;
-use App\Http\Controllers\seg\AuditoriaAccesosController;
-use App\Http\Controllers\seg\AuditoriaAccesosFallidosController;
-use App\Http\Controllers\seg\AuditoriaController;
-use App\Http\Controllers\seg\AuditoriaMiddlewareController;
-use App\Http\Controllers\seg\CredencialesController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FileController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\seg\AuthController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
-
-use App\Http\Controllers\bienestar\FichaPdfController;
-use App\Http\Controllers\bienestar\EstudianteController;
+use App\Http\Controllers\seg\CredencialesController;
+use App\Http\Controllers\seg\ListarCursosController;
 use App\Http\Middleware\AuditoriaAccesos;
 use App\Http\Middleware\RefreshToken;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
-//Linea 18 de febrero-------------------------------------
-//use App\Http\Controllers\VacantesController;
+// Linea 18 de febrero-------------------------------------
+// use App\Http\Controllers\VacantesController;
 
-//Route::post('/guardar-vacantes', [VacantesController::class, 'guardarVacantes']);
-//Route::post('store', [VacantesController::class, 'store']);
+// Route::post('/guardar-vacantes', [VacantesController::class, 'guardarVacantes']);
+// Route::post('store', [VacantesController::class, 'store']);
 
-//-------------------------------------------------------
+// -------------------------------------------------------
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
@@ -66,9 +49,8 @@ Route::group(['middleware' => ['auth:api', RefreshToken::class]], function () {
     Route::patch('usuarios/mi-contrasena', [AuthController::class, 'actualizarContrasenaUsuario']);
 });
 
-
-//Route::post('/verificar', [MailController::class, 'index']);
-//Route::post('/verificar_codigo', [MailController::class, 'comparar']);
+// Route::post('/verificar', [MailController::class, 'index']);
+// Route::post('/verificar_codigo', [MailController::class, 'comparar']);
 Route::post('/listar_cursos', [ListarCursosController::class, 'cursos']);
 
 Route::group(['prefix' => 'administrador'], function () {
@@ -81,7 +63,7 @@ Route::group(['prefix' => 'administrador'], function () {
     Route::post('mensaje', [AdministradorController::class, 'mensaje']);
 });
 
-//pev-101-formulario-instituciones
+// pev-101-formulario-instituciones
 Route::group(['prefix' => 'ere'], function () {
 
     Route::group(['prefix' => 'ie'], function () {
@@ -107,7 +89,6 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerCapacidades', [CapacidadesController::class, 'obtenerCapacidades']);
     });
 
-
     Route::group(['prefix' => 'desempenos'], function () {
         Route::get('obtenerDesempenos', [DesempenosController::class, 'obtenerDesempenos']);
     });
@@ -116,67 +97,66 @@ Route::group(['prefix' => 'ere'], function () {
         Route::get('obtenerCursos', [cursoController::class, 'obtenerCursos']);
     });
 
-
     Route::group(['prefix' => 'Evaluaciones'], function () {
         Route::get('ereObtenerEvaluacion', [EvaluacionesController::class, 'obtenerEvaluaciones']); // Cambié el nombre de la ruta para que sea más limpio
 
         Route::post('guardar', [EvaluacionesController::class, 'guardarEvaluacion']);
         Route::post('actualizar', [EvaluacionesController::class, 'actualizarEvaluacion']);
-        //Agregando participacion y eliminando participacion, IE
+        // Agregando participacion y eliminando participacion, IE
         Route::post('guardarParticipacion', [EvaluacionesController::class, 'guardarParticipacion']);
         Route::delete('eliminarParticipacion', [EvaluacionesController::class, 'eliminarParticipacion']);
-        //Agregando participacion nuevo
+        // Agregando participacion nuevo
         Route::post('guardarParticipacionNuevo', [EvaluacionesController::class, 'guardarParticipacionNuevo']);
         // Ruta para actualizar la evaluación
         Route::put('actualizar/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacion']);
         // Ruta para obtener las participaciones
-        //Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
+        // Route::get('obtenerParticipaciones', [EvaluacionesController::class, 'obtenerParticipaciones']);
         Route::get('obtenerParticipaciones/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerParticipaciones']);
-        //Nuevo Ver con Datos completos
+        // Nuevo Ver con Datos completos
         Route::get('verParticipacionNuevo', [EvaluacionesController::class, 'verParticipacionNuevo']);
-        //Obtener Cursos
+        // Obtener Cursos
         Route::post('obtenerCursos', [EvaluacionesController::class, 'obtenerCursos']);
-        //Insertar Cursos
+        // Insertar Cursos
         Route::post('insertarCursos', [EvaluacionesController::class, 'insertarCursos']);
-        //Eliminar Cursos
+        // Eliminar Cursos
         Route::delete('eliminarCursos', [EvaluacionesController::class, 'eliminarCursos']);
-        //Ver Cursos
+        // Ver Cursos
         Route::get('evaluaciones/{iEvaluacionId}/cursos', [EvaluacionesController::class, 'obtenerCursosEvaluacion']);
-        //Actualizar Cursos COMENTADO
+        // Actualizar Cursos COMENTADO
         Route::post('evaluaciones/{iEvaluacionId}/actualizarCursos', [EvaluacionesController::class, 'actualizarCursosEvaluacion']);
-        //Obtener Evaluacion Copiar
+        // Obtener Evaluacion Copiar
         Route::get('/obtenerEvaluacionCopia', [EvaluacionesController::class, 'obtenerEvaluacionCopia']);
-        //Obtener evaluacion Copiar 2
+        // Obtener evaluacion Copiar 2
         Route::get('/obtenerEvaluacionCopia2', [EvaluacionesController::class, 'obtenerEvaluacionCopia2']);
         // ACTUALIZAAR En routes/api.php o routes/web.php
         Route::put('actualizarCursos', [EvaluacionesController::class, 'actualizarCursos']);
-        //Agregando CopiarEvaluacion
+        // Agregando CopiarEvaluacion
         Route::post('copiarEvaluacion', [EvaluacionesController::class, 'copiarEvaluacion']);
-        //ObtenerMatrizCompetencia
+        // ObtenerMatrizCompetencia
         Route::get('obtenerMatrizCompetencias', [EvaluacionesController::class, 'obtenerMatrizCompetencias']);
-        //ObtenerMatrizCapacidad
+        // ObtenerMatrizCapacidad
         Route::get('obtenerMatrizCapacidades', [EvaluacionesController::class, 'obtenerMatrizCapacidades']);
-        //InsertarMatrizDesempeno
+        // InsertarMatrizDesempeno
         Route::post('insertarMatrizDesempeno', [EvaluacionesController::class, 'insertarMatrizDesempeno']);
-        //ObtenerEspecialistas
+        // ObtenerEspecialistas
         Route::get('obtenerEspDrem', [EvaluacionesController::class, 'obtenerEspDrem']);
-        //Obtener por el iGradoId los Cursos del Especialista
+        // Obtener por el iGradoId los Cursos del Especialista
         Route::get('obtenerEspDremCurso', [EvaluacionesController::class, 'obtenerEspDremCurso']);
-        //Matriz Descargar
+        // Matriz Descargar
         Route::get('generarPdfMatrizbyEvaluacionId', [EvaluacionesController::class, 'generarPdfMatrizbyEvaluacionId']);
-        //Insertar pregunta seleccionada
+        // Insertar pregunta seleccionada
         Route::post('insertarPreguntaSeleccionada', [EvaluacionesController::class, 'insertarPreguntaSeleccionada']);
-        //Obtener pregunta seleccionada
+        // Obtener pregunta seleccionada
         Route::get('obtenerPreguntaSeleccionada', [EvaluacionesController::class, 'obtenerPreguntaSeleccionada']);
-        //Obtener preguntas por EvaluacionId y preguntaId
+        // Obtener preguntas por EvaluacionId y preguntaId
         Route::get('obtenerPreguntaInformacion', [EvaluacionesController::class, 'obtenerPreguntaInformacion']);
-        //Obtener conteo por curso
+        // Obtener conteo por curso
         Route::post('obtenerConteoPorCurso', [EvaluacionesController::class, 'obtenerConteoPorCurso']);
-        //Guardar fecha inicio fin de cursos
+        // Guardar fecha inicio fin de cursos
         Route::post('guardarInicioFinalExmAreas', [EvaluacionesController::class, 'guardarInicioFinalExmAreas']);
-        //Eliminar una pregunta de una evaluación.
+        // Eliminar una pregunta de una evaluación.
         Route::delete('eliminarPregunta', [EvaluacionesController::class, 'eliminarPregunta']);
-        //guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
+        // guardar Fecha de Inicio y Cantidad de preguntas en examen cursos
         Route::post('guardarFechaCantidadExamenCursos', [EvaluacionesController::class, 'guardarFechaCantidadExamenCursos']);
         Route::post('insertarCuestionarioNotas', [EvaluacionesController::class, 'insertarCuestionarioNotas']);
     });
@@ -201,7 +181,7 @@ Route::group(['prefix' => 'acad'], function () {
     });
     Route::group(['prefix' => 'gestionInstitucional'], function () {
         Route::post('listarPersonalIes', [GestionInstitucionalController::class, 'listarPersonalIes']);
-        //procendimiento generales
+        // procendimiento generales
         Route::post('insertMaestroDetalle', [GestionInstitucionalController::class, 'insertMaestroDetalle']);
         Route::post('insertMaestro', [GestionInstitucionalController::class, 'insertMaestro']);
         Route::post('updateMaestro', [GestionInstitucionalController::class, 'updateMaestro']);
@@ -222,14 +202,14 @@ Route::group(['prefix' => 'acad'], function () {
     Route::post('generarConfiguracionMasivaInicio', [CalendarioAcademicosController::class, 'generarConfiguracionMasivaInicio']); // procedimiento masivo para generar configuraciones de inicio escolar
     Route::group(['prefix' => 'horario'], function () {
         Route::post('listarHorarioIes', [HorarioController::class, 'listarHorarioIes']);
-        //procendimiento generales
+        // procendimiento generales
     });
 
-    Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); //Cambio Alvaro Ere
+    Route::post('calendarioAcademicos/searchAmbiente', [CalendarioAcademicosController::class, 'selAmbienteAcademico']); // Cambio Alvaro Ere
 
     Route::group(['prefix' => 'calendarioAcademico'], function () {
         Route::post('addCalAcademico', [CalendarioAcademicosController::class, 'addCalAcademico']); // procedimiento especifico EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion ?,?
-        Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); //procedimiento especifico EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?
+        Route::post('updateCalAcademico', [CalendarioAcademicosController::class, 'updateCalAcademico']); // procedimiento especifico EXEC acad.SP_UPD_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('deleteCalAcademico', [CalendarioAcademicosController::class, 'deleteCalAcademico']); // procedimiento especifico EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
         Route::post('searchAcademico', [CalendarioAcademicosController::class, 'searchAcademico']); // procedimiento especifico EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?
 
@@ -250,7 +230,7 @@ Route::group(['prefix' => 'acad'], function () {
         /*
          * * Peticiones de información de varios calendarios
         */
-        //* GET: Calendarios académicos por sede
+        // * GET: Calendarios académicos por sede
         Route::get('selCalAcademicoSede', [CalendarioAcademicosController::class, 'selCalAcademicoSede']);
 
         Route::get('selDiasLaborales', [CalendarioAcademicosController::class, 'selDiasLaborales']);
@@ -258,25 +238,25 @@ Route::group(['prefix' => 'acad'], function () {
         /*
          * * Peticiones de información para la configuración de un calendario
         */
-        //* GET: Fases promocionales y fechas para configurar un calendario
+        // * GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selCalFasesProm', [CalendarioAcademicosController::class, 'selCalFasesProm']);
 
         /*
          * * Peticiones de información para la configuración de un calendario
         */
-        //* GET: Fases promocionales y fechas para configurar un calendario
+        // * GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
 
-        //* GET: Fases promocionales y fechas para configurar un calendario
+        // * GET: Fases promocionales y fechas para configurar un calendario
         Route::get('selFasesFechas', [CalendarioAcademicosController::class, 'selFasesFechas']);
 
-        //* GET: Dias laborales para configurar un calendario
+        // * GET: Dias laborales para configurar un calendario
         Route::get('selTurnosModalidades', [CalendarioAcademicosController::class, 'selTurnosModalidades']);
 
-        //* GET: Periodos de evaluaciones formativos
+        // * GET: Periodos de evaluaciones formativos
         Route::get('selPeriodosFormativos', [CalendarioAcademicosController::class, 'selPeriodosFormativos']);
 
-        //* GET: Dias laborales de un calendario
+        // * GET: Dias laborales de un calendario
         Route::get('selCalDiasLaborales', [CalendarioAcademicosController::class, 'selCalDiasLaborales']);
 
         // //* GET: Formas y modalidades de atención para configurar un calendario
@@ -291,7 +271,7 @@ Route::group(['prefix' => 'acad'], function () {
         // //* GET: Fases promocionales y fechas de un calendario académico
         // Route::get('selCalFasesFechas', [CalendarioAcademicosController::class, 'selCalFasesFechas']);
 
-        //* GET: Dias Laborales de la semana
+        // * GET: Dias Laborales de la semana
         Route::get('selDias', [CalendarioAcademicosController::class, 'selDias']);
 
         // //* GET: Formas de atención y sus modalidades de un calendario
@@ -316,10 +296,10 @@ Route::group(['prefix' => 'acad'], function () {
         // * POST: Dias Laborales de un calendario
         Route::post('insCalDiasLaborales', [CalendarioAcademicosController::class, 'insCalDiasLaborales']);
 
-        //* POST: Formas de atención y sus modalidades de un calendario
+        // * POST: Formas de atención y sus modalidades de un calendario
         Route::post('insCalFormasAtencion', [CalendarioAcademicosController::class, 'insCalFormasAtencion']);
 
-        //* POST: Periodos académicos de un calendario
+        // * POST: Periodos académicos de un calendario
         Route::post('insCalPeriodosFormativos', [CalendarioAcademicosController::class, 'insCalPeriodosFormativos']);
 
         // //* POST: Información de un calendario configurado
@@ -332,15 +312,14 @@ Route::group(['prefix' => 'acad'], function () {
         // * PUT: Calendario Académico
         Route::put('updCalAcademico', [CalendarioAcademicosController::class, 'updCalAcademico']);
 
-        //* PUT: Formas de atención y sus modalidades de un calendario
+        // * PUT: Formas de atención y sus modalidades de un calendario
         Route::put('updCalFormasAtencion', [CalendarioAcademicosController::class, 'updCalFormasAtencion']);
 
-        //* PUT: Periodos académicos de un calendario
+        // * PUT: Periodos académicos de un calendario
         Route::put('updCalFasesProm', [CalendarioAcademicosController::class, 'updCalFasesProm']);
 
         // //* PUT: Periodos académicos de un calendario
         // Route::put('updCalPeriodosAcademicos', [CalendarioAcademicosController::class, 'updCalPeriodosAcademicos']);
-
 
         /*
          * * Peticiones con información para eliminar información de un
@@ -355,10 +334,10 @@ Route::group(['prefix' => 'acad'], function () {
         // * DELETE: Calendario Academico por identificador
         // Route::delete('deleteCalAcademico', CalendarioAcademicosController::class, 'deleteCalAcademico');
 
-        //* DELETE: Formas de atención y sus modalidades de un calendario
+        // * DELETE: Formas de atención y sus modalidades de un calendario
         Route::delete('deleteCalFormasAtencion', [CalendarioAcademicosController::class, 'deleteCalFormasAtencion']);
 
-        //* DELETE: Periodos académicos de un calendario
+        // * DELETE: Periodos académicos de un calendario
         Route::delete('deleteCalPeriodosFormativos', [CalendarioAcademicosController::class, 'deleteCalPeriodosFormativos']);
 
         Route::post('obtenerCursosDiasHorarios', [CalendarioAcademicosController::class, 'obtenerCursosDiasHorarios']);
@@ -366,11 +345,6 @@ Route::group(['prefix' => 'acad'], function () {
     });
 
 });
-
-
-
-
-
 
 // Route::post('/login', [CredencialescCredUsuariocClaveController::class, 'login']);
 // Route::post('/verificar', [MailController::class, 'index']);
@@ -380,9 +354,9 @@ Route::group(['prefix' => 'acad'], function () {
 
 Route::get('/imprimir', PersonaController::class);
 
-//Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
-//Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
-//Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
+// Route::post('/obtenerUsuario', [CredencialesController::class, 'obtenerUsuario']);
+// Route::post('/verificarUsuario', [CredencialesController::class, 'verificarUsuario']);
+// Route::post('/actualizarUsuario', [CredencialesController::class, 'actualizarUsuario']);
 
 Route::group(['prefix' => 'grl'], function () {
     Route::get('listTipoIdentificaciones', [TipoIdentificacionController::class, 'list']);
@@ -405,7 +379,7 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
     Route::post('actualizarEnlaces', function (Request $request, $index) {
         $path = 'data/miarchivo.json';
 
-        if (!Storage::exists($path)) {
+        if (! Storage::exists($path)) {
             return response()->json(['error' => 'Archivo no encontrado'], 404);
         }
 
@@ -413,7 +387,7 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
         $data = json_decode(Storage::get($path), true);
 
         // Verificar si el índice existe
-        if (!isset($data[$index])) {
+        if (! isset($data[$index])) {
             return response()->json(['error' => 'Elemento no encontrado'], 404);
         }
 
@@ -427,5 +401,5 @@ Route::group(['prefix' => 'enlaces-ayuda'], function () {
     });
 });
 
-//Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
+// Route::get('/estudiantes/{pApod}/{iIieeId}/{anio}', [EstudianteController::class, 'obtenerEstudiantesPorAnio']);
 Route::get('evaluaciones/competencias', [App\Http\Controllers\eval\EvaluacionesController::class, 'obtenerCompetencias']);

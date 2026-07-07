@@ -6,14 +6,12 @@ use App\Helpers\CollectionStrategy;
 use App\Helpers\ResponseHandler;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
-use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class TipoFechaController extends Controller
 {
-    const schema = "acad";
+    const schema = 'acad';
 
     public function getTiposFechas(Request $request)
     {
@@ -22,10 +20,10 @@ class TipoFechaController extends Controller
                 'esquema' => self::schema,
                 'tabla' => 'tipo_fechas',
                 'campos' => '*',
-                'where' => "iTipoFerId IN (4)",
+                'where' => 'iTipoFerId IN (4)',
             ]);
 
-            $strategy = new CollectionStrategy();
+            $strategy = new CollectionStrategy;
             $apiController = new ApiController($strategy);
             $query = $apiController->getData($request);
 

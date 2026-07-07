@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\grl;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class GeneralController extends Controller
 {
@@ -15,7 +15,7 @@ class GeneralController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'file' => 'required|mimes:pdf,jpeg,png'
+                'file' => 'required|mimes:pdf,jpeg,png',
             ],
             [
                 'file.required' => 'Es necesario que cargue un archivo',
@@ -32,7 +32,9 @@ class GeneralController extends Controller
             $file = $request->file('file');
             $path = Storage::disk('public')->put($request->nameFile, $file);
             $ruta_generada = $request->nameFile.'/'.basename($path);
+
             return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $ruta_generada], 200);
+
             return response()->json($path);
         } else {
             return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);
@@ -44,7 +46,7 @@ class GeneralController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'file' => 'required|mimes:pdf,jpeg,png'
+                'file' => 'required|mimes:pdf,jpeg,png',
             ],
             [
                 'file.required' => 'Es necesario que cargue un archivo',
@@ -57,9 +59,10 @@ class GeneralController extends Controller
         }
 
         if ($request->hasFile('file')) {
-            $documento_recibido = $request->file("file");
-            $documento_almacenado = Storage::disk('public')->put($request->nameFile,$documento_recibido);
+            $documento_recibido = $request->file('file');
+            $documento_almacenado = Storage::disk('public')->put($request->nameFile, $documento_recibido);
             $ruta_generada = $request->nameFile.'/'.basename($documento_almacenado);
+
             return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $ruta_generada], 200);
         } else {
             return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);
@@ -71,7 +74,7 @@ class GeneralController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'data' => 'required|string'
+                'data' => 'required|string',
             ],
             [
                 'data.required' => 'La ruta del archivo es obligatoria.',
@@ -86,16 +89,17 @@ class GeneralController extends Controller
 
         if (Storage::disk('public')->exists($ruta)) {
             Storage::disk('public')->delete($ruta);
+
             return new JsonResponse([
                 'validated' => true,
                 'message' => 'El archivo se eliminó correctamente',
-                'data' => []
+                'data' => [],
             ], 200);
         } else {
             return new JsonResponse([
                 'validated' => false,
                 'message' => 'El archivo no existe en el servidor',
-                'data' => []
+                'data' => [],
             ], 404);
         }
     }
@@ -105,7 +109,7 @@ class GeneralController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'file' => 'required|mimetypes:image/svg+xml,text/plain,text/xml,application/xml,application/octet-stream,application/pdf,image/jpeg,image/png'
+                'file' => 'required|mimetypes:image/svg+xml,text/plain,text/xml,application/xml,application/octet-stream,application/pdf,image/jpeg,image/png',
             ],
             [
                 'file.required' => 'Es necesario que cargue un archivo',
@@ -121,11 +125,12 @@ class GeneralController extends Controller
 
             $file = $request->file('file');
             $ext = $file->getClientOriginalExtension() ?: 'svg';
-            $filename = uniqid('pizarra_') . '.' . $ext;
+            $filename = uniqid('pizarra_').'.'.$ext;
 
             $path = $file->storeAs($request->nameFile, $filename, ['disk' => 'file']);
 
             return new JsonResponse(['validated' => true, 'message' => 'Se guardó exitosamente el archivo', 'data' => $path], 200);
+
             return response()->json($path);
         } else {
             return new JsonResponse(['validated' => false, 'message' => 'No se adjuntaron archivos', 'data' => []], 503);

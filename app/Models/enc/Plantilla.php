@@ -7,26 +7,31 @@ use Illuminate\Support\Facades\DB;
 
 class PLantilla extends Model
 {
-    public static function selPlantillas($request) {
+    public static function selPlantillas($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iCateId,
             $request->iTipoReporte,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC enc.Sp_SEL_plantillas $placeholders", $parametros);
     }
 
-    public static function selPlantilla($request) {
+    public static function selPlantilla($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_plantilla $placeholders", $parametros);
     }
 
-    public static function insPlantilla($request) {
+    public static function insPlantilla($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->cPlanNombre,
@@ -42,10 +47,12 @@ class PLantilla extends Model
             $request->bCompartirMismaUgel,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_plantilla $placeholders", $parametros);
     }
 
-    public static function updPlantilla($request) {
+    public static function updPlantilla($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanId,
@@ -62,15 +69,18 @@ class PLantilla extends Model
             $request->bCompartirMismaUgel,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_plantilla $placeholders", $parametros);
     }
 
-    public static function delPlantilla($request) {
+    public static function delPlantilla($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iPlanId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_DEL_plantilla $placeholders", $parametros);
     }
 
@@ -82,6 +92,7 @@ class PLantilla extends Model
             $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_plantillaEstado $placeholders", $parametros);
     }
 
@@ -98,6 +109,7 @@ class PLantilla extends Model
             $request->bCopiarPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_plantillaDuplicado $placeholders", $parametros);
     }
 
@@ -114,6 +126,7 @@ class PLantilla extends Model
             $request->bCopiarPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_plantillaEncuesta $placeholders", $parametros);
     }
 
@@ -125,6 +138,7 @@ class PLantilla extends Model
             $request->bArchivar,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_plantillaArchivar $placeholders", $parametros);
     }
 }

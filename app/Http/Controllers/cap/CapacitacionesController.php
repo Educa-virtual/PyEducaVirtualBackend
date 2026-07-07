@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\cap;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CapacitacionesController extends Controller
 {
-    //Notas: Campo iEstado
+    // Notas: Campo iEstado
     // null => Obtendré todos los registros menos los eliminados
     // 0 => Eliminado
     // 1 => Activo
@@ -29,26 +28,26 @@ class CapacitacionesController extends Controller
                 'iInstId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iTipoCapId           ??  NULL,
-                $request->iNivelPedId          ??  NULL,
-                $request->iTipoPubId           ??  NULL,
-                $request->cCapTitulo           ??  NULL,
-                $request->cCapDescripcion      ??  NULL,
-                $request->iTotalHrs            ??  NULL,
-                $request->dFechaInicio         ??  NULL,
-                $request->dFechaFin            ??  NULL,
-                $request->iInstId              ??  NULL,
-                $request->iCosto               ??  NULL,
-                $request->nCosto               ??  NULL,
-                $request->iImageAleatorio      ??  NULL,
-                $request->cImagenUrl           ??  NULL,
-                $request->cLink                ??  NULL,
-                $request->iCredId              ??  NULL,
+                $request->iTipoCapId ?? null,
+                $request->iNivelPedId ?? null,
+                $request->iTipoPubId ?? null,
+                $request->cCapTitulo ?? null,
+                $request->cCapDescripcion ?? null,
+                $request->iTotalHrs ?? null,
+                $request->dFechaInicio ?? null,
+                $request->dFechaFin ?? null,
+                $request->iInstId ?? null,
+                $request->iCosto ?? null,
+                $request->nCosto ?? null,
+                $request->iImageAleatorio ?? null,
+                $request->cImagenUrl ?? null,
+                $request->cLink ?? null,
+                $request->iCredId ?? null,
 
-                $request->jsonHorario          ??  NULL
+                $request->jsonHorario ?? null,
 
             ];
 
@@ -103,10 +102,10 @@ class CapacitacionesController extends Controller
                 'iInstId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCredId              ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -115,6 +114,7 @@ class CapacitacionesController extends Controller
                 $parametros
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK
@@ -140,27 +140,27 @@ class CapacitacionesController extends Controller
                 'iInstId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCapacitacionId      ??  NULL,
-                $request->iTipoCapId           ??  NULL,
-                $request->iNivelPedId          ??  NULL,
-                $request->iTipoPubId           ??  NULL,
-                $request->cCapTitulo           ??  NULL,
-                $request->cCapDescripcion      ??  NULL,
-                $request->iTotalHrs            ??  NULL,
-                $request->dFechaInicio         ??  NULL,
-                $request->dFechaFin            ??  NULL,
-                $request->iInstId              ??  NULL,
-                $request->iCosto               ??  NULL,
-                $request->nCosto               ??  NULL,
-                $request->iImageAleatorio      ??  NULL,
-                $request->cImagenUrl           ??  NULL,
-                $request->cLink                ??  NULL,
-                $request->iCredId              ??  NULL,
+                $request->iCapacitacionId ?? null,
+                $request->iTipoCapId ?? null,
+                $request->iNivelPedId ?? null,
+                $request->iTipoPubId ?? null,
+                $request->cCapTitulo ?? null,
+                $request->cCapDescripcion ?? null,
+                $request->iTotalHrs ?? null,
+                $request->dFechaInicio ?? null,
+                $request->dFechaFin ?? null,
+                $request->iInstId ?? null,
+                $request->iCosto ?? null,
+                $request->nCosto ?? null,
+                $request->iImageAleatorio ?? null,
+                $request->cImagenUrl ?? null,
+                $request->cLink ?? null,
+                $request->iCredId ?? null,
 
-                $request->jsonHorario          ??  NULL
+                $request->jsonHorario ?? null,
 
             ];
 
@@ -214,10 +214,10 @@ class CapacitacionesController extends Controller
                 'iCapacitacionId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iCapacitacionId             ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCapacitacionId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -257,11 +257,10 @@ class CapacitacionesController extends Controller
             'bEstado.required' => 'No se encontró el estado',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -273,11 +272,11 @@ class CapacitacionesController extends Controller
                 'iCapacitacionId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iCapacitacionId             ??  NULL,
-                $request->iEstado                     ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iCapacitacionId ?? null,
+                $request->iEstado ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -291,13 +290,15 @@ class CapacitacionesController extends Controller
             $cEstado = $request->bEstado ? 'Finalizado' : 'Publicado';
 
             if ($data[0]->iCapacitacionId > 0) {
-                $message = 'Se ha ' . $cEstado . ' correctamente la capacitación';
+                $message = 'Se ha '.$cEstado.' correctamente la capacitación';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => null],
                     Response::HTTP_OK
                 );
             } else {
-                $message = 'No se ha ' . $cEstado . ' correctamente la capacitación';
+                $message = 'No se ha '.$cEstado.' correctamente la capacitación';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => null],
                     Response::HTTP_OK
@@ -322,10 +323,10 @@ class CapacitacionesController extends Controller
                 'iInstId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCredId              ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -355,14 +356,15 @@ class CapacitacionesController extends Controller
                 'iTipoCapId',
                 'iNivelPedId',
                 'iTipoPubId',
-                'iInstId'
+                'iInstId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $data = DB::select(
                 'exec cap.SP_SEL_capacitacionesPublicadas'
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK
@@ -388,11 +390,10 @@ class CapacitacionesController extends Controller
             'iCredId.required' => 'No se encontró la credencial',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -401,11 +402,11 @@ class CapacitacionesController extends Controller
                 'iCredId',
                 'iCapacitacionId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->cPerfil              ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->cPerfil ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -416,6 +417,7 @@ class CapacitacionesController extends Controller
             );
 
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK

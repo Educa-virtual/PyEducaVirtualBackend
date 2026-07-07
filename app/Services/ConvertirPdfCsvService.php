@@ -21,15 +21,15 @@ class ConvertirPdfCsv
         $data = [];
 
         // Validar que request tiene al menos un archivo
-        if($request->allFiles()) {
+        if ($request->allFiles()) {
 
             // Obtener data solo del primer archivo
-            foreach( $request->file() as $file) {
+            foreach ($request->file() as $file) {
                 $archivo = $file;
                 break;
             }
 
-            if( !$archivo ) {
+            if (! $archivo) {
                 return $data;
             }
 
@@ -40,27 +40,27 @@ class ConvertirPdfCsv
                 // Almacenar archivo de forma temporal
                 Storage::disk('local')->put($nombre_archivo, $archivo);
 
-                if($params['lattice']) {
-                    $lattice = "-l";
+                if ($params['lattice']) {
+                    $lattice = '-l';
                 } else {
-                    $lattice = "";
+                    $lattice = '';
                 }
 
-                if($params['array_coordenadas'] ) {
-                    $percentage = $params['percentage_coordenadas'] ? "%" : "";
-                    $top = $params['top'] ?? "0";
-                    $left = $params['left'] ?? "0";
-                    $bottom = $params['bottom'] ?? "100";
-                    $right = $params['right'] ?? "100";
+                if ($params['array_coordenadas']) {
+                    $percentage = $params['percentage_coordenadas'] ? '%' : '';
+                    $top = $params['top'] ?? '0';
+                    $left = $params['left'] ?? '0';
+                    $bottom = $params['bottom'] ?? '100';
+                    $right = $params['right'] ?? '100';
                     $coordenadas = "-a $percentage$top $left $bottom $right";
                 }
-                if($params['array_paginas']) {
-                    $paginas = "-p " . implode(',', $params['array_paginas']);
+                if ($params['array_paginas']) {
+                    $paginas = '-p '.implode(',', $params['array_paginas']);
                 } else {
-                    $paginas = "-p all";
+                    $paginas = '-p all';
                 }
 
-                if( !Storage::disk('local')->exists($nombre_archivo) ) {
+                if (! Storage::disk('local')->exists($nombre_archivo)) {
                     return $data;
                 }
 
@@ -80,7 +80,7 @@ class ConvertirPdfCsv
                         -t,--stream                Force PDF to be extracted using stream-mode extraction
                 */
 
-                $csv = exec("java -jar tabula-1.0.5-jar-with-dependencies.jar -f CSV $lattice $coordenadas $paginas -t $nombre_archivo" );
+                $csv = exec("java -jar tabula-1.0.5-jar-with-dependencies.jar -f CSV $lattice $coordenadas $paginas -t $nombre_archivo");
                 Storage::disk('local')->delete($nombre_archivo);
             } catch (\Exception $e) {
                 return $data;

@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class RecursoDidacticosController extends Controller
 {
     protected $hashids;
+
     protected $iRecDidacticoId;
-   
 
     public function __construct()
     {
@@ -34,14 +34,13 @@ class RecursoDidacticosController extends Controller
             $iRecDidacticoId = count($iRecDidacticoId) > 0 ? $iRecDidacticoId[0] : $iRecDidacticoId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $iRecDidacticoId                         ?? NULL,
-            $request->cRecDidacticoNombre            ?? NULL,
-            $request->cRecDidacticoDescripcion       ?? NULL,
-            $request->iCredId
+            $iRecDidacticoId ?? null,
+            $request->cRecDidacticoNombre ?? null,
+            $request->cRecDidacticoDescripcion ?? null,
+            $request->iCredId,
 
         ];
 

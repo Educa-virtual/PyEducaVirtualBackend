@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\eval;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class EvaluacionesController extends Controller
 {
-
     public function obtenerEvaluacionesxiEvaluacionId(Request $request, $iEvaluacionId)
     {
         $request->merge(['iEvaluacionId' => $iEvaluacionId]);
@@ -24,12 +23,12 @@ class EvaluacionesController extends Controller
                 'iCredId',
                 'iEstudiante',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId             ??  NULL,
-                $request->iEstudiante             ??  NULL,
-                $request->iCredId                   ??  NULL
+                $request->iEvaluacionId ?? null,
+                $request->iEstudiante ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -61,8 +60,8 @@ class EvaluacionesController extends Controller
             'iDocenteId' => ['required'],
             'cEvaluacionTitulo' => ['required', 'max:250'],
             'cEvaluacionDescripcion' => ['required'],
-            'dtEvaluacionInicio'     => ['required'],
-            'dtEvaluacionFin'        => ['required'],
+            'dtEvaluacionInicio' => ['required'],
+            'dtEvaluacionFin' => ['required'],
 
             'iContenidoSemId' => ['required'],
             'iActTipoId' => ['required'],
@@ -72,8 +71,8 @@ class EvaluacionesController extends Controller
             'cEvaluacionTitulo.required' => 'No se encontró el identificador cEvaluacionTitulo',
             'cEvaluacionTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cEvaluacionDescripcion.required' => 'No se encontró una descripción',
-            'dtEvaluacionInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtEvaluacionFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtEvaluacionInicio.required' => 'La fecha y hora de inicio es obligatoria',
+            'dtEvaluacionFin.required' => 'La fecha y hora de fin es obligatoria',
 
             'iContenidoSemId.required' => 'No se encontró el identificador iContenidoSemId',
             'iActTipoId.required' => 'No se encontró el identificador iActTipoId',
@@ -83,7 +82,7 @@ class EvaluacionesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -101,24 +100,24 @@ class EvaluacionesController extends Controller
                 'iCapacitacionId',
                 'iYAcadId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iTipoEvalId               ?? NULL,
-                $request->iDocenteId                ?? NULL,
-                $request->cEvaluacionTitulo         ?? NULL,
-                $request->cEvaluacionDescripcion    ?? NULL,
-                $request->dtEvaluacionInicio        ?? NULL,
-                $request->dtEvaluacionFin           ?? NULL,
-                $request->cEvaluacionArchivoAdjunto ?? NULL,
-                $request->iContenidoSemId           ?? NULL,
-                $request->iActTipoId                ?? NULL,
-                $request->idDocCursoId              ?? NULL,
-                $request->iCapacitacionId           ?? NULL,
-                $request->iYAcadId                  ?? NULL,
+                $request->iTipoEvalId ?? null,
+                $request->iDocenteId ?? null,
+                $request->cEvaluacionTitulo ?? null,
+                $request->cEvaluacionDescripcion ?? null,
+                $request->dtEvaluacionInicio ?? null,
+                $request->dtEvaluacionFin ?? null,
+                $request->cEvaluacionArchivoAdjunto ?? null,
+                $request->iContenidoSemId ?? null,
+                $request->iActTipoId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->iYAcadId ?? null,
 
-                $request->iCredId                   ?? NULL,
-                $request->jCompetencias             ?? NULL
+                $request->iCredId ?? null,
+                $request->jCompetencias ?? null,
             ];
 
             $data = DB::select(
@@ -167,21 +166,21 @@ class EvaluacionesController extends Controller
             'iEvaluacionId' => ['required'],
             'cEvaluacionTitulo' => ['required', 'max:250'],
             'cEvaluacionDescripcion' => ['required'],
-            'dtEvaluacionInicio'     => ['required'],
-            'dtEvaluacionFin'        => ['required'],
+            'dtEvaluacionInicio' => ['required'],
+            'dtEvaluacionFin' => ['required'],
         ], [
             'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
             'cEvaluacionTitulo.required' => 'No se encontró el identificador cEvaluacionTitulo',
             'cEvaluacionTitulo.max' => 'El título no debe exceder los 250 caracteres.',
             'cEvaluacionDescripcion.required' => 'No se encontró una descripción',
-            'dtEvaluacionInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtEvaluacionFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtEvaluacionInicio.required' => 'La fecha y hora de inicio es obligatoria',
+            'dtEvaluacionFin.required' => 'La fecha y hora de fin es obligatoria',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -190,18 +189,18 @@ class EvaluacionesController extends Controller
                 'iEvaluacionId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId             ?? NULL,
-                $request->cEvaluacionTitulo         ?? NULL,
-                $request->cEvaluacionDescripcion    ?? NULL,
-                $request->dtEvaluacionInicio        ?? NULL,
-                $request->dtEvaluacionFin           ?? NULL,
-                $request->cEvaluacionArchivoAdjunto ?? NULL,
+                $request->iEvaluacionId ?? null,
+                $request->cEvaluacionTitulo ?? null,
+                $request->cEvaluacionDescripcion ?? null,
+                $request->dtEvaluacionInicio ?? null,
+                $request->dtEvaluacionFin ?? null,
+                $request->cEvaluacionArchivoAdjunto ?? null,
 
-                $request->iCredId                   ?? NULL,
-                $request->jCompetencias                ?? NULL
+                $request->iCredId ?? null,
+                $request->jCompetencias ?? null,
             ];
 
             $data = DB::select(
@@ -249,7 +248,7 @@ class EvaluacionesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -259,11 +258,11 @@ class EvaluacionesController extends Controller
                 'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId      ??  NULL,
-                $request->iCredId            ??  NULL
+                $request->iEvaluacionId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -308,13 +307,13 @@ class EvaluacionesController extends Controller
             'iSedeId.required' => 'No se encontró el identificador iSedeId',
             'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
             'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
-            'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId'
+            'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -324,18 +323,18 @@ class EvaluacionesController extends Controller
             'iSedeId',
             'iSeccionId',
             'iNivelGradoId',
-            'iEvaluacionId'
+            'iEvaluacionId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iIeCursoId            ??      NULL,
-            $request->iYAcadId              ??      NULL,
-            $request->iSedeId               ??      NULL,
-            $request->iSeccionId            ??      NULL,
-            $request->iNivelGradoId         ??      NULL,
-            $request->iEvaluacionId         ??      NULL,
+            $request->iIeCursoId ?? null,
+            $request->iYAcadId ?? null,
+            $request->iSedeId ?? null,
+            $request->iSeccionId ?? null,
+            $request->iNivelGradoId ?? null,
+            $request->iEvaluacionId ?? null,
         ];
 
         try {
@@ -360,10 +359,11 @@ class EvaluacionesController extends Controller
             // Manejo de excepción y respuesta de error
             $response = [
                 'validated' => false,
-                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'message' => $e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(),
                 'data' => [],
             ];
             $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return new JsonResponse($response, $estado);
         }
     }
@@ -377,6 +377,7 @@ class EvaluacionesController extends Controller
                 case 'CONSULTARxiEvaluacionId':
                     $data = DB::select('exec eval.Sp_SEL_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
+
                     return new JsonResponse(
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200
@@ -386,6 +387,7 @@ class EvaluacionesController extends Controller
                     $data = DB::select('exec eval.Sp_INS_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEvaluacionId > 0) {
                         $data = $this->encodeId($data);
+
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'Se guardó la información', 'data' => $data],
                             200
@@ -413,6 +415,7 @@ class EvaluacionesController extends Controller
                     $data = DB::select('exec eval.Sp_UPD_evaluaciones ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iEvaluacionId > 0) {
                         $data = $this->encodeId($data);
+
                         return new JsonResponse(
                             ['validated' => true, 'message' => 'Se actualizó la información', 'data' => $data],
                             200

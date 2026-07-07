@@ -6,14 +6,11 @@ use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\apo\Apoderado;
-use App\Models\grl\Persona;
-use App\Models\seg\Usuario;
 use App\Services\acad\MatriculasService;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use App\Services\seg\UsuariosService;
 
 class ApoderadoController extends Controller
 {
@@ -22,6 +19,7 @@ class ApoderadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
             $data = Apoderado::selApoderados($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -35,9 +33,11 @@ class ApoderadoController extends Controller
             DB::beginTransaction();
             $data = MatriculasService::registrarApoderado($request);
             DB::commit();
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -49,9 +49,11 @@ class ApoderadoController extends Controller
             DB::beginTransaction();
             $data = MatriculasService::actualizarApoderado($request);
             DB::commit();
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -61,6 +63,7 @@ class ApoderadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Apoderado::updApoderadoEstado($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -72,6 +75,7 @@ class ApoderadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
             $data = Apoderado::selApoderado($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -83,6 +87,7 @@ class ApoderadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Apoderado::delApoderado($request);
+
             return FormatearMensajeHelper::ok('Se eliminó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -94,11 +99,10 @@ class ApoderadoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Apoderado::selPersonaApoderado($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
-
-
 }

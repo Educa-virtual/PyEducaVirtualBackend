@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class TipoIndicadorLogrosController extends Controller
 {
     protected $hashids;
-    protected $iTipoIndLogId;
 
+    protected $iTipoIndLogId;
 
     public function __construct()
     {
@@ -34,16 +34,15 @@ class TipoIndicadorLogrosController extends Controller
             $iTipoIndLogId = count($iTipoIndLogId) > 0 ? $iTipoIndLogId[0] : $iTipoIndLogId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iTipoIndLogId                      ?? NULL,
-            $request->cTipoIndLogNombre         ?? NULL,
-            $request->bTipoIndLogReqDetalle     ?? NULL,
+            $iTipoIndLogId ?? null,
+            $request->cTipoIndLogNombre ?? null,
+            $request->bTipoIndLogReqDetalle ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\DataReturnStrategy;
 use Exception;
-use Illuminate\Support\Arr;
-use Illuminate\Http\Request;
-use App\Helpers\ResponseHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use App\Contracts\DataReturnStrategy;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -25,22 +23,23 @@ abstract class AbstractDatabaseOperation
     {
         // Obtener los parámetros esperados (asegurar que sea un array)
         $params_expected = $this->getParamsRequest() ?? [];
-    
+
         // Obtener los parámetros recibidos dependiendo del tipo de `$request`
         $params_received = $request instanceof Request
             ? array_keys($request->all() ?? [])  // Si es Request, obtener claves de los datos
             : array_keys($request ?? []);        // Si es array, obtener claves directamente
-    
+
         // Asegurar que ambos son arrays y ordenarlos
-        if (!is_array($params_expected) || !is_array($params_received)) {
+        if (! is_array($params_expected) || ! is_array($params_received)) {
             throw new Exception('Error en los parámetros.');
         }
-    
+
         sort($params_received);
         sort($params_expected);
-    
+
         return $params_received === $params_expected;
     }
+
     /**
      * Ejecuta una consulta con parámetros y un procedimiento almacenado.
      */
@@ -48,16 +47,15 @@ abstract class AbstractDatabaseOperation
     {
         $procedure = $this->getProcedureName();
 
-
         $params = array_filter($this->getParamsProcedure()); // Filtrar valores nulos
-        
+
         $placeholders = implode(',', array_fill(0, count($params), '?'));
 
-        $msg = new ConsoleOutput();
-        
-        $text = "EXEC $procedure $placeholders " . implode(", ", $params);
+        $msg = new ConsoleOutput;
 
-        $msg->writeln("EXEC $procedure $placeholders " . implode(", ", $params));
+        $text = "EXEC $procedure $placeholders ".implode(', ', $params);
+
+        $msg->writeln("EXEC $procedure $placeholders ".implode(', ', $params));
 
         Log::info($text);
 
@@ -75,7 +73,7 @@ abstract class AbstractDatabaseOperation
 
         foreach ($queries as $query) {
 
-            if (!$this->hasValidRequest($query)) {
+            if (! $this->hasValidRequest($query)) {
                 throw new Exception('Error en la solicitud de los datos.');
             }
 
@@ -94,8 +92,6 @@ abstract class AbstractDatabaseOperation
     {
         try {
 
-
-
             if ($this->hasValidRequest($request)) {
 
                 $query = $this->executeQuery();
@@ -108,6 +104,7 @@ abstract class AbstractDatabaseOperation
             // Manejo de solicitudes múltiples
             $queries = $request->all();
             $results = $this->processMultipleRequests($request, $queries);
+
             // $results = $this->handleMultipleRequests($request, $procedure);
             return $strategy->handle($results);
         } catch (Exception $e) {
@@ -121,6 +118,7 @@ abstract class AbstractDatabaseOperation
     private function extractQueryParams(Request $request): array
     {
         $params = $this->getParamsRequest();
+
         return array_values($request->only($params));
     }
 
@@ -130,6 +128,7 @@ abstract class AbstractDatabaseOperation
     private function handleMultipleRequests(Request $request, string $procedure): Collection
     {
         $queries = $request->all();
+
         return $this->processMultipleRequests($request, $queries, $procedure);
     }
 

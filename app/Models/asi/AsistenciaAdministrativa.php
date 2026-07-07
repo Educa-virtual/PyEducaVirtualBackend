@@ -9,19 +9,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AsistenciaAdministrativa extends Model
-{   
-    public static function guardarAsistenciaEstudiante(Request $request){
+{
+    public static function guardarAsistenciaEstudiante(Request $request)
+    {
         $iPersId = $request->iPersId;
         $archivos = $request->file('archivos');
         $ruta = 'justificaciones/'.$iPersId;
 
         if ($archivos) {
-            $documento = Storage::disk('public')->put($ruta,$archivos);
+            $documento = Storage::disk('public')->put($ruta, $archivos);
             $asistencia = $ruta.'/'.basename($documento);
         }
 
         $datos = [
-            $request->opcion ?? NULL,
+            $request->opcion ?? null,
             $request->iEstudianteId,
             $request->dtAsistencia,
             $request->iTipoAsiId,
@@ -29,83 +30,98 @@ class AsistenciaAdministrativa extends Model
             $request->iSedeId,
             $request->iYAcadId,
             $request->iNivelGradoId,
-            $request->idAsistencia == 'null' ? NULL : $request->idAsistencia,
-            $request->iMatrId ?? NULL,
-            $asistencia ?? NULL,
+            $request->idAsistencia == 'null' ? null : $request->idAsistencia,
+            $request->iMatrId ?? null,
+            $asistencia ?? null,
         ];
-       
-        $enviados = str_repeat('?,',count($datos)-1).'?';
-        $data = DB::select("EXEC asi.Sp_INS_asistencia_general_estudiante ".$enviados,$datos);
+
+        $enviados = str_repeat('?,', count($datos) - 1).'?';
+        $data = DB::select('EXEC asi.Sp_INS_asistencia_general_estudiante '.$enviados, $datos);
+
         return $data;
     }
-    public static function guardarAsistenciaGeneral(Request $request){
-        
-        $asistencia = json_decode($request->asistencia,true);
+
+    public static function guardarAsistenciaGeneral(Request $request)
+    {
+
+        $asistencia = json_decode($request->asistencia, true);
         $iPersId = $request->iPersId;
         $archivos = $request->file('archivos');
         $ruta = 'justificaciones/'.$iPersId;
         if ($archivos) {
             foreach ($archivos as $index => $archivo) {
-                $documento = Storage::disk('public')->put($ruta,$archivo);
+                $documento = Storage::disk('public')->put($ruta, $archivo);
                 $asistencia[$index]['justificar'] = $ruta.'/'.basename($documento);
             }
         }
-     
+
         $datos = [
             json_encode($asistencia),
             $request->dtAsistencia,
             $request->iSedeId,
             $request->iYAcadId,
         ];
-        
-        $enviados = str_repeat('?,',count($datos)-1).'?';
-        $data = DB::select("EXEC asi.Sp_INS_asistencia_general ".$enviados,$datos);
+
+        $enviados = str_repeat('?,', count($datos) - 1).'?';
+        $data = DB::select('EXEC asi.Sp_INS_asistencia_general '.$enviados, $datos);
+
         return $data;
     }
-    public static function buscarAlumnos(Request $request){
+
+    public static function buscarAlumnos(Request $request)
+    {
 
         $cPersDocumento = VerifyHash::decodes($request->cPersDocumento);
         $cEstCodigo = VerifyHash::decodes($request->cEstCodigo);
 
         $datos = [
             $request->opcion,
-            $request->iGradoId ?? NULL,
-            $request->iSeccionId ?? NULL,
-            $request->iSedeId,          
+            $request->iGradoId ?? null,
+            $request->iSeccionId ?? null,
+            $request->iSedeId,
             $request->iYAcadId,
-            $cEstCodigo ?? NULL,
-            $cPersDocumento ?? NULL,
+            $cEstCodigo ?? null,
+            $cPersDocumento ?? null,
             $request->dtAsistencia,
         ];
-        
-        $enviados = str_repeat('?,',count($datos)-1).'?';
-        $data = DB::select("EXEC [asi].[SP_SEL_buscarAlumnos] ".$enviados,$datos);
+
+        $enviados = str_repeat('?,', count($datos) - 1).'?';
+        $data = DB::select('EXEC [asi].[SP_SEL_buscarAlumnos] '.$enviados, $datos);
+
         return $data;
     }
-    public static function buscarAsisnteciaGeneral(Request $request){
+
+    public static function buscarAsisnteciaGeneral(Request $request)
+    {
         $datos = [
             $request->opcion,
-            $request->iGradoId ?? NULL,
-            $request->iSeccionId ?? NULL,
+            $request->iGradoId ?? null,
+            $request->iSeccionId ?? null,
             $request->iSedeId,
             $request->iYAcadId,
             $request->mes,
-            $request->cPersDocumento ?? NULL,
-            $request->cEstCodigo ?? NULL,
+            $request->cPersDocumento ?? null,
+            $request->cEstCodigo ?? null,
         ];
-        $enviados = str_repeat('?,',count($datos)-1).'?';
-        $data = DB::select("EXEC [asi].[Sp_SEL_asistencia_general] ".$enviados,$datos);
+        $enviados = str_repeat('?,', count($datos) - 1).'?';
+        $data = DB::select('EXEC [asi].[Sp_SEL_asistencia_general] '.$enviados, $datos);
+
         return $data;
     }
-    public static function buscarHorarioInstitucion(Request $request){
+
+    public static function buscarHorarioInstitucion(Request $request)
+    {
         $datos = [
             $request->iSedeId,
         ];
-        $data = DB::select("EXEC [asi].[SP_SEL_configuracion_horario] ?",$datos);
+        $data = DB::select('EXEC [asi].[SP_SEL_configuracion_horario] ?', $datos);
+
         return $data;
     }
-    public static function guardarHorarioInstitucion(Request $request){
-        
+
+    public static function guardarHorarioInstitucion(Request $request)
+    {
+
         $datos = [
             $request->iSedeId,
             $request->cGrupoNombre,
@@ -114,12 +130,15 @@ class AsistenciaAdministrativa extends Model
             $request->tConfHorarioEntTur,
             $request->tConfHorarioSalTur,
         ];
-        $enviados = str_repeat('?,',count($datos)-1).'?';
-        $data = DB::select("EXEC [asi].[Sp_INS_grupos] ".$enviados, $datos);
+        $enviados = str_repeat('?,', count($datos) - 1).'?';
+        $data = DB::select('EXEC [asi].[Sp_INS_grupos] '.$enviados, $datos);
+
         return $data;
     }
-    public static function actualizarHorarioInstitucion(Request $request){
-        
+
+    public static function actualizarHorarioInstitucion(Request $request)
+    {
+
         $datos = [
             $request->iSedeId,
             $request->iGrupoId,
@@ -130,28 +149,36 @@ class AsistenciaAdministrativa extends Model
             $request->tConfHorarioSalTur,
         ];
 
-        $enviados = str_repeat('?,',count($datos)-1).'?';
-        $data = DB::select("EXEC [asi].[Sp_UPD_grupos] ".$enviados, $datos);
+        $enviados = str_repeat('?,', count($datos) - 1).'?';
+        $data = DB::select('EXEC [asi].[Sp_UPD_grupos] '.$enviados, $datos);
+
         return $data;
     }
-    public static function buscarPersonalInstitucion(Request $request){
+
+    public static function buscarPersonalInstitucion(Request $request)
+    {
         $datos = [
             $request->iSedeId,
             $request->iYAcadId,
         ];
-        $data = DB::select("EXEC [asi].[Sp_SEL_GrupoPersonal] ?,?",$datos);
+        $data = DB::select('EXEC [asi].[Sp_SEL_GrupoPersonal] ?,?', $datos);
+
         return $data;
     }
-    public static function guardarPersonalInstitucion(Request $request){
+
+    public static function guardarPersonalInstitucion(Request $request)
+    {
         $datos = [
             $request->iGrupoId,
             $request->grupoPersonal,
         ];
-        $data = DB::select("EXEC [asi].[Sp_INS_personaGrupo] ?,?",$datos);
+        $data = DB::select('EXEC [asi].[Sp_INS_personaGrupo] ?,?', $datos);
+
         return $data;
     }
-    
-    public static function editarGrupoInstitucion(Request $request){
+
+    public static function editarGrupoInstitucion(Request $request)
+    {
         $datos = [
             $request->iSedeId,
             $request->iGrupoId,
@@ -165,8 +192,9 @@ class AsistenciaAdministrativa extends Model
             $request->dtFechaIncio,
             $request->dtFechaFin,
         ];
-        $enviados = str_repeat('?,',count($datos)-1).'?';
-        $data = DB::select("EXEC [asi].[Sp_UPD_grupos] ".$enviados,$datos);
+        $enviados = str_repeat('?,', count($datos) - 1).'?';
+        $data = DB::select('EXEC [asi].[Sp_UPD_grupos] '.$enviados, $datos);
+
         return $data;
     }
 }
