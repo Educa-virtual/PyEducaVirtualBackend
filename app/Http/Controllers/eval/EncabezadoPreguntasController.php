@@ -317,17 +317,13 @@ class EncabezadoPreguntasController extends Controller
         }
 
         try {
-            $fieldsToDecode = [
-                'idEncabPregId',
-                'iCredId',
-            ];
-            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->idEncabPregId ?? null,
-                $request->cEncabPregTitulo ?? null,
-                $request->cEncabPregContenido ?? null,
-                $request->iCredId ?? null,
+                $request->idEncabPregId ?? NULL,
+                $request->cEncabPregTitulo ?? NULL,
+                $request->cEncabPregContenido ?? NULL,
+                json_encode($request->jsonPreguntas) ?? NULL,
+                $request->header('iCredEntPerfId') ?? NULL,
             ];
 
             $data = DB::select(
@@ -335,7 +331,8 @@ class EncabezadoPreguntasController extends Controller
                     @_idEncabPregId=?,   
                     @_cEncabPregTitulo=?,   
                     @_cEncabPregContenido=?,     
-                    @_iCredId=?',
+                    @_jsonPreguntas=?,
+                    @_iCredEntPerfId=?',
                 $parametros
             );
 
