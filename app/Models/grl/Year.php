@@ -6,6 +6,15 @@ use Illuminate\Support\Facades\DB;
 
 class Year
 {
+    public static function selYearParametros($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC grl.Sp_SEL_yearParametros $placeholders", $parametros);
+    }
+
     public static function selYears($request)
     {
         $parametros = [
@@ -61,6 +70,6 @@ class Year
             $request->iYearId ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne("EXEC grl.Sp_DEL_delYear $placeholders", $parametros);
+        return DB::selectOne("EXEC grl.Sp_DEL_year $placeholders", $parametros);
     }
 }

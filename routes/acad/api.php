@@ -24,7 +24,7 @@ use App\Http\Controllers\acad\SilabosController;
 use App\Http\Controllers\acad\TurnosController;
 use App\Http\Controllers\acad\DesercionController;
 use App\Http\Controllers\api\acad\AdministradorController;
-use App\Http\Controllers\api\acad\DistribucionBloqueController;
+use App\Http\Controllers\acad\DistribucionBloqueController;
 use App\Http\Controllers\api\acad\FeriadoImportanteController;
 use App\Http\Controllers\api\acad\TipoFechaController;
 use App\Http\Controllers\asi\AsistenciaController;
@@ -79,6 +79,12 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('actualizarDocenteCurso', [DocenteCursoController::class, 'actualizarDocenteCurso']);
     Route::post('actualizarDocenteCursoEstado', [DocenteCursoController::class, 'actualizarDocenteCursoEstado']);
     Route::post('borrarDocenteCurso', [DocenteCursoController::class, 'borrarDocenteCurso']);
+
+    Route::post('listarDistribucionBloques', [DistribucionBloqueController::class, 'listarDistribucionBloques']);
+    Route::post('verDistribucionBloque', [DistribucionBloqueController::class, 'verDistribucionBloque']);
+    Route::post('guardarDistribucionBloque', [DistribucionBloqueController::class, 'guardarDistribucionBloque']);
+    Route::post('actualizarDistribucionBloque', [DistribucionBloqueController::class, 'actualizarDistribucionBloque']);
+    Route::post('borrarDistribucionBloque', [DistribucionBloqueController::class, 'borrarDistribucionBloque']);
 
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
@@ -254,13 +260,6 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
         // Route::post('insFechasImportantes', [FeriadoImportanteController::class, 'insFechasImportantes']);
         Route::put('updFechasImportantes', [FeriadoImportanteController::class, 'updFechasImportantes']);
         Route::delete('deleteFechasImportantes/{iFechaImpId}', [FeriadoImportanteController::class, 'deleteFechasImportantes']);
-    });
-
-    Route::group(['prefix' => 'distribucion-bloques'], function () {
-        Route::get('getDistribucionBloques/{iYearId}/{iDistribucionBloqueId?}', [DistribucionBloqueController::class, 'getDistribucionBloques']);
-        Route::post('insDistribucionBloques', [DistribucionBloqueController::class, 'insDistribucionBloques']);
-        Route::put('updDistribucionBloques', [DistribucionBloqueController::class, 'updDistribucionBloques']);
-        Route::delete('deleteDistribucionBloques/{iDistribucionBloqueId}', [DistribucionBloqueController::class, 'deleteDistribucionBloques']);
     });
 
     Route::group(['prefix' => 'periodo-evaluaciones'], function () {

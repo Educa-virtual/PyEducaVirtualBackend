@@ -1,79 +1,68 @@
 <?php
 
-namespace App\Http\Controllers\grl;
+namespace App\Http\Controllers\acad;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\grl\ActualizarYearRequest;
-use App\Http\Requests\grl\GuardarYearRequest;
-use App\Models\grl\Year;
-use Illuminate\Http\Request;
+use App\Http\Requests\acad\ActualizarDistribucionBloqueRequest;
+use App\Http\Requests\acad\DistribucionBloqueRequest;
+use App\Http\Requests\acad\GuardarDistribucionBloqueRequest;
+use App\Http\Requests\acad\ListarDistribucionBloquesRequest;
+use App\Models\acad\DistribucionBloque;
 use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\grl\YearRequest;
 
-class YearController extends Controller
+class DistribucionBloqueController extends Controller
 {
-    public function crearYear(Request $request)
+    public function listarDistribucionBloques(ListarDistribucionBloquesRequest $request)
     {
         try {
             // Permitido para todos los perfiles
-            $data = Year::selYearParametros($request);
+            $data = DistribucionBloque::selDistribucionBloques($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function listarYears(Request $request)
+    public function verDistribucionBloque(DistribucionBloqueRequest $request)
     {
         try {
             // Permitido para todos los perfiles
-            $data = Year::selYears($request);
+            $data = DistribucionBloque::selDistribucionBloque($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function verYear(YearRequest $request)
-    {
-        try {
-            // Permitido para todos los perfiles
-            $data = Year::selYear($request);
-            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        } catch (\Exception $e) {
-            return FormatearMensajeHelper::error($e);
-        }
-    }
-
-    public function guardarYear(GuardarYearRequest $request)
+    public function guardarDistribucionBloque(GuardarDistribucionBloqueRequest $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
-            $data = Year::insYear($request);
+            $data = DistribucionBloque::insDistribucionBloque($request);
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function actualizarYear(ActualizarYearRequest $request)
+    public function actualizarDistribucionBloque(ActualizarDistribucionBloqueRequest $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
-            $data = Year::updYear($request);
+            $data = DistribucionBloque::updDistribucionBloque($request);
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function borrarYear(YearRequest $request)
+    public function borrarDistribucionBloque(DistribucionBloqueRequest $request)
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
-            $data = Year::delYear($request);
+            $data = DistribucionBloque::delDistribucionBloque($request);
             return FormatearMensajeHelper::ok('Se eliminó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
