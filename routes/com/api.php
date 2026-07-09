@@ -28,6 +28,7 @@ Route::group(['prefix' => 'com'], function () {
 });
 
 Route::group(['prefix' => 'com', 'middleware' => ['auth:api']], function () {
+    Route::post('notificarComunicados', [ComunicadoController::class, 'notificarComunicados']);
     Route::post('listarComunicados', [ComunicadoController::class, 'listarComunicados']);
     Route::post('crearComunicado', [ComunicadoController::class, 'crearComunicado']);
     Route::post('verComunicado', [ComunicadoController::class, 'verComunicado']);

@@ -9,7 +9,6 @@ use App\Models\doc\ActividadesGestion;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class CargaNoLectivasController extends Controller
@@ -88,7 +87,7 @@ class CargaNoLectivasController extends Controller
 
     public function descargar(Request $request)
     {
-        
+
         $ruta = $request->ruta;
         if (! Storage::disk('public')->exists($ruta)) {
             throw new Exception('El archivo no existe');

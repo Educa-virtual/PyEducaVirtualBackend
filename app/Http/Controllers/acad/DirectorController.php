@@ -12,6 +12,7 @@ use App\Services\seg\UsuariosService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DirectorController extends Controller
@@ -58,6 +59,15 @@ class DirectorController extends Controller
 
     public function descargarArchivo(Request $request)
     {
+        if (ob_get_level() > 0 && ob_get_length() > 0) {
+            Log::warning('Output buffer no vacío antes de enviar archivo: ' . bin2hex(ob_get_contents()));
+            ob_clean(); // limpia el buffer antes de continuar
+        }
+        $archivo = $request->archivo;
+        if (! Storage::disk('local')->exists($archivo)) {
+            throw new Exception('El archivo no existe');
+        }
+        
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $ruta = $request->ruta;

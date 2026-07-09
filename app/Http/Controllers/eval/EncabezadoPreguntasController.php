@@ -319,11 +319,11 @@ class EncabezadoPreguntasController extends Controller
         try {
 
             $parametros = [
-                $request->idEncabPregId ?? NULL,
-                $request->cEncabPregTitulo ?? NULL,
-                $request->cEncabPregContenido ?? NULL,
-                json_encode($request->jsonPreguntas) ?? NULL,
-                $request->header('iCredEntPerfId') ?? NULL,
+                $request->idEncabPregId ?? null,
+                $request->cEncabPregTitulo ?? null,
+                $request->cEncabPregContenido ?? null,
+                json_encode($request->jsonPreguntas) ?? null,
+                $request->header('iCredEntPerfId') ?? null,
             ];
 
             $data = DB::select(

@@ -150,4 +150,21 @@ class Comunicado extends Model
 
         return DB::selectOne("EXEC com.SEL_INS_RecepcionComunicados $placeholders", $parametros);
     }
+
+    public static function selNotificarComunicados($request){
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId
+        ];
+
+        $datos = DB::select("EXEC com.Sp_SEL_notificaciones ?,?", $parametros);
+
+        foreach ($datos as $lista) {
+            if (isset($lista->descripcion)) {
+                $lista->cComunicadoDescripcion = strip_tags($lista->cComunicadoDescripcion);
+            }
+        }
+
+        return $datos;
+    }
 }
