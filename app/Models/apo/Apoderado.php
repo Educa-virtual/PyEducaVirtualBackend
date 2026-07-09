@@ -95,4 +95,17 @@ class Apoderado extends Model
 
         return DB::selectOne("EXEC apo.SP_SEL_personaApoderado $placeholders", $parametros);
     }
+
+    public static function selApoderadoEstudiantes(Object $request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId,
+            $request->iSedeId,
+            $request->iApoderadoId,
+            $request->iPersId,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC apo.SP_SEL_apoderadoEstudiantes $placeholders", $parametros);
+    }
 }

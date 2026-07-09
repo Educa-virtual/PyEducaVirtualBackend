@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class ReporteAcademicoProgresoController extends Controller
 {
@@ -55,7 +56,7 @@ class ReporteAcademicoProgresoController extends Controller
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
             $params = [null, null, null, VerifyHash::decodesxId($iMatrId)];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
-            ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
+            // ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
             $outputPdf = ReportesAcademicosService::generarReporteAcademicoProgresoPdf($matricula);
 
             return response()->download($outputPdf)->deleteFileAfterSend(true);
@@ -99,11 +100,11 @@ class ReporteAcademicoProgresoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::APODERADO]]);
-            $params = [null, null, null, VerifyHash::decodesxId($iMatrId)];
+            $iMatrId = is_numeric($iMatrId) ? $iMatrId : VerifyHash::decodesxId($iMatrId);
+            $params = [NULL, NULL, NULL, $iMatrId];
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
-            ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
+            // ApoderadosService::estudiantePerteneceApoderado(Auth::user()->iPersId, $matricula->iEstudianteId);
             $data = ReportesAcademicosService::obtenerReporteAcademicoProgreso($matricula);
-
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
