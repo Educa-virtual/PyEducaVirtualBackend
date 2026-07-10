@@ -9,6 +9,17 @@ use Illuminate\Http\Request;
 
 class CalendarioAcademico extends Model
 {
+    public static function selCalendarioAcademicos($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId') ?? NULL,
+            $request->iYAcadId ?? NULL,
+            $request->iSedeId ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_SEL_calendarioAcademicos $placeholders", $parametros);
+    }
+
     public static function selCalendarioFechasInicioFinSede($iYAcadId, $iSedeId)
     {
         return DB::select("SELECT iPeriodoEvalAperId,calacad.iCalAcadId,cPeriodoEvalLetra,dtPeriodoEvalAperInicio, dtPeriodoEvalAperFin
@@ -20,46 +31,14 @@ class CalendarioAcademico extends Model
         ORDER BY dtPeriodoEvalAperInicio ASC", [$iYAcadId, $iSedeId]);
     }
 
-    public static function insCalendarioAcademico(Request $request){
-
-        $iMeritoId = $request->iMeritoId;
-        $iPersId = $request->iPersId;
-        $iTipoMeritoId = $request->iTipoMeritoId;
-        $cMeritoDescripcion = $request->cMeritoDescripcion;
-        $iMeritoPuntaje = $request->iMeritoPuntaje;
-        $iMeritoPuesto = $request->iMeritoPuesto;	
-        $cMeritoRef = $request->cMeritoRef;
-        $dtMeritoFecha = $request->dtMeritoFecha;
-        $iYAcadId = $request->iYAcadId;
-        $iSedeId = $request->iSedeId;
-        $iCredEntPerfId = $request->iCredEntPerfId;
-
-        $parametros = [
-            $iMeritoId,
-            $iTipoMeritoId,
-            $iPersId,  
-            $cMeritoDescripcion,
-            $iMeritoPuntaje,
-            $iMeritoPuesto,	
-            $cMeritoRef,
-            $dtMeritoFecha,
-            $iYAcadId,
-            $iSedeId,
-            $iCredEntPerfId,
-        ];
-        
-        $cantidad = str_repeat('?,', count($parametros) - 1).'?';
-        return DB::selectOne("EXEC acad.Sp_INS_merito ".$cantidad, $parametros);
-    }
-
-    public static function selCalendarioAcademico(Request $request){
-
+    public static function selCalendarioAcademico(Request $request)
+    {
+        // Renombrar y mover a otro lado, es calendario de clases
         $parametros = [
             VerifyHash::decodes($request->iDocenteId),
             $request->iYAcadId,
             $request->iSedeId,
         ];
-
         $cantidad = str_repeat('?,', count($parametros) - 1).'?';
         return DB::selectOne("EXEC acad.Sp_SEL_calendarioAcademico ".$cantidad, $parametros);
     }

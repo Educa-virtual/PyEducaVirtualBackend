@@ -166,21 +166,22 @@ class CalendarioAcademicosController extends Controller
         }
     }
 
-    public function insCalendarioAcademico(Request $request)
-    {   
+    public function verCalendarioAcademicos(Request $request)
+    {
         try {
-             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
-            $data = CalendarioAcademico::insCalendarioAcademico($request);
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE]]);
+            $data = CalendarioAcademico::selCalendarioAcademicos($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        } catch (Exception $e) {
+        } catch(\Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
     public function obtenerCalendario(Request $request)
     {
+        // Renombrar y mover a otro lado, es calendario de clases
         try {
-             Gate::authorize('tiene-perfil', [[Perfil::DOCENTE,Perfil::ESTUDIANTE,Perfil::DIRECTOR_IE]]);
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE,Perfil::ESTUDIANTE,Perfil::DIRECTOR_IE]]);
             $data = CalendarioAcademico::selCalendarioAcademico($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {

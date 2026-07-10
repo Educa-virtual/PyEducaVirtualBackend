@@ -86,6 +86,8 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('actualizarDistribucionBloque', [DistribucionBloqueController::class, 'actualizarDistribucionBloque']);
     Route::post('borrarDistribucionBloque', [DistribucionBloqueController::class, 'borrarDistribucionBloque']);
 
+    Route::post('verCalendarioAcademicos', [CalendarioAcademicosController::class, 'verCalendarioAcademicos']);
+
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
     Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
