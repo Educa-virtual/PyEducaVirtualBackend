@@ -14,7 +14,7 @@ class FeriadoNacional extends Model
                 $request->iYAcadId ?? NULL,
             ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.Sp_SEL_feriadosNacionales $placeholders", $parametros);
+        return DB::select("EXEC grl.Sp_SEL_feriadosNacionales $placeholders", $parametros);
     }
 
     public static function insFeriadoNacional(Object $request)
@@ -30,18 +30,19 @@ class FeriadoNacional extends Model
             $request->iEstado ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.Sp_INS_feriadoNacional $placeholders", $parametros);
+        return DB::select("EXEC grl.Sp_INS_feriadoNacional $placeholders", $parametros);
     }
 
     public static function insFeriadoNacionalMasivo(Object $request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iYAcidId ?? NULL,
+            $request->iYAcadId ?? NULL,
             $request->jsonFeriadosNacionales ?? NULL,
+            $request->bPermiteSobrescribir ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.Sp_INS_feriadoNacionalMasivo $placeholders", $parametros);
+        return DB::select("EXEC grl.Sp_INS_feriadoNacionalMasivo $placeholders", $parametros);
     }
 
     public static function updFeriadoNacional(Object $request)
@@ -57,7 +58,7 @@ class FeriadoNacional extends Model
             $request->iEstado ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.Sp_UPD_feriadoNacional $placeholders", $parametros);
+        return DB::select("EXEC grl.Sp_UPD_feriadoNacional $placeholders", $parametros);
     }
 
     public static function delFeriadoNacional(Object $request)
@@ -67,6 +68,16 @@ class FeriadoNacional extends Model
             $request->iFeriadoId ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.Sp_DEL_feriadoNacional $placeholders", $parametros);
+        return DB::select("EXEC grl.Sp_DEL_feriadoNacional $placeholders", $parametros);
+    }
+
+    public static function updFeriadoNacionalAplicar(Object $request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iYAcadId ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC grl.Sp_UPD_feriadoNacionalAplicar $placeholders", $parametros);
     }
 }

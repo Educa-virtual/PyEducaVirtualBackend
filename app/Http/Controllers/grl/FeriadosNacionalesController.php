@@ -57,7 +57,7 @@ class FeriadosNacionalesController extends Controller
     public function aplicarFeriadosNacionales(AplicarFeriadosNacionalesRequest $request)
     {
         try {
-            $data = FeriadoNacional::updFeriadoNacional($request);
+            $data = FeriadoNacional::updFeriadoNacionalAplicar($request);
             return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
