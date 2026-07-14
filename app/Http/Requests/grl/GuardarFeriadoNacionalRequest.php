@@ -23,7 +23,7 @@ class GuardarFeriadoNacionalRequest extends GeneralFormRequest
         return [
             'iYAcadId' => 'integer|required',
             'cFeriadoNombre' => 'required|string|max:200',
-            'dtFeriado' => 'required|data',
+            'dtFeriado' => 'required|date',
             'bFeriadoEsRecuperable' => 'required|boolean',
             'cFeriadoDescripcion' => 'nullable|string',
             'cDocumento' => 'nullable|string',
@@ -34,6 +34,11 @@ class GuardarFeriadoNacionalRequest extends GeneralFormRequest
     {
         return [
             'iYAcadId' => 'año académico',
+            'cFeriadoNombre' => 'nombre del año',
+            'dtFeriado' => 'fecha del feriado',
+            'bFeriadoEsRecuperable' => 'es recuperable',
+            'cFeriadoDescripcion' => 'descripcion del feriado',
+            'cDocumento' => 'documento del feriado',
         ];
     }
 }

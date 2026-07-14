@@ -89,7 +89,6 @@ class GuardarFeriadoNacionalMasivoRequest extends GeneralFormRequest
             // Extraer datos a partir de la fila 2
             if ($index_fila > 1) {
                 // Limpiar datos de la fila
-                $fila = array_map('strtoupper', $fila);
                 $fila = array_map('trim', $fila);
 
                 // Ignorar filas sin fecha ni nombre

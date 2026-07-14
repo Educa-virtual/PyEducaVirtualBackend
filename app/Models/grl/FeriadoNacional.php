@@ -4,6 +4,7 @@ namespace App\Models\grl;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FeriadoNacional extends Model
 {
@@ -27,7 +28,6 @@ class FeriadoNacional extends Model
             $request->cFeriadoNombre ?? NULL,
             $request->cFeriadoDescripcion ?? NULL,
             $request->cDocumento ?? NULL,
-            $request->iEstado ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC grl.Sp_INS_feriadoNacional $placeholders", $parametros);
@@ -41,6 +41,7 @@ class FeriadoNacional extends Model
             $request->jsonFeriadosNacionales ?? NULL,
             $request->bPermiteSobrescribir ?? NULL,
         ];
+        Log::info($parametros);
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC grl.Sp_INS_feriadoNacionalMasivo $placeholders", $parametros);
     }
@@ -50,12 +51,10 @@ class FeriadoNacional extends Model
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iFeriadoId ?? NULL,
-            $request->dtFeriado ?? NULL,
             $request->bFeriadoEsRecuperable ?? NULL,
             $request->cFeriadoNombre ?? NULL,
             $request->cFeriadoDescripcion ?? NULL,
             $request->cDocumento ?? NULL,
-            $request->iEstado ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC grl.Sp_UPD_feriadoNacional $placeholders", $parametros);

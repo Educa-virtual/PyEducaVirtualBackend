@@ -23,7 +23,6 @@ class ActualizarFeriadoNacionalRequest extends GeneralFormRequest
         return [
             'iFeriadoId' => 'integer|required',
             'cFeriadoNombre' => 'required|string|max:200',
-            'dtFeriado' => 'required|data',
             'bFeriadoEsRecuperable' => 'required|boolean',
             'cFeriadoDescripcion' => 'nullable|string',
             'cDocumento' => 'nullable|string',
@@ -34,6 +33,10 @@ class ActualizarFeriadoNacionalRequest extends GeneralFormRequest
     {
         return [
             'iFeriadoId' => 'año académico',
+            'cFeriadoNombre' => 'nombre del año',
+            'bFeriadoEsRecuperable' => 'es recuperable',
+            'cFeriadoDescripcion' => 'descripcion del feriado',
+            'cDocumento' => 'documento del feriado',
         ];
     }
 }
