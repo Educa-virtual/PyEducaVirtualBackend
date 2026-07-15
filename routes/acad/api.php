@@ -87,6 +87,8 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('borrarDistribucionBloque', [DistribucionBloqueController::class, 'borrarDistribucionBloque']);
 
     Route::post('verCalendarioAcademicos', [CalendarioAcademicosController::class, 'verCalendarioAcademicos']);
+    Route::post('guardarCalendarioAcademicos', [CalendarioAcademicosController::class, 'guardarCalendarioAcademicos']);
+    Route::post('actualizarCalendarioAcademicos', [CalendarioAcademicosController::class, 'actualizarCalendarioAcademicos']);
 
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
@@ -292,7 +294,7 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
         Route::post('bandeja-estudiante', [BandejaCotnroller::class, 'bandejaEstudiante']);
     });
     Route::group(['prefix' => 'calendario-academicos'], function () {
-        Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioAcademicosController::class, 'obtenerCalendarioAcademicosxiSedeIdxiYAcadId']);
+        Route::get('/{iYAcadId}/sede/{iSedeId}', [CalendarioAcademicosController::class, 'verCalendarioAcademico']);
         Route::post('/', [CalendarioAcademicosController::class, 'guardarCalendarioAcademicos']);
     });
     Route::group(['prefix' => 'turnos'], function () {

@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Requests\acad\ActualizarCalendarioAcademicosRequest;
+use App\Http\Requests\acad\GuardarCalendarioAcademicosRequest;
 use App\Models\acad\CalendarioAcademico;
 use Exception;
 use Illuminate\Http\Response;
@@ -78,91 +80,25 @@ class CalendarioAcademicosController extends Controller
         }
     }
 
-    public function guardarCalendarioAcademicos(Request $request)
+    public function guardarCalendarioAcademicos(GuardarCalendarioAcademicosRequest $request)
     {
-
-        $validator = Validator::make($request->all(), [
-            'iYAcadId' => ['required'],
-            'iSedeId' => ['required'],
-        ], [
-            'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
-            'iSedeId.required' => 'No se encontró el identificador iSedeId',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'validated' => false,
-                'errors' => $validator->errors()
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         try {
-            $fieldsToDecode = [
-                'iYAcadId',
-                'iSedeId',
-                'iCredId',
-            ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
-            $parametros = [
-                $request->iYAcadId                    ??  NULL,
-                $request->iSedeId                     ??  NULL,
-
-                $request->dtCalAcadInicio             ??  NULL,
-                $request->dtCalAcadFin                ??  NULL,
-                $request->dtCalAcadMatriculaInicio    ??  NULL,
-                $request->dtCalAcadMatriculaFin       ??  NULL,
-                $request->dtCalAcadMatriculaResagados ??  NULL,
-                $request->dtFaseInicioRegular         ??  NULL,
-                $request->dtFaseFinRegular            ??  NULL,
-                $request->dtFaseInicioRecuperacion    ??  NULL,
-                $request->dtFaseFinRecuperacion       ??  NULL,
-                $request->iTurnoId                    ??  NULL,
-                $request->dtAperTurnoInicio           ??  NULL,
-                $request->dtAperTurnoFin              ??  NULL,
-                $request->jsonHorarios                ??  NULL,
-
-                $request->iCredId                     ??  NULL
-            ];
-
-            $data = DB::select(
-                'exec acad.SP_INS_calendarioAcademicos 
-                    @_iYAcadId=?, 
-                    @_iSedeId=?, 
-                    @_dtCalAcadInicio=?, 
-                    @_dtCalAcadFin=?, 
-                    @_dtCalAcadMatriculaInicio=?, 
-                    @_dtCalAcadMatriculaFin=?, 
-                    @_dtCalAcadMatriculaResagados=?, 
-                    @_dtFaseInicioRegular=?, 
-                    @_dtFaseFinRegular=?, 
-                    @_dtFaseInicioRecuperacion=?, 
-                    @_dtFaseFinRecuperacion=?, 
-                    @_iTurnoId=?, 
-                    @_dtAperTurnoInicio=?, 
-                    @_dtAperTurnoFin=?,  
-                    @_jsonHorarios=?,  
-                    @_iCredId=?',
-                $parametros
-            );
-
-
-            if ($data[0]->iCalAcadId > 0) {
-                return new JsonResponse(
-                    ['validated' => true, 'message' => 'Se ha guardado exitosamente ', 'data' => null],
-                    Response::HTTP_OK
-                );
-            } else {
-                return new JsonResponse(
-                    ['validated' => false, 'message' => 'No se ha podido guardar', 'data' => null],
-                    Response::HTTP_OK
-                );
-            }
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE]]);
+            $data = CalendarioAcademico::insCalendarioAcademicos($request);
+            return FormatearMensajeHelper::ok('Se ha guardado exitosamente ', $data);
         } catch (\Exception $e) {
-            return new JsonResponse(
-                ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function actualizarCalendarioAcademicos(ActualizarCalendarioAcademicosRequest $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::DIRECTOR_IE]]);
+            $data = CalendarioAcademico::updCalendarioAcademicos($request);
+            return FormatearMensajeHelper::ok('Se ha actualizado exitosamente ', $data);
+        } catch (\Exception $e) {
+            return FormatearMensajeHelper::error($e);
         }
     }
 
