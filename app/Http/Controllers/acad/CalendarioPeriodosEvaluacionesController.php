@@ -2,16 +2,49 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Requests\acad\ListarCalendarioPeriodosRequest;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use App\Models\acad\CalendarioPeriodosEvaluaciones;
 
 class CalendarioPeriodosEvaluacionesController extends Controller
 {
+    public function listarCalendarioPeriodos(ListarCalendarioPeriodosRequest $request)
+    {
+        try {
+            $data = CalendarioPeriodosEvaluaciones::selCalendariosPeriodosEvaluaciones($request);
+            return FormatearMensajeHelper::ok('Se obtuvo los datos', $data);
+        } catch(\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function procesarCalendarioPeriodos(Request $request)
+    {
+        try {
+            $data = CalendarioPeriodosEvaluaciones::updCalendarioPeriodosAcademicos($request);
+            return FormatearMensajeHelper::ok('Se proceso el calendario', $data);
+        } catch(\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function actualizarCalendarioPeriodo(Request $request)
+    {
+        try {
+            $data = CalendarioPeriodosEvaluaciones::updCalendarioPeriodoAcademico($request);
+            return FormatearMensajeHelper::ok('Se actualizo el calendario', $data);
+        } catch(\Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function obtenerPeriodosxiYAcadIdxiSedeIdxFaseRegular(Request $request, $iYAcadId, $iSedeId)
     {
         $request->merge([

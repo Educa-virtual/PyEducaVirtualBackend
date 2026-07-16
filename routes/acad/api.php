@@ -90,6 +90,10 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('guardarCalendarioAcademicos', [CalendarioAcademicosController::class, 'guardarCalendarioAcademicos']);
     Route::post('actualizarCalendarioAcademicos', [CalendarioAcademicosController::class, 'actualizarCalendarioAcademicos']);
 
+    Route::post('listarCalendarioPeriodos', [CalendarioPeriodosEvaluacionesController::class, 'listarCalendarioPeriodos']);
+    Route::post('procesarCalendarioPeriodos', [CalendarioPeriodosEvaluacionesController::class, 'procesarCalendarioPeriodos']);
+    Route::post('actualizarCalendarioPeriodo', [CalendarioPeriodosEvaluacionesController::class, 'actualizarCalendarioPeriodo']);
+
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
     Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
