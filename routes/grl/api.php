@@ -41,6 +41,7 @@ Route::group(['prefix' => 'grl', 'middleware' => ['auth:api']], function () {
 
   Route::post('crearYear', [YearController::class, 'crearYear']);
   Route::post('listarYears', [YearController::class, 'listarYears']);
+  Route::post('verYear', [YearController::class, 'verYear']);
   Route::post('guardarYear', [YearController::class, 'guardarYear']);
   Route::post('actualizarYear', [YearController::class, 'actualizarYear']);
   Route::post('borrarYear', [YearController::class, 'borrarYear']);

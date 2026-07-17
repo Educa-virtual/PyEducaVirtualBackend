@@ -16,7 +16,7 @@ class ReportesAcademicosService
     //$matricula = MatriculasService::obtenerDetallesMatriculaEstudiante($iCredPerfIdEstudiante, $iYAcadId);
     public static function generarReporteAcademicoProgresoPdf($matricula)
     {
-        $yearAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
+        $yearAcademico = YearAcademicosService::obtenerYearAcademicoPorId($matricula->iYAcadId);
         $persona = PersonasRepository::obtenerPersonaPorId($matricula->iPersId);
         $ie = InstitucionesEducativasService::obtenerInstitucionEducativa($matricula->iIieeId);
         $tutor = DocentesCursosService::obtenerTutorSalonIe($matricula->iYAcadId, $matricula->iSedeId, $matricula->iNivelGradoId, $matricula->iSeccionId);

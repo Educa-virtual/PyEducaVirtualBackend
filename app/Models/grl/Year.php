@@ -29,6 +29,7 @@ class Year
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iYearId ?? NULL,
+            $request->iYAcadId ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::selectOne("EXEC grl.Sp_SEL_year $placeholders", $parametros);

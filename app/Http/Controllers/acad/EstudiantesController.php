@@ -158,7 +158,7 @@ class EstudiantesController extends Controller
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
             $tiposActividad = TiposActividadService::obtenerTiposActividad();
-            $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
+            $anioAcademico = YearAcademicosService::obtenerYearAcademicoPorId($matricula->iYAcadId);
 
             $calendario = ProgramacionActividadesService::obtenerCalendarioAcademicoEstudiante($matricula);
             return FormatearMensajeHelper::ok('Se obtuvo el calendario académico', [
@@ -180,7 +180,7 @@ class EstudiantesController extends Controller
             $matricula = MatriculasService::obtenerDetalleMatriculaEstudiante($params);
             $cursos = MatriculasService::obtenerCursosMatricula($matricula->iMatrId);
             $tiposActividad = TiposActividadService::obtenerTiposActividad();
-            $anioAcademico = YearAcademicosService::obtenerYearAcademico($matricula->iYAcadId);
+            $anioAcademico = YearAcademicosService::obtenerYearAcademicoPorId($matricula->iYAcadId);
 
             $calendario = ProgramacionActividadesService::obtenerCalendarioAcademicoEstudiante($matricula);
             return FormatearMensajeHelper::ok('Se obtuvo el calendario académico', [

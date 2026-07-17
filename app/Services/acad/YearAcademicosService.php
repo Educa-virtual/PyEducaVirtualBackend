@@ -6,9 +6,9 @@ use App\Models\acad\YearAcademico;
 
 class YearAcademicosService
 {
-    public static function obtenerYearAcademico($iYAcadId)
+    public static function obtenerYearAcademicoPorId($iYAcadId)
     {
-        return YearAcademico::selYearAcademico($iYAcadId);
+        return YearAcademico::selYearAcademicoPorId($iYAcadId) ;
     }
 
     public static function obtenerYearAcademicoPorAnio($anio)

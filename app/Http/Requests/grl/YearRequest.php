@@ -15,13 +15,15 @@ class YearRequest extends GeneralFormRequest
     {
         $this->merge([
             'iYearId' => $this->route('iYearId') ?? $this->input('iYearId'),
+            'iYAcadId' => $this->route('iYAcadId') ?? $this->input('iYAcadId'),
         ]);
     }
 
     public function rules(): array
     {
         return [
-            'iYearId' => ['integer', 'required'],
+            'iYearId' => ['integer', 'nullable', 'required_without:iYAcadId'],
+            'iYAcadId' => ['integer', 'nullable', 'required_without:iYearId'],
         ];
     }
 
@@ -29,6 +31,7 @@ class YearRequest extends GeneralFormRequest
     {
         return [
             'iYearId' => 'identificador del año',
+            'iYAcadId' => 'identificador del año académico',
         ];
     }
 }
