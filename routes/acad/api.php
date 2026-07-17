@@ -8,6 +8,7 @@ use App\Http\Controllers\acad\BuzonSugerenciaDirectorController;
 use App\Http\Controllers\acad\BuzonSugerenciaEstudianteController;
 use App\Http\Controllers\acad\CalendarioAcademicosController;
 use App\Http\Controllers\acad\CalendarioPeriodosEvaluacionesController;
+use App\Http\Controllers\acad\CalendarioTurnoController;
 use App\Http\Controllers\acad\ContenidoSemanasController;
 use App\Http\Controllers\acad\CursosController;
 use App\Http\Controllers\acad\DetalleMatriculasController;
@@ -93,6 +94,10 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('listarCalendarioPeriodos', [CalendarioPeriodosEvaluacionesController::class, 'listarCalendarioPeriodos']);
     Route::post('procesarCalendarioPeriodos', [CalendarioPeriodosEvaluacionesController::class, 'procesarCalendarioPeriodos']);
     Route::post('actualizarCalendarioPeriodo', [CalendarioPeriodosEvaluacionesController::class, 'actualizarCalendarioPeriodo']);
+
+    Route::post('verCalendarioTurno', [CalendarioTurnoController::class, 'verCalendarioTurno']);
+    Route::post('guardarCalendarioTurno', [CalendarioTurnoController::class, 'guardarCalendarioTurno']);
+    Route::post('actualizarCalendarioTurno', [CalendarioTurnoController::class, 'actualizarCalendarioTurno']);
 
     Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
     Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
