@@ -8,6 +8,27 @@ use Illuminate\Support\Facades\Storage;
 
 class InstitucionEducativa
 {
+    public static function selInstitucionesEducativasParametros($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_SEL_institucionesEducativasParametros $placeholders", $parametros);
+    }
+
+    public static function selInstitucionesEducativas($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            $request->iNivelTipoId ?? NULL,
+            $request->iUgelId ?? NULL,
+            $request->iEstado ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::select("EXEC acad.sp_sel_instituciones_educativas $placeholders", $parametros);
+    }
+
     public static function selInstitucionEducativa($iIieeId) {
         return DB::selectOne("SELECT * FROM acad.institucion_educativas WHERE iIieeId=?", [$iIieeId]);
     }

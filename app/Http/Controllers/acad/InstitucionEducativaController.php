@@ -7,9 +7,34 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use App\Models\acad\InstitucionEducativa;
+use App\Enums\Perfil;
 
 class InstitucionEducativaController extends Controller
 {
+    public static function crearInstitucionEducativa(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            $data = InstitucionEducativa::selInstitucionesEducativasParametros($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public static function listarInstitucionesEducativas(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            $data = InstitucionEducativa::selInstitucionesEducativas($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function obtenerInstitucionesEducativas(Request $request)
     {
         try {

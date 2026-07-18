@@ -38,6 +38,7 @@ use App\Http\Controllers\acad\ConfiguracionController;
 use App\Http\Controllers\acad\GradoSeccionController;
 use App\Http\Controllers\acad\IeCursoController;
 use App\Http\Controllers\acad\DocenteCursoController;
+use App\Http\Controllers\acad\SedeController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
@@ -99,14 +100,24 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('guardarCalendarioTurno', [CalendarioTurnoController::class, 'guardarCalendarioTurno']);
     Route::post('actualizarCalendarioTurno', [CalendarioTurnoController::class, 'actualizarCalendarioTurno']);
 
-    Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
-    Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
-    Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
-    Route::get('fechas-importantes/tipos', [FechasImportantesController::class, 'obtenerTiposFechas']);
+    Route::post('listarInstitucionesEducativas', [InstitucionEducativaController::class, 'listarInstitucionesEducativas']);
+    Route::post('crearInstitucionEducativa', [InstitucionEducativaController::class, 'crearInstitucionEducativa']);
+    Route::post('verInstitucionEducativa', [InstitucionEducativaController::class, 'verInstitucionEducativa']);
+
+    Route::post('listarSedes', [SedeController::class, 'listarSedes']);
+    Route::post('guardarSede', [SedeController::class, 'guardarSede']);
+    Route::post('actualizarSede', [SedeController::class, 'actualizarSede']);
+    Route::post('eliminarSede', [SedeController::class, 'eliminarSede']);
+
     Route::group(['prefix' => 'instituciones-educativas'], function () {
         Route::get('', [InstitucionEducativaController::class, 'obtenerInstitucionesEducativas']);
         Route::get('{iIieeId}/sedes', [InstitucionEducativaController::class, 'obtenerSedesIe']);
     });
+
+    Route::post('subirImagen', [DirectorController::class, 'subirImagen']);
+    Route::post('subirDocumento', [DirectorController::class, 'subirDocumento']);
+    Route::post('descargarArchivo', [DirectorController::class, 'descargarArchivo']);
+    Route::get('fechas-importantes/tipos', [FechasImportantesController::class, 'obtenerTiposFechas']);
 
     Route::post('obtenerCalendario', [CalendarioAcademicosController::class, 'obtenerCalendario']);
 
