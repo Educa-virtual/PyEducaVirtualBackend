@@ -50,7 +50,7 @@ class InscripcionesController extends Controller
                      cPersTelefono
                     ,cPersCorreo
                     FROM grl.personas
-                    WHERE iPersId = '.$data['data']['iPersId']
+                    WHERE iPersId = ' . $data['data']['iPersId']
                 );
 
                 $data['data']['cPersTelefono'] = count($datosContacto) > 0 ? $datosContacto[0]->cPersTelefono : null;
@@ -73,14 +73,14 @@ class InscripcionesController extends Controller
 
                 if (count($inscripciones) > 0) {
                     if ($inscripciones[0]->iMatriculado) {
-                        $message = $data['data']['cPersNombre'].' '.$data['data']['cPersPaterno'].' ya se encuentra matriculado en la capacitación';
+                        $message = $data['data']['cPersNombre'] . ' ' . $data['data']['cPersPaterno'] . ' ya se encuentra matriculado en la capacitación';
 
                         return new JsonResponse(
                             ['validated' => false, 'message' => $message, 'data' => []],
                             Response::HTTP_OK
                         );
                     } else {
-                        $message = $data['data']['cPersNombre'].' '.$data['data']['cPersPaterno'].' ya se encuentra inscrito en la capacitación';
+                        $message = $data['data']['cPersNombre'] . ' ' . $data['data']['cPersPaterno'] . ' ya se encuentra inscrito en la capacitación';
 
                         return new JsonResponse(
                             ['validated' => false, 'message' => $message, 'data' => []],
@@ -256,7 +256,7 @@ class InscripcionesController extends Controller
             $cEstado = $request->bEstado ? 'validado' : 'rechazado';
 
             if ($data[0]->iInscripId > 0) {
-                $message = 'Se ha '.$cEstado.' correctamente a la Inscripción';
+                $message = 'Se ha ' . $cEstado . ' correctamente a la Inscripción';
 
                 $info = DB::select(
                     'exec cap.SP_SEL_detalleInscripcion ?',
@@ -292,7 +292,7 @@ class InscripcionesController extends Controller
                     Response::HTTP_OK
                 );
             } else {
-                $message = 'No se ha '.$cEstado.' correctamente a la Inscripción';
+                $message = 'No se ha ' . $cEstado . ' correctamente a la Inscripción';
 
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],

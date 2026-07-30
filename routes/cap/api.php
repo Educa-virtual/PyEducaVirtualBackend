@@ -7,6 +7,7 @@ use App\Http\Controllers\cap\InstructoresController;
 use App\Http\Controllers\cap\NivelPedagogicosController;
 use App\Http\Controllers\cap\NotasController;
 use App\Http\Controllers\cap\TipoCapacitacionesController;
+use App\Http\Controllers\cap\TipoModalidadController;
 use App\Http\Controllers\cap\TipoPublicosController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,7 +32,7 @@ Route::group(['prefix' => 'cap'], function () {
         Route::put('/{iCapacitacionId}/estado', [CapacitacionesController::class, 'actualizarEstadoCapacitacion']);
         Route::get('/matriculados', [CapacitacionesController::class, 'listarCapacitacionesxMatriculados']); // Para listar las capacitaciones con sus inscripciones aprobadas
         Route::get('/publicadas', [CapacitacionesController::class, 'listarCapacitacionesPublicadas']);
-        Route::get('/publicadas', [CapacitacionesController::class, 'listarCapacitacionesPublicadas']);
+        Route::get('/publicada/{iCapacitacionId}', [CapacitacionesController::class, 'listarCapacitacionesPublicadasxiCapacitacionId']);
         Route::get('/{cPerfil}/{iCredId}', [CapacitacionesController::class, 'listarCapacitacionesxiCredId']);
     });
     Route::group(['prefix' => 'inscripciones'], function () {
@@ -54,5 +55,8 @@ Route::group(['prefix' => 'cap'], function () {
     });
     Route::prefix('certificado')->group(function () {
         Route::get('/{iCapacitacionId}/persona/{iPersId}/pdf', [CertificadoController::class, 'downloadPdf']);
+    });
+    Route::group(['prefix' => 'tipo-modalidad'], function () {
+        Route::get('/', [TipoModalidadController::class, 'listarTipoModalidad']);
     });
 });
