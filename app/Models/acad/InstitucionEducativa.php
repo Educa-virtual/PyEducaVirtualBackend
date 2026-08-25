@@ -22,15 +22,84 @@ class InstitucionEducativa
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iNivelTipoId ?? NULL,
+            $request->iTipoSectorId ?? NULL,
+            $request->iDsttId ?? NULL,
+            $request->iIieeId ?? NULL,
             $request->iUgelId ?? NULL,
-            $request->iEstado ?? NULL,
+            $request->iZonaId ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select("EXEC acad.sp_sel_instituciones_educativas $placeholders", $parametros);
+        return DB::select("EXEC acad.Sp_SEL_institucionesEducativas $placeholders", $parametros);
     }
 
-    public static function selInstitucionEducativa($iIieeId) {
-        return DB::selectOne("SELECT * FROM acad.institucion_educativas WHERE iIieeId=?", [$iIieeId]);
+    public static function insInstitucionEducativa($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId') ?? NULL,
+            $request->iDsttId ?? NULL,
+            $request->iUgelId ?? NULL,
+            $request->iNivelTipoId ?? NULL,
+            $request->iTipoSectorId ?? NULL,
+            $request->cIieeCodigoModular ?? NULL,
+            $request->cIieeNombre ?? NULL,
+            $request->cIieeDireccion ?? NULL,
+            $request->iZonaId ?? NULL,
+            $request->cIieeRUC ?? NULL,
+            $request->cIieeDirector ?? NULL,
+            $request->cIieeTelefono ?? NULL,
+            $request->cIieeEmail ?? NULL,
+            $request->cIieeLogo ?? NULL,
+            $request->cIieeRslCreacion ?? NULL,
+            $request->dtIieeRslCreacion ?? NULL,
+            $request->iEstado ?? NULL,
+            $request->cIieeNlat ?? NULL,
+            $request->cIieeNlog ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_INS_institucionEducativa $placeholders", $parametros);
+    }
+
+    public static function updInstitucionEducativa($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId') ?? NULL,
+            $request->iIieeId ?? NULL,
+            $request->iDsttId ?? NULL,
+            $request->iUgelId ?? NULL,
+            $request->iNivelTipoId ?? NULL,
+            $request->iTipoSectorId ?? NULL,
+            $request->cIieeCodigoModular ?? NULL,
+            $request->cIieeNombre ?? NULL,
+            $request->cIieeDireccion ?? NULL,
+            $request->iZonaId ?? NULL,
+            $request->cIieeRUC ?? NULL,
+            $request->cIieeDirector ?? NULL,
+            $request->cIieeTelefono ?? NULL,
+            $request->cIieeEmail ?? NULL,
+            $request->cIieeLogo ?? NULL,
+            $request->cIieeRslCreacion ?? NULL,
+            $request->dtIieeRslCreacion ?? NULL,
+            $request->iEstado ?? NULL,
+            $request->cIieeNlat ?? NULL,
+            $request->cIieeNlog ?? NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_UPD_institucionEducativa $placeholders", $parametros);
+    }
+
+    public static function selInstitucionEducativa($request)
+    {
+        $parametros = [
+            $request->header('iCredEntPerfId'),
+            NULL,
+            NULL,
+            NULL,
+            $request->iIieeId ?? NULL,
+            NULL,
+            NULL,
+        ];
+        $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+        return DB::selectOne("EXEC acad.Sp_SEL_institucionesEducativas $placeholders", $parametros);
     }
 
     public static function selInstitucionEducativaPorCodigoModular($codigoModular) {

@@ -35,6 +35,39 @@ class InstitucionEducativaController extends Controller
         }
     }
 
+    public static function verInstitucionEducativa(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            $data = InstitucionEducativa::selInstitucionEducativa($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function guardarInstitucionEducativa(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            $data = InstitucionEducativa::insInstitucionEducativa($request);
+            return FormatearMensajeHelper::ok('Se guardó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
+    public function actualizarInstitucionEducativa(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            $data = InstitucionEducativa::updInstitucionEducativa($request);
+            return FormatearMensajeHelper::ok('Se actualizó la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function obtenerInstitucionesEducativas(Request $request)
     {
         try {

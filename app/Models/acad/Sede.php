@@ -10,7 +10,7 @@ class Sede
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iIieeId,
+            $request->iIieeId ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC acad.Sp_SEL_sedes $placeholders", $parametros);
@@ -20,15 +20,18 @@ class Sede
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
-            $request->iIieeId,
-            $request->cNombre,
-            $request->cDireccion,
-            $request->cTelefono,
-            $request->cCelular,
-            $request->cEmail,
-            $request->cFax,
-            $request->cWeb,
-            $request->iTipoId,
+            $request->iIieeId ?? NULL,
+            $request->cSedeNombre ?? NULL,
+            $request->cSedeDireccion ?? NULL,
+            $request->cSedeTelefono ?? NULL,
+            $request->cSedeRslCreacion ?? NULL,
+            $request->dtSedeRslCreacion ?? NULL,
+            $request->iEstado ?? NULL,
+            $request->iServEdId ?? NULL,
+            $request->iTurnoId ?? NULL,
+            $request->cEscNlat ?? NULL,
+            $request->cEscNlog ?? NULL,
+            $request->cEscDirector ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC acad.Sp_INS_sede $placeholders", $parametros);
@@ -39,14 +42,18 @@ class Sede
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iSedeId,
-            $request->cNombre,
-            $request->cDireccion,
-            $request->cTelefono,
-            $request->cCelular,
-            $request->cEmail,
-            $request->cFax,
-            $request->cWeb,
-            $request->iTipoId,
+            $request->iIieeId ?? NULL,
+            $request->cSedeNombre ?? NULL,
+            $request->cSedeDireccion ?? NULL,
+            $request->cSedeTelefono ?? NULL,
+            $request->cSedeRslCreacion ?? NULL,
+            $request->dtSedeRslCreacion ?? NULL,
+            $request->iEstado ?? NULL,
+            $request->iServEdId ?? NULL,
+            $request->iTurnoId ?? NULL,
+            $request->cEscNlat ?? NULL,
+            $request->cEscNlog ?? NULL,
+            $request->cEscDirector ?? NULL,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::update("EXEC acad.Sp_UPD_sede $placeholders", $parametros);

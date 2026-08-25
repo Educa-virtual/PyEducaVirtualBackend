@@ -103,6 +103,8 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('listarInstitucionesEducativas', [InstitucionEducativaController::class, 'listarInstitucionesEducativas']);
     Route::post('crearInstitucionEducativa', [InstitucionEducativaController::class, 'crearInstitucionEducativa']);
     Route::post('verInstitucionEducativa', [InstitucionEducativaController::class, 'verInstitucionEducativa']);
+    Route::post('guardarInstitucionEducativa', [InstitucionEducativaController::class, 'guardarInstitucionEducativa']);
+    Route::post('actualizarInstitucionEducativa', [InstitucionEducativaController::class, 'actualizarInstitucionEducativa']);
 
     Route::post('listarSedes', [SedeController::class, 'listarSedes']);
     Route::post('guardarSede', [SedeController::class, 'guardarSede']);
