@@ -38,6 +38,7 @@ use App\Http\Controllers\acad\ConfiguracionController;
 use App\Http\Controllers\acad\GradoSeccionController;
 use App\Http\Controllers\acad\IeCursoController;
 use App\Http\Controllers\acad\DocenteCursoController;
+use App\Http\Controllers\acad\IndicadorAcademicoController;
 use App\Http\Controllers\acad\SedeController;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
@@ -105,6 +106,13 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
     Route::post('verInstitucionEducativa', [InstitucionEducativaController::class, 'verInstitucionEducativa']);
     Route::post('guardarInstitucionEducativa', [InstitucionEducativaController::class, 'guardarInstitucionEducativa']);
     Route::post('actualizarInstitucionEducativa', [InstitucionEducativaController::class, 'actualizarInstitucionEducativa']);
+
+    Route::post('verIndicadorParametros', [IndicadorAcademicoController::class, 'verIndicadoresParametros']);
+    Route::post('verIndicadorMatriculados', [IndicadorAcademicoController::class, 'verIndicadoresMatriculados']);
+    Route::post('verIndicadorDeserciones', [IndicadorAcademicoController::class, 'verIndicadoresDeserciones']);
+    Route::post('verIndicadorFaltasTardanzas', [IndicadorAcademicoController::class, 'verIndicadoresFaltasTardanzas']);
+    Route::post('verIndicadorDesempenos', [IndicadorAcademicoController::class, 'verIndicadoresDesempenos']);
+    Route::post('verIndicadorBajoRendimiento', [IndicadorAcademicoController::class, 'verIndicadoresBajoRendimiento']);
 
     Route::post('listarSedes', [SedeController::class, 'listarSedes']);
     Route::post('guardarSede', [SedeController::class, 'guardarSede']);
