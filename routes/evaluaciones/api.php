@@ -19,9 +19,14 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
 use App\Http\Controllers\eval\EvaluacionPromediosController;
 use App\Http\Controllers\eval\InstrumentosController;
+use App\Http\Controllers\eval\ResultadoCompetenciaController;
 use Illuminate\Http\Request;
 
-Route::group(['prefix' => 'evaluaciones',], function () {
+Route::group(['prefix' => 'evaluaciones', 'middleware' => ['auth:api']], function () {
+
+    Route::post('listarPeriodos', [EvaluacionesController::class, 'obtenerPeriodosEvaluacion']);
+    Route::post('verCursoEstudiantesCompetencias', [ResultadoCompetenciaController::class, 'verCursoEstudiantesCompetencias']);
+
     Route::get('lista-estudiantes', [EvaluacionController::class, 'generarListaEstudiantesSedeSeccionGrado']);
     Route::get('competenciasXCursoIdXCurricula', [EvaluacionController::class, 'competenciasXCursoIdXCurricula']);
     Route::post('insertarResultadoXcompetencias', [EvaluacionController::class, 'insertarResultadoXcompetencias']);

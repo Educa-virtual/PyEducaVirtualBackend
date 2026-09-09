@@ -1,22 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\acad;
+namespace App\Http\Controllers\eval;
 
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Models\acad\DocenteCurso;
+use App\Models\eval\ResultadoCompetencia;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class DocenteCursoController extends Controller
+class ResultadoCompetenciaController extends Controller
 {
-    public function listarDocenteCurso(Request $request)
+    /**
+     * Obtener parametros para filtros y formularios
+     */
+    public function verCursoEstudiantesCompetencias(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE, Perfil::DOCENTE]]);
-            $data = DocenteCurso::selDocenteCursos($request);
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
+            $data = ResultadoCompetencia::selCursoEstudiantesCompetencias($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -27,7 +30,7 @@ class DocenteCursoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
-            $data = DocenteCurso::selDocenteCursoHistorial($request);
+            $data = ResultadoCompetencia::selDocenteCursoHistorial($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -38,7 +41,7 @@ class DocenteCursoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
-            $data = DocenteCurso::insDocenteCurso($request);
+            $data = ResultadoCompetencia::insDocenteCurso($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -49,7 +52,7 @@ class DocenteCursoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
-            $data = DocenteCurso::updDocenteCurso($request);
+            $data = ResultadoCompetencia::updDocenteCurso($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -60,7 +63,7 @@ class DocenteCursoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
-            $data = DocenteCurso::updDocenteCursoEstado($request);
+            $data = ResultadoCompetencia::updDocenteCursoEstado($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -71,7 +74,7 @@ class DocenteCursoController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
-            $data = DocenteCurso::delDocenteCurso($request);
+            $data = ResultadoCompetencia::delDocenteCurso($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

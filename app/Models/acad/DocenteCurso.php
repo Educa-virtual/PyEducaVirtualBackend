@@ -26,6 +26,9 @@ class DocenteCurso
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iConfigId,
+            $request->iYAcadId,
+            $request->iIeCursoId,
+            $request->iDocenteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         return DB::select("EXEC acad.Sp_SEL_docenteCursos $placeholders", $parametros);
