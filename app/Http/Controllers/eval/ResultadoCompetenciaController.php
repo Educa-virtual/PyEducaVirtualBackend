@@ -26,6 +26,17 @@ class ResultadoCompetenciaController extends Controller
         }
     }
 
+    public function verResultadosCompetencias(Request $request)
+    {
+        try {
+            Gate::authorize('tiene-perfil', [[Perfil::DOCENTE]]);
+            $data = ResultadoCompetencia::selResultadosCompetencias($request);
+            return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
+        } catch (Exception $e) {
+            return FormatearMensajeHelper::error($e);
+        }
+    }
+
     public function verDocenteCursoHistorial(Request $request)
     {
         try {
