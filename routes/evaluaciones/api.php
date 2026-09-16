@@ -27,6 +27,7 @@ Route::group(['prefix' => 'evaluaciones', 'middleware' => ['auth:api']], functio
     Route::post('listarPeriodos', [EvaluacionesController::class, 'obtenerPeriodosEvaluacion']);
     Route::post('verCursoEstudiantesCompetencias', [ResultadoCompetenciaController::class, 'verCursoEstudiantesCompetencias']);
     Route::post('verResultadosCompetencias', [ResultadoCompetenciaController::class, 'verResultadosCompetencias']);
+    Route::post('actualizarResultadosCompetencias', [ResultadoCompetenciaController::class, 'actualizarResultadosCompetencias']);
 
     Route::get('lista-estudiantes', [EvaluacionController::class, 'generarListaEstudiantesSedeSeccionGrado']);
     Route::get('competenciasXCursoIdXCurricula', [EvaluacionController::class, 'competenciasXCursoIdXCurricula']);
