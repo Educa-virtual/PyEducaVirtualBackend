@@ -2,7 +2,10 @@
 
 namespace App\Models\acad;
 
+use App\Helpers\FormatearMensajeHelper;
 use App\Http\Requests\acad\SubirArchivoRequest;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -35,14 +38,19 @@ class InstitucionEducativa
         WHERE ie.iIieeId=?', [$iIieeId]);
     }
 
-    public static function subirImagen($iCredEntPerfId, $iYAcadId, $imagen)
+    public static function subirImagen(Request $request)
     {
-        $convertirBase = base64_encode(file_get_contents($imagen));
-        $extension = $imagen->extension();
-        $img = 'data:image/'.$extension.';base64,'.$convertirBase;
+        $iYAcadId = $request->iYAcadId;
+        $iIieeId = $request->iIieeId;
+        $iSedeId = $request->iSedeId;
+        $iPersId = $request->iPersId;
+        $iCredEntPerfId = $request->iCredEntPerfId;
+        $archivo = $request->file('escudo');
+        $ruta = 'logoInstitucional/'.$iYAcadId.'/'.$iIieeId.'/'.$iSedeId.'/'.$iPersId.'/'.$iCredEntPerfId;
 
+        $imagen = Storage::disk('public')->put($ruta, $archivo);
         $parametros = [
-            $iCredEntPerfId, $iYAcadId, $img, null,
+            $iCredEntPerfId, $iYAcadId, $imagen, null,
         ];
 
         return DB::selectOne('exec acad.Sp_UPD_institucion_logo_reglamento ?,?,?,?', $parametros);

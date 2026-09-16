@@ -8,4 +8,12 @@ Route::group(['prefix' => 'hor', 'middleware' => ['auth:api', RefreshToken::clas
     Route::group(['prefix' => 'horarios/anio/{iYAcadId}'], function () {
         Route::get('', [HorarioController::class, 'obtenerHorario']);
     });
+
+    Route::post('buscarHorario', [HorarioController::class, 'selHorario']);
+
+    Route::group(['prefix' => 'calendarioAcademico'], function () {
+        Route::post('guardarHorario', [HorarioController::class, 'insHorario']);
+        Route::post('guardarDetalleBloque', [HorarioController::class, 'insDetalleBloque']);
+    });
+    
 });

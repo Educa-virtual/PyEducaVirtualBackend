@@ -819,6 +819,7 @@ class CalendarioAcademicosController extends Controller
                 $request->iYAcadId ?? null,
                 $request->iGradoId ?? null,
                 $request->iSeccionId ?? null,
+                $request->header('iCredEntPerfId'),
             ];
 
             $data = DB::select(
@@ -826,7 +827,8 @@ class CalendarioAcademicosController extends Controller
                 @_iSedeId=?,
                 @_iYAcadId=?,
                 @_iGradoId=?,
-                @_iSeccionId=?',
+                @_iSeccionId=?,
+                @_iCredEntPerfId=?',
                 $parametros
             );
 
@@ -851,9 +853,7 @@ class CalendarioAcademicosController extends Controller
             ];
 
             $data = DB::select(
-                'exec hor.SP_UPD_horarioIEDetallexiHorarioIeDetalleIdxidDocCursoId
-                @_iHorarioIeDetalleId=?,
-                @_idDocCursoId=?',
+                'exec hor.SP_UPD_horarioIEDetallexiHorarioIeDetalleIdxidDocCursoId ?,?',
                 $parametros
             );
             if ($data[0]->iHorarioIeDetalleId > 0) {

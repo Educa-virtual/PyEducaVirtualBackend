@@ -35,9 +35,10 @@ class DirectorController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $imagen = $request->file('escudo');
-            $iYAcadId = $request->iYAcadId;
-            $iCredEntPerfId = $request->iCredEntPerfId;
-            $data = InstitucionEducativa::subirImagen($iCredEntPerfId, $iYAcadId, $imagen);
+            if(!$imagen || !$imagen->isValid()){
+                throw new Exception('El archivo no es válido', 400);
+            }
+            $data = InstitucionEducativa::subirImagen($request);
 
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
