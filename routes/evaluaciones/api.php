@@ -7,8 +7,8 @@ use App\Http\Controllers\eval\BancoAlternativasController;
 use App\Http\Controllers\eval\EncabezadoPreguntasController;
 use App\Http\Controllers\eval\EvaluacionPreguntasController;
 use App\Http\Controllers\eval\EvaluacionRespuestasController;
+use App\Http\Controllers\eval\EscalaCalificacionesController;
 use App\Http\Controllers\evaluaciones\BancoPreguntasController;
-use App\Http\Controllers\evaluaciones\EscalaCalificacionesController;
 use App\Http\Controllers\evaluaciones\EvaluacionController;
 use App\Http\Controllers\evaluaciones\EvaluacionEstudiantesController;
 use App\Http\Controllers\evaluaciones\InstrumentosEvaluacionController;
@@ -20,6 +20,7 @@ use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPregu
 use App\Http\Controllers\eval\EvaluacionPromediosController;
 use App\Http\Controllers\eval\InstrumentosController;
 use App\Http\Controllers\eval\ResultadoCompetenciaController;
+use App\Http\Controllers\eval\TipoEscalaController;
 use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'evaluaciones', 'middleware' => ['auth:api']], function () {
@@ -28,6 +29,15 @@ Route::group(['prefix' => 'evaluaciones', 'middleware' => ['auth:api']], functio
     Route::post('verCursoEstudiantesCompetencias', [ResultadoCompetenciaController::class, 'verCursoEstudiantesCompetencias']);
     Route::post('verResultadosCompetencias', [ResultadoCompetenciaController::class, 'verResultadosCompetencias']);
     Route::post('actualizarResultadosCompetencias', [ResultadoCompetenciaController::class, 'actualizarResultadosCompetencias']);
+
+    Route::post('listarTipoEscala', [TipoEscalaController::class, 'listarTipoEscala']);
+    Route::post('verTipoEscala', [TipoEscalaController::class, 'verTipoEscala']);
+    Route::post('guardarTipoEscala', [TipoEscalaController::class, 'guardarTipoEscala']);
+    Route::post('actualizarTipoEscala', [TipoEscalaController::class, 'actualizarTipoEscala']);
+
+    Route::post('listarEscalaCalificaciones', [EscalaCalificacionesController::class, 'listarEscalaCalificaciones']);
+    Route::post('guardarEscalaCalificaciones', [EscalaCalificacionesController::class, 'guardarEscalaCalificaciones']);
+    Route::post('actualizarEscalaCalificaciones', [EscalaCalificacionesController::class, 'actualizarEscalaCalificaciones']);
 
     Route::get('lista-estudiantes', [EvaluacionController::class, 'generarListaEstudiantesSedeSeccionGrado']);
     Route::get('competenciasXCursoIdXCurricula', [EvaluacionController::class, 'competenciasXCursoIdXCurricula']);
@@ -85,7 +95,7 @@ Route::group(['prefix' => 'evaluaciones', 'middleware' => ['auth:api']], functio
     Route::resource('escala-calificaciones', EscalaCalificacionesController::class);
 
     Route::group(['prefix' => 'escala-calificaciones'], function () {
-        Route::get('', [EscalaCalificacionesController::class, 'obtenerEscalaCalificaciones']);
+        Route::get('', [EscalaCalificacionesController::class, 'listarEscalaCalificaciones']);
     });
 
     Route::group(['prefix' => 'banco-alternativas'], function () {
