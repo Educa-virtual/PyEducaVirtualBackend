@@ -37,9 +37,6 @@ use App\Http\Controllers\ere\EspecialistasUgelController;
 use App\Http\Controllers\ere\UgelesController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\acad\ConfiguracionController;
-use App\Http\Controllers\acad\GradoSeccionController;
-use App\Http\Controllers\acad\IeCursoController;
-use App\Http\Controllers\acad\DocenteCursoController;
 use App\Http\Controllers\acad\IndicadorAcademicoController;
 use App\Http\Controllers\acad\SedeController;
 use App\Http\Middleware\RefreshToken;
@@ -240,10 +237,6 @@ Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
 });
 
 Route::group(['prefix' => 'acad', 'middleware' => ['auth:api']], function () {
-    Route::group(['prefix' => 'vacantes'], function () {
-        Route::post('guardar', [VacantesController::class, 'guardarVacantes']);
-        // vacantes convenciones de nombre para APIs
-    });
 
     Route::group(['prefix' => 'grados'], function () {
         Route::post('handleCrudOperation', [GradosController::class, 'handleCrudOperation']);

@@ -9,15 +9,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
 use App\Http\Requests\acad\ActualizarCalendarioAcademicosRequest;
 use App\Http\Requests\acad\GuardarCalendarioAcademicosRequest;
 use App\Models\acad\CalendarioAcademico;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
