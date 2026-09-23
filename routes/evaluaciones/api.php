@@ -17,8 +17,6 @@ use App\Http\Controllers\evaluaciones\LogrosController;
 use App\Http\Controllers\evaluaciones\TipoEvaluacionController as EvaluacionesTipoEvaluacionController;
 use App\Http\Controllers\evaluaciones\TipoPreguntaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
-use App\Http\Controllers\eval\EvaluacionPromediosController;
 use App\Http\Controllers\eval\InstrumentosController;
 use App\Http\Controllers\eval\ResultadoCompetenciaController;
 use App\Http\Controllers\eval\TipoEscalaController;
