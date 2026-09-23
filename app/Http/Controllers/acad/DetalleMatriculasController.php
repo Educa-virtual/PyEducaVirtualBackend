@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\acad;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class DetalleMatriculasController extends Controller
@@ -46,7 +46,7 @@ class DetalleMatriculasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -62,7 +62,7 @@ class DetalleMatriculasController extends Controller
                 'iEscalaCalifIdPeriodo',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
                 $request->iEscalaCalifIdPromedio ?? null,               // @_iEscalaCalifIdPromedio
@@ -77,7 +77,7 @@ class DetalleMatriculasController extends Controller
                 $request->bEsPorPeriodo ? $request->iNumeroPeriodo : null,        // @_iNumeroPeriodo
                 $request->bEsPorPeriodo ? $request->iEscalaCalifIdPeriodo : null,  // @_iEscalaCalifIdPeriodo
                 $request->bEsPorPeriodo ? $request->cDetMatrConclusionDescPeriodo : null, // @_cDetMatrConclusionDescPeriodo
-                $request->iCredId ?? null                               // @_iCredId
+                $request->iCredId ?? null,                               // @_iCredId
             ];
 
             $data = DB::select(

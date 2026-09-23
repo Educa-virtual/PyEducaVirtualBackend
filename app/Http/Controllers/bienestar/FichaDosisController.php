@@ -26,6 +26,7 @@ class FichaDosisController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDosis::selFichasDosis($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -37,6 +38,7 @@ class FichaDosisController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDosis::selFichaDosis($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -48,6 +50,7 @@ class FichaDosisController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDosis::insFichaDosis($request);
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -59,6 +62,7 @@ class FichaDosisController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDosis::updFichaDosis($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -70,6 +74,7 @@ class FichaDosisController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDosis::borrarFichaDosis($request);
+
             return FormatearMensajeHelper::ok('Se borró la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

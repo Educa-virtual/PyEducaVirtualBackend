@@ -5,14 +5,10 @@ namespace App\Http\Controllers\bienestar;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\bienestar\FichaViviendaSaveRequest;
 use App\Models\bienestar\FichaVivienda;
-use App\Services\ParseSqlErrorService;
 use Exception;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class FichaViviendaController extends Controller
 {
@@ -30,9 +26,9 @@ class FichaViviendaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaVivienda::updFichaVivienda($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -42,9 +38,9 @@ class FichaViviendaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaVivienda::selfichaVivienda($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }

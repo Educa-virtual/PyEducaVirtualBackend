@@ -44,7 +44,7 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    //base_path('app'),
+                    // base_path('app'),
                     base_path('app/Http/docs/BaseDoc.php'),
                     base_path('app/Http/Controllers/acad'),
                     base_path('app/Http/Controllers/api/seg'),
@@ -222,20 +222,20 @@ return [
             ],
             'security' => [
                 // Open API 3.0 support
-        'passport' => [ // Unique name of security
-            'type' => 'oauth2', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
-            'description' => 'Laravel passport oauth2 security.',
-            'in' => 'header',
-            'scheme' => 'https',
-            'flows' => [
-                "password" => [
-                    "authorizationUrl" => config('app.url') . '/oauth/authorize',
-                    "tokenUrl" => config('app.url') . '/oauth/token',
-                    "refreshUrl" => config('app.url') . '/token/refresh',
-                    "scopes" => []
+                'passport' => [ // Unique name of security
+                    'type' => 'oauth2', // The type of the security scheme. Valid values are "basic", "apiKey" or "oauth2".
+                    'description' => 'Laravel passport oauth2 security.',
+                    'in' => 'header',
+                    'scheme' => 'https',
+                    'flows' => [
+                        'password' => [
+                            'authorizationUrl' => config('app.url').'/oauth/authorize',
+                            'tokenUrl' => config('app.url').'/oauth/token',
+                            'refreshUrl' => config('app.url').'/token/refresh',
+                            'scopes' => [],
+                        ],
+                    ],
                 ],
-            ],
-        ],
             ],
         ],
 

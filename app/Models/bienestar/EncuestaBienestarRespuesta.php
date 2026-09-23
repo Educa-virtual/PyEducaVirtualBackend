@@ -22,6 +22,7 @@ class EncuestaBienestarRespuesta
             $request->cPersSexo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC obe.Sp_SEL_encuestaRespuestas $placeholders", $parametros);
     }
 
@@ -33,6 +34,7 @@ class EncuestaBienestarRespuesta
             $request->jsonPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC obe.Sp_INS_encuestaRespuesta $placeholders", $parametros);
     }
 
@@ -44,6 +46,7 @@ class EncuestaBienestarRespuesta
             $request->jsonPreguntas,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC obe.Sp_UPD_encuestaRespuesta $placeholders", $parametros);
     }
 
@@ -55,6 +58,7 @@ class EncuestaBienestarRespuesta
             $request->iMatrId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC obe.Sp_SEL_encuestaRespuesta $placeholders", $parametros);
     }
 
@@ -65,6 +69,7 @@ class EncuestaBienestarRespuesta
             $request->iEncuPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::delete("EXEC obe.Sp_DEL_encuestaRespuesta $placeholders", $parametros);
     }
 
@@ -85,6 +90,7 @@ class EncuestaBienestarRespuesta
             $request->cPersSexo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectResultSets("EXEC obe.Sp_SEL_encuestaRespuestasDetalle $placeholders", $parametros);
     }
 }

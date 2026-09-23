@@ -36,6 +36,7 @@ class RespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
             $data = Respuesta::selRespuestas($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -50,6 +51,7 @@ class RespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
             $data = Respuesta::selRespuesta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -61,6 +63,7 @@ class RespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestados]);
             $data = Respuesta::insRespuestas($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -72,6 +75,7 @@ class RespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestados]);
             $data = Respuesta::updRespuestas($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -85,10 +89,10 @@ class RespuestaController extends Controller
             $data = Respuesta::selRespuestasDetalle($request);
             $encuesta = $data[0][0];
             $preguntas = $data[1];
-            $respuestas = $data[2]; 
+            $respuestas = $data[2];
             $filtros = $data[3][0];
 
-            foreach ( $respuestas as $respuesta) {
+            foreach ($respuestas as $respuesta) {
                 $respuesta->respuestas = json_decode($respuesta->respuestas);
             }
 
@@ -97,6 +101,7 @@ class RespuestaController extends Controller
             while (ob_get_level() > 0) {
                 ob_end_clean();
             }
+
             return view('enc.respuestas_excel', compact('encuesta', 'preguntas', 'respuestas', 'nro_preguntas', 'filtros'));
 
         } catch (Exception $e) {

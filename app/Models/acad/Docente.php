@@ -6,12 +6,13 @@ use Illuminate\Support\Facades\DB;
 
 class Docente
 {
-    public static function selDocentePorId($iDocenteId) {
-        return DB::selectOne("
+    public static function selDocentePorId($iDocenteId)
+    {
+        return DB::selectOne('
             SELECT doc.iDocenteId, per.cPersPaterno, per.cPersMaterno, per.cPersNombre
             FROM acad.docentes AS doc
                 INNER JOIN grl.personas AS per ON per.iPersId=doc.iPersId
-            WHERE doc.iDocenteId=?", [$iDocenteId]);
+            WHERE doc.iDocenteId=?', [$iDocenteId]);
     }
 
     public static function selDocente($request)
@@ -25,6 +26,7 @@ class Docente
             $request->cPersDocumento,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.Sp_SEL_docente $placeholders", $parametros);
     }
 
@@ -35,6 +37,7 @@ class Docente
             $request->iConfigId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.Sp_SEL_docentes $placeholders", $parametros);
     }
 
@@ -54,6 +57,7 @@ class Docente
             $request->cCodigoPlaza,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_INS_docente $placeholders", $parametros);
     }
 
@@ -71,6 +75,7 @@ class Docente
             $request->cCodigoPlaza,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_docente $placeholders", $parametros);
     }
 
@@ -82,6 +87,7 @@ class Docente
             $request->bActivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_docenteEstado $placeholders", $parametros);
     }
 
@@ -92,6 +98,7 @@ class Docente
             $request->iPersIeId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_DEL_docente $placeholders", $parametros);
     }
 }

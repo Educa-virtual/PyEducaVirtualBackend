@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\acad;
 
 use App\Helpers\ResponseHandler;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class PeriodoEvaluacionesController extends Controller
 {
@@ -16,7 +16,7 @@ class PeriodoEvaluacionesController extends Controller
 
     public function getPeriodoEvaluaciones(Request $request)
     {
-        $query = DB::select("EXEC grl.SP_SEL_DesdeTablaOVista @nombreEsquema = :esquema, @nombreObjeto = :tabla, @campos = :campos, @condicionWhere = :where", [
+        $query = DB::select('EXEC grl.SP_SEL_DesdeTablaOVista @nombreEsquema = :esquema, @nombreObjeto = :tabla, @campos = :campos, @condicionWhere = :where', [
             'esquema' => self::schema,
             'tabla' => 'periodo_evaluaciones',
             'campos' => '*',
@@ -29,18 +29,17 @@ class PeriodoEvaluacionesController extends Controller
 
     public function processConfigCalendario(Request $request)
     {
-        $query = DB::select("EXEC acad.Sp_INS_generarDistribucionSemanasXiYearIdXiPerioEvalId 
+        $query = DB::select('EXEC acad.Sp_INS_generarDistribucionSemanasXiYearIdXiPerioEvalId 
             @_iCredEntPerfId = :iCredEntPerfId,
             @_iCredId = :iCredId,
             @iPerioEvalId = :iPerioEvalId, 
-            @iYAcadId = :iYAcadId", [            
+            @iYAcadId = :iYAcadId', [
             'iCredEntPerfId' => $request->input('iCredEntPerfId'),
             'iCredId' => $request->input('iCredId'),
             'iPerioEvalId' => $request->input('iPerioEvalId'),
             'iYAcadId' => $request->input('iYAcadId'),
-            
-        ]);
 
+        ]);
 
         return ResponseHandler::success($query, 'Calendario procesado correctamente.');
     }
@@ -52,10 +51,10 @@ class PeriodoEvaluacionesController extends Controller
                 'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCredId                   ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

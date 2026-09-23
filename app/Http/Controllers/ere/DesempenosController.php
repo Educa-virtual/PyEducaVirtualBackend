@@ -4,16 +4,14 @@ namespace App\Http\Controllers\ere;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\Controller;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class DesempenosController extends ApiController
 {
-    protected  $alternativaPreguntaRespository;
+    protected $alternativaPreguntaRespository;
 
     public function obtenerDesempenos(Request $request)
     {
@@ -23,9 +21,8 @@ class DesempenosController extends ApiController
             $request->iNivelTipoId,
             $request->iEvaluacionId ?? 0,
             $request->iCompCursoId ?? 0,
-            $request->iCapacidadId ?? 0
+            $request->iCapacidadId ?? 0,
         ];
-
 
         try {
             $desempenos = DB::select(
@@ -43,7 +40,7 @@ class DesempenosController extends ApiController
         }
     }
 
-    //Estructura : Jhonny
+    // Estructura : Jhonny
     protected $hashids;
 
     public function __construct()
@@ -56,6 +53,7 @@ class DesempenosController extends ApiController
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -81,16 +79,16 @@ class DesempenosController extends ApiController
 
         return [
             $request->opcion,
-            $request->valorBusqueda ?? NULL,
+            $request->valorBusqueda ?? null,
 
-            $request->iDesempenoId              ??  NULL,
-            $request->iEvaluacionId             ??  NULL,
-            $request->iCompCursoId              ??  NULL,
-            $request->iCapacidadId              ??  NULL,
-            $request->cDesempenoDescripcion     ??  NULL,
-            $request->cDesempenoConocimiento    ??  NULL,
+            $request->iDesempenoId ?? null,
+            $request->iEvaluacionId ?? null,
+            $request->iCompCursoId ?? null,
+            $request->iCapacidadId ?? null,
+            $request->cDesempenoDescripcion ?? null,
+            $request->cDesempenoConocimiento ?? null,
 
-            $request->iCredId               ??  NULL
+            $request->iCredId ?? null,
         ];
     }
 
@@ -126,10 +124,11 @@ class DesempenosController extends ApiController
             if ($data[0]->iDesempenoId > 0) {
                 $request['opcion'] = $request['iPreguntaId'] ? 'ACTUALIZARxiPreguntaId' : 'GUARDAR';
                 $request['iDesempenoId'] = $data[0]->iDesempenoId;
-                $resp = new PreguntasController();
+                $resp = new PreguntasController;
+
                 return $resp->handleCrudOperation($request);
             } else {
-                throw new Exception("No se ha podido actualizar la información");
+                throw new Exception('No se ha podido actualizar la información');
             }
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

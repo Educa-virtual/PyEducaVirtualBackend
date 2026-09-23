@@ -4,7 +4,6 @@ namespace App\Services\seg;
 
 use App\Http\Requests\seg\AuditoriaFiltroFechaRequest;
 use App\Models\seg\Auditoria;
-use Illuminate\Http\Request;
 
 class AuditoriaService
 {

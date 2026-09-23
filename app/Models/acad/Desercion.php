@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class Desercion extends Model
 {
-    public static function selDeserciones(Object $request)
+    public static function selDeserciones(object $request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
@@ -17,10 +17,11 @@ class Desercion extends Model
             $request->iTipoDesercionId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.SP_SEL_deserciones $placeholders", $parametros);
     }
 
-    public static function insDesercion(Object $request)
+    public static function insDesercion(object $request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
@@ -31,10 +32,11 @@ class Desercion extends Model
             $request->cMotivoDesercion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.SP_INS_desercion $placeholders", $parametros);
     }
 
-    public static function updDesercion(Object $request)
+    public static function updDesercion(object $request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
@@ -45,27 +47,29 @@ class Desercion extends Model
             $request->cMotivoDesercion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.SP_UPD_desercion $placeholders", $parametros);
     }
 
-    public static function delDesercion(Object $request)
+    public static function delDesercion(object $request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iDesercionId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.SP_DEL_desercion $placeholders", $parametros);
     }
 
-    public static function selDesercion(Object $request)
+    public static function selDesercion(object $request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iDesercionId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.SP_SEL_desercion $placeholders", $parametros);
     }
-
 }

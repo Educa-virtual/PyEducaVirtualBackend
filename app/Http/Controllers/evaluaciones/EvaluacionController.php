@@ -7,14 +7,13 @@ use App\Http\Controllers\ApiController;
 use App\Models\aula\Evaluacion;
 use App\Repositories\aula\ProgramacionActividadesRepository;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use Throwable;
 
 class EvaluacionController extends ApiController
 {
-
     public function guardarActualizarEvaluacion(Request $request)
     {
 
@@ -32,7 +31,7 @@ class EvaluacionController extends ApiController
             'dtProgActFin' => $request->dtEvaluacionFin ?? null,
             'cProgActTituloLeccion' => $request->cEvaluacionTitulo,
             'cProgActDescripcion' => $request->cEvaluacionDescripcion,
-            'iEstado' => 1
+            'iEstado' => 1,
         ];
 
         if ($iProgActId === 0) {
@@ -48,6 +47,7 @@ class EvaluacionController extends ApiController
         } catch (Throwable $e) {
             DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al guardar la programación');
+
             return $this->errorResponse(null, $message);
         }
 
@@ -57,20 +57,20 @@ class EvaluacionController extends ApiController
             $iEvaluacionId,
             $request->iTipoEvalId,
             $iProgActId,
-            $request->iInstrumentoId === 0 ? NULL : $request->iInstrumentoId,
-            $request->iEscalaCalifId ?? NULL,
+            $request->iInstrumentoId === 0 ? null : $request->iInstrumentoId,
+            $request->iEscalaCalifId ?? null,
             $iDocenteId,
-            $request->dtEvaluacionPublicacion ?? NULL,
+            $request->dtEvaluacionPublicacion ?? null,
             $request->cEvaluacionTitulo,
             $request->cEvaluacionDescripcion,
             $request->cEvaluacionObjetivo,
             $request->nEvaluacionPuntaje,
             $request->iEvaluacionNroPreguntas,
-            $request->dtEvaluacionInicio ?? NULL,
-            $request->dtEvaluacionFin ?? NULL,
+            $request->dtEvaluacionInicio ?? null,
+            $request->dtEvaluacionFin ?? null,
             $request->iEvaluacionDuracionHoras,
             $request->iEvaluacionDuracionMinutos,
-            $request->cEvaluacionArchivoAdjunto
+            $request->cEvaluacionArchivoAdjunto,
         ];
         try {
             $data = DB::select('exec eval.SP_INS_UPD_evaluacionAula
@@ -97,15 +97,17 @@ class EvaluacionController extends ApiController
         } catch (Throwable $e) {
             DB::rollBack();
             $errorMessage = $this->handleAndLogError($e, 'Error al guardar la evaluación');
+
             return $this->errorResponse(null, $errorMessage);
         }
 
         $responseData = [
             'iProgActId' => $iProgActId,
-            'iEvaluacionId' => $iEvaluacionId
+            'iEvaluacionId' => $iEvaluacionId,
         ];
 
         DB::commit();
+
         return $this->successResponse($responseData, 'Cambios realizados correctamente');
     }
 
@@ -115,7 +117,7 @@ class EvaluacionController extends ApiController
         $iEvaluacionId = $request->iEvaluacionId;
 
         try {
-            $evaluacionPregunta = new Evaluacion();
+            $evaluacionPregunta = new Evaluacion;
             $preguntas = $evaluacionPregunta->guardarPreguntas(
                 $iEvaluacionId,
                 $preguntas
@@ -124,6 +126,7 @@ class EvaluacionController extends ApiController
             return $this->successResponse($preguntas, 'Preguntas guardadas correctamente');
         } catch (Throwable $e) {
             $message = $this->handleAndLogError($e, 'Error al guardar los datos');
+
             return $this->errorResponse(null, $message);
         }
     }
@@ -146,11 +149,11 @@ class EvaluacionController extends ApiController
 
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al obtener los datos' . $e);
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'.$e);
+
             return $this->errorResponse(null, $message);
         }
     }
-
 
     public function guardarActualizarCalificacionRubricaEvaluacion(Request $request)
     {
@@ -158,8 +161,7 @@ class EvaluacionController extends ApiController
 
             $params = ['eval', 'nivel_logro_alcanzado_evaluaciones'];
 
-
-            if (!isset($request->iNivelLogroAlcId)) {
+            if (! isset($request->iNivelLogroAlcId)) {
 
                 $params[] = json_encode([
                     'iNivelEvaId' => $request->iNivelEvaId,
@@ -188,7 +190,8 @@ class EvaluacionController extends ApiController
 
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al obtener los datos' . $e);
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'.$e);
+
             return $this->errorResponse(null, $message);
         }
     }
@@ -198,7 +201,7 @@ class EvaluacionController extends ApiController
         try {
 
             $params = ['eval', 'evaluaciones', json_encode([
-                'iInstrumentoId' => 'NULL'
+                'iInstrumentoId' => 'NULL',
             ])];
 
             $params[] = json_encode([
@@ -213,7 +216,8 @@ class EvaluacionController extends ApiController
 
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al obtener los datos' . $e);
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'.$e);
+
             return $this->errorResponse(null, $message);
         }
     }
@@ -236,11 +240,11 @@ class EvaluacionController extends ApiController
 
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al obtener los datos' . $e);
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'.$e);
+
             return $this->errorResponse(null, $message);
         }
     }
-
 
     public function eliminarPreguntaEvulacion($id)
     {
@@ -253,6 +257,7 @@ class EvaluacionController extends ApiController
             return $this->successResponse($resp->mensaje, 'Se eliminó correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al eliminar la pregunta');
+
             return $this->errorResponse(null, $message);
         }
     }
@@ -273,13 +278,14 @@ class EvaluacionController extends ApiController
         DB::beginTransaction();
 
         try {
-            $evaluacion = new Evaluacion();
+            $evaluacion = new Evaluacion;
             $params = ['iEstado' => (int) $request->iEstado];
             $where = [new WhereCondition('iEvaluacionId', $iEvaluacionId)];
             $resp = $evaluacion->actualizarEvaluacion($params, $where);
         } catch (Exception $e) {
             DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al publicar la evaluación');
+
             return $this->errorResponse(null, $message);
         }
 
@@ -298,9 +304,11 @@ class EvaluacionController extends ApiController
         } catch (Exception $e) {
             DB::rollBack();
             $message = $this->handleAndLogError($e, 'Error al generar las preguntas a estudiantes');
+
             return $this->errorResponse(null, $message);
         }
         DB::commit();
+
         return $this->successResponse(null, $resp[0]->mensaje);
     }
 
@@ -310,22 +318,24 @@ class EvaluacionController extends ApiController
         try {
             $resp = DB::select('exec eval.SP_DEL_anularPublicacionEvaluacionById @_iEvaluacionId = ?', [$iEvaluacionId]);
             $resp = $resp[0];
+
             return $this->successResponse(null, $resp->mensaje);
         } catch (Exception $e) {
             $mensaje = $this->handleAndLogError($e, 'Error al anular la publicación');
+
             return $this->errorResponse(null, $mensaje);
         }
     }
 
     public function generarListaEstudiantesSedeSeccionGrado(Request $request)
-    { 
-        //return $request->all();
+    {
+        // return $request->all();
         try {
             $parametros = [
-                $request->iSedeId ?? NULL,
-                $request->iSeccionId ?? NULL,
-                $request->iYAcadId ?? NULL,
-                $request->iNivelGradoId ?? NULL,
+                $request->iSedeId ?? null,
+                $request->iSeccionId ?? null,
+                $request->iYAcadId ?? null,
+                $request->iNivelGradoId ?? null,
             ];
 
             $data = DB::select(
@@ -357,14 +367,14 @@ class EvaluacionController extends ApiController
     }
 
     public function competenciasXCursoIdXCurricula(Request $request)
-    { 
-        //return $request->all();
+    {
+        // return $request->all();
         try {
             $parametros = [
                 $request->iCursoId,
                 $request->iNivelTipoId,
                 $request->iDetMatrId ?? 0,
-                
+
             ];
 
             $data = DB::select(
@@ -395,14 +405,14 @@ class EvaluacionController extends ApiController
     }
 
     public function insertarResultadoXcompetencias(Request $request)
-    { 
-        //return $request->all();
+    {
+        // return $request->all();
         try {
             $parametros = [
                 $request->json,
                 $request->opcion,
                 $request->iCredId,
-                
+
             ];
 
             $data = DB::select(
@@ -431,15 +441,15 @@ class EvaluacionController extends ApiController
 
         return new JsonResponse($response, $estado);
     }
-    
+
     public function actualizarResultadoXperiodoDetMatricula(Request $request)
-    { 
-        //return $request->all();
+    {
+        // return $request->all();
         try {
             $parametros = [
                 $request->json,
                 $request->iCredId,
-                
+
             ];
 
             $data = DB::select(
@@ -466,5 +476,5 @@ class EvaluacionController extends ApiController
         }
 
         return new JsonResponse($response, $estado);
-    }    
+    }
 }

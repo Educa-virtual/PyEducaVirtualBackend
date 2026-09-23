@@ -3,11 +3,9 @@
 namespace App\Services;
 
 use Carbon\Carbon;
-use App\Services\DividirApellidoNombresService;
 
 class FormatearExcelPadresService
 {
-
     private $dividirApellidoNombresService;
 
     public function __invoke($hojas)
@@ -17,16 +15,17 @@ class FormatearExcelPadresService
 
     /**
      * Formatear datos de apoderados
-     * @param array $hojas [hoja => [fila => [columna => valor]]]
+     *
+     * @param  array  $hojas  [hoja => [fila => [columna => valor]]]
      * @return array [
-     *      codigo_modular => valor,
-     *      modalidad => valor,
-     *      nivel => valor,
-     *      turno => valor,
-     *      estudiantes => [
-     *          ...,
-     *          apoderado => [...]
-     * ]
+     *               codigo_modular => valor,
+     *               modalidad => valor,
+     *               nivel => valor,
+     *               turno => valor,
+     *               estudiantes => [
+     *               ...,
+     *               apoderado => [...]
+     *               ]
      */
     public static function formatear($hojas)
     {
@@ -66,7 +65,7 @@ class FormatearExcelPadresService
                 $fila = array_map('trim', $fila);
 
                 // Formatear datos de estudiantes y padres en nuevo array
-                $estudiantes[] = array(
+                $estudiantes[] = [
                     'grado' => $fila['C'],
                     'seccion' => $fila['D'],
                     'cod_tipo_documento' => array_search(strtoupper($fila['E']), $tipos_docs) ?: '0',
@@ -85,12 +84,12 @@ class FormatearExcelPadresService
                     'apo_nombres' => DividirApellidoNombresService::dividir($fila['AS'])['nombres'],
                     'apo_sexo' => $sexos[strtoupper($fila['AT'])],
                     'apo_parentesco' => trim($fila['AU']),
-                    'apo_cod_tipo_documento' =>  array_search(strtoupper($fila['AV']), $tipos_docs) ?: '0',
+                    'apo_cod_tipo_documento' => array_search(strtoupper($fila['AV']), $tipos_docs) ?: '0',
                     'apo_documento' => trim($fila['AW']),
                     'apo_validado_reniec' => trim($fila['AX']),
                     'apo_correo' => trim(explode('/', $fila['AY'])[0]),
                     'apo_celular' => trim(explode('/', $fila['AZ'])[0]),
-                );
+                ];
             }
         }
 

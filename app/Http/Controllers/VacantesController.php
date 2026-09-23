@@ -1,6 +1,8 @@
 <?php
-//use App\Http\Controllers\Controller;
-//use Illuminate\Http\Request;
+
+// use App\Http\Controllers\Controller;
+// use Illuminate\Http\Request;
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,7 +13,7 @@ class VacantesController extends Controller
 {
     public function guardarVacantes(Request $request)
     {
-        //return "OKAS";
+        // return "OKAS";
         // Validar los datos recibidos
         $validator = Validator::make($request->all(), [
             'vacantes' => 'required|array',
@@ -44,7 +46,8 @@ class VacantesController extends Controller
             return response()->json(['message' => 'Vacantes guardadas correctamente'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Error al guardar las vacantes: ' . $e->getMessage()], 500);
+
+            return response()->json(['error' => 'Error al guardar las vacantes: '.$e->getMessage()], 500);
         }
     }
 }

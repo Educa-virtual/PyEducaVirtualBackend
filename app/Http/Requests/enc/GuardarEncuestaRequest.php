@@ -11,7 +11,7 @@ class RegistrarConfiguracionEncuestaRequest extends GeneralFormRequest
         return [
             'iConfEncId' => 'required|numeric',
             'cConfEncNombre' => 'required|string',
-            'cConfEncDesc'=> 'required|string',
+            'cConfEncDesc' => 'required|string',
             'iTiemDurId' => 'required|numeric',
             'iCategoriaEncuestaId' => 'required|string',
             'dConfEncFin' => 'required',
@@ -28,7 +28,7 @@ class RegistrarConfiguracionEncuestaRequest extends GeneralFormRequest
             'iTiemDurId' => 'Tiempo de duracion',
             'iCategoriaEncuestaId' => 'ID de categoría de encuesta',
             'dConfEncFin' => 'Fecha fin',
-            'dConfEncInicio' => 'Fecha de inicio'
+            'dConfEncInicio' => 'Fecha de inicio',
         ];
     }
 }

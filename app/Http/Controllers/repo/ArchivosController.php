@@ -4,10 +4,10 @@ namespace App\Http\Controllers\repo;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Exception;
 use App\Http\Requests\repo\GuardarArchivoRequest;
 use App\Models\repo\Archivo;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ArchivosController extends Controller
@@ -16,11 +16,11 @@ class ArchivosController extends Controller
     {
         try {
             $file = $request->file('archivo');
-            if (!$file or !$file->isValid()) {
+            if (! $file or ! $file->isValid()) {
                 throw new Exception('El archivo no es válido', 400);
             }
-            $ruta_persona = 'repositorio/' . $request->iPersId;
-            $nombre_extension = hash('sha256', uniqid()) . '.' . $file->getClientOriginalExtension();
+            $ruta_persona = 'repositorio/'.$request->iPersId;
+            $nombre_extension = hash('sha256', uniqid()).'.'.$file->getClientOriginalExtension();
             $request->merge([
                 'cNombreOriginal' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
                 'cExtension' => $file->getClientOriginalExtension(),
@@ -32,14 +32,16 @@ class ArchivosController extends Controller
 
             if ($data->iArchivoId > 0) {
                 $this->subirArchivo($file, $ruta_persona, $nombre_extension);
+
                 return FormatearMensajeHelper::ok('Se ha guardado exitosamente ', $data);
             } else {
                 throw new Exception('No se ha podido guardar', 500);
             }
         } catch (\Exception $e) {
-            if(file_exists($request->cRuta . '/' . $request->cNombreOriginal)) {
-                Storage::disk('local')->delete($request->cRuta . '/' . $request->cNombreOriginal);
+            if (file_exists($request->cRuta.'/'.$request->cNombreOriginal)) {
+                Storage::disk('local')->delete($request->cRuta.'/'.$request->cNombreOriginal);
             }
+
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -51,14 +53,14 @@ class ArchivosController extends Controller
             if (empty($archivo)) {
                 throw new Exception('No se encontró el archivo', 404);
             }
-            $path = 'repositorio/' . $archivo->iPersId . '/' . $archivo->cRuta;
-            if (!Storage::exists($path)) {
+            $path = 'repositorio/'.$archivo->iPersId.'/'.$archivo->cRuta;
+            if (! Storage::exists($path)) {
                 throw new Exception('El archivo no existe en el servidor', 404);
             }
 
             $contenido = base64_encode(Storage::get($path));
             $mime = Storage::mimeType($path);
-            $nombre = $archivo->cNombre . '.' . $archivo->cExtension;
+            $nombre = $archivo->cNombre.'.'.$archivo->cExtension;
 
             return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', [
                 'nombre' => $nombre,
@@ -74,7 +76,7 @@ class ArchivosController extends Controller
     {
         try {
             $archivo = Archivo::selArchivo($request);
-            if (!$archivo) {
+            if (! $archivo) {
                 throw new Exception('No se encontró el archivo', 404);
             }
 
@@ -83,6 +85,7 @@ class ArchivosController extends Controller
                 if (Storage::exists($archivo->cRuta)) {
                     Storage::delete($archivo->cRuta);
                 }
+
                 return FormatearMensajeHelper::ok('Se ha eliminado exitosamente ', $data);
             } else {
                 throw new Exception('No se ha podido eliminar', 500);
@@ -94,13 +97,14 @@ class ArchivosController extends Controller
 
     private function subirArchivo($archivo, $ruta, $nombre_archivo)
     {
-        if(!Storage::disk('local')->exists($ruta)) {
+        if (! Storage::disk('local')->exists($ruta)) {
             Storage::disk('local')->makeDirectory($ruta, 0755, true);
         }
         $archivo->move(Storage::disk('local')->path($ruta), $nombre_archivo);
-        if (Storage::disk('local')->exists($ruta . '/' . $nombre_archivo)) {
+        if (Storage::disk('local')->exists($ruta.'/'.$nombre_archivo)) {
             return $nombre_archivo;
         }
+
         return null;
     }
 }

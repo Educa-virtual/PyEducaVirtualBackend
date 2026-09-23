@@ -26,27 +26,29 @@ class SolicitudesRegistroUsuarioService
     private static function generarParametrosParaObtenerRegistros($tipo, Request $request)
     {
         $parametros = [
-            $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
+            $tipo == 'data' ? 0 : 1, // 0: Obtener datos, 1: Obtener cantidad
             $request->get('offset', 0),
             $request->get('limit', 20),
             $request->get('fechaCreacionDesde'),
             $request->get('fechaCreacionHasta'),
-            $request->get('atendidas')
+            $request->get('atendidas'),
         ];
+
         return $parametros;
     }
 
     public static function obtenerListaSolicitudesRegistro(Request $request)
     {
-        //fechaSolicitud
+        // fechaSolicitud
         $parametros = self::generarParametrosParaObtenerRegistros('data', $request);
         $dataRegistros = SolicitudRegistroUsuario::selListaSolicitudesRegistro($parametros);
         $parametros = UsuariosService::generarParametrosParaObtenerUsuarios('cantidad', $request);
         $dataCantidad = SolicitudRegistroUsuario::selListaSolicitudesRegistro($parametros);
         $resultado = [
             'totalFilas' => $dataCantidad[0]->totalFilas,
-            'dataRegistros' => $dataRegistros
+            'dataRegistros' => $dataRegistros,
         ];
+
         return $resultado;
     }
 }

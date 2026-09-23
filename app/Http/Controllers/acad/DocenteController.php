@@ -19,6 +19,7 @@ class DocenteController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Docente::selDocente($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -30,6 +31,7 @@ class DocenteController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Docente::selDocentes($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -56,6 +58,7 @@ class DocenteController extends Controller
             ]);
             UsuariosService::insPerfil($request);
             $data = Docente::insDocente($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -75,6 +78,7 @@ class DocenteController extends Controller
                 Persona::updPersonas($request);
             }
             $data = Docente::updDocente($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -86,6 +90,7 @@ class DocenteController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Docente::updDocenteEstado($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -97,6 +102,7 @@ class DocenteController extends Controller
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE, Perfil::SUBDIRECTOR_IE]]);
             $data = Docente::delDocente($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

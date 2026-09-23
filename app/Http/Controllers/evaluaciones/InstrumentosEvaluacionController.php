@@ -4,19 +4,14 @@ namespace App\Http\Controllers\evaluaciones;
 
 use App\DTO\WhereCondition;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\Controller;
 use App\Models\eval\InstrumentoEvaluacion;
 use App\Repositories\GeneralRepository;
-use Carbon\Carbon;
 use Exception;
-use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class InstrumentosEvaluacionController extends ApiController
 {
-
     public function index(Request $request)
     {
         $iDocenteId = $this->decodeId($request->iDocenteId ?? 0);
@@ -28,25 +23,28 @@ class InstrumentosEvaluacionController extends ApiController
             'iDocenteId' => $iDocenteId,
             'idDocCursoId' => $idDocCursoId,
             'iCursoId' => $iCursoId,
-            'busqueda' => $request->busqueda ?? ''
+            'busqueda' => $request->busqueda ?? '',
         ];
         try {
-            $instrumento = new InstrumentoEvaluacion();
+            $instrumento = new InstrumentoEvaluacion;
             $data = $instrumento->obtener($params);
+
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+
             return $this->errorResponse(null, $message);
         }
     }
 
-    public function obtenerRubrica(Request $request){
+    public function obtenerRubrica(Request $request)
+    {
         try {
 
-            $params = ['eval','V_Instrumentos','*'];
+            $params = ['eval', 'V_Instrumentos', '*'];
 
-            if (!is_null($request->iInstrumentoId)) {
-                $params[] = 'iInstrumentoId=' . $request->iInstrumentoId;
+            if (! is_null($request->iInstrumentoId)) {
+                $params[] = 'iInstrumentoId='.$request->iInstrumentoId;
             }
 
             // Construir los placeholders dinámicos
@@ -56,33 +54,35 @@ class InstrumentosEvaluacionController extends ApiController
 
             foreach ($data as $key => $item) {
                 $criterios = $item->criterios ?? '[]';
-                $data[$key]->criterios  = json_decode($criterios, true);
+                $data[$key]->criterios = json_decode($criterios, true);
             }
 
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'.$e);
+
             return $this->errorResponse(null, $message);
         }
     }
 
-    public function obtenerRubricaEvaluacion(Request $request){
+    public function obtenerRubricaEvaluacion(Request $request)
+    {
         try {
 
-            $params = ['eval','V_InstrumentosEvaluacion','*'];
+            $params = ['eval', 'V_InstrumentosEvaluacion', '*'];
 
             $where = '';
 
-            if (!is_null($request->iEvaluacionId)) {
-                $where .= 'iEvaluacionId=' . $request->iEvaluacionId . ' AND iInstrumentoId IS NOT NULL';
-                
+            if (! is_null($request->iEvaluacionId)) {
+                $where .= 'iEvaluacionId='.$request->iEvaluacionId.' AND iInstrumentoId IS NOT NULL';
+
             }
 
-            if(isset($request->iEstudianteId) AND !is_null($request->iEstudianteId) AND is_numeric($request->iEstudianteId)){
-                $where .= ' AND iEstudianteId=' . $request->iEstudianteId;
+            if (isset($request->iEstudianteId) and ! is_null($request->iEstudianteId) and is_numeric($request->iEstudianteId)) {
+                $where .= ' AND iEstudianteId='.$request->iEstudianteId;
                 $params[1] = 'V_InstrumentoEvaluacionCalificada';
             }
-            
+
             $params[] = $where;
             // Construir los placeholders dinámicos
             $placeholders = implode(',', array_fill(0, count($params), '?'));
@@ -91,12 +91,13 @@ class InstrumentosEvaluacionController extends ApiController
 
             foreach ($data as $key => $item) {
                 $criterios = $item->criterios ?? '[]';
-                $data[$key]->criterios  = json_decode($criterios, true);
+                $data[$key]->criterios = json_decode($criterios, true);
             }
 
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'.$e);
+
             return $this->errorResponse(null, $message);
         }
     }
@@ -114,13 +115,12 @@ class InstrumentosEvaluacionController extends ApiController
             'iCursoId' => $iCursoId,
         ];
 
-
         try {
 
-            $params = ['eval','V_Instrumentos','*'];
+            $params = ['eval', 'V_Instrumentos', '*'];
 
-            if (!is_null($request->filtroYear)) {
-                $params[] = 'YEAR(dtInstrumentoCreacion)=' . $request->filtroYear;
+            if (! is_null($request->filtroYear)) {
+                $params[] = 'YEAR(dtInstrumentoCreacion)='.$request->filtroYear;
             }
 
             // Construir los placeholders dinámicos
@@ -130,12 +130,13 @@ class InstrumentosEvaluacionController extends ApiController
 
             foreach ($data as $key => $item) {
                 $criterios = $item->criterios ?? '[]';
-                $data[$key]->criterios  = json_decode($criterios, true);
+                $data[$key]->criterios = json_decode($criterios, true);
             }
 
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
-            $message = $this->handleAndLogError($e, 'Error al obtener los datos'. $e);
+            $message = $this->handleAndLogError($e, 'Error al obtener los datos'.$e);
+
             return $this->errorResponse(null, $message);
         }
     }
@@ -155,9 +156,9 @@ class InstrumentosEvaluacionController extends ApiController
                 'iCursoId' => $iCursoId,
                 'cInstrumentoNombre' => $request->cInstrumentoNombre,
                 'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion,
-                'dtInstrumentoCreacion' =>  $this->getDateToDB(),
+                'dtInstrumentoCreacion' => $this->getDateToDB(),
                 'iEstado' => 1,
-                'iSesionId' => $iSesionId
+                'iSesionId' => $iSesionId,
             ]);
 
             try {
@@ -167,23 +168,25 @@ class InstrumentosEvaluacionController extends ApiController
             } catch (Exception $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al guardar los cambios');
+
                 return $this->errorResponse(null, $message);
             }
         } else {
             $paramsInstrumentoToUpdate = json_encode([
                 'cInstrumentoNombre' => $request->cInstrumentoNombre,
                 'cInstrumentoDescripcion' => $request->cInstrumentoDescripcion,
-                'dtActualizado' => $this->getDateToDB()
+                'dtActualizado' => $this->getDateToDB(),
             ]);
 
             $whereToUpdate = json_encode([
-                new WhereCondition('iInstrumentoId', $iInstrumentoId)
+                new WhereCondition('iInstrumentoId', $iInstrumentoId),
             ]);
             try {
                 $resp = GeneralRepository::actualizar('eval', 'instrumento_evaluaciones', $paramsInstrumentoToUpdate, $whereToUpdate);
             } catch (Exception $e) {
                 DB::rollBack();
                 $message = $this->handleAndLogError($e, 'Error al actualizar los datos');
+
                 return $this->errorResponse(null, $message);
             }
         }
@@ -204,13 +207,13 @@ class InstrumentosEvaluacionController extends ApiController
                             'cCriterioNombre' => $criterio['cCriterioNombre'],
                             'cCriterioDescripcion' => $criterio['cCriterioDescripcion'],
                             'iSesion' => $iSesionId,
-                            'dtActualizado' => $this->getDateToDB()
+                            'dtActualizado' => $this->getDateToDB(),
                         ]);
                         $resp = GeneralRepository::insertar('eval', 'criterio_evaluaciones', $criterioToSave);
                         $iCriterioId = $resp[0]->id;
                     } catch (Exception $e) {
                         $this->handleAndLogError($e);
-                        throw new Exception("Error al crear el criterio: " . $criterio['cCriterioNombre']);
+                        throw new Exception('Error al crear el criterio: '.$criterio['cCriterioNombre']);
                     }
                 } else {
                     // actualizar
@@ -219,16 +222,16 @@ class InstrumentosEvaluacionController extends ApiController
                             'cCriterioNombre' => $criterio['cCriterioNombre'],
                             'cCriterioDescripcion' => $criterio['cCriterioDescripcion'],
                             'iSesion' => $iSesionId,
-                            'dtActualizado' => $this->getDateToDB()
+                            'dtActualizado' => $this->getDateToDB(),
                         ]);
                         DB::rollBack();
                         $criterioWhere = json_encode([
-                            new WhereCondition('iCriterioId', $iCriterioId)
+                            new WhereCondition('iCriterioId', $iCriterioId),
                         ]);
                         GeneralRepository::actualizar('eval', 'criterio_evaluaciones', $criterioToUpdate, $criterioWhere);
                     } catch (Exception $e) {
                         $this->handleAndLogError($e);
-                        throw new Exception("Error al actualizar el criterio: " . $criterio['cCriterioNombre']);
+                        throw new Exception('Error al actualizar el criterio: '.$criterio['cCriterioNombre']);
                     }
                 }
 
@@ -247,11 +250,11 @@ class InstrumentosEvaluacionController extends ApiController
                             'iSesionId' => $iSesionId,
                         ]);
                         try {
-                            $resp =  GeneralRepository::insertar('eval', 'nivel_evaluaciones', $nivelToSave);
+                            $resp = GeneralRepository::insertar('eval', 'nivel_evaluaciones', $nivelToSave);
                             $iNivelEvaId = $resp[0]->id;
                         } catch (Exception $e) {
                             $this->handleAndLogError($e);
-                            throw new Exception('Error al guardar el nivel: ' . $nivel['cNivelEvaNombre']);
+                            throw new Exception('Error al guardar el nivel: '.$nivel['cNivelEvaNombre']);
                         }
                     } else {
                         // actualizar nivel
@@ -261,16 +264,16 @@ class InstrumentosEvaluacionController extends ApiController
                             'cNivelEvaDescripcion' => $nivel['cNivelEvaDescripcion'],
                             'iNivelEvaValor' => $nivel['iNivelEvaValor'],
                             'iSesionId' => $iSesionId,
-                            'dtActualizado' => $this->getDateToDB()
+                            'dtActualizado' => $this->getDateToDB(),
                         ]);
                         $whereNivel = json_encode([
-                            new WhereCondition('iNivelEvaId', $iNivelEvaId)
+                            new WhereCondition('iNivelEvaId', $iNivelEvaId),
                         ]);
                         try {
                             GeneralRepository::actualizar('eval', 'nivel_evaluaciones', $nivelToUpdate, $whereNivel);
                         } catch (Exception $e) {
                             $this->handleAndLogError($e);
-                            throw new Exception("Error al actualizar el nivel: " . $criterio['cCriterioNombre']);
+                            throw new Exception('Error al actualizar el nivel: '.$criterio['cCriterioNombre']);
                         }
                     }
                 }
@@ -278,6 +281,7 @@ class InstrumentosEvaluacionController extends ApiController
         } catch (Exception $e) {
             DB::rollBack();
             $error = $this->handleAndLogError($e, 'Error al guardar los cambios');
+
             return $this->errorResponse(null, $error);
         }
 
@@ -294,9 +298,11 @@ class InstrumentosEvaluacionController extends ApiController
         try {
             $resp = DB::select('exec eval.SP_DEL_instrumentoEvaluacionXrubricaId 
                 @_id = ?, @_cTipo = ?', [$id, $cTipo]);
+
             return $this->successResponse(null, 'Eliminado correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al eliminar la rúbrica');
+
             return $this->errorResponse(null, $message);
         }
     }

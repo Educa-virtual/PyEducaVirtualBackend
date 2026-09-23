@@ -2,24 +2,23 @@
 
 namespace App\Http\Controllers\acad;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ContenidoSemanasController extends Controller
 {
-
     public function guardarContenidoSemanas(Request $request)
     {   // tiposuario: DOCENTE - INSTRUCTOR
         // Reglas comunes
         $commonRules = [
             'iYAcadId' => ['required'],
             'cContenidoSemTitulo' => ['required', 'string', 'max:250'],
-            'cTipoUsuario' => ['required']
+            'cTipoUsuario' => ['required'],
         ];
 
         // Mensajes comunes
@@ -50,7 +49,7 @@ class ContenidoSemanasController extends Controller
                 'cAdjunto.required' => 'No se encontró el documento adjunto',
                 'idDocCursoId.required' => 'No se encontró el identificador idDocCursoId',
             ],
-            'INSTRUCTOR' => ['iCapacitacionId.required' => 'No se encontró el identificador iCapacitacionId',],
+            'INSTRUCTOR' => ['iCapacitacionId.required' => 'No se encontró el identificador iCapacitacionId'],
         ];
 
         // Selección dinámica de reglas y mensajes
@@ -63,10 +62,9 @@ class ContenidoSemanasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
 
         try {
             $fieldsToDecode = [
@@ -75,21 +73,21 @@ class ContenidoSemanasController extends Controller
                 'iPeriodoEvalAperId',
                 'iTipExp',
                 'iCredId',
-                'iCapacitacionId'
+                'iCapacitacionId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->cTipoUsuario                   ?? NULL,
-                $request->iYAcadId                       ?? NULL,
-                $request->idDocCursoId                   ?? NULL,
-                $request->iCapacitacionId                ?? NULL,
-                $request->cContenidoSemTitulo            ?? NULL,
-                $request->iPeriodoEvalAperId             ?? NULL,
-                $request->iTipExp                        ?? NULL,
-                $request->cAdjunto                       ?? NULL,
-                $request->iCredId                        ?? NULL
+                $request->cTipoUsuario ?? null,
+                $request->iYAcadId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->cContenidoSemTitulo ?? null,
+                $request->iPeriodoEvalAperId ?? null,
+                $request->iTipExp ?? null,
+                $request->cAdjunto ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -108,12 +106,14 @@ class ContenidoSemanasController extends Controller
 
             if ($data[0]->iContenidoSemId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -130,7 +130,7 @@ class ContenidoSemanasController extends Controller
     public function actualizarContenidoSemanas(Request $request, $iContenidoSemId)
     {
         $request->merge([
-            'iContenidoSemId' => $iContenidoSemId
+            'iContenidoSemId' => $iContenidoSemId,
         ]);
 
         // Reglas comunes
@@ -179,7 +179,7 @@ class ContenidoSemanasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -188,19 +188,19 @@ class ContenidoSemanasController extends Controller
                 'iContenidoSemId',
                 'iPeriodoEvalAperId',
                 'iTipExp',
-                'iCredId'
+                'iCredId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->cTipoUsuario                   ?? NULL,
-                $request->iContenidoSemId                ?? NULL,
-                $request->cContenidoSemTitulo            ?? NULL,
-                $request->iPeriodoEvalAperId             ?? NULL,
-                $request->iTipExp                        ?? NULL,
-                $request->cAdjunto                       ?? NULL,
-                $request->iCredId                        ?? NULL
+                $request->cTipoUsuario ?? null,
+                $request->iContenidoSemId ?? null,
+                $request->cContenidoSemTitulo ?? null,
+                $request->iPeriodoEvalAperId ?? null,
+                $request->iTipExp ?? null,
+                $request->cAdjunto ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -217,12 +217,14 @@ class ContenidoSemanasController extends Controller
 
             if ($data[0]->iContenidoSemId > 0) {
                 $message = 'Se ha actualizado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido actualizar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -239,7 +241,7 @@ class ContenidoSemanasController extends Controller
     public function eliminarContenidoSemanas(Request $request, $iContenidoSemId)
     {
         $request->merge([
-            'iContenidoSemId' => $iContenidoSemId
+            'iContenidoSemId' => $iContenidoSemId,
         ]);
 
         $validator = Validator::make($request->all(), [
@@ -251,21 +253,21 @@ class ContenidoSemanasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $fieldsToDecode = [
                 'iContenidoSemId',
-                'iCredId'
+                'iCredId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iContenidoSemId                ?? NULL,
-                $request->iCredId                        ?? NULL
+                $request->iContenidoSemId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -277,12 +279,14 @@ class ContenidoSemanasController extends Controller
 
             if ($data[0]->iContenidoSemId > 0) {
                 $message = 'Se ha eliminado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido eliminar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -299,7 +303,7 @@ class ContenidoSemanasController extends Controller
     public function obtenerContenidoSemanasxiContenidoSemId(Request $request, $iContenidoSemId)
     {
         $request->merge([
-            'iContenidoSemId' => $iContenidoSemId
+            'iContenidoSemId' => $iContenidoSemId,
         ]);
 
         $validator = Validator::make($request->all(), [
@@ -311,7 +315,7 @@ class ContenidoSemanasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -319,14 +323,14 @@ class ContenidoSemanasController extends Controller
             $fieldsToDecode = [
                 'iContenidoSemId',
                 'iPeriodoEvalAperId',
-                'iCredId'
+                'iCredId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iContenidoSemId                ?? NULL,
-                $request->iCredId                        ?? NULL
+                $request->iContenidoSemId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -336,7 +340,7 @@ class ContenidoSemanasController extends Controller
                 $parametros
             );
 
-            $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
@@ -354,7 +358,7 @@ class ContenidoSemanasController extends Controller
     {
         $request->merge([
             'idDocCursoId' => $idDocCursoId,
-            'iYAcadId' => $iYAcadId
+            'iYAcadId' => $iYAcadId,
         ]);
 
         $validator = Validator::make($request->all(), [
@@ -368,7 +372,7 @@ class ContenidoSemanasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -378,15 +382,15 @@ class ContenidoSemanasController extends Controller
                 'iYAcadId',
                 'iContenidoSemId',
                 'iPeriodoEvalAperId',
-                'iCredId'
+                'iCredId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->idDocCursoId                ?? NULL,
-                $request->iYAcadId                    ?? NULL,
-                $request->iCredId                     ?? NULL
+                $request->idDocCursoId ?? null,
+                $request->iYAcadId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -397,7 +401,7 @@ class ContenidoSemanasController extends Controller
                 $parametros
             );
 
-            $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
@@ -415,7 +419,7 @@ class ContenidoSemanasController extends Controller
     {
         $request->merge([
             'iCapacitacionId' => $iCapacitacionId,
-            'iYAcadId' => $iYAcadId
+            'iYAcadId' => $iYAcadId,
         ]);
 
         $validator = Validator::make($request->all(), [
@@ -429,7 +433,7 @@ class ContenidoSemanasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -438,15 +442,15 @@ class ContenidoSemanasController extends Controller
                 'iCapacitacionId',
                 'iYAcadId',
                 'iContenidoSemId',
-                'iCredId'
+                'iCredId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCapacitacionId             ?? NULL,
-                $request->iYAcadId                    ?? NULL,
-                $request->iCredId                     ?? NULL
+                $request->iCapacitacionId ?? null,
+                $request->iYAcadId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -457,7 +461,7 @@ class ContenidoSemanasController extends Controller
                 $parametros
             );
 
-            $data =  VerifyHash::encodeRequest($data, $fieldsToDecode);
+            $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
 
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data],
@@ -474,7 +478,7 @@ class ContenidoSemanasController extends Controller
     public function obtenerActividadesxiContenidoSemId(Request $request, $iContenidoSemId)
     {
         $request->merge([
-            'iContenidoSemId' => $iContenidoSemId
+            'iContenidoSemId' => $iContenidoSemId,
         ]);
 
         $validator = Validator::make($request->all(), [
@@ -486,7 +490,7 @@ class ContenidoSemanasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -495,17 +499,17 @@ class ContenidoSemanasController extends Controller
                 'iContenidoSemId',
                 'idDocCursoId',
                 'iCapacitacionId',
-                'iCredId'
+                'iCredId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iContenidoSemId             ?? NULL,
-                $request->idDocCursoId             ?? NULL,
-                $request->iCapacitacionId             ?? NULL,
-                $request->cPerfil                     ?? NULL,
-                $request->iCredId                     ?? NULL
+                $request->iContenidoSemId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->cPerfil ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -555,18 +559,17 @@ class ContenidoSemanasController extends Controller
 
         $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iContenidoSemId                    ?? NULL,
-            $iIndActId                          ?? NULL,
-            $request->cContenidoSemTitulo       ?? NULL,
-            $request->cContenidoSemNumero       ?? NULL,
-            $request->cContenidoSemDescripcion  ?? NULL,
+            $iContenidoSemId ?? null,
+            $iIndActId ?? null,
+            $request->cContenidoSemTitulo ?? null,
+            $request->cContenidoSemNumero ?? null,
+            $request->cContenidoSemDescripcion ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -576,7 +579,7 @@ class ContenidoSemanasController extends Controller
 
             $fieldsToDecode = [
                 'iContenidoSemId',
-                'iIndActId'
+                'iIndActId',
             ];
 
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
@@ -589,6 +592,7 @@ class ContenidoSemanasController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
     public function store(Request $request)
     {
         $request->validate(
@@ -602,20 +606,20 @@ class ContenidoSemanasController extends Controller
 
         $fieldsToDecode = [
             'iContenidoSemId',
-            'iIndActId'
+            'iIndActId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $iContenidoSemId                    ?? NULL,
-            $iIndActId                          ?? NULL,
-            $request->cContenidoSemTitulo       ?? NULL,
-            $request->cContenidoSemNumero       ?? NULL,
-            $request->cContenidoSemDescripcion  ?? NULL,
-            $request->iCredId
+            $iContenidoSemId ?? null,
+            $iIndActId ?? null,
+            $request->cContenidoSemTitulo ?? null,
+            $request->cContenidoSemNumero ?? null,
+            $request->cContenidoSemDescripcion ?? null,
+            $request->iCredId,
         ];
 
         try {
@@ -630,8 +634,8 @@ class ContenidoSemanasController extends Controller
                     break;
                 case 'ELIMINARxiContenidoSemId':
                     $parametros = [
-                        $iContenidoSemId    ?? NULL,
-                        $request->iCredId
+                        $iContenidoSemId ?? null,
+                        $request->iCredId,
                     ];
                     $data = DB::select('exec acad.Sp_DEL_contenidoSemanas ?,?', $parametros);
                     break;

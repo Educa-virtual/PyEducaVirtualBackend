@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ForosController extends Controller
 {
-
     public function obtenerForoxiForoId(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -24,14 +23,14 @@ class ForosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $fieldsToDecode = [
-            'iForoId'
+            'iForoId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iForoId,
@@ -58,42 +57,42 @@ class ForosController extends Controller
             'iForoId' => ['required'],
             'iForoCatId' => ['required'],
             'cForoTitulo' => ['required', 'max:250'],
-            'dtForoInicio'     => ['required'],
-            'dtForoFin'        => ['required'],
+            'dtForoInicio' => ['required'],
+            'dtForoFin' => ['required'],
 
         ], [
             'iForoId.required' => 'No se encontró el identificador iForoId',
             'iForoCatId.required' => 'No se encontró el identificador iForoCatId',
             'cForoTitulo.required' => 'No se encontró el título',
             'cForoTitulo.max' => 'El título no debe exceder los 250 caracteres.',
-            'dtForoInicio.required'     => 'La fecha y hora de inicio es obligatoria',
-            'dtForoFin.required'        => 'La fecha y hora de fin es obligatoria',
+            'dtForoInicio.required' => 'La fecha y hora de inicio es obligatoria',
+            'dtForoFin.required' => 'La fecha y hora de fin es obligatoria',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $fieldsToDecode = [
             'iForoId',
             'iForoCatId',
-            'iDocenteId'
+            'iDocenteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iForoId           ?? NULL,
-            $request->iForoCatId        ?? NULL,
-            $request->cForoTitulo       ?? NULL,
-            $request->cForoDescripcion  ?? NULL,
-            $request->dtForoInicio      ?? NULL,
-            $request->dtForoFin         ?? NULL,
-            $request->cForoUrl          ?? NULL,
-            $request->jCompetencias     ?? NULL
-            
+            $request->iForoId ?? null,
+            $request->iForoCatId ?? null,
+            $request->cForoTitulo ?? null,
+            $request->cForoDescripcion ?? null,
+            $request->dtForoInicio ?? null,
+            $request->dtForoFin ?? null,
+            $request->cForoUrl ?? null,
+            $request->jCompetencias ?? null,
+
         ];
 
         try {
@@ -109,7 +108,6 @@ class ForosController extends Controller
                     @_jCompetencias=?',
                 $parametros
             );
-
 
             if ($data[0]->iForoId > 0) {
                 return new JsonResponse(
@@ -141,19 +139,19 @@ class ForosController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $fieldsToDecode = [
-            'iForoId'
+            'iForoId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->opcion            ??      NULL,
-            $request->valorBusqueda     ??      NULL,
-            $request->iForoId           ??      NULL
+            $request->opcion ?? null,
+            $request->valorBusqueda ?? null,
+            $request->iForoId ?? null,
         ];
 
         try {
@@ -184,19 +182,19 @@ class ForosController extends Controller
             'iYAcadId' => ['required'],
             'iSedeId' => ['required'],
             'iSeccionId' => ['required'],
-            'iNivelGradoId' => ['required']
+            'iNivelGradoId' => ['required'],
         ], [
             'iIeCursoId.required' => 'No se encontró el identificador iIeCursoId',
             'iYAcadId.required' => 'No se encontró el identificador iYAcadId',
             'iSedeId.required' => 'No se encontró el identificador iSedeId',
             'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
-            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId'
+            'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -205,17 +203,17 @@ class ForosController extends Controller
             'iYAcadId',
             'iSedeId',
             'iSeccionId',
-            'iNivelGradoId'
+            'iNivelGradoId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iIeCursoId            ??      NULL,
-            $request->iYAcadId              ??      NULL,
-            $request->iSedeId               ??      NULL,
-            $request->iSeccionId            ??      NULL,
-            $request->iNivelGradoId         ??      NULL
+            $request->iIeCursoId ?? null,
+            $request->iYAcadId ?? null,
+            $request->iSedeId ?? null,
+            $request->iSeccionId ?? null,
+            $request->iNivelGradoId ?? null,
         ];
 
         try {
@@ -239,10 +237,11 @@ class ForosController extends Controller
             // Manejo de excepción y respuesta de error
             $response = [
                 'validated' => false,
-                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'message' => $e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(),
                 'data' => [],
             ];
             $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return new JsonResponse($response, $estado);
         }
     }
@@ -280,11 +279,10 @@ class ForosController extends Controller
             'iYAcadId.required' => 'No se encontró el identificador del año académico',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -301,26 +299,26 @@ class ForosController extends Controller
                 'iYAcadId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iForoCatId                     ?? NULL,
-                $request->iDocenteId                     ?? NULL,
-                $request->cForoTitulo                    ?? NULL,
-                $request->cForoDescripcion               ?? NULL,
-                $request->dtForoInicio                   ?? NULL,
-                $request->dtForoFin                      ?? NULL,
-                $request->cForoUrl                       ?? NULL,
-                $request->cTareaUrlnstrumentoEvaluacion  ?? NULL,
-                $request->iInstrumentoId                 ?? NULL,
-                $request->iContenidoSemId                ?? NULL,
-                $request->iActTipoId                     ?? NULL,
-                $request->idDocCursoId                   ?? NULL,
-                $request->iCapacitacionId                ?? NULL,
-                $request->iYAcadId                       ?? NULL,
+                $request->iForoCatId ?? null,
+                $request->iDocenteId ?? null,
+                $request->cForoTitulo ?? null,
+                $request->cForoDescripcion ?? null,
+                $request->dtForoInicio ?? null,
+                $request->dtForoFin ?? null,
+                $request->cForoUrl ?? null,
+                $request->cTareaUrlnstrumentoEvaluacion ?? null,
+                $request->iInstrumentoId ?? null,
+                $request->iContenidoSemId ?? null,
+                $request->iActTipoId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->iYAcadId ?? null,
 
-                $request->iCredId                        ?? NULL,
-                $request->jCompetencias                  ?? NULL
+                $request->iCredId ?? null,
+                $request->jCompetencias ?? null,
             ];
 
             $data = DB::select(
@@ -347,12 +345,14 @@ class ForosController extends Controller
 
             if ($data[0]->iForoId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -382,13 +382,13 @@ class ForosController extends Controller
             'iSedeId.required' => 'No se encontró el identificador iSedeId',
             'iSeccionId.required' => 'No se encontró el identificador iSeccionId',
             'iNivelGradoId.required' => 'No se encontró el identificador iNivelGradoId',
-            'iForoId.required' => 'No se encontró el identificador iForoId'
+            'iForoId.required' => 'No se encontró el identificador iForoId',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -398,18 +398,18 @@ class ForosController extends Controller
             'iSedeId',
             'iSeccionId',
             'iNivelGradoId',
-            'iForoId'
+            'iForoId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iIeCursoId            ??      NULL,
-            $request->iYAcadId              ??      NULL,
-            $request->iSedeId               ??      NULL,
-            $request->iSeccionId            ??      NULL,
-            $request->iNivelGradoId         ??      NULL,
-            $request->iForoId         ??      NULL,
+            $request->iIeCursoId ?? null,
+            $request->iYAcadId ?? null,
+            $request->iSedeId ?? null,
+            $request->iSeccionId ?? null,
+            $request->iNivelGradoId ?? null,
+            $request->iForoId ?? null,
         ];
 
         try {
@@ -434,10 +434,11 @@ class ForosController extends Controller
             // Manejo de excepción y respuesta de error
             $response = [
                 'validated' => false,
-                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'message' => $e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(),
                 'data' => [],
             ];
             $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return new JsonResponse($response, $estado);
         }
     }

@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class Encuesta extends Model
 {
-    public static function selEncuestas($request) {
+    public static function selEncuestas($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iYAcadId,
@@ -15,28 +16,34 @@ class Encuesta extends Model
             $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC enc.Sp_SEL_encuestas $placeholders", $parametros);
     }
 
-    public static function selEncuestaParametros($request) {
+    public static function selEncuestaParametros($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_encuestaParametros $placeholders", $parametros);
     }
 
-    public static function selEncuesta($request) {
+    public static function selEncuesta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
             $request->iTipoUsuario,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_encuesta $placeholders", $parametros);
     }
 
-    public static function insEncuesta($request) {
+    public static function insEncuesta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->cEncuNombre,
@@ -52,10 +59,12 @@ class Encuesta extends Model
             $request->iFuenteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_encuesta $placeholders", $parametros);
     }
 
-    public static function updEncuesta($request) {
+    public static function updEncuesta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
@@ -72,15 +81,18 @@ class Encuesta extends Model
             $request->iFuenteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_encuesta $placeholders", $parametros);
     }
 
-    public static function delEncuesta($request) {
+    public static function delEncuesta($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_DEL_encuesta $placeholders", $parametros);
     }
 
@@ -92,6 +104,7 @@ class Encuesta extends Model
             $request->jsonPoblacion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_SEL_encuestaPoblacion $placeholders", $parametros);
     }
 
@@ -103,6 +116,7 @@ class Encuesta extends Model
             $request->iEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_UPD_encuestaEstado $placeholders", $parametros);
     }
 
@@ -125,10 +139,12 @@ class Encuesta extends Model
             $request->iCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_encuestaDuplicado $placeholders", $parametros);
     }
 
-    public static function insEncuestaPlantilla($request) {
+    public static function insEncuestaPlantilla($request)
+    {
         $parametros = [
             $request->header('iCredEntPerfId'),
             $request->iYAcadId,
@@ -147,6 +163,7 @@ class Encuesta extends Model
             $request->iEstadoPorDefecto,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC enc.Sp_INS_encuestaPlantilla $placeholders", $parametros);
     }
 }

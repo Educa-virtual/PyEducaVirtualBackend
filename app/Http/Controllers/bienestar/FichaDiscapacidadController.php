@@ -9,7 +9,6 @@ use App\Models\bienestar\FichaDiscapacidad;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 
 class FichaDiscapacidadController extends Controller
 {
@@ -27,9 +26,9 @@ class FichaDiscapacidadController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDiscapacidad::updFichaDiscapacidad($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -39,9 +38,9 @@ class FichaDiscapacidadController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDiscapacidad::selfichaDiscapacidad($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }

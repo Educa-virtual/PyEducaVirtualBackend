@@ -77,6 +77,7 @@ class InstitucionEducativaController extends Controller
             ];
             $placeholders = implode(',', array_fill(0, count($params), '?'));
             $insituciones = DB::select("EXEC ere.SP_SEL_instituciones $placeholders", $params);
+
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $insituciones);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -89,6 +90,7 @@ class InstitucionEducativaController extends Controller
     {
         try {
             $sedes = DB::select('SELECT * FROM acad.sedes WHERE iIieeId=?', [$iIieeId]);
+
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $sedes);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

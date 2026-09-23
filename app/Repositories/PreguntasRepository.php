@@ -20,10 +20,10 @@ class PreguntasRepository
         if (is_numeric($valor)) {
             return $valor;
         }
-        // Se pueden usar addslashes o mysqli_real_escape_string según el caso
-        return "'" . addslashes($valor) . "'";
-    }
 
+        // Se pueden usar addslashes o mysqli_real_escape_string según el caso
+        return "'".addslashes($valor)."'";
+    }
 
     /*public static function contarPreguntasEre($preguntas)
     {
@@ -40,15 +40,17 @@ class PreguntasRepository
         return $cantidad;
     }*/
 
-    public static function obtenerCantidadPreguntasPorEvaluacion($iEvaluacionid, $iCursosNivelGradId) {
+    public static function obtenerCantidadPreguntasPorEvaluacion($iEvaluacionid, $iCursosNivelGradId)
+    {
         $params = [
             $iEvaluacionid,
-            $iCursosNivelGradId
+            $iCursosNivelGradId,
         ];
         $result = DB::selectOne('SELECT COUNT(*) AS cantidad FROM ere.evaluacion_preguntas AS ep
 INNER JOIN ere.preguntas AS p ON ep.iPreguntaId=p.iPreguntaId
 WHERE ep.iEvaluacionId=? AND p.bPreguntaEstado=1
 AND p.iCursosNivelGradId=?', $params);
+
         return $result->cantidad;
     }
 
@@ -74,12 +76,11 @@ AND p.iCursosNivelGradId=?', $params);
 
             $params);
         foreach ($preguntasDB as $pregunta) {
-            $pregunta->cPregunta = StringService::recortarTexto(str_replace(['<','>'],'',html_entity_decode(strip_tags($pregunta->cPregunta))));
+            $pregunta->cPregunta = StringService::recortarTexto(str_replace(['<', '>'], '', html_entity_decode(strip_tags($pregunta->cPregunta))));
         }
+
         return $preguntasDB;
     }
-
-
 
     public static function obtenerBancoPreguntasByParams($params)
     {
@@ -91,7 +92,7 @@ AND p.iCursosNivelGradId=?', $params);
             $params['ids'] ?? '',
             $params['iEncabPregId'] ?? 0,
             $params['iEvaluacionId'] ?? 0,
-            $params['iPreguntaId']
+            $params['iPreguntaId'],
         ];
 
         $preguntasDB = DB::select('exec ere.SP_SEL_bancoPreguntas @_iCursosNivelGradId = ?,
@@ -116,6 +117,7 @@ AND p.iCursosNivelGradId=?', $params);
 
         return $preguntas;
     }
+
     public static function obtenerBancoPreguntas($params)
     {
 
@@ -143,12 +145,12 @@ AND p.iCursosNivelGradId=?', $params);
             $data['iEncabPregId'],
             $data['cEncabPregTitulo'] ?? '',
             $data['cEncabPregContenido'] ?? '',
-            //$data['iCursoId'],
+            // $data['iCursoId'],
             $data['iCursosNivelGradId'],
             $data['iNivelGradoId'],
             $data['iColumnValue'],
             $data['cColumnName'] ?? 'iEspecialistaId',
-            $data['cSchemaName']
+            $data['cSchemaName'],
         ];
         // , @_iCursoId = ?
         $result = DB::select(
@@ -172,8 +174,8 @@ AND p.iCursosNivelGradId=?', $params);
 
         $campos = 'cEncabPregTitulo, cEncabPregContenido';
         $where = '1=1 ';
-        //$where .= " AND iCursoId = {$params['iCursoId']}";//Aqui se paso en Eval
-        $schema =  $params['schema'] ?? 'ere';
+        // $where .= " AND iCursoId = {$params['iCursoId']}";//Aqui se paso en Eval
+        $schema = $params['schema'] ?? 'ere';
         if ($schema === 'ere') {
             $campos .= ' ,iEncabPregId';
             $where .= " AND iNivelGradoId = {$params['iNivelGradoId']}";
@@ -191,9 +193,8 @@ AND p.iCursosNivelGradId=?', $params);
             $schema,
             'encabezado_preguntas',
             $campos,
-            $where
+            $where,
         ];
-
 
         return DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
                 @nombreEsquema = ?,

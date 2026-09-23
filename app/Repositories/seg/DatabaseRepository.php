@@ -2,7 +2,6 @@
 
 namespace App\Repositories\seg;
 
-use Carbon\Carbon;
 use DragonCode\Support\Facades\Filesystem\File;
 use Illuminate\Support\Facades\DB;
 
@@ -15,8 +14,8 @@ class DatabaseRepository
         $user = env('DB_USERNAME');
         $password = env('DB_PASSWORD');
 
-        $backupFile = 'resp_' . now()->format('Ymd_His') . '.bak';
-        $backupPath = 'D:\\BackupBD\\' . $backupFile;
+        $backupFile = 'resp_'.now()->format('Ymd_His').'.bak';
+        $backupPath = 'D:\\BackupBD\\'.$backupFile;
 
         $batContent = <<<BAT
 @echo off
@@ -42,7 +41,7 @@ BAT;
         $sql="BACKUP DATABASE [CINFODW] TO DISK = N'D:\BackupBD\archivo.bak';";
         DB::statement($sql);*/
 
-        //DB::statement('EXEC [seg].usp_BackupDatabase @DatabaseName=?, @BackupFileName=?, @BackupPath=?', [$nombreBd, $nombreBackup, $ruta]);
+        // DB::statement('EXEC [seg].usp_BackupDatabase @DatabaseName=?, @BackupFileName=?, @BackupPath=?', [$nombreBd, $nombreBackup, $ruta]);
         /*DB::statement('INSERT INTO [seg].[backup_logs]
            (cBackupNombre,cBackupPath,iPersId,dtBackupCreacion,cBackupStatus)
            VALUES (?, ?, ?, GETDATE(), ?)', [$nombreBackup, $ruta, $iPersId, 'Completado']);*/
@@ -57,8 +56,9 @@ BAT;
         INNER JOIN grl.personas AS p ON p.iPersId=bl.iPersId
         ORDER BY dtBackupCreacion DESC", [env('DB_DIAS_BACKUP')]);
         foreach ($resultado as $fila) {
-            $fila->iDiasParaEliminarse = $fila->iDiasParaEliminarse < 0 ? 0 : $fila->iDiasParaEliminarse; //file_exists($fila->cBackupPath.'\\'.$fila->cBackupNombre) ? 'SI' : 'NO';
+            $fila->iDiasParaEliminarse = $fila->iDiasParaEliminarse < 0 ? 0 : $fila->iDiasParaEliminarse; // file_exists($fila->cBackupPath.'\\'.$fila->cBackupNombre) ? 'SI' : 'NO';
         }
+
         return $resultado;
     }
 }

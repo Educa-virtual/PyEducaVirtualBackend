@@ -21,8 +21,10 @@ class YearAcademico
         return $data;
     }
 
-    public static function selYearAcademicoPorAnio($anio) {
-        $data = DB::selectOne("SELECT * FROM acad.year_academicos WHERE iYearId=?", [$anio]);
+    public static function selYearAcademicoPorAnio($anio)
+    {
+        $data = DB::selectOne('SELECT * FROM acad.year_academicos WHERE iYearId=?', [$anio]);
+
         return $data;
     }
 }

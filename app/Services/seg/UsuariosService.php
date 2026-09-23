@@ -15,7 +15,7 @@ class UsuariosService
     {
         $parametros = [
             'iCredEntPerfId' => $request->header('iCredEntPerfId'),
-            'soloTotal' => $tipo == 'data' ? 0 : 1, //0: Obtener datos, 1: Obtener cantidad
+            'soloTotal' => $tipo == 'data' ? 0 : 1, // 0: Obtener datos, 1: Obtener cantidad
             'offset' => $request->get('offset', 0),
             'limit' => $request->get('limit', 20),
             'opcionBusqueda' => $request->get('opcionSeleccionada'),
@@ -32,6 +32,7 @@ class UsuariosService
             'columnaOrdenar' => $request->get('columnaOrdenar', null),
             'direccionOrdenar' => $request->get('direccionOrdenar', null),
         ];
+
         return $parametros;
     }
 
@@ -44,8 +45,9 @@ class UsuariosService
         $resultado = [
             'totalFilas' => $dataCantidad[0]->totalFilas,
             'dataUsuarios' => $dataUsuarios,
-            'fechaServidor' => new Carbon()
+            'fechaServidor' => new Carbon,
         ];
+
         return $resultado;
     }
 
@@ -73,7 +75,8 @@ class UsuariosService
     {
         Usuario::updiCredEstadoCredencialesXiCredId($parametros);
         $mensaje = $parametros[1] == 1 ? 'activado' : 'desactivado';
-        return 'El usuario ha sido ' . $mensaje;
+
+        return 'El usuario ha sido '.$mensaje;
     }
 
     public static function actualizarFechaVigenciaUsuario($iCredId, Request $request)
@@ -103,7 +106,7 @@ class UsuariosService
         Usuario::delCredencialesEntidadesPerfiles($iCredId, $parametros);
     }
 
-    public static function restablecerClaveUsuario(Object $parametros)
+    public static function restablecerClaveUsuario(object $parametros)
     {
         Usuario::updReseteoClaveCredencialesXiCredId($parametros);
     }
@@ -114,12 +117,13 @@ class UsuariosService
             $usuario->iCredId,
             $usuario->iPersId,
             $request->contrasenaActual,
-            $request->contrasenaNueva
+            $request->contrasenaNueva,
         ];
         Usuario::updCredenciasUpdatePassword($parametros);
     }
 
-    public static function obtenerDetallesCredencialEntidad($iCredEntPerfId) {
+    public static function obtenerDetallesCredencialEntidad($iCredEntPerfId)
+    {
         return Usuario::selDetallesCredencialEntidad($iCredEntPerfId);
     }
 }

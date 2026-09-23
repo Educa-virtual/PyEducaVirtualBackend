@@ -1,18 +1,13 @@
 <?php
 
 use App\Http\Controllers\api\grl\PersonaController;
-use App\Http\Controllers\seg\AuditoriaAccesosFallidosController;
 use App\Http\Controllers\seg\AuditoriaController;
-use App\Http\Controllers\seg\AuditoriaMiddlewareController;
-use App\Http\Controllers\seg\AuthController;
-use App\Http\Controllers\seg\CredencialModuloController;
 use App\Http\Controllers\seg\DatabaseController;
 use App\Http\Controllers\seg\ModuloAdministrativoController;
 use App\Http\Controllers\seg\PasswordRecoveryController;
 use App\Http\Controllers\seg\PerfilController;
 use App\Http\Controllers\seg\SolicitudRegistroUsuarioController;
 use App\Http\Controllers\seg\UsuarioController;
-use App\Http\Middleware\RefreshToken;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'seg', 'middleware' => ['auth:api']], function () {

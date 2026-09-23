@@ -3,26 +3,26 @@
 namespace App\Http\Controllers\cap;
 
 use App\Helpers\FormatearMensajeHelper;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
-use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\grl\PersonasController;
-use App\Http\Requests\bienestar\FichaRecreacionSaveRequest;
 use App\Models\cap\Instructor;
 use Exception;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class InstructoresController extends Controller
 {
     private $ESTADO_ELIMINADO = 0;
+
     private $ESTADO_INACTIVO = 10;
+
     private $ESTADO_ACTIVO = 1;
 
-    public function buscarInstructorxiTipoIdentIdxcPersDocumento($iTipoIdentId = 1, $cPersDocumento = null, Request $request)
+    public function buscarInstructorxiTipoIdentIdxcPersDocumento($iTipoIdentId, $cPersDocumento, Request $request)
     {
         $request->merge(['iTipoIdentId' => $iTipoIdentId]);
         $request->merge(['cPersDocumento' => $cPersDocumento]);
@@ -39,23 +39,22 @@ class InstructoresController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
 
         try {
             $fieldsToDecode = [
                 'iTipoIdentId',
-                'iPersId'
+                'iPersId',
             ];
 
-            $data = new PersonasController();
+            $data = new PersonasController;
             $data = $data->buscarPersonaxiTipoIdentIdxcPersDocumento($request);
 
             if (isset($data['data']['iPersId'])) {
                 $request->merge(['iPersId' => $data['data']['iPersId']]);
-                $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+                $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
                 return new JsonResponse(
                     ['validated' => false, 'message' => 'Se obtuvo la información exitosamente', 'data' => $data['data']],
@@ -84,9 +83,10 @@ class InstructoresController extends Controller
                 'iPersId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $data = Instructor::selInstructores($request);
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -103,7 +103,7 @@ class InstructoresController extends Controller
             'cPersMaterno' => ['required'],
             'cPersTelefono' => ['required'],
             'cPersCorreo' => ['required', 'email'],
-            'cPersDireccion' => ['required']
+            'cPersDireccion' => ['required'],
         ], [
             'iTipoIdentId.required' => 'No se encontró el identificador iTipoIdentId',
             'cPersDocumento.required' => 'No se encontró el número del documento',
@@ -114,18 +114,18 @@ class InstructoresController extends Controller
             'cPersTelefono.required' => 'Debe ingresar el número de celular',
             'cPersCorreo.required' => 'Debe ingresar el correo electrónico',
             'cPersCorreo.email' => 'Debe ingresar un correo electrónico válido',
-            'cPersDireccion.required' => 'Debe ingresar la dirección'
+            'cPersDireccion.required' => 'Debe ingresar la dirección',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        if (!isset($request->iPersId)) {
-            $persona = new PersonasController();
+        if (! isset($request->iPersId)) {
+            $persona = new PersonasController;
             $persona = $persona->guardarPersonas($request);
 
             if ($persona[0]->iPersId > 0) {
@@ -135,18 +135,19 @@ class InstructoresController extends Controller
             } else {
                 return response()->json([
                     'validated' => false,
-                    'errors' => 'No se encontró el iPersId'
+                    'errors' => 'No se encontró el iPersId',
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
         $request->merge(['cPersDomicilio' => $request->cPersDireccion]);
-        $datosPersonales = new PersonasController();
+        $datosPersonales = new PersonasController;
         $datosPersonales = $datosPersonales->guardarPersonasxDatosPersonales($request);
 
         try {
             $data = Instructor::insInstructores($request);
+
             return FormatearMensajeHelper::ok('Se ha guardado exitosamente', $data);
-            
+
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
@@ -158,6 +159,7 @@ class InstructoresController extends Controller
             $request->merge(['iInstId' => $iInstId]);
             $request = VerifyHash::validateRequest($request, ['iInstId']);
             $data = Instructor::delInstructores($request);
+
             return FormatearMensajeHelper::ok('Se ha eliminado exitosamente', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -174,25 +176,26 @@ class InstructoresController extends Controller
             'iInstId' => ['required'],
             'cPersTelefono' => ['required'],
             'cPersCorreo' => ['required', 'email'],
-            'cPersDireccion' => ['required']
+            'cPersDireccion' => ['required'],
         ], [
             'cOpcion.required' => 'No se encontró la opción',
             'iInstId.required' => 'No se encontró el identificador iInstId',
             'cPersTelefono.required' => 'Debe ingresar el número de celular',
             'cPersCorreo.required' => 'Debe ingresar el correo electrónico',
             'cPersCorreo.email' => 'Debe ingresar un correo electrónico válido',
-            'cPersDireccion.required' => 'Debe ingresar la dirección'
+            'cPersDireccion.required' => 'Debe ingresar la dirección',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $data = Instructor::updInstructores($request);
+
             return FormatearMensajeHelper::ok('Se ha actualizado exitosamente', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -206,6 +209,7 @@ class InstructoresController extends Controller
             $request->merge(['iInstId' => $iInstId]);
             $request = VerifyHash::validateRequest($request, ['iInstId']);
             $data = Instructor::updInstructoresEstado($request);
+
             return FormatearMensajeHelper::ok('Se ha actualizado exitosamente', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

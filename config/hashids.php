@@ -2,5 +2,5 @@
 
 return [
     'salt' => 'PROYECTO VIRTUAL - DREMO',
-    'min_length' => 50
+    'min_length' => 50,
 ];

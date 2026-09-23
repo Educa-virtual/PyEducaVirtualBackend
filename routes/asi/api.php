@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\acad\EstudiantesController;
 use App\Http\Controllers\asi\AsistenciaControlController;
 use App\Http\Controllers\asi\AsistenciaController;
 use App\Http\Controllers\asi\AsistenciaGeneralController;

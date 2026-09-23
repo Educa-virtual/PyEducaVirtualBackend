@@ -10,36 +10,44 @@ use Illuminate\Http\Request;
 
 class InstrumentosController extends Controller
 {
-    public function guardarInstrumentos(Request $request){
+    public function guardarInstrumentos(Request $request)
+    {
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $data = InstrumentoEvaluacion::guardarInstrumentos($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
-        
+
     }
-    public function editarInstrumentos(Request $request){
+
+    public function editarInstrumentos(Request $request)
+    {
 
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $data = InstrumentoEvaluacion::editarInstrumentos($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
-        
+
     }
-    public function eliminarInstrumentos(Request $request){
+
+    public function eliminarInstrumentos(Request $request)
+    {
 
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $data = InstrumentoEvaluacion::eliminarInstrumentos($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
-        
+
     }
 }

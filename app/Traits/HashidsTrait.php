@@ -16,6 +16,7 @@ trait HashidsTrait
     protected function decodeId($encodedId)
     {
         $decodedId = $this->hashids->decode($encodedId);
+
         return count($decodedId) > 0 ? $decodedId[0] : $encodedId;
     }
 }

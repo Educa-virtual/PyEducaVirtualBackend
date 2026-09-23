@@ -20,6 +20,7 @@ class EncuestaBienestarRespuestaController extends Controller
         Perfil::ASISTENTE_SOCIAL,
         Perfil::APODERADO,
     ];
+
     private $registran = [
         Perfil::ESTUDIANTE,
     ];
@@ -29,6 +30,7 @@ class EncuestaBienestarRespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->visualizan]);
             $data = EncuestaBienestarRespuesta::selRespuestas($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -40,6 +42,7 @@ class EncuestaBienestarRespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->visualizan, $this->registran)]);
             $data = EncuestaBienestarRespuesta::selRespuesta($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -51,6 +54,7 @@ class EncuestaBienestarRespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->visualizan, $this->registran)]);
             $data = EncuestaBienestarRespuesta::insRespuesta($request);
+
             return FormatearMensajeHelper::ok('se guardó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -62,6 +66,7 @@ class EncuestaBienestarRespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->visualizan, $this->registran)]);
             $data = EncuestaBienestarRespuesta::updRespuesta($request);
+
             return FormatearMensajeHelper::ok('se actualizó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -73,6 +78,7 @@ class EncuestaBienestarRespuestaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->visualizan, $this->registran)]);
             $data = EncuestaBienestarRespuesta::delRespuesta($request);
+
             return FormatearMensajeHelper::ok('se eliminó la respuesta', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -89,7 +95,7 @@ class EncuestaBienestarRespuestaController extends Controller
             $respuestas = $data[2];
             $filtros = $data[3][0];
 
-            foreach ( $respuestas as $respuesta) {
+            foreach ($respuestas as $respuesta) {
                 $respuesta->respuestas = json_decode($respuesta->respuestas);
             }
 
@@ -98,11 +104,11 @@ class EncuestaBienestarRespuestaController extends Controller
             while (ob_get_level() > 0) {
                 ob_end_clean();
             }
+
             return view('bienestar.encuesta_respuestas_excel', compact('encuesta', 'preguntas', 'respuestas', 'nro_preguntas', 'filtros'));
 
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
-
 }

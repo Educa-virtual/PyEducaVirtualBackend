@@ -3,24 +3,23 @@
 namespace App\Http\Controllers\grl;
 
 use App\Helpers\FormatearMensajeHelper;
-use App\Http\Controllers\Controller;
-use App\Http\Middleware\AuditoriaConsultas;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Hashids\Hashids;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use App\Http\Controllers\api\grl\PersonaController;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\grl\ActualizarFotoPerfilRequest;
 use App\Services\grl\PersonasService;
 use Exception;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class PersonasController extends Controller
 {
     protected $hashids;
+
     protected $iPersId;
 
     public function __construct()
@@ -33,6 +32,7 @@ class PersonasController extends Controller
         try {
             $usuario = Auth::user();
             PersonasService::actualizarDatosPersonales($usuario->iPersId, $request);
+
             return FormatearMensajeHelper::ok('Se han actualizado sus datos');
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -44,6 +44,7 @@ class PersonasController extends Controller
         try {
             $usuario = Auth::user();
             $urlFoto = PersonasService::actualizarFotoPerfil($usuario->iPersId, $request);
+
             return FormatearMensajeHelper::ok('Se ha actualizado su foto de perfil', ['urlFoto' => $urlFoto]);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -67,35 +68,35 @@ class PersonasController extends Controller
 
         $parametros = [
             $request->opcion,
-            $iPersId                            ?? NULL,
-            $request->iTipoPersId               ?? NULL,
-            $request->iTipoIdentId              ?? NULL,
-            $request->cPersDocumento            ?? NULL,
-            $request->cPersPaterno              ?? NULL,
-            $request->cPersMaterno              ?? NULL,
-            $request->cPersNombre               ?? NULL,
-            $request->cPersSexo                 ?? NULL,
-            $request->dPersNacimiento           ?? NULL,
-            $request->iTipoEstCivId             ?? NULL,
-            $request->iNacionId                 ?? NULL,
-            $request->cPersFotografia           ?? NULL,
-            $request->cPersRazonSocialNombre    ?? NULL,
-            $request->cPersRazonSocialCorto     ?? NULL,
-            $request->cPersRazonSocialSigla     ?? NULL,
-            $request->iPersRepresentanteLegalId ?? NULL,
-            $request->cPersDomicilio            ?? NULL,
-            $request->iTipoSectorId             ?? NULL,
-            $request->iPaisId                   ?? NULL,
-            $request->iDptoId                   ?? NULL,
-            $request->iPrvnId                   ?? NULL,
-            $request->iDsttId                   ?? NULL,
-            $request->iPersEstado               ?? NULL,
-            $request->cPersCodigoVerificacion   ?? NULL,
-            $request->cPersObs                  ?? NULL
+            $iPersId ?? null,
+            $request->iTipoPersId ?? null,
+            $request->iTipoIdentId ?? null,
+            $request->cPersDocumento ?? null,
+            $request->cPersPaterno ?? null,
+            $request->cPersMaterno ?? null,
+            $request->cPersNombre ?? null,
+            $request->cPersSexo ?? null,
+            $request->dPersNacimiento ?? null,
+            $request->iTipoEstCivId ?? null,
+            $request->iNacionId ?? null,
+            $request->cPersFotografia ?? null,
+            $request->cPersRazonSocialNombre ?? null,
+            $request->cPersRazonSocialCorto ?? null,
+            $request->cPersRazonSocialSigla ?? null,
+            $request->iPersRepresentanteLegalId ?? null,
+            $request->cPersDomicilio ?? null,
+            $request->iTipoSectorId ?? null,
+            $request->iPaisId ?? null,
+            $request->iDptoId ?? null,
+            $request->iPrvnId ?? null,
+            $request->iDsttId ?? null,
+            $request->iPersEstado ?? null,
+            $request->cPersCodigoVerificacion ?? null,
+            $request->cPersObs ?? null,
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", [$parametros]);
+            $data = DB::select('execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', [$parametros]);
 
             foreach ($data as $key => $value) {
                 $value->iPersId = $this->hashids->encode($value->iPersId);
@@ -117,14 +118,14 @@ class PersonasController extends Controller
             'iPersId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
         $parametros = [
-            $request->iPersId
+            $request->iPersId,
         ];
 
         try {
-            $data = DB::selectOne("execute grl.Sp_SEL_personasxiPersId ?", $parametros);
-            $data->cPersFotografia='storage/'.PersonasService::obtenerRutaFotoPerfil($data->iPersId).'/'.$data->cPersFotografia;
+            $data = DB::selectOne('execute grl.Sp_SEL_personasxiPersId ?', $parametros);
+            $data->cPersFotografia = 'storage/'.PersonasService::obtenerRutaFotoPerfil($data->iPersId).'/'.$data->cPersFotografia;
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -140,7 +141,7 @@ class PersonasController extends Controller
         $fieldsToDecode = [
             'iPersId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iPersId,
@@ -152,7 +153,7 @@ class PersonasController extends Controller
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_UPD_personasxDatosPersonales ?,?,?,?,?,?", $parametros);
+            $data = DB::select('execute grl.Sp_UPD_personasxDatosPersonales ?,?,?,?,?,?', $parametros);
 
             if ($data[0]->iPersId > 0) {
 
@@ -174,8 +175,8 @@ class PersonasController extends Controller
     {
         try {
             $fieldsToDecode = ['iTipoIdentId', 'iCredId'];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-            $data = new PersonaController();
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
+            $data = new PersonaController;
             $data = ($data->validate($request))->getContent();
 
             $data = json_decode($data, true);
@@ -183,9 +184,9 @@ class PersonasController extends Controller
             if (isset($data['data']['iPersId'])) {
 
                 $request->merge(['iPersId' => $data['data']['iPersId']]);
-                $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+                $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
-                $contacto = new PersonasContactosController();
+                $contacto = new PersonasContactosController;
 
                 $contacto = $contacto->obtenerxiPersId($request)->getData(true);
                 $contacto = $contacto['data'];
@@ -195,6 +196,7 @@ class PersonasController extends Controller
                 $data['data']['cPersTel'] = $contacto['cPersTel'];
                 $data['data']['cPersRedSoc'] = $contacto['cPersRedSoc'];
             }
+
             return $data;
         } catch (\Exception $e) {
             return new JsonResponse(
@@ -209,20 +211,21 @@ class PersonasController extends Controller
         $fieldsToDecode = [
             'iPersId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iTipoIdentId          ??  NULL,
-            $request->cPersDocumento        ??  NULL,
-            $request->cPersNombre           ??  NULL,
-            $request->cPersPaterno          ??  NULL,
-            $request->cPersMaterno          ??  NULL,
-            $request->cPersTelefono         ??  NULL,
-            $request->cPersCorreo           ??  NULL,
+            $request->iTipoIdentId ?? null,
+            $request->cPersDocumento ?? null,
+            $request->cPersNombre ?? null,
+            $request->cPersPaterno ?? null,
+            $request->cPersMaterno ?? null,
+            $request->cPersTelefono ?? null,
+            $request->cPersCorreo ?? null,
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_INS_personasGral ?,?,?,?,?,?,?", $parametros);
+            $data = DB::select('execute grl.Sp_INS_personasGral ?,?,?,?,?,?,?', $parametros);
+
             return $data;
         } catch (\Exception $e) {
             $response = ['validated' => false, 'message' => $e->getMessage(), 'data' => []];

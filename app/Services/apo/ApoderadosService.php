@@ -19,14 +19,15 @@ class ApoderadosService
         foreach ($data as $fila) {
             $fila->iEstudianteId = VerifyHash::encodexId($fila->iEstudianteId);
         }
+
         return $data;
     }
 
     public static function estudiantePerteneceApoderado($iPersIdApoderado, $iEstudianteId)
     {
         $data = Apoderado::selEstudianteApoderado($iPersIdApoderado, $iEstudianteId);
-        if (!$data) {
-            throw new Exception("El estudiante no esta relacionado con el apoderado");
+        if (! $data) {
+            throw new Exception('El estudiante no esta relacionado con el apoderado');
         }
     }
 
@@ -37,10 +38,10 @@ class ApoderadosService
 
         $detallesCredencial = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
         $institucionEducativa = InstitucionesEducativasService::obtenerIePorSede($detallesCredencial->iSedeId);
-        if ($institucionEducativa->cIieeCodigoModular!=$dataFormateada['codigo_modular']) {
-            throw new Exception("El código modular del archivo no coincide con la institución educativa del usuario.");
+        if ($institucionEducativa->cIieeCodigoModular != $dataFormateada['codigo_modular']) {
+            throw new Exception('El código modular del archivo no coincide con la institución educativa del usuario.');
         }
-        //$json_estudiantes = str_replace("'", "''", json_encode($dataFormateada['estudiantes']));
+        // $json_estudiantes = str_replace("'", "''", json_encode($dataFormateada['estudiantes']));
         Apoderado::insApoderadosDesdeArchivo($dataFormateada['estudiantes'], $iPersId);
 
     }

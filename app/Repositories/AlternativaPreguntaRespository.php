@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\DB;
 
 class AlternativaPreguntaRespository
 {
-
     public function getAllByPreguntaId($id)
     {
         $campos = 'iPreguntaId,iAlternativaId,cAlternativaDescripcion,cAlternativaLetra,bAlternativaCorrecta,cAlternativaExplicacion';
@@ -16,7 +15,7 @@ class AlternativaPreguntaRespository
             'ere',
             'alternativas',
             $campos,
-            $where
+            $where,
         ];
 
         $alternativas = DB::select(
@@ -27,9 +26,9 @@ class AlternativaPreguntaRespository
                 @condicionWhere = ?',
             $params
         );
+
         return $alternativas;
     }
-
 
     public function guardarActualizarAlternativa($params)
     {

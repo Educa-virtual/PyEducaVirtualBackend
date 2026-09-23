@@ -15,7 +15,6 @@ class GuardarHojaDesarrolloEstudianteRequest extends GeneralFormRequest
         ]);
     }
 
-
     public function rules(): array
     {
         return [
@@ -33,7 +32,7 @@ class GuardarHojaDesarrolloEstudianteRequest extends GeneralFormRequest
             'iEvaluacionId' => 'ID de evaluacion',
             'iCursosNivelGradId' => 'ID de curso',
             'iEstudianteId' => 'ID de estudiante',
-            'archivo' => 'Archivo'
+            'archivo' => 'Archivo',
         ];
     }
 

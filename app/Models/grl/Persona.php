@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Persona extends Model
 {
-    public static function insPersonas(Object $request)
+    public static function insPersonas(object $request)
     {
         $parametros = [
             $request->iTipoPersId ?? null,
@@ -35,10 +35,11 @@ class Persona extends Model
             $request->cPersCorreo ?? null,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC grl.Sp_INS_personas $placeholders", $parametros);
     }
 
-    public static function updPersonas(Object $request)
+    public static function updPersonas(object $request)
     {
         $parametros = [
             $request->iPersId ?? null,
@@ -65,21 +66,23 @@ class Persona extends Model
             $request->cPersCorreo ?? null,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC grl.Sp_UPD_personas $placeholders", $parametros);
     }
 
     public static function selPersonaPorDocumento($documento)
     {
-        return DB::selectOne("SELECT TOP 1 * FROM grl.personas WHERE cPersDocumento=?", [$documento]);
+        return DB::selectOne('SELECT TOP 1 * FROM grl.personas WHERE cPersDocumento=?', [$documento]);
     }
 
     public static function updDatosPersonales($iPersId, Request $request)
     {
-        return DB::update("UPDATE grl.personas SET cPersTelefono=?, cPersCorreo=?, cPersDomicilio=?, dtPersActualizado=GETDATE()
-        WHERE iPersId=?", [$request->cPersTelefono, $request->cPersCorreo, $request->cPersDomicilio, $iPersId]);
+        return DB::update('UPDATE grl.personas SET cPersTelefono=?, cPersCorreo=?, cPersDomicilio=?, dtPersActualizado=GETDATE()
+        WHERE iPersId=?', [$request->cPersTelefono, $request->cPersCorreo, $request->cPersDomicilio, $iPersId]);
     }
 
-    public static function updFotoPerfil($iPersId, $foto) {
-        DB::update("UPDATE grl.personas SET cPersFotografia=?, dtPersActualizado=GETDATE() WHERE iPersId=?", [$foto, $iPersId]);
+    public static function updFotoPerfil($iPersId, $foto)
+    {
+        DB::update('UPDATE grl.personas SET cPersFotografia=?, dtPersActualizado=GETDATE() WHERE iPersId=?', [$foto, $iPersId]);
     }
 }

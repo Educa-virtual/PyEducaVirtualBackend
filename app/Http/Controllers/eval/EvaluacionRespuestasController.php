@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\eval;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class EvaluacionRespuestasController extends Controller
 {
@@ -22,6 +22,7 @@ class EvaluacionRespuestasController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -38,7 +39,7 @@ class EvaluacionRespuestasController extends Controller
             'iEvalRptaId',
             'iEstudianteId',
             'iEvalPregId',
-            'iBancoAltCorrecta'
+            'iBancoAltCorrecta',
 
         ];
 
@@ -50,21 +51,21 @@ class EvaluacionRespuestasController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iEvalRptaId           ??  NULL,
-            $request->iEstudianteId         ??  NULL,
-            $request->iEvalPregId           ??  NULL,
-            $request->iBancoAltCorrecta     ??  NULL,
-            $request->dtEvalRpta            ??  NULL,
-            $request->nEvalRptaNota         ??  NULL,
-            $request->dtEvalRptaDuracion    ??  NULL,
-            $request->jEvalRptaEstudiante   ??  NULL,
-            $request->iEstado               ??  NULL,
-            $request->iSesionId             ??  NULL,
-            $request->dtCreado              ??  NULL,
-            $request->dtActualizado         ??  NULL,
-            $request->cEvalRptaLibre        ??  NULL,
+            $request->iEvalRptaId ?? null,
+            $request->iEstudianteId ?? null,
+            $request->iEvalPregId ?? null,
+            $request->iBancoAltCorrecta ?? null,
+            $request->dtEvalRpta ?? null,
+            $request->nEvalRptaNota ?? null,
+            $request->dtEvalRptaDuracion ?? null,
+            $request->jEvalRptaEstudiante ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
+            $request->cEvalRptaLibre ?? null,
 
-            $request->iCredId                       ??  NULL
+            $request->iCredId ?? null,
         ];
     }
 
@@ -74,7 +75,7 @@ class EvaluacionRespuestasController extends Controller
             'iEvalRptaId',
             'iEstudianteId',
             'iEvalPregId',
-            'iBancoAltCorrecta'
+            'iBancoAltCorrecta',
         ];
 
         foreach ($fieldsToEncode as $field) {
@@ -100,6 +101,7 @@ class EvaluacionRespuestasController extends Controller
                 case 'CONSULTAR':
                     $data = DB::select('exec eval.Sp_SEL_evaluacionRespuestas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
+
                     return new JsonResponse(
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200

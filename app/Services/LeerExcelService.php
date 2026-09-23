@@ -13,23 +13,24 @@ class LeerExcelService
 
     /**
      * Leer datos de archivo Excel
-     * @param Request $request
+     *
+     * @param  Request  $request
      * @return array [hoja => [fila => [columna => valor]]]
-    */
+     */
     public static function leer($request)
     {
         $data = [];
 
         // Validar que request tiene al menos un archivo
-        if($request->allFiles()) {
+        if ($request->allFiles()) {
 
             // Obtener data solo del primer archivo
-            foreach( $request->file() as $file) {
+            foreach ($request->file() as $file) {
                 $archivo = $file;
                 break;
             }
 
-            if( !$archivo ) {
+            if (! $archivo) {
                 return $data;
             }
 

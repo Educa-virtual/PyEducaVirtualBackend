@@ -26,9 +26,9 @@ class FichaSaludController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaSalud::updFichaSalud($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -38,9 +38,9 @@ class FichaSaludController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaSalud::selfichaSalud($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }

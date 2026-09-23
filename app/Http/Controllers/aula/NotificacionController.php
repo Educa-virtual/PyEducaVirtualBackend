@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
 use Exception;
+use Hashids\Hashids;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Hashids\Hashids;
 
 class NotificacionController extends Controller
 {
-
     protected $hashids;
 
     public function __construct()
     {
         $this->hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
-
 
     public function mostrar_notificacion(Request $request)
     {

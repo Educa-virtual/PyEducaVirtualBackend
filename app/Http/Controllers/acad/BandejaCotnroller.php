@@ -16,7 +16,8 @@ class BandejaCotnroller extends Controller
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $data = Bandeja::BandejaEntradaEstudiante($request);
-            return FormatearMensajeHelper::ok('Se ha obtenido bandeja de estudiante', $data, Response::HTTP_CREATED); 
+
+            return FormatearMensajeHelper::ok('Se ha obtenido bandeja de estudiante', $data, Response::HTTP_CREATED);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
@@ -27,7 +28,8 @@ class BandejaCotnroller extends Controller
         try {
             // Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $data = Bandeja::BandejaEntradaDocente($request);
-            return FormatearMensajeHelper::ok('Se ha obtenido bandeja de docente', $data, Response::HTTP_CREATED); 
+
+            return FormatearMensajeHelper::ok('Se ha obtenido bandeja de docente', $data, Response::HTTP_CREATED);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

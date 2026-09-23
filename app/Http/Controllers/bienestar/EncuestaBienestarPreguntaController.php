@@ -19,6 +19,7 @@ class EncuestaBienestarPreguntaController extends Controller
         Perfil::SUBDIRECTOR_IE,
         Perfil::ASISTENTE_SOCIAL,
     ];
+
     private array $visualizan = [
         Perfil::ESTUDIANTE,
         Perfil::APODERADO,
@@ -29,6 +30,7 @@ class EncuestaBienestarPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->administran, $this->visualizan)]);
             $data = EncuestaBienestarPregunta::selPreguntas($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -40,6 +42,7 @@ class EncuestaBienestarPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::selPregunta($request);
+
             return FormatearMensajeHelper::ok('se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -51,6 +54,7 @@ class EncuestaBienestarPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::insPregunta($request);
+
             return FormatearMensajeHelper::ok('se guardó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -62,6 +66,7 @@ class EncuestaBienestarPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::updPregunta($request);
+
             return FormatearMensajeHelper::ok('se actualizó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -73,10 +78,10 @@ class EncuestaBienestarPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->administran]);
             $data = EncuestaBienestarPregunta::delPregunta($request);
+
             return FormatearMensajeHelper::ok('se eliminó la pregunta', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
-
 }

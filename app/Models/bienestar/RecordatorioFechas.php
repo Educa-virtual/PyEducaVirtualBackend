@@ -14,8 +14,8 @@ class RecordatorioFechas
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         try {
-            return DB::select('EXEC obe.Sp_SEL_cumpleanios ' . $placeholders, $parametros);
-        } catch(\Exception $e) {
+            return DB::select('EXEC obe.Sp_SEL_cumpleanios '.$placeholders, $parametros);
+        } catch (\Exception $e) {
             // Manejar error en caso de que no se devuelva ningún resultado
             if (str_contains($e->getMessage(), 'contains no fields')) {
                 return [];
@@ -37,7 +37,8 @@ class RecordatorioFechas
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_cumpleaniosConfiguracion ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_cumpleaniosConfiguracion '.$placeholders, $parametros);
     }
 
     public static function updCumpleaniosConfiguracion($request)
@@ -49,6 +50,7 @@ class RecordatorioFechas
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::update('EXEC obe.Sp_UPD_cumpleaniosConfiguracion ' . $placeholders, $parametros);
+
+        return DB::update('EXEC obe.Sp_UPD_cumpleaniosConfiguracion '.$placeholders, $parametros);
     }
 }

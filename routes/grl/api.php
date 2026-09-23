@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\grl\DiasController;
 use App\Http\Controllers\grl\FeriadosNacionalesController;
 use App\Http\Controllers\grl\PersonasContactosController;
@@ -8,11 +7,12 @@ use App\Http\Controllers\grl\PersonasController;
 use App\Http\Controllers\grl\PrioridadController;
 use App\Http\Controllers\grl\TipoIdentificacionController;
 use App\Http\Controllers\grl\YearController;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'administracion'], function () {
 
-  // PRIMER NIVEL
-  Route::post('dias', [DiasController::class, 'list']);
+    // PRIMER NIVEL
+    Route::post('dias', [DiasController::class, 'list']);
 });
 
 Route::group(['prefix' => 'grl', 'middleware' => ['auth:api']], function () {

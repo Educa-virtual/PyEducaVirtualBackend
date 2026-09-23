@@ -3,30 +3,26 @@
 namespace App\Http\Controllers\api\acad;
 
 use App\Enums\Perfil;
-use App\Helpers\CollectionStrategy;
 use App\Helpers\FormatearMensajeHelper;
 use App\Helpers\ResponseHandler;
-use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\acad\FechasImportantesRequest;
 use App\Models\acad\FechaImportante;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 
 class FeriadoImportanteController extends Controller
 {
-    const schema = "acad";
+    const schema = 'acad';
 
     public function selFechasImportantes(Request $request)
     {
-       try {
+        try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $query = FechaImportante::selFechasImportantes($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $query);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -35,9 +31,10 @@ class FeriadoImportanteController extends Controller
 
     public function selDependenciaFechas(Request $request)
     {
-       try {
+        try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $query = FechaImportante::selDependenciaFechas($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $query);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -55,7 +52,7 @@ class FeriadoImportanteController extends Controller
                     'iSedeId' => $iSedeId,
                     'iYAcadId' => $iYAcadId,
                 ]),
-                'opcion' => 'getCalendarioFechas'
+                'opcion' => 'getCalendarioFechas',
             ]);
 
             return ResponseHandler::success($query, 'Fechas importantes obtenidas correctamente.');
@@ -75,7 +72,7 @@ class FeriadoImportanteController extends Controller
                 'json' => json_encode([
                     'iFechaImpId' => $request->route('iFechaImpId'),
                 ]),
-                'opcion' => 'getDependenciaFechas'
+                'opcion' => 'getDependenciaFechas',
             ]);
 
             return ResponseHandler::success($query, 'Fechas importantes obtenidas correctamente.');
@@ -89,25 +86,26 @@ class FeriadoImportanteController extends Controller
     }
 
     public function insFechasImportantes(FechasImportantesRequest $request)
-    {   
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
 
             $parametros = [
-                    $request->iFechaImpId ?? NULL,
-                    $request->iTipoFerId ?? NULL,
-                    $request->iCalAcadId ?? NULL,
-                    $request->bFechaImpSeraLaborable ?? NULL,
-                    $request->cFechaImpNombre ?? NULL,
-                    $request->dtFechaImpFecha ?? NULL,
-                    $request->cFechaImpURLDocumento ?? NULL,
-                    $request->cFechaImpInfoAdicional ?? NULL,
-                    $request->iDepFechaImpId ?? NULL,
-                    $request->iCredEntPerfId ?? NULL,
+                $request->iFechaImpId ?? null,
+                $request->iTipoFerId ?? null,
+                $request->iCalAcadId ?? null,
+                $request->bFechaImpSeraLaborable ?? null,
+                $request->cFechaImpNombre ?? null,
+                $request->dtFechaImpFecha ?? null,
+                $request->cFechaImpURLDocumento ?? null,
+                $request->cFechaImpInfoAdicional ?? null,
+                $request->iDepFechaImpId ?? null,
+                $request->iCredEntPerfId ?? null,
             ];
-            
-            $cantidad = str_repeat('?,', count($parametros) - 1) . '?';
-            $query = DB::select("EXEC acad.Sp_INS_FechasEspecialesIE ". $cantidad, $parametros);
+
+            $cantidad = str_repeat('?,', count($parametros) - 1).'?';
+            $query = DB::select('EXEC acad.Sp_INS_FechasEspecialesIE '.$cantidad, $parametros);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $query);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -122,6 +120,7 @@ class FeriadoImportanteController extends Controller
 
             $iFechaImpId = $request->route('iFechaImpId');
             $query = FechaImportante::delFechasImportantes($iFechaImpId);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $query);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -131,7 +130,7 @@ class FeriadoImportanteController extends Controller
 
     public function updFechasImportantes(Request $request)
     {
-        $query = DB::select("EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion", [
+        $query = DB::select('EXEC acad.SP_INS_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion', [
             'json' => json_encode([
                 'iFechaImpId' => $request->input('iFechaImpId'),
                 'iTipoFerId' => 4,
@@ -142,7 +141,7 @@ class FeriadoImportanteController extends Controller
                 'cFechaImpURLDocumento' => $request->input('cFechaImpURLDocumento'),
                 'cFechaImpInfoAdicional' => $request->input('cFechaImpInfoAdicional'),
             ]),
-            'opcion' => 'addFechasEspecialesIE'
+            'opcion' => 'addFechasEspecialesIE',
         ]);
 
         return ResponseHandler::success($query, 'Fechas importantes obtenidas correctamente.');
@@ -152,11 +151,11 @@ class FeriadoImportanteController extends Controller
     {
         $iFechaImpId = $request->route('iFechaImpId');
 
-        $query = DB::select("EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion", [
+        $query = DB::select('EXEC acad.SP_DEL_stepCalendarioAcademicoDesdeJsonOpcion @json = :json, @_opcion = :opcion', [
             'json' => json_encode([
-                'iFechaImpId' => $iFechaImpId
+                'iFechaImpId' => $iFechaImpId,
             ]),
-            'opcion' => 'deleteFechasEspeciales'
+            'opcion' => 'deleteFechasEspeciales',
         ]);
 
         return ResponseHandler::success($query, 'Fechas importantes obtenidas correctamente.');

@@ -1,27 +1,26 @@
 <?php
 
-use App\Http\Controllers\aula\AulaVirtualController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\acad\MatriculaController;
 use App\Http\Controllers\aula\AcademicoController;
 use App\Http\Controllers\aula\AnunciosController;
+use App\Http\Controllers\aula\AulaVirtualController;
 use App\Http\Controllers\aula\CuestionariosController;
+use App\Http\Controllers\aula\EstadisticasController;
 use App\Http\Controllers\aula\ForosController;
 use App\Http\Controllers\aula\NotificacionController;
 use App\Http\Controllers\aula\NotificacionEstudianteController;
+use App\Http\Controllers\aula\PreguntaAlternativasRespuestasController;
+use App\Http\Controllers\aula\PreguntasController;
 use App\Http\Controllers\aula\ProgramacionActividadesController;
 use App\Http\Controllers\aula\ResultadoController;
+use App\Http\Controllers\aula\ReunionVirtualesController;
 use App\Http\Controllers\aula\TareaCabeceraGruposController;
 use App\Http\Controllers\aula\TareaEstudiantesController;
 use App\Http\Controllers\aula\TareasController;
 use App\Http\Controllers\aula\TipoActividadController;
-use App\Http\Controllers\aula\EstadisticasController;
-use App\Http\Controllers\aula\PreguntaAlternativasRespuestasController;
-use App\Http\Controllers\aula\PreguntasController;
-use App\Http\Controllers\aula\ReunionVirtualesController;
 use App\Http\Controllers\aula\TipoExperienciaAprendizajeController;
 use App\Http\Controllers\aula\TipoPreguntasController;
-use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'aula-virtual'], function () {
 
@@ -33,7 +32,7 @@ Route::group(['prefix' => 'aula-virtual'], function () {
             Route::post('guardarActividad', [AulaVirtualController::class, 'guardarActividad']);
             Route::delete('eliminarActividad', [AulaVirtualController::class, 'eliminarActividad']);
             Route::get('obtenerActividad', [AulaVirtualController::class, 'obtenerActividad']);
-            //agregando para asignar estudiantes
+            // agregando para asignar estudiantes
             Route::post('asignar-estudiantes', [AulaVirtualController::class, 'asignarEstudiantes']);
         });
         Route::group(['prefix' => 'foro'], function () {

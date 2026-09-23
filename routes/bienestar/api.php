@@ -5,21 +5,20 @@ use App\Http\Controllers\bienestar\EncuestaBienestarPreguntaController;
 use App\Http\Controllers\bienestar\EncuestaBienestarRespuestaController;
 use App\Http\Controllers\bienestar\EncuestaBienestarResumenController;
 use App\Http\Controllers\bienestar\FichaAlimentacionController;
-use App\Http\Controllers\bienestar\FichaFamiliarController;
-use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaBienestarController;
-use App\Http\Controllers\bienestar\FichaRecreacionController;
-use App\Http\Controllers\bienestar\FichaViviendaController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\bienestar\FichaDiscapacidadController;
 use App\Http\Controllers\bienestar\FichaDiscapacidadDetalleController;
 use App\Http\Controllers\bienestar\FichaDosisController;
 use App\Http\Controllers\bienestar\FichaEconomicoController;
+use App\Http\Controllers\bienestar\FichaFamiliarController;
+use App\Http\Controllers\bienestar\FichaGeneralController;
 use App\Http\Controllers\bienestar\FichaPdfController;
+use App\Http\Controllers\bienestar\FichaRecreacionController;
 use App\Http\Controllers\bienestar\FichaSaludController;
+use App\Http\Controllers\bienestar\FichaViviendaController;
 use App\Http\Controllers\bienestar\RecordarioFechasController;
 use App\Http\Controllers\bienestar\SeguimientoBienestarController;
-use App\Http\Middleware\RefreshToken;
+use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function () {
 
@@ -131,4 +130,3 @@ Route::group(['prefix' => 'bienestar', 'middleware' => ['auth:api']], function (
     Route::post('verDatosPersona', [SeguimientoBienestarController::class, 'verDatosPersona']);
     Route::post('descargarSeguimiento', [SeguimientoBienestarController::class, 'descargarSeguimiento']);
 });
-

@@ -2,23 +2,23 @@
 
 namespace App\Models\seg;
 
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class Usuario extends Model
 {
-    public static function selCredencialParametros(Object $request)
+    public static function selCredencialParametros(object $request)
     {
         $parametros = [
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC seg.Sp_SEL_credencialParametros $placeholders", $parametros);
     }
 
-    public static function insCredencial(Object $request)
+    public static function insCredencial(object $request)
     {
         $params = [
             $request->header('iCredEntPerfId'),
@@ -30,10 +30,11 @@ class Usuario extends Model
             $request->cCredTokenPassword,
         ];
         $placeholders = implode(',', array_fill(0, count($params), '?'));
+
         return DB::selectOne("EXEC seg.Sp_INS_credencial $placeholders", $params);
     }
 
-    public static function updCredencial(Object $request)
+    public static function updCredencial(object $request)
     {
         $params = [
             $request->header('iCredEntPerfId'),
@@ -46,16 +47,18 @@ class Usuario extends Model
             $request->cCredTokenPassword,
         ];
         $placeholders = implode(',', array_fill(0, count($params), '?'));
+
         return DB::selectOne("EXEC seg.Sp_UPD_credencial $placeholders", $params);
     }
 
     public static function obtenerIdPersonaPorIdCred($iCredId)
     {
-        $data = DB::selectOne("SELECT TOP 1 iPersId FROM seg.credenciales WHERE iCredId=?", [$iCredId]);
+        $data = DB::selectOne('SELECT TOP 1 iPersId FROM seg.credenciales WHERE iCredId=?', [$iCredId]);
+
         return $data->iPersId ?? null;
     }
 
-    public static function selUsuarios(Object $request)
+    public static function selUsuarios(object $request)
     {
         $parametros = [
             $request->soloTotal,
@@ -77,6 +80,7 @@ class Usuario extends Model
             $request->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC seg.SP_SEL_usuarios $placeholders", $parametros);
     }
 
@@ -88,18 +92,19 @@ class Usuario extends Model
             $request->iPersId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC seg.SP_SEL_usuario $placeholders", $parametros);
     }
 
     public static function selUsuarioPorCredencial($cCredUsuario)
     {
-        return DB::selectOne("SELECT TOP 1 per.iPersId, cred.iCredId,cPersCorreo, per.cPersNombre, per.cPersPaterno, per.cPersMaterno
+        return DB::selectOne('SELECT TOP 1 per.iPersId, cred.iCredId,cPersCorreo, per.cPersNombre, per.cPersPaterno, per.cPersMaterno
         FROM grl.personas AS per
         INNER JOIN seg.credenciales AS cred ON cred.iPersId=per.iPersId
-        WHERE cred.cCredUsuario=?", [$cCredUsuario]);
+        WHERE cred.cCredUsuario=?', [$cCredUsuario]);
     }
 
-    public static function updFechaVigenciaCuenta(Object $datos)
+    public static function updFechaVigenciaCuenta(object $datos)
     {
         $parametros = [
             $datos->iCredId,
@@ -107,10 +112,11 @@ class Usuario extends Model
             $datos->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::statement("EXEC seg.Sp_UPD_credencialVigencia $placeholders", $parametros);
     }
 
-    public static function updCredencialEstado(Object $datos)
+    public static function updCredencialEstado(object $datos)
     {
         $parametros = [
             $datos->iCredId,
@@ -118,6 +124,7 @@ class Usuario extends Model
             $datos->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::statement("EXEC seg.Sp_UPD_credencialEstado $placeholders", $parametros);
     }
 
@@ -128,6 +135,7 @@ class Usuario extends Model
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::statement("EXEC seg.Sp_UPD_credencialPassword $placeholders", $parametros);
     }
 
@@ -138,22 +146,24 @@ class Usuario extends Model
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC seg.SP_SEL_PerfilesUsuario $placeholders", $parametros);
     }
 
-    public static function updReseteoClaveCredencialesXiCredId(Object $datos)
+    public static function updReseteoClaveCredencialesXiCredId(object $datos)
     {
         $parametros = [
             $datos->iCredId,
             $datos->iCredEntPerfId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::statement("EXEC seg.Sp_UPD_ReseteoClave_credencialesXiCredId $placeholders", $parametros);
     }
 
     public static function delCredencialesEntidadesPerfiles($iCredId, $iCredEntPerfId)
     {
-        return DB::statement("EXEC [seg].[Sp_DEL_credenciales_entidades_perfiles] @_iCredEntPerfId=?", [$iCredEntPerfId]);
+        return DB::statement('EXEC [seg].[Sp_DEL_credenciales_entidades_perfiles] @_iCredEntPerfId=?', [$iCredEntPerfId]);
     }
 
     public static function insPerfil($request)
@@ -167,18 +177,19 @@ class Usuario extends Model
         ];
         Log::info($parametros);
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC seg.Sp_INS_perfil $placeholders", $parametros);
     }
 
     public static function insPerfilDremo($iCredId, $request)
     {
         $cTipo = $request->iPerfilId == 2 ? 'EspecialistaDremo' : 'PerfilModuloDremo';
-        DB::statement("EXEC [seg].[SP_INS_PerfilDremo] @iEntId=?, @iPerfilId=?, @iCursosNivelGradId=?, @iCredId=?, @cTipo=?", [
+        DB::statement('EXEC [seg].[SP_INS_PerfilDremo] @iEntId=?, @iPerfilId=?, @iCursosNivelGradId=?, @iCredId=?, @cTipo=?', [
             $request->iEntId,
             $request->iPerfilId,
             $request->iCursosNivelGradId,
             $iCredId,
-            $cTipo
+            $cTipo,
         ]);
     }
 
@@ -189,54 +200,55 @@ class Usuario extends Model
             $request->iEntId,
             $request->iPerfilId,
             $iCredId,
-            $request->iCursosNivelGradId
+            $request->iCursosNivelGradId,
         ];
-        DB::statement("EXEC [seg].[SP_INS_PerfilUgel] @iUgelId=?, @iEntId=?, @iPerfilId=?, @iCredId=?, @iCursosNivelGradId=?", [
+        DB::statement('EXEC [seg].[SP_INS_PerfilUgel] @iUgelId=?, @iEntId=?, @iPerfilId=?, @iCredId=?, @iCursosNivelGradId=?', [
             $request->iUgelId,
             $request->iEntId,
             $request->iPerfilId,
             $iCredId,
-            $request->iCursosNivelGradId
+            $request->iCursosNivelGradId,
         ]);
     }
 
     public static function insPerfilIiee($iCredId, $request)
     {
-        DB::statement("EXEC [seg].[SP_INS_PerfilIiee] @iSedeId=?, @iEntId=?, @iPerfilId=?, @iCredId=?", [
+        DB::statement('EXEC [seg].[SP_INS_PerfilIiee] @iSedeId=?, @iEntId=?, @iPerfilId=?, @iCredId=?', [
             $request->iSedeId,
             $request->iEntId,
             $request->iPerfilId,
-            $iCredId
+            $iCredId,
         ]);
     }
 
     public static function insPersonas($datos)
     {
         $parametros = [
-            $datos->iTipoPersId ?? NULL,
-            $datos->iTipoIdentId ?? NULL,
-            $datos->cPersDocumento ?? NULL,
-            $datos->cPersPaterno ?? NULL,
-            $datos->cPersMaterno ?? NULL,
-            $datos->cPersNombre ?? NULL,
-            $datos->cPersSexo ?? NULL,
-            $datos->dPersNacimiento ?? NULL,
-            $datos->iTipoEstCivId ?? NULL,
-            $datos->cPersFotografia ?? NULL,
-            $datos->cPersRazonSocialNombre ?? NULL,
-            $datos->cPersRazonSocialCorto ?? NULL,
-            $datos->cPersRazonSocialSigla ?? NULL,
-            $datos->cPersDomicilio ?? NULL,
-            $datos->iCredSesionId ?? NULL,
-            $datos->iNacionId ?? NULL,
-            $datos->iPaisId ?? NULL,
-            $datos->iDptoId ?? NULL,
-            $datos->iPrvnId ?? NULL,
-            $datos->iDsttId ?? NULL,
-            $datos->cPersTelefono ?? NULL,
-            $datos->cPersCorreo ?? NULL,
+            $datos->iTipoPersId ?? null,
+            $datos->iTipoIdentId ?? null,
+            $datos->cPersDocumento ?? null,
+            $datos->cPersPaterno ?? null,
+            $datos->cPersMaterno ?? null,
+            $datos->cPersNombre ?? null,
+            $datos->cPersSexo ?? null,
+            $datos->dPersNacimiento ?? null,
+            $datos->iTipoEstCivId ?? null,
+            $datos->cPersFotografia ?? null,
+            $datos->cPersRazonSocialNombre ?? null,
+            $datos->cPersRazonSocialCorto ?? null,
+            $datos->cPersRazonSocialSigla ?? null,
+            $datos->cPersDomicilio ?? null,
+            $datos->iCredSesionId ?? null,
+            $datos->iNacionId ?? null,
+            $datos->iPaisId ?? null,
+            $datos->iDptoId ?? null,
+            $datos->iPrvnId ?? null,
+            $datos->iDsttId ?? null,
+            $datos->cPersTelefono ?? null,
+            $datos->cPersCorreo ?? null,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("execute grl.Sp_INS_personas $placeholders", $parametros);
     }
 
@@ -267,6 +279,7 @@ class Usuario extends Model
             $datos->cPersCorreo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("execute grl.Sp_UPD_personas $placeholders", $parametros);
     }
 
@@ -283,24 +296,25 @@ class Usuario extends Model
 
     public static function updCredenciasUpdatePassword($parametros)
     {
-        DB::statement("execute seg.Sp_UPD_credenciasxUpdatePassword @_iCredId=?, @_iPersId=?, @_contraseniaActual=?, @_contraseniaNueva=?", $parametros);
+        DB::statement('execute seg.Sp_UPD_credenciasxUpdatePassword @_iCredId=?, @_iPersId=?, @_contraseniaActual=?, @_contraseniaNueva=?', $parametros);
     }
 
     public static function selDetallesCredencialEntidad($iCredEntPerfId)
     {
-        return DB::selectOne("SELECT cep.*, ce.*,c.iPersId FROM seg.credenciales_entidades_perfiles AS cep
+        return DB::selectOne('SELECT cep.*, ce.*,c.iPersId FROM seg.credenciales_entidades_perfiles AS cep
 INNER JOIN seg.credenciales_entidades AS ce ON ce.iCredEntId=cep.iCredEntId
 INNER JOIN seg.credenciales AS c ON c.iCredId=ce.iCredId
-WHERE iCredEntPerfId=?", [$iCredEntPerfId]);
+WHERE iCredEntPerfId=?', [$iCredEntPerfId]);
     }
 
-    public static function updPerfilEstado(Object $datos)
+    public static function updPerfilEstado(object $datos)
     {
         $parametros = [
             $datos->iCredEntPerfId,
             $datos->iCredEntPerfEstado,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC seg.Sp_UPD_perfilEstado $placeholders", $parametros);
     }
 }

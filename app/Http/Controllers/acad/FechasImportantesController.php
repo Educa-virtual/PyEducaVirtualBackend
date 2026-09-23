@@ -15,11 +15,14 @@ class FechasImportantesController extends Controller
 {
     protected $hashids;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
     }
+
     // PARA ELIMINAR TODO EL DOCUMENTO
-    public function list(Request $request){
+    public function list(Request $request)
+    {
 
         // Se Decodifica los id hasheados que son enviados por el frontend
         if ($request->iSedeId) {
@@ -52,18 +55,18 @@ class FechasImportantesController extends Controller
         }
 
         $solicitud = [
-            $iSedeId ?? NULL,
-            $iIieeId ?? NULL,
-            $iCursoId ?? NULL,
-            $iYAcadId ?? NULL,
-            $iSeccionId ?? NULL,
-            $iNivelGradoId ?? NULL,
-            $iDocenteId ?? NULL,
+            $iSedeId ?? null,
+            $iIieeId ?? null,
+            $iCursoId ?? null,
+            $iYAcadId ?? null,
+            $iSeccionId ?? null,
+            $iNivelGradoId ?? null,
+            $iDocenteId ?? null,
         ];
 
-        $query=DB::select("execute asi.Sp_SEL_fechas_asistencia ?,?,?,?,?,?,?", $solicitud);
+        $query = DB::select('execute asi.Sp_SEL_fechas_asistencia ?,?,?,?,?,?,?', $solicitud);
 
-        try{
+        try {
             $response = [
                 'validated' => true,
                 'message' => 'se obtuvo la información',
@@ -72,7 +75,7 @@ class FechasImportantesController extends Controller
 
             $estado = 200;
 
-        } catch(Exception $e){
+        } catch (Exception $e) {
             $response = [
                 'validated' => true,
                 'message' => $e->getMessage(),
@@ -81,13 +84,14 @@ class FechasImportantesController extends Controller
             $estado = 500;
         }
 
-        return new JsonResponse($response,$estado);
+        return new JsonResponse($response, $estado);
     }
 
     public function obtenerTiposFechas()
     {
         try {
             $data = FechasImportantesService::obtenerTiposFechasCalendario();
+
             return FormatearMensajeHelper::ok('Se obtuvo los tipos de fechas', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

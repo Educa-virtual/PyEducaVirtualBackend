@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class TareasController extends Controller
 {
-
     public function guardarTareas(Request $request)
     {
 
@@ -42,11 +40,10 @@ class TareasController extends Controller
             'iYAcadId.required' => 'No se encontró el identificador del año académico',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -58,27 +55,27 @@ class TareasController extends Controller
                 'idDocCursoId',
                 'iCredId',
                 'iCapacitacionId',
-                'iYAcadId',              
+                'iYAcadId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iDocenteId                     ?? NULL,
-                $request->cTareaTitulo                   ?? NULL,
-                $request->cTareaDescripcion              ?? NULL,
-                $request->cTareaArchivoAdjunto           ?? NULL,
-                $request->bTareaEsGrupal                 ?? NULL,
-                $request->dtTareaInicio                  ?? NULL,
-                $request->dtTareaFin                     ?? NULL,
-                $request->iContenidoSemId                ?? NULL,
-                $request->iActTipoId                     ?? NULL,
-                $request->idDocCursoId                   ?? NULL,
-                $request->iCapacitacionId                ?? NULL,
-                $request->iYAcadId                       ?? NULL,
+                $request->iDocenteId ?? null,
+                $request->cTareaTitulo ?? null,
+                $request->cTareaDescripcion ?? null,
+                $request->cTareaArchivoAdjunto ?? null,
+                $request->bTareaEsGrupal ?? null,
+                $request->dtTareaInicio ?? null,
+                $request->dtTareaFin ?? null,
+                $request->iContenidoSemId ?? null,
+                $request->iActTipoId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->iYAcadId ?? null,
 
-                $request->iCredId                        ?? NULL,
-                $request->jCompetencias                  ?? NULL,
+                $request->iCredId ?? null,
+                $request->jCompetencias ?? null,
             ];
 
             $data = DB::select(
@@ -102,12 +99,14 @@ class TareasController extends Controller
 
             if ($data[0]->iTareaId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -145,32 +144,31 @@ class TareasController extends Controller
             'dtTareaFin.required' => 'Debe ingresar la fecha de fin',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $fieldsToDecode = [
                 'iTareaId',
-                'iCredId'
+                'iCredId',
 
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iTareaId                        ?? NULL,
-                $request->cTareaTitulo                    ?? NULL,
-                $request->cTareaDescripcion               ?? NULL,
-                $request->cTareaArchivoAdjunto            ?? NULL,
-                $request->dtTareaInicio                   ?? NULL,
-                $request->dtTareaFin                      ?? NULL,
+                $request->iTareaId ?? null,
+                $request->cTareaTitulo ?? null,
+                $request->cTareaDescripcion ?? null,
+                $request->cTareaArchivoAdjunto ?? null,
+                $request->dtTareaInicio ?? null,
+                $request->dtTareaFin ?? null,
 
-                $request->iCredId                        ?? NULL,
-                $request->jCompetencias                  ?? NULL
+                $request->iCredId ?? null,
+                $request->jCompetencias ?? null,
             ];
 
             $data = DB::select(
@@ -188,12 +186,14 @@ class TareasController extends Controller
 
             if ($data[0]->iTareaId > 0) {
                 $message = 'Se ha actualizado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido actualizar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -223,31 +223,31 @@ class TareasController extends Controller
             'iProgActId',
             'iDocenteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iTareaId              ?? NULL,
-            $request->iProgActId            ?? NULL,
-            $request->iDocenteId            ?? NULL,
-            $request->cTareaTitulo          ?? NULL,
-            $request->cTareaDescripcion     ?? NULL,
-            $request->cTareaArchivoAdjunto  ?? NULL,
-            $request->cTareaIndicaciones    ?? NULL,
-            $request->bTareaEsEvaluado      ?? NULL,
-            $request->bTareaEsRestringida   ?? NULL,
-            $request->bTareaEsGrupal        ?? NULL,
-            $request->dtTareaInicio         ?? NULL,
-            $request->dtTareaFin            ?? NULL,
-            $request->cTareaComentarioDocente   ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-            $request->dtCreado                  ?? NULL,
-            $request->dtActualizado             ?? NULL,
+            $request->iTareaId ?? null,
+            $request->iProgActId ?? null,
+            $request->iDocenteId ?? null,
+            $request->cTareaTitulo ?? null,
+            $request->cTareaDescripcion ?? null,
+            $request->cTareaArchivoAdjunto ?? null,
+            $request->cTareaIndicaciones ?? null,
+            $request->bTareaEsEvaluado ?? null,
+            $request->bTareaEsRestringida ?? null,
+            $request->bTareaEsGrupal ?? null,
+            $request->dtTareaInicio ?? null,
+            $request->dtTareaFin ?? null,
+            $request->cTareaComentarioDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
 
-            //$request->iCredId
+            // $request->iCredId
 
         ];
 
@@ -284,34 +284,34 @@ class TareasController extends Controller
             'iProgActId',
             'iDocenteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iTareaId              ?? NULL,
-            $request->iProgActId            ?? NULL,
-            $request->iDocenteId            ?? NULL,
-            $request->cTareaTitulo          ?? NULL,
-            $request->cTareaDescripcion     ?? NULL,
-            $request->cTareaArchivoAdjunto  ?? NULL,
-            $request->cTareaIndicaciones    ?? NULL,
-            $request->bTareaEsEvaluado      ?? NULL,
-            $request->bTareaEsRestringida   ?? NULL,
-            $request->bTareaEsGrupal        ?? NULL,
-            $request->dtTareaInicio         ?? NULL,
-            $request->dtTareaFin            ?? NULL,
-            $request->cTareaComentarioDocente   ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-            $request->dtCreado                  ?? NULL,
-            $request->dtActualizado             ?? NULL,
+            $request->iTareaId ?? null,
+            $request->iProgActId ?? null,
+            $request->iDocenteId ?? null,
+            $request->cTareaTitulo ?? null,
+            $request->cTareaDescripcion ?? null,
+            $request->cTareaArchivoAdjunto ?? null,
+            $request->cTareaIndicaciones ?? null,
+            $request->bTareaEsEvaluado ?? null,
+            $request->bTareaEsRestringida ?? null,
+            $request->bTareaEsGrupal ?? null,
+            $request->dtTareaInicio ?? null,
+            $request->dtTareaFin ?? null,
+            $request->cTareaComentarioDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
 
-            //$request->iCredId
+            // $request->iCredId
 
         ];
-        //return $parametros;
+        // return $parametros;
         try {
             switch ($request->opcion) {
                 case 'GUARDARxProgActxiTarea':
@@ -358,7 +358,7 @@ class TareasController extends Controller
             'iCursoId',
             'iProgActId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iCursoId,
@@ -394,28 +394,28 @@ class TareasController extends Controller
             'iProgActId',
             'iDocenteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $request->iTareaId              ?? NULL,
-            $request->iProgActId            ?? NULL,
-            $request->iDocenteId            ?? NULL,
-            $request->cTareaTitulo          ?? NULL,
-            $request->cTareaDescripcion     ?? NULL,
-            $request->cTareaArchivoAdjunto  ?? NULL,
-            $request->cTareaIndicaciones    ?? NULL,
-            $request->bTareaEsEvaluado      ?? NULL,
-            $request->bTareaEsRestringida   ?? NULL,
-            $request->bTareaEsGrupal        ?? NULL,
-            $request->dtTareaInicio         ?? NULL,
-            $request->dtTareaFin            ?? NULL,
-            $request->cTareaComentarioDocente   ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-            $request->dtCreado                  ?? NULL,
-            $request->dtActualizado             ?? NULL,
+            $request->iTareaId ?? null,
+            $request->iProgActId ?? null,
+            $request->iDocenteId ?? null,
+            $request->cTareaTitulo ?? null,
+            $request->cTareaDescripcion ?? null,
+            $request->cTareaArchivoAdjunto ?? null,
+            $request->cTareaIndicaciones ?? null,
+            $request->bTareaEsEvaluado ?? null,
+            $request->bTareaEsRestringida ?? null,
+            $request->bTareaEsGrupal ?? null,
+            $request->dtTareaInicio ?? null,
+            $request->dtTareaFin ?? null,
+            $request->cTareaComentarioDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
 
         ];
 
@@ -455,35 +455,34 @@ class TareasController extends Controller
             'iProgActId',
             'iDocenteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iTareaId              ?? NULL,
-            $request->iProgActId            ?? NULL,
-            $request->iDocenteId            ?? NULL,
-            $request->cTareaTitulo          ?? NULL,
-            $request->cTareaDescripcion     ?? NULL,
-            $request->cTareaArchivoAdjunto  ?? NULL,
-            $request->cTareaIndicaciones    ?? NULL,
-            $request->bTareaEsEvaluado      ?? NULL,
-            $request->bTareaEsRestringida   ?? NULL,
-            $request->bTareaEsGrupal        ?? NULL,
-            $request->dtTareaInicio         ?? NULL,
-            $request->dtTareaFin            ?? NULL,
-            $request->cTareaComentarioDocente   ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-            $request->dtCreado                  ?? NULL,
-            $request->dtActualizado             ?? NULL,
+            $request->iTareaId ?? null,
+            $request->iProgActId ?? null,
+            $request->iDocenteId ?? null,
+            $request->cTareaTitulo ?? null,
+            $request->cTareaDescripcion ?? null,
+            $request->cTareaArchivoAdjunto ?? null,
+            $request->cTareaIndicaciones ?? null,
+            $request->bTareaEsEvaluado ?? null,
+            $request->bTareaEsRestringida ?? null,
+            $request->bTareaEsGrupal ?? null,
+            $request->dtTareaInicio ?? null,
+            $request->dtTareaFin ?? null,
+            $request->cTareaComentarioDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
 
-            //$request->iCredId
+            // $request->iCredId
 
         ];
-        //return $parametros;
+        // return $parametros;
         try {
             $data = DB::select('exec aula.SP_DEL_tareas
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
@@ -520,30 +519,29 @@ class TareasController extends Controller
             'iProgActId',
             'iDocenteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iTareaId              ?? NULL,
-            $request->iProgActId            ?? NULL,
-            $request->iDocenteId            ?? NULL,
-            $request->cTareaTitulo          ?? NULL,
-            $request->cTareaDescripcion     ?? NULL,
-            $request->cTareaArchivoAdjunto  ?? NULL,
-            $request->cTareaIndicaciones    ?? NULL,
-            $request->bTareaEsEvaluado      ?? NULL,
-            $request->bTareaEsRestringida   ?? NULL,
-            $request->bTareaEsGrupal        ?? NULL,
-            $request->dtTareaInicio         ?? NULL,
-            $request->dtTareaFin            ?? NULL,
-            $request->cTareaComentarioDocente   ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-            $request->dtCreado                  ?? NULL,
-            $request->dtActualizado             ?? NULL,
+            $request->iTareaId ?? null,
+            $request->iProgActId ?? null,
+            $request->iDocenteId ?? null,
+            $request->cTareaTitulo ?? null,
+            $request->cTareaDescripcion ?? null,
+            $request->cTareaArchivoAdjunto ?? null,
+            $request->cTareaIndicaciones ?? null,
+            $request->bTareaEsEvaluado ?? null,
+            $request->bTareaEsRestringida ?? null,
+            $request->bTareaEsGrupal ?? null,
+            $request->dtTareaInicio ?? null,
+            $request->dtTareaFin ?? null,
+            $request->cTareaComentarioDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
 
         ];
 
@@ -573,10 +571,9 @@ class TareasController extends Controller
     {
         $fieldsToDecode = [
             'iTareaId',
-            'iEstudianteId'
+            'iEstudianteId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iTareaId,

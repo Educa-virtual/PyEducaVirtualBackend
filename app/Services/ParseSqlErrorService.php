@@ -2,9 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-
 class ParseSqlErrorService
 {
     public function __invoke($error_message)
@@ -21,9 +18,9 @@ class ParseSqlErrorService
     */
     public static function parse($error)
     {
-        if( is_array($error) ) {
+        if (is_array($error)) {
             $error_message = $error['errorInfo'][2];
-        } elseif ( is_string($error) ) {
+        } elseif (is_string($error)) {
             $error_message = $error;
         } else {
             $error_message = json_encode($error);
@@ -32,7 +29,6 @@ class ParseSqlErrorService
         // Ubicar última instancia de ] en mensaje
         $pos_inicio = strripos($error_message, 'SQL Server]') + 11;
         $pos_cierre = stripos($error_message, '(Connection: sqlsrv');
-
 
         $return_message = substr($error_message, $pos_inicio, $pos_cierre - $pos_inicio);
 

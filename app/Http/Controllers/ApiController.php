@@ -2,29 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Traits\HelperTrait;
-use App\Traits\ApiResponser;
-use App\Traits\HashidsTrait;
-use Illuminate\Http\Request;
-use App\Traits\handleErrorDb;
 use App\Contracts\DataReturnStrategy;
 use App\Helpers\JsonResponseStrategy;
-use App\Http\Controllers\DeleteOperation;
-use App\Http\Controllers\InsertOperation;
-use App\Http\Controllers\SelectOperation;
-use App\Http\Controllers\UpdateOperation;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use App\Traits\ApiResponser;
+use App\Traits\handleErrorDb;
+use App\Traits\HashidsTrait;
+use App\Traits\HelperTrait;
+use Illuminate\Http\Request;
 
 class ApiController extends Controller
 {
     use ApiResponser;
     use handleErrorDb;
-    use HelperTrait;
     use HashidsTrait;
+    use HelperTrait;
 
     private $strategy;
 
-    public function __construct(DataReturnStrategy $strategy = new JsonResponseStrategy())
+    public function __construct(DataReturnStrategy $strategy = new JsonResponseStrategy)
     {
         $this->initializeHashids();
         $this->strategy = $strategy;
@@ -50,7 +45,9 @@ class ApiController extends Controller
     {
         return (new DeleteOperation($request))->handleRequest($request, $this->strategy);
     }
-    public function execProcedure(Request $request, $procedure, $paramsRequest, $paramsProcedure){
+
+    public function execProcedure(Request $request, $procedure, $paramsRequest, $paramsProcedure)
+    {
         return (new ExecProcedure($procedure, $paramsRequest, $paramsProcedure))->handleRequest($request, $this->strategy);
     }
 }

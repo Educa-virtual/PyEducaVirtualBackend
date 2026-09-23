@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\AbstractDatabaseOperation;
 
 class InsertOperation extends AbstractDatabaseOperation
 {
-
     private $request;
 
     public function __construct(Request $request)
@@ -27,8 +25,8 @@ class InsertOperation extends AbstractDatabaseOperation
 
     protected function getParamsRequest(): array
     {
-         // Lista de propiedades requeridas
-         return ['esquema', 'tabla', 'campos'];
+        // Lista de propiedades requeridas
+        return ['esquema', 'tabla', 'campos'];
 
     }
 
@@ -37,5 +35,3 @@ class InsertOperation extends AbstractDatabaseOperation
         return $this->getParamsRequest();
     }
 }
-
-?>

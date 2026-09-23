@@ -24,6 +24,7 @@ class PlantillaPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaPregunta::selPlantillaPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -35,6 +36,7 @@ class PlantillaPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaPregunta::insPlantillaPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -46,6 +48,7 @@ class PlantillaPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaPregunta::updPlantillaPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -57,6 +60,7 @@ class PlantillaPreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaPregunta::delPlantillaPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

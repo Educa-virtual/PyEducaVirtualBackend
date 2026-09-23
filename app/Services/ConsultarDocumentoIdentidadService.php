@@ -10,21 +10,20 @@ use Illuminate\Support\Facades\DB;
 
 class ConsultarDocumentoIdentidadService
 {
-
-    //private $token;
+    // private $token;
     private $divirApellidoNombresService;
-
 
     public function __construct()
     {
-        //$this->token = env('FACTILIZA_TOKEN');
-        $this->divirApellidoNombresService = new DividirApellidoNombresService();
+        // $this->token = env('FACTILIZA_TOKEN');
+        $this->divirApellidoNombresService = new DividirApellidoNombresService;
     }
 
     /**
      * Consultar datos segun tipo de documento de identidad
-     * @param mixed $tipo_documento Tipo de documento de identidad
-     * @param mixed $documento Número de documento de identidad
+     *
+     * @param  mixed  $tipo_documento  Tipo de documento de identidad
+     * @param  mixed  $documento  Número de documento de identidad
      * @return array Contiene mensaje, codigo status y datos de la persona
      */
     public function buscar($tipo_documento, $documento)
@@ -44,29 +43,30 @@ class ConsultarDocumentoIdentidadService
                 return [
                     'message' => 'Tipo de identificación no existe',
                     'data' => [],
-                    'status' => Response::HTTP_NOT_FOUND
+                    'status' => Response::HTTP_NOT_FOUND,
                 ];
         }
     }
 
     /**
      * Buscar datos en servicio web según DNI
-     * @param mixed $documento Número de DNI
+     *
+     * @param  mixed  $documento  Número de DNI
      * @return array Contiene mensaje, codigo status y datos de la persona
      */
     public function buscarDni($documento)
     {
         try {
             if (strlen($documento) != 8) {
-                throw new Exception("El DNI debe tener 8 digitos");
+                throw new Exception('El DNI debe tener 8 digitos');
             }
             $response = FactilizaService::consultarDocumento('dni', $documento);
             $persona = PersonasService::obtenerPersonaPorDocumento($documento);
             $respuesta = json_decode($response);
             if ($respuesta->data === null) {
-                if (!$persona) {
+                if (! $persona) {
                     return [
-                        'message' => 'No se obtuvo datos: ' . $respuesta->message,
+                        'message' => 'No se obtuvo datos: '.$respuesta->message,
                         'data' => [],
                         'status' => Response::HTTP_NOT_FOUND,
                     ];
@@ -74,95 +74,100 @@ class ConsultarDocumentoIdentidadService
             }
             $respuestaFormateada = $this->formatearRespuestaDni($respuesta->data);
             $datosPersona = PersonasService::actualizarPersonaConDataApi($respuestaFormateada, $persona);
+
             return [
                 'message' => 'Se obtuvo la información del servicio ',
                 'data' => $datosPersona['parametros'] ?? [],
                 'status' => $respuesta->status ?? Response::HTTP_OK,
-                'iPersId' => $datosPersona['iPersId'] ?? null
+                'iPersId' => $datosPersona['iPersId'] ?? null,
             ];
         } catch (Exception $ex) {
             return [
-                'message' => 'Error consultando servicio: ' . $ex->getMessage(),
+                'message' => 'Error consultando servicio: '.$ex->getMessage(),
                 'data' => [],
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             ];
         }
     }
 
     /**
      * Buscar datos en servicio web según Carnet de extranjería
-     * @param mixed $documento Carnet de extranjería
+     *
+     * @param  mixed  $documento  Carnet de extranjería
      * @return array Contiene mensaje, codigo status y datos de la persona
      */
     public function buscarCarnet($documento)
     {
         try {
             if (strlen($documento) != 12) {
-                throw new Exception("El Carnet debe tener 12 digitos");
+                throw new Exception('El Carnet debe tener 12 digitos');
             }
             $response = FactilizaService::consultarDocumento('carnet', $documento);
             $respuesta = json_decode($response);
             if ($respuesta->data === null) {
                 return [
-                    'message' => 'No se obtuvo datos: ' . $respuesta->message,
+                    'message' => 'No se obtuvo datos: '.$respuesta->message,
                     'data' => [],
                     'status' => 404,
                 ];
             }
             $respuestaFormateada = $this->formatearRespuestaCarnet($respuesta->data);
+
             return [
                 'message' => 'Se obtuvo la información del servicio ',
                 'data' => $respuestaFormateada,
-                'status' => $respuesta->status
+                'status' => $respuesta->status,
             ];
         } catch (Exception $ex) {
             return [
-                'message' => 'Error consultando servicio: ' . $ex->getMessage(),
+                'message' => 'Error consultando servicio: '.$ex->getMessage(),
                 'data' => [],
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             ];
         }
     }
 
     /**
      * Buscar datos en servicio web según RUC
-     * @param mixed $documento Registro Único de Contribuyente
+     *
+     * @param  mixed  $documento  Registro Único de Contribuyente
      * @return array Contiene mensaje, codigo status y datos de la persona
      */
-
     private function buscarRuc($documento)
     {
         try {
             if (strlen($documento) != 11) {
-                throw new Exception("El RUC debe tener 11 digitos");
+                throw new Exception('El RUC debe tener 11 digitos');
             }
             $response = FactilizaService::consultarDocumento('ruc', $documento);
             $respuesta = json_decode($response);
             if ($respuesta->data === null) {
                 return [
-                    'message' => 'No se obtuvo datos: ' . $respuesta->message,
+                    'message' => 'No se obtuvo datos: '.$respuesta->message,
                     'data' => [],
                     'status' => 404,
                 ];
             }
             $respuestaFormateada = $this->formatearRespuestaRuc($respuesta->data);
+
             return [
                 'message' => 'Se obtuvo la información del servicio ',
                 'data' => $respuestaFormateada,
-                'status' => $respuesta->status
+                'status' => $respuesta->status,
             ];
         } catch (Exception $ex) {
             return [
-                'message' => 'Error consultando servicio: ' . $ex->getMessage(),
+                'message' => 'Error consultando servicio: '.$ex->getMessage(),
                 'data' => [],
-                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR,
             ];
         }
     }
 
     /**
      * Formatear respuesta de servicio web para DNI
-     * @param object $respuesta Respuesta del servicio web
+     *
+     * @param  object  $respuesta  Respuesta del servicio web
      * @return array Datos de la persona segun tabla grl.personas
      */
     private function formatearRespuestaDni($respuesta)
@@ -191,38 +196,38 @@ class ConsultarDocumentoIdentidadService
             $fecha_nacimiento = DateTimeImmutable::createFromFormat('d-m-Y', trim($respuesta->fecha_nacimiento));
             $fecha_nacimiento_formateada = date_format($fecha_nacimiento, 'Y-m-d');
         } else {
-            $fecha_nacimiento_formateada = NULL;
+            $fecha_nacimiento_formateada = null;
         }
 
         return [
-            'iTipoIdentId' => "1",
-            'cPersDocumento' => trim($respuesta->numero) ?: NULL,
+            'iTipoIdentId' => '1',
+            'cPersDocumento' => trim($respuesta->numero) ?: null,
             'cPersPaterno' => trim($respuesta->apellido_paterno),
             'cPersMaterno' => trim($respuesta->apellido_materno),
             'cPersNombre' => trim($respuesta->nombres),
-            'cPersSexo' => trim($respuesta->sexo) ?: NULL,
+            'cPersSexo' => trim($respuesta->sexo) ?: null,
             'dPersNacimiento' => $fecha_nacimiento_formateada,
-            'iTipoEstCivId' => count($estado_civil) > 0 ? $estado_civil[0]->iTipoEstCivId : NULL,
-            'iNacionId' => "193",
+            'iTipoEstCivId' => count($estado_civil) > 0 ? $estado_civil[0]->iTipoEstCivId : null,
+            'iNacionId' => '193',
             'cPersFotografia' => trim($respuesta->foto),
             'cPersDomicilio' => trim($respuesta->direccion),
-            'iPaisId' => "589",
-            'iDptoId' => count($ubigeo) > 0 ? $ubigeo[0]->iDptoId : NULL,
-            'iPrvnId' => count($ubigeo) > 0 ? $ubigeo[0]->iPrvnId : NULL,
-            'iDsttId' => count($ubigeo) > 0 ? $ubigeo[0]->iDsttId : NULL,
+            'iPaisId' => '589',
+            'iDptoId' => count($ubigeo) > 0 ? $ubigeo[0]->iDptoId : null,
+            'iPrvnId' => count($ubigeo) > 0 ? $ubigeo[0]->iPrvnId : null,
+            'iDsttId' => count($ubigeo) > 0 ? $ubigeo[0]->iDsttId : null,
             'cEstUbigeo' => trim($respuesta->ubigeo_sunat),
         ];
     }
 
     /** Formatear respuesta de servicio web para Carnet de Extranjería
-     * @param object $respuesta Respuesta del servicio web
+     * @param  object  $respuesta  Respuesta del servicio web
      * @return array Datos de la persona segun tabla grl.personas
      */
     private function formatearRespuestaCarnet($respuesta)
     {
         return [
-            'iTipoIdentId' => "3",
-            'cPersDocumento' => trim($respuesta->numero) ?: NULL,
+            'iTipoIdentId' => '3',
+            'cPersDocumento' => trim($respuesta->numero) ?: null,
             'cPersPaterno' => trim($respuesta->apellido_paterno),
             'cPersMaterno' => trim($respuesta->apellido_materno),
             'cPersNombre' => trim($respuesta->nombres),
@@ -230,7 +235,7 @@ class ConsultarDocumentoIdentidadService
     }
 
     /** Formatear respuesta de servicio web para Carnet de Extranjería
-     * @param object $respuesta Respuesta del servicio web
+     * @param  object  $respuesta  Respuesta del servicio web
      * @return array Datos de la persona segun tabla grl.personas
      */
     private function formatearRespuestaRuc($respuesta)
@@ -247,17 +252,17 @@ class ConsultarDocumentoIdentidadService
         $apellidos_nombres = $this->divirApellidoNombresService->dividir($respuesta->nombre_o_razon_social);
 
         return [
-            'iTipoIdentId' => "3",
-            'cPersDocumento' => trim($respuesta->numero) ?: NULL,
+            'iTipoIdentId' => '3',
+            'cPersDocumento' => trim($respuesta->numero) ?: null,
             'cPersPaterno' => $apellidos_nombres['paterno'],
             'cPersMaterno' => $apellidos_nombres['materno'],
             'cPersNombre' => $apellidos_nombres['nombres'],
             'cPersRazonSocialNombre' => $respuesta->nombre_o_razon_social,
             'cPersDomicilio' => trim($respuesta->direccion),
-            'iPaisId' => "589",
-            'iDptoId' => count($ubigeo) > 0 ? $ubigeo[0]->iDptoId : NULL,
-            'iPrvnId' => count($ubigeo) > 0 ? $ubigeo[0]->iPrvnId : NULL,
-            'iDsttId' => count($ubigeo) > 0 ? $ubigeo[0]->iDsttId : NULL,
+            'iPaisId' => '589',
+            'iDptoId' => count($ubigeo) > 0 ? $ubigeo[0]->iDptoId : null,
+            'iPrvnId' => count($ubigeo) > 0 ? $ubigeo[0]->iPrvnId : null,
+            'iDsttId' => count($ubigeo) > 0 ? $ubigeo[0]->iDsttId : null,
             'cEstUbigeo' => trim($respuesta->ubigeo_sunat),
         ];
     }

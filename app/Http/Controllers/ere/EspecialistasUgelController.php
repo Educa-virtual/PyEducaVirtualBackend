@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\PreguntasRepository;
-use App\Services\ere\AreasService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class EspecialistasUgelController extends Controller
 {
@@ -26,6 +23,7 @@ class EspecialistasUgelController extends Controller
         foreach ($data as $fila) {
             $fila->iDocenteId = $this->hashids->encode($fila->iDocenteId);
         }
+
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $data], Response::HTTP_OK);
     }
 
@@ -54,11 +52,12 @@ class EspecialistasUgelController extends Controller
         if (empty($ugelIdDescifrado) || empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        //return $docenteIdDescifrado[0].' - '. $ugelIdDescifrado[0].' - '.$request->iCursosNivelGradId;
+        // return $docenteIdDescifrado[0].' - '. $ugelIdDescifrado[0].' - '.$request->iCursosNivelGradId;
         DB::statement(
-            "EXEC acad.SP_INS_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?",
+            'EXEC acad.SP_INS_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?',
             [$docenteIdDescifrado[0], $ugelIdDescifrado[0], $request->iCursosNivelGradId]
         );
+
         return response()->json(['status' => 'Success', 'message' => 'Área asignada correctamente'], Response::HTTP_CREATED);
     }
 
@@ -70,9 +69,10 @@ class EspecialistasUgelController extends Controller
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
         DB::statement(
-            "EXEC acad.SP_DEL_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?",
+            'EXEC acad.SP_DEL_cursoEspecialistaUgel @iDocenteId=?, @iUgelId=?, @iCursosNivelGradId=?',
             [$docenteIdDescifrado[0], $ugelIdDescifrado[0], $request->iCursosNivelGradId]
         );
+
         return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_OK);
     }
 }

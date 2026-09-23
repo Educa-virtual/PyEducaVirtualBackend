@@ -7,7 +7,6 @@ use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\grl\TipoIdentificacion;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class TipoIdentificacionController extends Controller
@@ -20,10 +19,12 @@ class TipoIdentificacionController extends Controller
         Perfil::DOCENTE,
     ];
 
-    public function selTipoIdentificacion(){
+    public function selTipoIdentificacion()
+    {
         try {
             Gate::authorize('tiene-perfil', [$this->autorizado]);
             $data = TipoIdentificacion::selTipoIdentificacion();
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

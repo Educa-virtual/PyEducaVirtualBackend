@@ -16,9 +16,10 @@ class MatriculasService
     public static function obtenerDetalleMatriculaEstudiante($params)
     {
         $data = Matricula::selDetalleMatriculaEstudiante($params);
-        if (!$data) {
-            throw new Exception("No existe una matrícula para el año seleccionado o los parámetros enviados");
+        if (! $data) {
+            throw new Exception('No existe una matrícula para el año seleccionado o los parámetros enviados');
         }
+
         return $data;
     }
 
@@ -41,6 +42,7 @@ class MatriculasService
                 $fila->iMatrId = VerifyHash::encodexId($fila->iMatrId);
             }
         }
+
         return $data;
     }
 
@@ -97,7 +99,7 @@ class MatriculasService
             Persona::updPersonas($request);
         }
 
-        if($request->iEstudianteId == null || $request->iEstudianteId == 0) {
+        if ($request->iEstudianteId == null || $request->iEstudianteId == 0) {
             $estudiante = Estudiante::insEstudiante($request);
             $request->merge([
                 'iEstudianteId' => $estudiante['iEstudianteId'],
@@ -114,7 +116,7 @@ class MatriculasService
         ]);
         UsuariosService::insPerfil($request);
 
-        if($request->iApoderadoId != null || $request->iApoderadoId > 0) {
+        if ($request->iApoderadoId != null || $request->iApoderadoId > 0) {
             // Crear credencial de apoderado
             $request->merge([
                 'iPersId' => $request->iPersIdApoderado,
@@ -142,7 +144,7 @@ class MatriculasService
             Persona::updPersonas($request);
         }
 
-        if($request->iEstudianteId == null || $request->iEstudianteId == 0) {
+        if ($request->iEstudianteId == null || $request->iEstudianteId == 0) {
             $request->merge([
                 'iEstudianteId' => Estudiante::insEstudiante($request),
             ]);

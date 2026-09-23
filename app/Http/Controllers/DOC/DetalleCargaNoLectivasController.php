@@ -4,10 +4,10 @@ namespace App\Http\Controllers\doc;
 
 use App\Http\Controllers\Controller;
 use Exception;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class DetalleCargaNoLectivasController extends Controller
 {
@@ -55,14 +55,14 @@ class DetalleCargaNoLectivasController extends Controller
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $request->iDetCargaNoLectId             ?? NULL,
-            $request->iCargaNoLectivaId             ?? NULL,
-            $request->iTipoCargaNoLectId            ?? NULL,
-            $request->nDetCargaNoLectHoras          ?? NULL,
-            $request->cDetCargaNoLectEvidencias     ?? NULL,
+            $request->iDetCargaNoLectId ?? null,
+            $request->iCargaNoLectivaId ?? null,
+            $request->iTipoCargaNoLectId ?? null,
+            $request->nDetCargaNoLectHoras ?? null,
+            $request->cDetCargaNoLectEvidencias ?? null,
             $request->iCredId,
-            $request->cDescripcion                  ?? NULL,
-            $request->dtInicio                      ?? NULL,
+            $request->cDescripcion ?? null,
+            $request->dtInicio ?? null,
 
         ];
 
@@ -71,7 +71,7 @@ class DetalleCargaNoLectivasController extends Controller
 
     public function list(Request $request)
     {
-        $resp = new DetalleCargaNoLectivasController();
+        $resp = new DetalleCargaNoLectivasController;
         $parametros = $resp->validate($request);
 
         try {
@@ -92,22 +92,22 @@ class DetalleCargaNoLectivasController extends Controller
     {
         $parametros = [
             'GUARDARxDetalleCargaNoLectiva',
-            $request->cNombre                   ?? NULL,
-            $request->iCargaNoLectivaId         ?? NULL,
-            $request->iTipoCargaNoLectId        ?? NULL,
-            $request->nDetCargaNoLectHoras      ?? NULL,
-            $request->cDetCargaNoLectEvidencias ?? NULL,
-            $request->iCredId                   ?? NULL,
-            $request->cDescripcion              ?? NULL,
-            $request->dtInicio                  ?? NULL,
+            $request->cNombre ?? null,
+            $request->iCargaNoLectivaId ?? null,
+            $request->iTipoCargaNoLectId ?? null,
+            $request->nDetCargaNoLectHoras ?? null,
+            $request->cDetCargaNoLectEvidencias ?? null,
+            $request->iCredId ?? null,
+            $request->cDescripcion ?? null,
+            $request->dtInicio ?? null,
         ];
 
-        $solicitud = str_repeat('?,', count($parametros)-1).'?';
+        $solicitud = str_repeat('?,', count($parametros) - 1).'?';
         $procedimiento = 'exec doc.Sp_INS_detalleCargaNoLectivas '.$solicitud;
 
         try {
             $data = DB::select($procedimiento, $parametros);
-            
+
             if ($data[0]->iDetCargaNoLectId > 0) {
 
                 $response = ['validated' => true, 'mensaje' => 'Se guardó la información exitosamente.'];
@@ -126,20 +126,20 @@ class DetalleCargaNoLectivasController extends Controller
 
     public function update(Request $request)
     {
-        
+
         $parametros = [
             $request->opcion,
-            $request->cNombre                   ?? NULL,
-            $request->iDetCargaNoLectId         ?? NULL,
-            $request->iTipoCargaNoLectId        ?? NULL,
-            $request->nDetCargaNoLectHoras      ?? NULL,
-            $request->cDetCargaNoLectEvidencias ?? NULL,
-            $request->iCredId                   ?? NULL,
-            $request->cDescripcion              ?? NULL,
-            $request->dtInicio     
+            $request->cNombre ?? null,
+            $request->iDetCargaNoLectId ?? null,
+            $request->iTipoCargaNoLectId ?? null,
+            $request->nDetCargaNoLectHoras ?? null,
+            $request->cDetCargaNoLectEvidencias ?? null,
+            $request->iCredId ?? null,
+            $request->cDescripcion ?? null,
+            $request->dtInicio,
         ];
 
-        $enviar = str_repeat('?,', count($parametros)-1).'?';
+        $enviar = str_repeat('?,', count($parametros) - 1).'?';
         $procedimiento = 'exec doc.Sp_UPD_detalleCargaNoLectivas '.$enviar;
 
         try {
@@ -162,7 +162,7 @@ class DetalleCargaNoLectivasController extends Controller
     }
 
     public function delete(Request $request)
-    {   
+    {
 
         $parametros = [
             $request->opcion,
@@ -170,7 +170,7 @@ class DetalleCargaNoLectivasController extends Controller
             $request->iCredId,
         ];
 
-        $enviar = str_repeat('?,', count($parametros)-1).'?';
+        $enviar = str_repeat('?,', count($parametros) - 1).'?';
         $procedimiento = 'exec doc.Sp_DEL_detalleCargaNoLectivas '.$enviar;
 
         try {

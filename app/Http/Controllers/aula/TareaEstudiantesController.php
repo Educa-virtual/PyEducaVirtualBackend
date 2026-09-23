@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\aula;
 
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use App\Helpers\VerifyHash;
-use Illuminate\Support\Facades\Validator;
 
 class TareaEstudiantesController extends Controller
 {
@@ -29,19 +28,19 @@ class TareaEstudiantesController extends Controller
             'iSedeId',
             'iSeccionId',
             'iNivelGradoId',
-            'iEscalaCalifId'
+            'iEscalaCalifId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
-           
-            $request->iTareaId                    ??      NULL,
-            $request->iIeCursoId                  ??      NULL,
-            $request->iYAcadId                    ??      NULL,
-            $request->iSedeId                     ??      NULL,
-            $request->iSeccionId                  ??      NULL,
-            $request->iNivelGradoId               ??      NULL,
+
+            $request->iTareaId ?? null,
+            $request->iIeCursoId ?? null,
+            $request->iYAcadId ?? null,
+            $request->iSedeId ?? null,
+            $request->iSeccionId ?? null,
+            $request->iNivelGradoId ?? null,
 
         ];
         try {
@@ -79,25 +78,24 @@ class TareaEstudiantesController extends Controller
             'iEscalaCalifId',
             'iTareaCabGrupoId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iTareaEstudianteId                    ??      NULL,
-            $request->iTareaId                              ??      NULL,
-            $request->iEstudianteId                         ??      NULL,
-            $request->iEscalaCalifId                        ??      NULL,
-            $request->nTareaEstudianteNota                  ??      NULL,
-            $request->cTareaEstudianteComentarioDocente     ??      NULL,
-            $request->cTareaEstudianteUrlEstudiante         ??      NULL,
-            $request->iEstado                               ??      NULL,
-            $request->iSesionId                             ??      NULL,
-            $request->dtCreado                              ??      NULL,
-            $request->dtActualizado                         ??      NULL,
-            $request->iTareaCabGrupoId                      ??      NULL
+            $request->iTareaEstudianteId ?? null,
+            $request->iTareaId ?? null,
+            $request->iEstudianteId ?? null,
+            $request->iEscalaCalifId ?? null,
+            $request->nTareaEstudianteNota ?? null,
+            $request->cTareaEstudianteComentarioDocente ?? null,
+            $request->cTareaEstudianteUrlEstudiante ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
+            $request->iTareaCabGrupoId ?? null,
 
         ];
 
@@ -119,6 +117,7 @@ class TareaEstudiantesController extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
     public function entregarEstudianteTarea(Request $request)
     {
         $fieldsToDecode = [
@@ -126,13 +125,13 @@ class TareaEstudiantesController extends Controller
             'iEstudianteId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->iTareaId,
             $request->iEstudianteId,
             $request->cTareaEstudianteUrlEstudiante,
-            $request->header('iCredEntPerfId')
+            $request->header('iCredEntPerfId'),
         ];
 
         try {
@@ -164,26 +163,26 @@ class TareaEstudiantesController extends Controller
             'iEscalaCalifId',
             'iTareaCabGrupoId',
         ];
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iTareaEstudianteId                    ??      NULL,
-            $request->iTareaId                              ??      NULL,
-            $request->iEstudianteId                         ??      NULL,
-            $request->iEscalaCalifId                        ??      NULL,
-            $request->nTareaEstudianteNota                  ??      NULL,
-            $request->cTareaEstudianteComentarioDocente     ??      NULL,
-            $request->cTareaEstudianteUrlEstudiante         ??      NULL,
-            $request->iEstado                               ??      NULL,
-            $request->iSesionId                             ??      NULL,
-            $request->dtCreado                              ??      NULL,
-            $request->dtActualizado                         ??      NULL,
-            $request->iTareaCabGrupoId                      ??      NULL
+            $request->iTareaEstudianteId ?? null,
+            $request->iTareaId ?? null,
+            $request->iEstudianteId ?? null,
+            $request->iEscalaCalifId ?? null,
+            $request->nTareaEstudianteNota ?? null,
+            $request->cTareaEstudianteComentarioDocente ?? null,
+            $request->cTareaEstudianteUrlEstudiante ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
+            $request->iTareaCabGrupoId ?? null,
 
-            //$request->iCredId
+            // $request->iCredId
 
         ];
 

@@ -4,22 +4,26 @@ namespace App\Http\Controllers\aula;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\eval\EvaluacionesController;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
-use Illuminate\Support\Carbon;
 
 class ProgramacionActividadesController extends Controller
 {
     protected $hashids;
-    protected $iProgActId;
-    protected $iSilaboActAprendId;
-    protected $iContenidoSemId;
-    protected $iInstrumentoId;
-    protected $iActTipoId;
-    protected $iHorarioId;
 
+    protected $iProgActId;
+
+    protected $iSilaboActAprendId;
+
+    protected $iContenidoSemId;
+
+    protected $iInstrumentoId;
+
+    protected $iActTipoId;
+
+    protected $iHorarioId;
 
     public function __construct()
     {
@@ -31,6 +35,7 @@ class ProgramacionActividadesController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -69,36 +74,35 @@ class ProgramacionActividadesController extends Controller
             $iHorarioId = count($iHorarioId) > 0 ? $iHorarioId[0] : $iHorarioId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $iProgActId                     ?? NULL,
-            $iSilaboActAprendId             ?? NULL,
-            $iContenidoSemId                ?? NULL,
-            $iInstrumentoId                 ?? NULL,
-            $iActTipoId                     ?? NULL,
-            $request->dtProgActPublicacion  ?? NULL,
-            $request->nProgActConceptual    ?? NULL,
-            $request->nProgActProcedimiental    ?? NULL,
-            $request->nProgActActitudinal       ?? NULL,
-            $request->bProgActEsEvaluado        ?? NULL,
-            $request->cProgActTituloLeccion     ?? NULL,
-            $request->cProgActDescripcion       ?? NULL,
-            $request->bProgActEsObligatorio     ?? NULL,
-            $request->bProgActEsRestringido     ?? NULL,
-            $request->dtProgActInicio           ?? NULL,
-            $request->dtProgActFin              ?? NULL,
-            $request->nProgActNota              ?? NULL,
-            $request->cProgActComentarioDocente ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-            $request->dtCreado                  ?? NULL,
-            $request->dtActualizado             ?? NULL,
-            $iHorarioId                         ?? NULL,
+            $iProgActId ?? null,
+            $iSilaboActAprendId ?? null,
+            $iContenidoSemId ?? null,
+            $iInstrumentoId ?? null,
+            $iActTipoId ?? null,
+            $request->dtProgActPublicacion ?? null,
+            $request->nProgActConceptual ?? null,
+            $request->nProgActProcedimiental ?? null,
+            $request->nProgActActitudinal ?? null,
+            $request->bProgActEsEvaluado ?? null,
+            $request->cProgActTituloLeccion ?? null,
+            $request->cProgActDescripcion ?? null,
+            $request->bProgActEsObligatorio ?? null,
+            $request->bProgActEsRestringido ?? null,
+            $request->dtProgActInicio ?? null,
+            $request->dtProgActFin ?? null,
+            $request->nProgActNota ?? null,
+            $request->cProgActComentarioDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
+            $iHorarioId ?? null,
 
-            //$request->iCredId
+            // $request->iCredId
 
         ];
 
@@ -128,7 +132,6 @@ class ProgramacionActividadesController extends Controller
     public function store(Request $request)
     {
 
-
         $request->validate(
             [
                 'opcion' => 'required',
@@ -145,7 +148,7 @@ class ProgramacionActividadesController extends Controller
             'iContenidoSemId',
             'iInstrumentoId',
             'iActTipoId',
-            'iHorarioId'
+            'iHorarioId',
 
         ];
 
@@ -153,38 +156,37 @@ class ProgramacionActividadesController extends Controller
             $request[$field] = $this->decodeValue($request->$field);
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iProgActId                     ?? NULL,
-            $request->iSilaboActAprendId             ?? NULL,
-            $request->iContenidoSemId                ?? NULL,
-            $request->iInstrumentoId                 ?? NULL,
-            $request->iActTipoId                     ?? NULL,
-            $request->dtProgActPublicacion  ?? NULL,
-            $request->nProgActConceptual    ?? NULL,
-            $request->nProgActProcedimiental    ?? NULL,
-            $request->nProgActActitudinal       ?? NULL,
-            $request->bProgActEsEvaluado        ?? NULL,
-            $request->cProgActTituloLeccion     ?? NULL,
-            $request->cProgActDescripcion       ?? NULL,
-            $request->bProgActEsObligatorio     ?? NULL,
-            $request->bProgActEsRestringido     ?? NULL,
-            $request->dtProgActInicio           ?? NULL,
-            $request->dtProgActFin              ?? NULL,
-            $request->nProgActNota              ?? NULL,
-            $request->cProgActComentarioDocente ?? NULL,
-            $request->iEstado                   ?? NULL,
-            $request->iSesionId                 ?? NULL,
-            $request->dtCreado                  ?? NULL,
-            $request->dtActualizado             ?? NULL,
-            $request->iHorarioId                         ?? NULL,
+            $request->iProgActId ?? null,
+            $request->iSilaboActAprendId ?? null,
+            $request->iContenidoSemId ?? null,
+            $request->iInstrumentoId ?? null,
+            $request->iActTipoId ?? null,
+            $request->dtProgActPublicacion ?? null,
+            $request->nProgActConceptual ?? null,
+            $request->nProgActProcedimiental ?? null,
+            $request->nProgActActitudinal ?? null,
+            $request->bProgActEsEvaluado ?? null,
+            $request->cProgActTituloLeccion ?? null,
+            $request->cProgActDescripcion ?? null,
+            $request->bProgActEsObligatorio ?? null,
+            $request->bProgActEsRestringido ?? null,
+            $request->dtProgActInicio ?? null,
+            $request->dtProgActFin ?? null,
+            $request->nProgActNota ?? null,
+            $request->cProgActComentarioDocente ?? null,
+            $request->iEstado ?? null,
+            $request->iSesionId ?? null,
+            $request->dtCreado ?? null,
+            $request->dtActualizado ?? null,
+            $request->iHorarioId ?? null,
 
-            $request->idDocCursoId                         ?? NULL,
+            $request->idDocCursoId ?? null,
 
-            //$request->iCredId
+            // $request->iCredId
 
         ];
 
@@ -195,8 +197,9 @@ class ProgramacionActividadesController extends Controller
                     ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
-                        $resp = new TareasController();
+                        $resp = new TareasController;
                     }
+
                     return $resp->store($request);
                     break;
                 case 'GUARDARxProgActxiEvaluacionId':
@@ -204,8 +207,9 @@ class ProgramacionActividadesController extends Controller
                     ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
-                        $resp = new EvaluacionesController();
+                        $resp = new EvaluacionesController;
                     }
+
                     return $resp->handleCrudOperation($request);
                     break;
                 case 'ACTUALIZARxProgActxiEvaluacionId':
@@ -213,8 +217,9 @@ class ProgramacionActividadesController extends Controller
                     ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
-                        $resp = new EvaluacionesController();
+                        $resp = new EvaluacionesController;
                     }
+
                     return $resp->handleCrudOperation($request);
                     break;
                 case 'GUARDARxProgActxiCuestionarioId':
@@ -222,8 +227,9 @@ class ProgramacionActividadesController extends Controller
                     ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
-                        $resp = new CuestionariosController();
+                        $resp = new CuestionariosController;
                     }
+
                     return $resp->guardarCuestionario($request);
                     break;
                 case 'GUARDARxProgActxiRVirtualId':
@@ -231,8 +237,9 @@ class ProgramacionActividadesController extends Controller
                     ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
                     if ($data[0]->iProgActId > 0) {
                         $request['iProgActId'] = $this->hashids->encode($data[0]->iProgActId);
-                        $resp = new ReunionVirtualesController();
+                        $resp = new ReunionVirtualesController;
                     }
+
                     return $resp->guardarReunionVirtuales($request);
                     break;
                 default:

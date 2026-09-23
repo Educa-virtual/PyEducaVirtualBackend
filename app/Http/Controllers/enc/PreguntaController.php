@@ -33,6 +33,7 @@ class PreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [array_merge($this->encuestadores, $this->encuestados)]);
             $data = Pregunta::selPreguntas($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -44,6 +45,7 @@ class PreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = Pregunta::selPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -55,6 +57,7 @@ class PreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = Pregunta::insPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -66,6 +69,7 @@ class PreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = Pregunta::updPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -77,6 +81,7 @@ class PreguntaController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = Pregunta::delPregunta($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

@@ -17,6 +17,7 @@ class NotificarApoderadosInasistenciaGeneralJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $data;
+
     protected $fecha;
 
     public function __construct($data, $fecha)
@@ -29,7 +30,7 @@ class NotificarApoderadosInasistenciaGeneralJob implements ShouldQueue
     {
         foreach ($this->data as $fila) {
             $marcarNotificado = false;
-            if (!empty($fila->cPersTelefono)) {
+            if (! empty($fila->cPersTelefono)) {
                 $nombreApp = config('app.name');
                 $mensaje = "Estimado(a) {$fila->cPersNombreApo} {$fila->cPersPaternoApo} {$fila->cPersMaternoApo},
                 \nLe informamos que {$fila->cPersNombreEst} {$fila->cPersPaternoEst} {$fila->cPersMaternoEst} no asistió a la institución educativa {$fila->cIieeNombre} el día {$this->fecha}.

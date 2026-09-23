@@ -4,12 +4,11 @@ namespace App\Http\Controllers\acad;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
 use App\Http\Requests\acad\ListarCalendarioPeriodosRequest;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\acad\CalendarioPeriodosEvaluaciones;
 
@@ -63,7 +62,7 @@ class CalendarioPeriodosEvaluacionesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -71,15 +70,15 @@ class CalendarioPeriodosEvaluacionesController extends Controller
             'iYAcadId',
             'iSedeId',
             'iCredId',
-            'iPeriodoEvalAperId'
+            'iPeriodoEvalAperId',
         ];
 
-        $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+        $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
         $parametros = [
-            $request->iYAcadId              ??      NULL,
-            $request->iSedeId               ??      NULL,
-            $request->iCredId               ??      NULL
+            $request->iYAcadId ?? null,
+            $request->iSedeId ?? null,
+            $request->iCredId ?? null,
         ];
 
         try {
@@ -99,10 +98,11 @@ class CalendarioPeriodosEvaluacionesController extends Controller
             // Manejo de excepción y respuesta de error
             $response = [
                 'validated' => false,
-                'message' => $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine(),
+                'message' => $e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(),
                 'data' => [],
             ];
             $estado = Response::HTTP_INTERNAL_SERVER_ERROR;
+
             return new JsonResponse($response, $estado);
         }
     }
@@ -120,7 +120,7 @@ class CalendarioPeriodosEvaluacionesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -131,15 +131,15 @@ class CalendarioPeriodosEvaluacionesController extends Controller
                 'iPeriodoEvalId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iYAcadId                    ??  NULL,
-                $request->iSedeId                     ??  NULL,
-                $request->iPeriodoEvalId              ??  NULL,
-                $request->jsonPeriodos                ??  NULL,
+                $request->iYAcadId ?? null,
+                $request->iSedeId ?? null,
+                $request->iPeriodoEvalId ?? null,
+                $request->jsonPeriodos ?? null,
 
-                $request->iCredId                     ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

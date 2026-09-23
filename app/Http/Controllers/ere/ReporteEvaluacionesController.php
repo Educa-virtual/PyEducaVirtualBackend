@@ -20,6 +20,7 @@ class ReporteEvaluacionesController extends Controller
                 'iEvaluacionId' => $id_cifrado == null || is_numeric($id_cifrado) ? $id_cifrado : ($hashids->decode($id_cifrado)[0] ?? null),
             ]);
             $data = EvaluacionInforme::selEvaluacionesInformeOpt($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -31,6 +32,7 @@ class ReporteEvaluacionesController extends Controller
         try {
             $request->merge(['bMostrarDetalle' => 0]);
             $data = EvaluacionInforme::selEvaluacionInformeResumenOpt($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -54,17 +56,17 @@ class ReporteEvaluacionesController extends Controller
             $matriz = $data[4];
             $ies = [];
 
-            foreach ( $resultados as $resultado) {
+            foreach ($resultados as $resultado) {
                 $resultado->respuestas = json_decode($resultado->respuestas);
             }
             $ies = $data[5];
-            foreach ( $ies as $ie) {
+            foreach ($ies as $ie) {
                 $sumatoria = 0;
-                foreach( $niveles as $nivel) {
+                foreach ($niveles as $nivel) {
                     $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
                     $sumatoria += intval($ie?->$nivel_logro_id ?? 0);
                 }
-                foreach( $niveles as $nivel) {
+                foreach ($niveles as $nivel) {
                     $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
                     $ie->$nivel_logro_id = round(intval($ie?->$nivel_logro_id ?? 0) / $sumatoria * 100, 2);
                 }
@@ -91,7 +93,7 @@ class ReporteEvaluacionesController extends Controller
                 ->setOption('disable-smart-shrinking', true)
                 ->setOption('margin-top', '3cm')
                 ->setOption('margin-bottom', '2cm')
-                ->setOption('footer-left', "PAGINA [page] DE [toPage]")
+                ->setOption('footer-left', 'PAGINA [page] DE [toPage]')
                 ->setOption('footer-font-size', 8)
                 ->setOption('header-html', $headerHtml)
                 ->setOption('footer-html', $footerHtml)
@@ -122,14 +124,14 @@ class ReporteEvaluacionesController extends Controller
             $matriz = $data[4];
             $ies = null;
 
-            foreach ( $resultados as $resultado) {
+            foreach ($resultados as $resultado) {
                 $resultado->respuestas = json_decode($resultado->respuestas);
             }
-            if( $filtros->tipo_reporte == 'IE' ) {
+            if ($filtros->tipo_reporte == 'IE') {
                 $ies = $data[5];
-                foreach ( $ies as $ie) {
+                foreach ($ies as $ie) {
                     $sumatoria = 0;
-                    foreach( $niveles as $nivel) {
+                    foreach ($niveles as $nivel) {
                         $nivel_logro_id = strval($nivel?->nivel_logro_id ?? '');
                         $sumatoria += intval($ie?->$nivel_logro_id ?? 0);
                     }
@@ -150,6 +152,7 @@ class ReporteEvaluacionesController extends Controller
     {
         try {
             $request->merge(['bMostrarDetalle' => 0]);
+
             return EvaluacionInforme::selEvaluacionInformeComparacion($request);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -172,22 +175,22 @@ class ReporteEvaluacionesController extends Controller
             $resultados2 = $data[3];
             $niveles2 = $data[4];
 
-            foreach ( $resultados1 as $resultado) {
+            foreach ($resultados1 as $resultado) {
                 $resultado->respuestas = json_decode($resultado->respuestas);
             }
-            foreach ( $resultados2 as $resultado) {
+            foreach ($resultados2 as $resultado) {
                 $resultado->respuestas = json_decode($resultado->respuestas);
             }
 
-            $total1 = array_reduce($niveles1, function($sum, $item) {
+            $total1 = array_reduce($niveles1, function ($sum, $item) {
                 return $sum += intval($item->cantidad);
             });
-            $total2 = array_reduce($niveles2, function($sum, $item) {
+            $total2 = array_reduce($niveles2, function ($sum, $item) {
                 return $sum += intval($item->cantidad);
             });
 
             $niveles = null;
-            foreach( $niveles1 as $key => $nivel) {
+            foreach ($niveles1 as $key => $nivel) {
                 $niveles[] = [
                     'nivel' => $nivel->nivel_logro,
                     'cantidad1' => intval($nivel->cantidad),
@@ -214,7 +217,7 @@ class ReporteEvaluacionesController extends Controller
                 ->setOption('disable-smart-shrinking', true)
                 ->setOption('margin-top', '3cm')
                 ->setOption('margin-bottom', '2cm')
-                ->setOption('footer-left', "PAGINA [page] DE [toPage]")
+                ->setOption('footer-left', 'PAGINA [page] DE [toPage]')
                 ->setOption('footer-font-size', 8)
                 ->setOption('header-html', $headerHtml)
                 ->setOption('footer-html', $footerHtml)
@@ -244,26 +247,26 @@ class ReporteEvaluacionesController extends Controller
             $resultados2 = $data[3];
             $niveles2 = $data[4];
 
-            foreach ( $resultados1 as $resultado) {
+            foreach ($resultados1 as $resultado) {
                 $resultado->respuestas = json_decode($resultado->respuestas);
             }
-            foreach ( $resultados2 as $resultado) {
+            foreach ($resultados2 as $resultado) {
                 $resultado->respuestas = json_decode($resultado->respuestas);
             }
 
-            $total1 = array_reduce($niveles1, function($sum, $item) {
+            $total1 = array_reduce($niveles1, function ($sum, $item) {
                 return $sum += intval($item->cantidad);
             });
-            $total2 = array_reduce($niveles2, function($sum, $item) {
+            $total2 = array_reduce($niveles2, function ($sum, $item) {
                 return $sum += intval($item->cantidad);
             });
 
             $niveles = null;
-            foreach( $niveles1 as $key => $nivel) {
+            foreach ($niveles1 as $key => $nivel) {
                 $niveles[] = [
                     'nivel' => $nivel->nivel_logro,
                     'cantidad1' => intval($nivel->cantidad),
-                    'porcentaje1' => $total1 == 0 ? 0 : round( intval($nivel->cantidad) / $total1 * 100, 2),
+                    'porcentaje1' => $total1 == 0 ? 0 : round(intval($nivel->cantidad) / $total1 * 100, 2),
                     'cantidad2' => intval($niveles2[$key]->cantidad),
                     'porcentaje2' => $total2 == 0 ? 0 : round(intval($niveles2[$key]->cantidad) / $total2 * 100, 2),
                 ];
@@ -277,7 +280,7 @@ class ReporteEvaluacionesController extends Controller
 
     private function convertDataToChartForm($data)
     {
-        $newData = array();
+        $newData = [];
         $firstLine = true;
 
         foreach ($data as $dataRow) {
@@ -287,6 +290,7 @@ class ReporteEvaluacionesController extends Controller
             }
             $newData[] = array_values((array) $dataRow);
         }
+
         return $newData;
     }
 }

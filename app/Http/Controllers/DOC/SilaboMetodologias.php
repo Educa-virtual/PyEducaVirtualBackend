@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\doc;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class SilaboMetodologias extends Controller
 {
     protected $hashids;
-    protected $idSilMetId;
-    protected $iTipoMetId;
-    protected $iSilaboId;
 
+    protected $idSilMetId;
+
+    protected $iTipoMetId;
+
+    protected $iSilaboId;
 
     public function __construct()
     {
@@ -44,17 +46,16 @@ class SilaboMetodologias extends Controller
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $idSilMetId                     ?? NULL,
-            $iTipoMetId                     ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cSilMetDescripcion    ?? NULL,
+            $idSilMetId ?? null,
+            $iTipoMetId ?? null,
+            $iSilaboId ?? null,
+            $request->cSilMetDescripcion ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -77,6 +78,7 @@ class SilaboMetodologias extends Controller
 
         return new JsonResponse($response, $codeResponse);
     }
+
     public function store(Request $request)
     {
         $request->validate(
@@ -100,17 +102,16 @@ class SilaboMetodologias extends Controller
             $iSilaboId = count($iSilaboId) > 0 ? $iSilaboId[0] : $iSilaboId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $idSilMetId                     ?? NULL,
-            $iTipoMetId                     ?? NULL,
-            $iSilaboId                      ?? NULL,
-            $request->cSilMetDescripcion    ?? NULL,
+            $idSilMetId ?? null,
+            $iTipoMetId ?? null,
+            $iSilaboId ?? null,
+            $request->cSilMetDescripcion ?? null,
 
-            $request->iCredId
+            $request->iCredId,
 
         ];
 
@@ -126,7 +127,6 @@ class SilaboMetodologias extends Controller
                 $response = ['validated' => false, 'mensaje' => 'No se ha podido guardar la información.'];
                 $codeResponse = 500;
             }
-
 
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;

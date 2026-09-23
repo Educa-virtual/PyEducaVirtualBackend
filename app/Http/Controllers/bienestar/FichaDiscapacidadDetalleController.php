@@ -27,6 +27,7 @@ class FichaDiscapacidadDetalleController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDiscapacidadDetalle::selFichaDiscapacidadesDetalle($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -38,6 +39,7 @@ class FichaDiscapacidadDetalleController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDiscapacidadDetalle::selFichaDiscapacidadDetalle($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -50,7 +52,7 @@ class FichaDiscapacidadDetalleController extends Controller
             Gate::authorize('tiene-perfil', [$this->registran]);
 
             // Subir archivo
-            if( $request->hasFile('archivo') ) {
+            if ($request->hasFile('archivo')) {
                 $archivo = $request->file('archivo');
                 $iYAcadId = $request->iYAcadId;
                 $iFichaDGId = $request->iFichaDGId;
@@ -61,6 +63,7 @@ class FichaDiscapacidadDetalleController extends Controller
             }
 
             $data = FichaDiscapacidadDetalle::insFichaDiscapacidadDetalle($request);
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -73,7 +76,7 @@ class FichaDiscapacidadDetalleController extends Controller
             Gate::authorize('tiene-perfil', [$this->registran]);
 
             // Subir archivo
-            if( $request->hasFile('archivo') ) {
+            if ($request->hasFile('archivo')) {
                 $archivo = $request->file('archivo');
                 $iYAcadId = $request->iYAcadId;
                 $iFichaDGId = $request->iFichaDGId;
@@ -84,6 +87,7 @@ class FichaDiscapacidadDetalleController extends Controller
             }
 
             $data = FichaDiscapacidadDetalle::updFichaDiscapacidadDetalle($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -95,6 +99,7 @@ class FichaDiscapacidadDetalleController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaDiscapacidadDetalle::borrarFichaDiscapacidadDetalle($request);
+
             return FormatearMensajeHelper::ok('Se borró la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -103,15 +108,16 @@ class FichaDiscapacidadDetalleController extends Controller
 
     private function subirArchivo($archivo, $ruta)
     {
-        $nombre_archivo = hash('sha256', uniqid()) . '.' . $archivo->getClientOriginalExtension();
+        $nombre_archivo = hash('sha256', uniqid()).'.'.$archivo->getClientOriginalExtension();
         // $nombre_archivo = substr($archivo->getClientOriginalName(), 0, 150) . '.' . $archivo->getClientOriginalExtension();
-        if(!Storage::disk('local')->exists($ruta)) {
+        if (! Storage::disk('local')->exists($ruta)) {
             Storage::disk('local')->makeDirectory($ruta, 0755, true);
         }
         $archivo->move(Storage::disk('local')->path($ruta), $nombre_archivo);
-        if (Storage::disk('local')->exists($ruta . '/' . $nombre_archivo)) {
+        if (Storage::disk('local')->exists($ruta.'/'.$nombre_archivo)) {
             return $nombre_archivo;
         }
+
         return null;
     }
 
@@ -124,12 +130,13 @@ class FichaDiscapacidadDetalleController extends Controller
             $iYAcadId = $request->iYAcadId;
             $iFichaDGId = $data->iFichaDGId;
             $ruta = Storage::disk('local')->path("bienestar/ficha/$iYAcadId/$iFichaDGId/$nombre_archivo");
-            if (!file_exists($ruta)) {
+            if (! file_exists($ruta)) {
                 abort(404, 'Archivo no encontrado');
             }
+
             return response()->download($ruta, $nombre_archivo, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . $nombre_archivo . '"',
+                'Content-Disposition' => 'inline; filename="'.$nombre_archivo.'"',
             ]);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

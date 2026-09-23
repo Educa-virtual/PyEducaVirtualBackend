@@ -23,8 +23,7 @@ class RegistrarSugerenciaRequest extends GeneralFormRequest
             'cAsunto' => 'Asunto',
             'cSugerencia' => 'Sugerencia',
             'iPrioridadId' => 'Prioridad',
-            'fArchivos.*' => 'Archivo'
+            'fArchivos.*' => 'Archivo',
         ];
     }
 }
-

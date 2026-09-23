@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\acad;
 
-use App\Helpers\ResponseHandler;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TurnosController extends Controller
 {
@@ -19,10 +18,10 @@ class TurnosController extends Controller
                 'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCredId                   ??  NULL
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

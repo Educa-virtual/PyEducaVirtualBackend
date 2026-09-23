@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\acad;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class TipoMetodologiasController extends Controller
 {
     protected $hashids;
+
     protected $iTipoMetId;
-   
 
     public function __construct()
     {
@@ -34,13 +34,12 @@ class TipoMetodologiasController extends Controller
             $iTipoMetId = count($iTipoMetId) > 0 ? $iTipoMetId[0] : $iTipoMetId;
         }
 
-
         $parametros = [
             $request->opcion,
             $request->valorBusqueda ?? '-',
-            $iTipoMetId                         ?? NULL,
-            $request->cTipoMetNombre            ?? NULL,
-            $request->iCredId
+            $iTipoMetId ?? null,
+            $request->cTipoMetNombre ?? null,
+            $request->iCredId,
 
         ];
 

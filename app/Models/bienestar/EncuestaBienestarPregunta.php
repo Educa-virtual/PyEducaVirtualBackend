@@ -13,6 +13,7 @@ class EncuestaBienestarPregunta
             $request->iEncuId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC obe.Sp_SEL_encuestaPreguntas $placeholders", $parametros);
     }
 
@@ -28,6 +29,7 @@ class EncuestaBienestarPregunta
             $request->iEncuAlterGrupoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC obe.Sp_INS_encuestaPregunta $placeholders", $parametros);
     }
 
@@ -44,6 +46,7 @@ class EncuestaBienestarPregunta
             $request->iEncuAlterGrupoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC obe.Sp_UPD_encuestaPregunta $placeholders", $parametros);
     }
 
@@ -54,6 +57,7 @@ class EncuestaBienestarPregunta
             $request->iEncuPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_SEL_encuestaPregunta $placeholders", $parametros);
     }
 
@@ -64,6 +68,7 @@ class EncuestaBienestarPregunta
             $request->iEncuPregId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::delete("EXEC obe.Sp_DEL_encuestaPregunta $placeholders", $parametros);
     }
 }

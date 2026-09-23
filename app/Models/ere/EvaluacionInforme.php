@@ -21,6 +21,7 @@ class EvaluacionInforme
             $request->iSeccionId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC ere.SP_SEL_evaluacionesInformeOpt $placeholders", $parametros);
     }
 
@@ -45,6 +46,7 @@ class EvaluacionInforme
             $request->cTipoReporte,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC ere.SP_SEL_evaluacionInformeResumenOpt $placeholders", $parametros);
     }
 
@@ -70,6 +72,7 @@ class EvaluacionInforme
             $request->cTipoReporte ?? null,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC ere.SP_SEL_evaluacionInformeComparacion $placeholders", $parametros);
     }
 }

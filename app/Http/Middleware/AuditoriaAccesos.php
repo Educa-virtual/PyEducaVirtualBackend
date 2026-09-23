@@ -4,10 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use hisorange\BrowserDetect\Parser as Browser;
-use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Jenssegers\Agent\Agent;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuditoriaAccesos
@@ -32,7 +31,7 @@ class AuditoriaAccesos
         $response = $next($request);
 
         // Herramienta para identificar el dispositivo del cliente.
-        $agent = new Agent();
+        $agent = new Agent;
 
         // Registro de accesos exitosos
         if ($response instanceof \Illuminate\Http\JsonResponse) {
@@ -40,29 +39,29 @@ class AuditoriaAccesos
             //
             if (isset($originalContent['data']['user']['iCredId'])) {
                 DB::select(
-                    "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
+                    'EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?',
                     [
                         'seg',
                         'auditoria_accesos',
                         json_encode([
                             'iCredId' => $originalContent['data']['user']['iCredId'],
                             'cIpCliente' => $this->getIPCliente(),
-                            'cNavegador' => Browser::browserFamily(), //$agent->browser(),
+                            'cNavegador' => Browser::browserFamily(), // $agent->browser(),
                             'cDispositivo' => Browser::deviceType(),
                             'cSistmaOperativo' => Browser::platformName(),
-                        ])
+                        ]),
                     ]
                 );
             }
 
             // Registro de accesos fallidos
             if (isset($originalContent['message']) and isset($originalContent['status']) and $originalContent['status'] == 'Error') {
-                $pass = isset($request->pass) ? (strlen($request->pass) >= 3 ? '***' . substr($request->pass, 3) : str_repeat('*', strlen($request->pass))) : null;
+                $pass = isset($request->pass) ? (strlen($request->pass) >= 3 ? '***'.substr($request->pass, 3) : str_repeat('*', strlen($request->pass))) : null;
                 if (strlen($pass) > 30) {
                     $pass = substr($pass, 0, 30);
                 }
                 DB::select(
-                    "EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?",
+                    'EXEC grl.SP_INS_EnTablaDesdeJSON ?,?,?',
                     [
                         'seg',
                         'auditoria_accesos_fallidos',
@@ -74,12 +73,13 @@ class AuditoriaAccesos
                             'cNavegador' => Browser::browserFamily(),
                             'cDispositivo' => Browser::deviceType(),
                             'cSistmaOperativo' => Browser::platformName(),
-                        ])
+                        ]),
                     ]
                 );
             }
             $response->setData($originalContent);
         }
+
         return $response;
     }
 
@@ -91,16 +91,16 @@ class AuditoriaAccesos
      * - IP desde un proxy o red compartida.
      *
      * @return string
-     *   La dirección IP del cliente.
+     *                La dirección IP del cliente.
      */
-    function getIPCliente(): String
+    public function getIPCliente(): string
     {
         $ipAddress = '';
 
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        if (! empty($_SERVER['HTTP_CLIENT_IP'])) {
             // IP de internet compartido
             $ipAddress = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        } elseif (! empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
             // IP desde un proxy
             $ipAddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
         } else {

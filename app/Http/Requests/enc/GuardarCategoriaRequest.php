@@ -3,7 +3,6 @@
 namespace App\Http\Requests\enc;
 
 use App\Http\Requests\GeneralFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class GuardarCategoriaRequest extends GeneralFormRequest
 {
@@ -25,7 +24,7 @@ class GuardarCategoriaRequest extends GeneralFormRequest
             'cCateNombre' => 'Nombre',
             'cCateDescripcion' => 'Descripción',
             'cCateImagenNombre' => 'Imagen',
-            'bCatePermisoDremo' =>'Permiso para DREMO',
+            'bCatePermisoDremo' => 'Permiso para DREMO',
             'bCatePermisoUgel' => 'Permiso para UGEL',
             'bCatePermisoDirector' => 'Permiso para Director',
         ];

@@ -3,9 +3,8 @@
 namespace App\Http\Requests\seg;
 
 use App\Http\Requests\GeneralFormRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
-class SolicitarRegistroUsuarioRequest  extends GeneralFormRequest
+class SolicitarRegistroUsuarioRequest extends GeneralFormRequest
 {
     public function rules(): array
     {
@@ -15,7 +14,7 @@ class SolicitarRegistroUsuarioRequest  extends GeneralFormRequest
             'cCargo' => 'required',
             'cCorreo' => 'required|email',
             'cNombres' => 'required',
-            'cApellidos' => 'required'
+            'cApellidos' => 'required',
         ];
     }
 
@@ -27,7 +26,7 @@ class SolicitarRegistroUsuarioRequest  extends GeneralFormRequest
             'cCargo' => 'Cargo',
             'cCorreo' => 'Correo electrónico',
             'cNombres' => 'Nombres',
-            'cApellidos' => 'Apellidos'
+            'cApellidos' => 'Apellidos',
         ];
     }
 }

@@ -2,11 +2,7 @@
 
 namespace App\Services\enc;
 
-use App\Http\Requests\enc\RegistrarCategoriaRequest;
-use App\Models\enc\Categoria;
 use App\Models\enc\Docente;
-use App\Models\enc\Encuesta;
-use App\Models\enc\Estudiante;
 use Illuminate\Http\Request;
 
 class DocentesService
@@ -18,8 +14,9 @@ class DocentesService
             'iUgelId' => $request->iUgelId,
             'iNivelTipoId' => $request->iNivelTipoId,
             'iIieeId' => $request->iIieeId,
-            'iSedeId' => $request->iSedeId
+            'iSedeId' => $request->iSedeId,
         ];
+
         return Docente::selDocentesFiltroEncuesta($params);
     }
 }

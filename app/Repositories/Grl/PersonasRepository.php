@@ -12,6 +12,7 @@ class PersonasRepository
             'EXEC grl.Sp_SEL_personasXiPersId @_iPersId = ?',
             [$id]
         );
+
         return $persona;
     }
 }

@@ -6,7 +6,6 @@ use App\Http\Requests\GeneralFormRequest;
 
 class SubirArchivoRequest extends GeneralFormRequest
 {
-    
     public function rules(): array
     {
         return [
@@ -16,6 +15,7 @@ class SubirArchivoRequest extends GeneralFormRequest
             'iPersId' => 'required|string',
         ];
     }
+
     public function messages(): array
     {
         return [

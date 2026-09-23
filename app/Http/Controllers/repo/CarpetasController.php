@@ -4,10 +4,10 @@ namespace App\Http\Controllers\repo;
 
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\repo\ActualizarCarpetaRequest;
 use App\Http\Requests\repo\GuardarCarpetaRequest;
 use App\Models\repo\Carpeta;
+use Illuminate\Http\Request;
 
 class CarpetasController extends Controller
 {
@@ -15,6 +15,7 @@ class CarpetasController extends Controller
     {
         try {
             $data = Carpeta::selCarpetas($request);
+
             return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -25,6 +26,7 @@ class CarpetasController extends Controller
     {
         try {
             $data = Carpeta::selCarpetasReporte($request);
+
             return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -35,6 +37,7 @@ class CarpetasController extends Controller
     {
         try {
             $data = Carpeta::selCarpeta($request);
+
             return FormatearMensajeHelper::ok('Se ha obtenido exitosamente ', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);

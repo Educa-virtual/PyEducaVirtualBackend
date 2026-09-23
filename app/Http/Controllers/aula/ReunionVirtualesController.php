@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\aula;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Helpers\VerifyHash;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-//use Illuminate\Support\Facades\Log;
+
+// use Illuminate\Support\Facades\Log;
 
 class ReunionVirtualesController extends Controller
 {
@@ -39,7 +40,7 @@ class ReunionVirtualesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -52,23 +53,22 @@ class ReunionVirtualesController extends Controller
                 'iCapacitacionId',
                 'iYAcadId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
-            
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
+
             $parametros = [
-                $request->cRVirtualTema               ??  NULL,
-                $request->dtRVirtualInicio            ??  NULL,
-                $request->dtRVirtualFin               ??  NULL,
-                $request->cRVirtualUrlJoin            ??  NULL,
-                $request->iContenidoSemId             ??  NULL,
-                $request->iActTipoId                  ??  NULL,
-                $request->idDocCursoId                ??  NULL,
-                $request->iCapacitacionId             ??  NULL,
-                $request->iYAcadId                    ??  NULL,
-                $request->iCredId                     ??  NULL            
-                //$request->jCompetencias               ?? NULL
+                $request->cRVirtualTema ?? null,
+                $request->dtRVirtualInicio ?? null,
+                $request->dtRVirtualFin ?? null,
+                $request->cRVirtualUrlJoin ?? null,
+                $request->iContenidoSemId ?? null,
+                $request->iActTipoId ?? null,
+                $request->idDocCursoId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->iYAcadId ?? null,
+                $request->iCredId ?? null,
+                // $request->jCompetencias               ?? NULL
             ];
-           // Log::info("PARAMETROS ENVIADOS AL SP:", $parametros); 
-           
+            // Log::info("PARAMETROS ENVIADOS AL SP:", $parametros);
 
             $data = DB::select(
                 'exec aula.SP_INS_reunionVirtuales 
@@ -99,7 +99,7 @@ class ReunionVirtualesController extends Controller
                 );
             }
         } catch (\Exception $e) {
-           // Log::error("ERROR SQL: ".$e->getMessage());
+            // Log::error("ERROR SQL: ".$e->getMessage());
             return new JsonResponse(
                 ['validated' => false, 'message' => substr($e->errorInfo[2] ?? '', 54), 'data' => []],
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -130,7 +130,7 @@ class ReunionVirtualesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -139,15 +139,15 @@ class ReunionVirtualesController extends Controller
                 'iRVirtualId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iRVirtualId                  ??  NULL,
-                $request->cRVirtualTema               ??  NULL,
-                $request->dtRVirtualInicio            ??  NULL,
-                $request->dtRVirtualFin               ??  NULL,
-                $request->cRVirtualUrlJoin            ??  NULL,
-                $request->iCredId                     ??  NULL
-               // $request->jCompetencias               ?? NULL
+                $request->iRVirtualId ?? null,
+                $request->cRVirtualTema ?? null,
+                $request->dtRVirtualInicio ?? null,
+                $request->dtRVirtualFin ?? null,
+                $request->cRVirtualUrlJoin ?? null,
+                $request->iCredId ?? null,
+                // $request->jCompetencias               ?? NULL
             ];
 
             $data = DB::select(
@@ -178,20 +178,21 @@ class ReunionVirtualesController extends Controller
             );
         }
     }
+
     public function eliminarReunionVirtuales(Request $request, $iRVirtualId)
     {
         $request->merge(['iRVirtualId' => $iRVirtualId]);
 
         $validator = Validator::make($request->all(), [
-            'iRVirtualId' => ['required']
+            'iRVirtualId' => ['required'],
         ], [
-            'iRVirtualId.required' => 'No se encontró el identificador iRVirtualId'
+            'iRVirtualId.required' => 'No se encontró el identificador iRVirtualId',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -200,10 +201,10 @@ class ReunionVirtualesController extends Controller
                 'iRVirtualId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
             $parametros = [
-                $request->iRVirtualId                  ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iRVirtualId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -244,7 +245,7 @@ class ReunionVirtualesController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -254,11 +255,11 @@ class ReunionVirtualesController extends Controller
                 'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iRVirtualId      ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iRVirtualId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(

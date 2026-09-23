@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers\cap;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Exception;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
-use Illuminate\Http\Response;
 use App\Http\Controllers\api\grl\PersonaController;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\grl\PersonasController;
-use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Controller;
 use App\Mail\cap\EstadoInscripcionMail;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class InscripcionesController extends Controller
 {
-    //Notas: Campo iEstado
+    // Notas: Campo iEstado
     // 0 => Eliminado
     // 1 => Inscrito
     // 10 => Validado
@@ -33,18 +31,18 @@ class InscripcionesController extends Controller
             $fieldsToDecode = [
                 'iTipoIdentId',
                 'iCapacitacionId',
-                'iPersId'
+                'iPersId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
-            $data = new PersonaController();
+            $data = new PersonaController;
             $data = ($data->buscarPersona($request))->getContent();
 
             $data = json_decode($data, true);
 
             if (isset($data['data']['iPersId'])) {
                 $request->merge(['iPersId' => $data['data']['iPersId']]);
-                $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+                $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
                 $datosContacto = DB::select(
                     '
@@ -52,19 +50,18 @@ class InscripcionesController extends Controller
                      cPersTelefono
                     ,cPersCorreo
                     FROM grl.personas
-                    WHERE iPersId = ' . $data['data']['iPersId']
+                    WHERE iPersId = '.$data['data']['iPersId']
                 );
 
-                $data['data']['cPersTelefono'] = count($datosContacto) > 0 ? $datosContacto[0]->cPersTelefono : NULL;
-                $data['data']['cPersCorreo'] = count($datosContacto) > 0 ? $datosContacto[0]->cPersCorreo : NULL;
+                $data['data']['cPersTelefono'] = count($datosContacto) > 0 ? $datosContacto[0]->cPersTelefono : null;
+                $data['data']['cPersCorreo'] = count($datosContacto) > 0 ? $datosContacto[0]->cPersCorreo : null;
 
                 $parametros = [
-                    $request->iPersId              ??  NULL,
-                    $request->iCapacitacionId      ??  NULL,
-                    $request->iCredId              ??  NULL
+                    $request->iPersId ?? null,
+                    $request->iCapacitacionId ?? null,
+                    $request->iCredId ?? null,
 
                 ];
-
 
                 $inscripciones = DB::select(
                     'exec cap.SP_SEL_inscripcionesxiPersIdxiCapacitacionId
@@ -76,13 +73,15 @@ class InscripcionesController extends Controller
 
                 if (count($inscripciones) > 0) {
                     if ($inscripciones[0]->iMatriculado) {
-                        $message = $data['data']['cPersNombre'] . ' ' . $data['data']['cPersPaterno'] . ' ya se encuentra matriculado en la capacitación';
+                        $message = $data['data']['cPersNombre'].' '.$data['data']['cPersPaterno'].' ya se encuentra matriculado en la capacitación';
+
                         return new JsonResponse(
                             ['validated' => false, 'message' => $message, 'data' => []],
                             Response::HTTP_OK
                         );
                     } else {
-                        $message = $data['data']['cPersNombre'] . ' ' . $data['data']['cPersPaterno'] . ' ya se encuentra inscrito en la capacitación';
+                        $message = $data['data']['cPersNombre'].' '.$data['data']['cPersPaterno'].' ya se encuentra inscrito en la capacitación';
+
                         return new JsonResponse(
                             ['validated' => false, 'message' => $message, 'data' => []],
                             Response::HTTP_OK
@@ -90,16 +89,18 @@ class InscripcionesController extends Controller
                     }
                 }
             }
-            $instituciones = DB::select("
+            $instituciones = DB::select('
             SELECT ie.iIieeId, ie.cIieeCodigoModular, ie.cIieeNombre, nt.cNivelTipoNombre
                 FROM acad.institucion_educativas AS ie
                 INNER JOIN acad.nivel_tipos AS nt ON nt.iNivelTipoId = ie.iNivelTipoId
                 WHERE ie.iEstado = 1
-            ");
+            ');
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data['data'], 'instituciones' => $instituciones],
                 Response::HTTP_OK
             );
+
             return $data;
         } catch (\Exception $e) {
             return new JsonResponse(
@@ -108,6 +109,7 @@ class InscripcionesController extends Controller
             );
         }
     }
+
     public function guardarInscripcion(Request $request)
     {
         try {
@@ -115,19 +117,19 @@ class InscripcionesController extends Controller
                 'iCapacitacionId',
                 'iPersId',
                 'iIieeId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCapacitacionId      ??  NULL,
-                $request->iPersId              ??  NULL,
-                $request->cInscripCorreo       ??  NULL,
-                $request->cInscripCel          ??  NULL,
-                $request->iIieeId              ??  NULL,
-                $request->cVoucher             ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iCapacitacionId ?? null,
+                $request->iPersId ?? null,
+                $request->cInscripCorreo ?? null,
+                $request->cInscripCel ?? null,
+                $request->iIieeId ?? null,
+                $request->cVoucher ?? null,
+                $request->iCredId ?? null,
             ];
             $data = DB::select(
                 'exec cap.SP_INS_inscripciones
@@ -143,14 +145,14 @@ class InscripcionesController extends Controller
 
             if ($data[0]->iInscripId > 0) {
                 $message = 'Se ha inscrito correctamente a la capacitación';
-                DB::update("
+                DB::update('
                     UPDATE grl.personas
                     SET 
                     cPersDomicilio = ?,
                     cPersTelefono  = ?,
                     cPersCorreo    = ?
                     WHERE iPersId = ?
-                ", [$request->cPersDomicilio, $request->cInscripCel, $request->cInscripCorreo, $request->iPersId]);
+                ', [$request->cPersDomicilio, $request->cInscripCel, $request->cInscripCorreo, $request->iPersId]);
 
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => $data],
@@ -158,6 +160,7 @@ class InscripcionesController extends Controller
                 );
             } else {
                 $message = 'No se ha podido inscribir a la capacitación';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -170,6 +173,7 @@ class InscripcionesController extends Controller
             );
         }
     }
+
     public function listarInscripcionesxiCapacitacionId(Request $request)
     {
         try {
@@ -180,11 +184,11 @@ class InscripcionesController extends Controller
                 'iIieeId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCapacitacionId      ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iCapacitacionId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -194,6 +198,7 @@ class InscripcionesController extends Controller
                 $parametros
             );
             $data = VerifyHash::encodeRequest($data, $fieldsToDecode);
+
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => ($data)],
                 Response::HTTP_OK
@@ -218,29 +223,27 @@ class InscripcionesController extends Controller
             'bEstado.required' => 'No se encontró el estado',
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $iEstado = $request->bEstado ? 10 : 100;
         $request->merge(['iEstado' => $iEstado]);
 
-
         try {
             $fieldsToDecode = [
                 'iInscripId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iInscripId      ??  NULL,
-                $request->iEstado         ??  NULL,
-                $request->iCredId         ??  NULL
+                $request->iInscripId ?? null,
+                $request->iEstado ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -253,7 +256,7 @@ class InscripcionesController extends Controller
             $cEstado = $request->bEstado ? 'validado' : 'rechazado';
 
             if ($data[0]->iInscripId > 0) {
-                $message = 'Se ha ' . $cEstado . ' correctamente a la Inscripción';
+                $message = 'Se ha '.$cEstado.' correctamente a la Inscripción';
 
                 $info = DB::select(
                     'exec cap.SP_SEL_detalleInscripcion ?',
@@ -269,8 +272,7 @@ class InscripcionesController extends Controller
                         'cCapacitacionNombre' => $info[0]->cCapTitulo,
                     ];
 
-
-                    if (!empty($participante->cPersCorreo)) {
+                    if (! empty($participante->cPersCorreo)) {
                         $estadoTexto = $request->bEstado ? 'aprobado' : 'rechazado';
                         try {
                             Mail::mailer('mailer_capacitaciones')
@@ -284,12 +286,14 @@ class InscripcionesController extends Controller
                         }
                     }
                 }
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => $data],
                     Response::HTTP_OK
                 );
             } else {
-                $message = 'No se ha ' . $cEstado . ' correctamente a la Inscripción';
+                $message = 'No se ha '.$cEstado.' correctamente a la Inscripción';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK

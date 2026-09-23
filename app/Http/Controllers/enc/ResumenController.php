@@ -24,6 +24,7 @@ class ResumenController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = Resumen::selResumen($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

@@ -2,9 +2,7 @@
 
 namespace App\Services\Ere;
 
-use Exception;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use WebPConvert\WebPConvert;
 
@@ -20,16 +18,17 @@ class ExtraerBase64
     private static function convertirImagenWebp($ruta, $uuid, $extension)
     {
         $carpetaPublic = Storage::disk('public')->path($ruta);
-        $source = $carpetaPublic .  $uuid . '.' . $extension;
-        $destination = $carpetaPublic .  $uuid . '.webp';
+        $source = $carpetaPublic.$uuid.'.'.$extension;
+        $destination = $carpetaPublic.$uuid.'.webp';
         WebPConvert::convert($source, $destination, []);
         unlink($source);
-        return asset('storage/' . $ruta . $uuid . '.webp');
+
+        return asset('storage/'.$ruta.$uuid.'.webp');
     }
 
     public static function extraer($texto, $id, $tipo)
     {
-        $ruta = 'ere/preguntas/' . $tipo . '/' . $id . '/';
+        $ruta = 'ere/preguntas/'.$tipo.'/'.$id.'/';
 
         if (strpos($texto, 'base64')) {
             $urls = [];
@@ -51,8 +50,8 @@ class ExtraerBase64
                 $extension = explode('/', $mimeReal)[1];
 
                 $uuid = Uuid::uuid4();
-                $nombreImagen = $uuid . '.' . $extension;
-                $filePath = $ruta . $nombreImagen;
+                $nombreImagen = $uuid.'.'.$extension;
+                $filePath = $ruta.$nombreImagen;
 
                 Storage::disk('public')->put($filePath, $binario);
 
@@ -61,7 +60,7 @@ class ExtraerBase64
                     $urls[$key] = self::convertirImagenWebp($ruta, $uuid, $extension);
                 } else {
                     // Para GIF u otros formatos, conservar la ruta original
-                    $urls[$key] = asset('storage/' . $filePath);
+                    $urls[$key] = asset('storage/'.$filePath);
                 }
             }
 

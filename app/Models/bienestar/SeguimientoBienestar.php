@@ -3,7 +3,6 @@
 namespace App\Models\bienestar;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SeguimientoBienestar
 {
@@ -14,6 +13,7 @@ class SeguimientoBienestar
             $request->iYAcadId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_SEL_seguimientoParametros $placeholders", $parametros);
     }
 
@@ -26,7 +26,7 @@ class SeguimientoBienestar
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         try {
             return DB::select("EXEC obe.Sp_SEL_seguimientos $placeholders", $parametros);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // Manejar error en caso de que no se devuelva ningún resultado
             if (str_contains($e->getMessage(), 'contains no fields')) {
                 return [];
@@ -46,7 +46,7 @@ class SeguimientoBienestar
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
         try {
             return DB::select("EXEC obe.Sp_SEL_seguimientosPersona $placeholders", $parametros);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // Manejar error en caso de que no se devuelva ningún resultado
             if (str_contains($e->getMessage(), 'contains no fields')) {
                 return [];
@@ -62,12 +62,14 @@ class SeguimientoBienestar
             $request->iSeguimId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_SEL_seguimiento $placeholders", $parametros);
     }
 
     /**
      * Inserta un registro de seguimiento
-     * @param Request $request contiene los datos a insertar
+     *
+     * @param  Request  $request  contiene los datos a insertar
      * @return mixed devuelve el id del registro insertado
      */
     public static function insSeguimiento($request)
@@ -86,12 +88,14 @@ class SeguimientoBienestar
             SeguimientoBienestar::formatearDatos($request->iPersIeId, 'int'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_INS_seguimiento $placeholders", $parametros);
     }
 
     /**
      * Actualiza un registro de seguimiento
-     * @param Request $request contiene los datos a actualizar
+     *
+     * @param  Request  $request  contiene los datos a actualizar
      * @return mixed devuelve el id del registro actualizado
      */
     public static function updSeguimiento($request)
@@ -108,12 +112,14 @@ class SeguimientoBienestar
             $request->cSeguimDescripcion,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_UPD_seguimiento $placeholders", $parametros);
     }
 
     /**
      * Actualiza el archivo de un registro de seguimiento
-     * @param Request $request contiene los datos a actualizar
+     *
+     * @param  Request  $request  contiene los datos a actualizar
      * @return mixed devuelve true o false dependiendo si se actualizó o no
      */
     public static function updSeguimientoArchivo($request)
@@ -124,12 +130,14 @@ class SeguimientoBienestar
             $request->cSeguimArchivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC obe.Sp_UPD_seguimientoArchivo $placeholders", $parametros);
     }
 
     /**
      * Borra un registro de seguimiento
-     * @param Request $request contiene el id del registro a borrar
+     *
+     * @param  Request  $request  contiene el id del registro a borrar
      * @return mixed devuelve datos del registro borrado
      */
     public static function delSeguimiento($request)
@@ -139,6 +147,7 @@ class SeguimientoBienestar
             $request->iSeguimId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC obe.Sp_DEL_seguimiento $placeholders", $parametros);
     }
 
@@ -158,12 +167,13 @@ class SeguimientoBienestar
             $request->cPersDocumento,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::selectOne("EXEC acad.Sp_SEL_datosPersona $placeholders", $parametros);
     }
 
-    private static function formatearDatos($valor, $tipo = 'int'|'string'|'bool'|'null'|'date')
+    private static function formatearDatos($valor, $tipo = 'int' | 'string' | 'bool' | 'null' | 'date')
     {
-        if( in_array($valor, ['null', 'NULL', 'undefined']) ) {
+        if (in_array($valor, ['null', 'NULL', 'undefined'])) {
             return null;
         }
         switch ($tipo) {
@@ -181,9 +191,11 @@ class SeguimientoBienestar
                         return false;
                     }
                 }
+
                 return null;
             case 'date':
                 $fecha = substr($valor, 0, 10);
+
                 return is_string($fecha) ? date('Y-m-d', strtotime($fecha)) : null;
             case 'null':
                 return null;

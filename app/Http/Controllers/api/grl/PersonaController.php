@@ -2,27 +2,25 @@
 
 namespace App\Http\Controllers\api\grl;
 
-use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Services\ConsultarDocumentoIdentidadService;
 use App\Services\ParseSqlErrorService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Gate;
 
 class PersonaController extends Controller
 {
     private $parseSqlErrorService;
-    //private $consultarDocumentoIdentidadService;
+    // private $consultarDocumentoIdentidadService;
 
     public function __construct()
     {
-        //$this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
-        //$this->parseSqlErrorService = new ParseSqlErrorService;
+        // $this->consultarDocumentoIdentidadService = new ConsultarDocumentoIdentidadService;
+        // $this->parseSqlErrorService = new ParseSqlErrorService;
     }
 
     public function __invoke(Request $request)
@@ -32,16 +30,15 @@ class PersonaController extends Controller
             ->name('your-invoice.pdf');
     }
 
-
     /**
      * Busca si la persona está registrada en la base de datos. Si no está, consulta en el servicio web.
-     * @param Request $request
+     *
      * @return JsonResponse
      */
     public function buscarPersona(Request $request)
     {
         try {
-            $consultarDocumentoService = new ConsultarDocumentoIdentidadService();
+            $consultarDocumentoService = new ConsultarDocumentoIdentidadService;
             $dataServicio = $consultarDocumentoService->buscar($request->iTipoIdentId, $request->cPersDocumento);
             $data = array_merge($dataServicio['data'], [
                 'iPersId' => $dataServicio['iPersId'] ?? null,
@@ -50,20 +47,15 @@ class PersonaController extends Controller
             $mensaje = $dataServicio['message'];
             $status = $dataServicio['status'];
 
-          
             return FormatearMensajeHelper::ok($mensaje, $data, $status);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
 
-
-
-
-
     /**
      * Guarda una persona
-     * @param Request $request
+     *
      * @return JsonResponse
      */
     public function save(Request $request)
@@ -88,7 +80,7 @@ class PersonaController extends Controller
 
     /**
      * Busca una persona segun parametros
-     * @param Request $request
+     *
      * @return JsonResponse
      */
     public function show(Request $request)
@@ -123,7 +115,7 @@ class PersonaController extends Controller
         ];
 
         try {
-            $data = DB::select("execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?", $parametros);
+            $data = DB::select('execute grl.Sp_SEL_personas ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?', $parametros);
             $response = ['validated' => true, 'message' => 'se obtuvo la información', 'data' => $data];
             $codeResponse = 200;
         } catch (\Exception $e) {
@@ -135,11 +127,9 @@ class PersonaController extends Controller
         return new JsonResponse($response, $codeResponse);
     }
 
-
-
     /**
      * Valida los parametros de guardar persona
-     * @param Request $request
+     *
      * @return array
      */
     private function validateGuardarPersona(Request $request)

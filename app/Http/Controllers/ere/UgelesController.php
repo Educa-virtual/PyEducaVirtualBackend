@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\ApiController;
-use Illuminate\Support\Facades\DB;
-
 use Exception;
 use Hashids\Hashids;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UgelesController extends ApiController
 {
@@ -26,7 +24,7 @@ class UgelesController extends ApiController
             'acad',
             'ugeles',
             $campos,
-            $where
+            $where,
         ];
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
@@ -53,7 +51,7 @@ class UgelesController extends ApiController
             'acad',
             'ugeles',
             $campos,
-            $where
+            $where,
         ];
         try {
             $ugeles = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
@@ -65,6 +63,7 @@ class UgelesController extends ApiController
             foreach ($ugeles as $ugel) {
                 $ugel->iUgelId = $this->hashids->encode($ugel->iUgelId);
             }
+
             return $this->successResponse(
                 $ugeles,
                 'Datos obtenidos correctamente'

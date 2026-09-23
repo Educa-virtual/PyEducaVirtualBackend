@@ -3,12 +3,10 @@
 namespace App\Repositories\evaluaciones;
 
 use App\Models\eval\BancoPreguntas;
-use Exception;
 use Illuminate\Support\Facades\DB;
 
 class BancoRepository
 {
-
     public static function obtenerPreguntas($params)
     {
 
@@ -22,15 +20,15 @@ class BancoRepository
             $params['iBancoIds'] ?? '',
             $params['iEvalucionId'] ?? 0,
             $params['idEncabPregId'] ?? 0,
-            $params['iGradoId'] ?? 0
+            $params['iGradoId'] ?? 0,
         ];
-       
+
         $preguntasDB = DB::select('exec eval.SP_SEL_bancoPreguntas ?,?,?,?,?,?,?,?,?,?
         ', $params);
-        $preguntas = (new BancoPreguntas())->procesarPreguntas($preguntasDB);
+        $preguntas = (new BancoPreguntas)->procesarPreguntas($preguntasDB);
+
         return $preguntas;
     }
-
 
     public static function guardarActualizarPregunta($data)
     {
@@ -46,7 +44,7 @@ class BancoRepository
             $data['nBancoPuntaje'],
             $data['idEncabPregId'],
             $data['iCursoId'],
-            $data['iNivelCicloId']
+            $data['iNivelCicloId'],
         ];
 
         $result = DB::select('exec eval.SP_INS_UPD_bancoPregunta @_iBancoId = ?
@@ -62,6 +60,7 @@ class BancoRepository
             , @_iCursoId  = ?
             , @_iNivelCicloId = ?
         ', $params);
+
         return $result;
     }
 
@@ -73,7 +72,7 @@ class BancoRepository
             $params['cBancoAltLtera'],
             $params['cBancoAltDescripcion'],
             $params['bBancoAltRptaCarrecta'],
-            $params['cBancoAltExplicacionRpta']
+            $params['cBancoAltExplicacionRpta'],
         ];
 
         $result = DB::select('exec eval.SP_INS_UPD_alternativaPregunta
@@ -84,6 +83,7 @@ class BancoRepository
 	        , @_bBancoAltRptaCorrecta = ?
 	        , @_cBancoAltExplicacionRpta = ?
         ', $params);
+
         return $result;
     }
 }

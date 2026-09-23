@@ -7,7 +7,6 @@ use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\Controller;
 use App\Models\bienestar\FichaGeneral;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -27,9 +26,9 @@ class FichaGeneralController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaGeneral::selfichaGeneral($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -39,9 +38,9 @@ class FichaGeneralController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaGeneral::updFichaGeneral($request);
+
             return FormatearMensajeHelper::ok('Se actualizo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }

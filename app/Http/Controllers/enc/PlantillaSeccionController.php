@@ -24,6 +24,7 @@ class PlantillaSeccionController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaSeccion::selPlantillaSecciones($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -35,6 +36,7 @@ class PlantillaSeccionController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaSeccion::selPlantillaSeccion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -46,6 +48,7 @@ class PlantillaSeccionController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaSeccion::insPlantillaSeccion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -57,6 +60,7 @@ class PlantillaSeccionController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaSeccion::updPlantillaSeccion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -68,6 +72,7 @@ class PlantillaSeccionController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = PlantillaSeccion::delPlantillaSeccion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

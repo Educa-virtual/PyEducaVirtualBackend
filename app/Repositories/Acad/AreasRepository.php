@@ -9,6 +9,7 @@ class AreasRepository
     public static function obtenerAreaPorNivelGradId($iCursosNivelGradId)
     {
         $area = DB::selectOne('EXEC [ere].[SP_SEL_CursoNivelGrado] @_iCursoNivelGrado=?', [$iCursosNivelGradId]);
+
         return $area;
     }
 
@@ -32,7 +33,7 @@ class AreasRepository
 
     public static function obtenerHorasAreasPorEvaluacionIe($evaluacionId, $iieeId)
     {
-        return DB::select("SELECT iece.iIeeCursoExamenId,ec.iExamCurId, iepe.iIeeParticipaId,ec.iExamCurId,ec.iCursoNivelGradId, ec.dtExamenFechaInicio,
+        return DB::select('SELECT iece.iIeeCursoExamenId,ec.iExamCurId, iepe.iIeeParticipaId,ec.iExamCurId,ec.iCursoNivelGradId, ec.dtExamenFechaInicio,
 ec.dtExamenFechaFin, c.cCursoNombre, g.cGradoAbreviacion, g.cGradoNombre, nt.cNivelTipoNombre, tInicio, tFin
  FROM ere.examen_cursos ec
  INNER JOIN acad.cursos_niveles_grados cng ON ec.iCursoNivelGradId = cng.iCursosNivelGradId
@@ -46,20 +47,20 @@ ec.dtExamenFechaFin, c.cCursoNombre, g.cGradoAbreviacion, g.cGradoNombre, nt.cNi
  LEFT JOIN ere.iiee_cursos_examen AS iece ON iepe.iIeeParticipaId=iece.iIeeParticipaId AND iece.iExamCurId=ec.iExamCurId
  WHERE ec.iEvaluacionId = ? AND iepe.iIieeId = ?
  ORDER BY cNivelTipoNombre, cGradoAbreviacion, cCursoNombre
-", [$evaluacionId, $iieeId]);
+', [$evaluacionId, $iieeId]);
     }
 
     public static function eliminarHorasAreasPorEvaluacionIe($iIeeParticipaId)
     {
-        return DB::statement("DELETE FROM [ere].[iiee_cursos_examen] WHERE iIeeParticipaId=?", [$iIeeParticipaId]);
+        return DB::statement('DELETE FROM [ere].[iiee_cursos_examen] WHERE iIeeParticipaId=?', [$iIeeParticipaId]);
     }
 
     public static function registrarHorasAreasPorEvaluacionIe($params, $horaInicio, $horaFin)
     {
-        DB::statement("INSERT INTO [ere].[iiee_cursos_examen]
+        DB::statement('INSERT INTO [ere].[iiee_cursos_examen]
            ([tInicio],[tFin],[iIeeParticipaId]
            ,[iExamCurId],[iEstado],[iSesionId],[dtCreado],[dtActualizado])
-     VALUES (?,?,?,?,?,?,GETDATE(),GETDATE())", [$horaInicio, $horaFin, $params['iIeeParticipaId'], $params['iExamCurId'], 1, 1]);
+     VALUES (?,?,?,?,?,?,GETDATE(),GETDATE())', [$horaInicio, $horaFin, $params['iIeeParticipaId'], $params['iExamCurId'], 1, 1]);
     }
 
     public static function actualizarEstadoDescarga($evaluacionId, $areaId, $bDescarga)

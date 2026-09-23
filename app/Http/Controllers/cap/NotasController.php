@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\cap;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Http\Controllers\grl\PersonasController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,7 +25,7 @@ class NotasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -35,10 +34,10 @@ class NotasController extends Controller
                 'iCapacitacionId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iCapacitacionId               ??  NULL
+                $request->iCapacitacionId ?? null,
             ];
 
             $data = DB::select(
@@ -75,7 +74,7 @@ class NotasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -83,17 +82,17 @@ class NotasController extends Controller
             $fieldsToDecode = [
                 'iInscripId',
                 'iCapacitacionId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iInscripId               ??  NULL,
-                $request->iCapacitacionId          ??  NULL,
-                $request->iNroNota                 ??  NULL,
-                $request->cConclusion              ??  NULL,
-                $request->iCredId                  ??  NULL
+                $request->iInscripId ?? null,
+                $request->iCapacitacionId ?? null,
+                $request->iNroNota ?? null,
+                $request->cConclusion ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -109,12 +108,14 @@ class NotasController extends Controller
 
             if ($data[0]->iNotaId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK

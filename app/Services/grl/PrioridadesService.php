@@ -6,7 +6,8 @@ use App\Models\grl\Prioridad;
 
 class PrioridadesService
 {
-    public static function obtenerPrioridades() {
+    public static function obtenerPrioridades()
+    {
         return Prioridad::selPrioridades();
     }
 }

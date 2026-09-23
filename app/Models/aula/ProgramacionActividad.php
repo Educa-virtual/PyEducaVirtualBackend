@@ -8,7 +8,8 @@ class ProgramacionActividad
 {
     public static function selCalendarioAcademicoEstudiante($iMatrId)
     {
-        $data = DB::select("EXEC [aula].[SP_SEL_calendarioEstudiante] @iMatrId=?", [$iMatrId]);
+        $data = DB::select('EXEC [aula].[SP_SEL_calendarioEstudiante] @iMatrId=?', [$iMatrId]);
+
         return $data;
     }
 }

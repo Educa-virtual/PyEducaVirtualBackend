@@ -13,7 +13,8 @@ class FichaDiscapacidadDetalle
             $request->iFichaDGId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaDiscapacidadesDetalle ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichaDiscapacidadesDetalle '.$placeholders, $parametros);
     }
 
     public static function selFichaDiscapacidadDetalle($request)
@@ -23,7 +24,8 @@ class FichaDiscapacidadDetalle
             $request->iDiscFichaId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne('EXEC obe.Sp_SEL_fichaDiscapacidadDetalle ' . $placeholders, $parametros);
+
+        return DB::selectOne('EXEC obe.Sp_SEL_fichaDiscapacidadDetalle '.$placeholders, $parametros);
     }
 
     public static function insFichaDiscapacidadDetalle($request)
@@ -36,7 +38,8 @@ class FichaDiscapacidadDetalle
             $request->cDiscFichaArchivoNombre,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::insert('EXEC obe.Sp_INS_fichaDiscapacidadDetalle ' . $placeholders, $parametros);
+
+        return DB::insert('EXEC obe.Sp_INS_fichaDiscapacidadDetalle '.$placeholders, $parametros);
     }
 
     public static function updFichaDiscapacidadDetalle($request)
@@ -50,7 +53,8 @@ class FichaDiscapacidadDetalle
             $request->cDiscFichaArchivoNombre,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::update('EXEC obe.Sp_UPD_fichaDiscapacidadDetalle ' . $placeholders, $parametros);
+
+        return DB::update('EXEC obe.Sp_UPD_fichaDiscapacidadDetalle '.$placeholders, $parametros);
     }
 
     public static function borrarFichaDiscapacidadDetalle($request)
@@ -60,6 +64,7 @@ class FichaDiscapacidadDetalle
             $request->iDiscFichaId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::selectOne('EXEC obe.Sp_DEL_fichaDiscapacidadDetalle ' . $placeholders, $parametros);
+
+        return DB::selectOne('EXEC obe.Sp_DEL_fichaDiscapacidadDetalle '.$placeholders, $parametros);
     }
 }

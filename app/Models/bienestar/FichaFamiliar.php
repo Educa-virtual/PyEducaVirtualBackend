@@ -15,7 +15,8 @@ class FichaFamiliar
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichasFamiliaresPersonas ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichasFamiliaresPersonas '.$placeholders, $parametros);
     }
 
     public static function insfichaFamiliar($request)
@@ -64,7 +65,8 @@ class FichaFamiliar
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_INS_fichaFamiliar ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_INS_fichaFamiliar '.$placeholders, $parametros);
     }
 
     public static function updFichaFamiliar($request)
@@ -114,7 +116,8 @@ class FichaFamiliar
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_UPD_fichaFamiliar ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_UPD_fichaFamiliar '.$placeholders, $parametros);
     }
 
     public static function selFichaFamiliar($request)
@@ -124,7 +127,8 @@ class FichaFamiliar
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaFamiliar ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichaFamiliar '.$placeholders, $parametros);
     }
 
     public static function delFichaFamiliar($request)
@@ -134,6 +138,7 @@ class FichaFamiliar
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_DEL_fichaFamiliar ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_DEL_fichaFamiliar '.$placeholders, $parametros);
     }
 }

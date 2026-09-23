@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class CompetenciasController extends ApiController
 {
-
     public function obtenerCompetencias()
     {
 
@@ -18,7 +17,7 @@ class CompetenciasController extends ApiController
             'ere',
             'competencias',
             $campos,
-            $where
+            $where,
         ];
 
         try {
@@ -28,6 +27,7 @@ class CompetenciasController extends ApiController
                 @campos = ?,        
                 @condicionWhere = ?
             ', $params);
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

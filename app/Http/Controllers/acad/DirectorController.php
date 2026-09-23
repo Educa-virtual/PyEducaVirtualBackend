@@ -12,6 +12,7 @@ use App\Services\seg\UsuariosService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DirectorController extends Controller
@@ -22,42 +23,62 @@ class DirectorController extends Controller
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $detallesUsuario = UsuariosService::obtenerDetallesCredencialEntidad($request->header('iCredEntPerfId'));
             $data = EstudiantesService::obtenerEstudiantePorIeDocumentoAnio($cPersDocumento, $detallesUsuario->iSedeId, $iYAcadId);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
-    public function subirImagen(Request $request){
+
+    public function subirImagen(Request $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $imagen = $request->file('escudo');
-            $iYAcadId = $request->iYAcadId;
-            $iCredEntPerfId = $request->iCredEntPerfId;
-            $data = InstitucionEducativa::subirImagen($iCredEntPerfId, $iYAcadId, $imagen);
+            if(!$imagen || !$imagen->isValid()){
+                throw new Exception('El archivo no es válido', 400);
+            }
+            $data = InstitucionEducativa::subirImagen($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
-    public function subirDocumento(SubirArchivoRequest $request){
+
+    public function subirDocumento(SubirArchivoRequest $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $data = InstitucionEducativa::subirReglamento($request);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }
     }
-    public function descargarArchivo(Request $request){
+
+    public function descargarArchivo(Request $request)
+    {
+        if (ob_get_level() > 0 && ob_get_length() > 0) {
+            Log::warning('Output buffer no vacío antes de enviar archivo: ' . bin2hex(ob_get_contents()));
+            ob_clean(); // limpia el buffer antes de continuar
+        }
+        $archivo = $request->archivo;
+        if (! Storage::disk('local')->exists($archivo)) {
+            throw new Exception('El archivo no existe');
+        }
+        
         try {
             Gate::authorize('tiene-perfil', [[Perfil::DIRECTOR_IE]]);
             $ruta = $request->ruta;
 
-            if (!Storage::disk('public')->exists($ruta)) {
+            if (! Storage::disk('public')->exists($ruta)) {
                 throw new Exception('El archivo no existe');
             }
 
             $archivo = Storage::disk('public')->get($ruta);
+
             return $archivo;
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

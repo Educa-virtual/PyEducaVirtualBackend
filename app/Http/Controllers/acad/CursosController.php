@@ -8,17 +8,16 @@ use App\Http\Controllers\Controller;
 use App\Models\acad\Curso;
 use App\Services\acad\ReportesAcademicosService;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class CursosController extends Controller
 {
     protected $hashids;
+
     protected $iCursoId;
 
     public function __construct()
@@ -34,6 +33,7 @@ class CursosController extends Controller
                 $iCursoId = count($iCursoId) > 0 ? $iCursoId[0] : null;
             }
             $data = Curso::selCursos($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -44,11 +44,11 @@ class CursosController extends Controller
     {
         if ($request->query('nivel') == '0') {
             $solicitud = [
-                '{"id":"1289"}', //Número cualquiera
-                'getCursoNivelGrado'
+                '{"id":"1289"}', // Número cualquiera
+                'getCursoNivelGrado',
             ];
             $data = DB::select(
-                "EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?",
+                'EXEC acad.SP_SEL_stepCalendarioAcademicoDesdeJsonOpcion ?,?',
                 $solicitud
             );
         } else {
@@ -62,8 +62,9 @@ class CursosController extends Controller
     {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
-            $data =  ReportesAcademicosService::obtenerResultadoParaGrafico($request->header('iCredEntPerfId'), $iYAcadId, $iIeCursoId);
-            return FormatearMensajeHelper::ok("Datos obtenidos", $data);
+            $data = ReportesAcademicosService::obtenerResultadoParaGrafico($request->header('iCredEntPerfId'), $iYAcadId, $iIeCursoId);
+
+            return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
         }

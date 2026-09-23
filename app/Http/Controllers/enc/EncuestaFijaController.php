@@ -19,30 +19,36 @@ class EncuestaFijaController extends Controller
         Perfil::DIRECTOR_IE,
     ];
 
-    public function crearEncuestaFija(Request $request) {
+    public function crearEncuestaFija(Request $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = EncuestaFija::selEncuestaParametrosFija($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function crearEncuestaAutoevaluacion(Request $request) {
+    public function crearEncuestaAutoevaluacion(Request $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = EncuestaFija::insEncuestaAutoevaluacion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
 
-    public function crearEncuestaSatisfaccion(Request $request) {
+    public function crearEncuestaSatisfaccion(Request $request)
+    {
         try {
             Gate::authorize('tiene-perfil', [$this->encuestadores]);
             $data = EncuestaFija::insEncuestaSatisfaccion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);

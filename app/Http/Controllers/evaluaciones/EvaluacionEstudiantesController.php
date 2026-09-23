@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\evaluaciones;
 
-use App\DTO\WhereCondition;
+use App\Helpers\VerifyHash;
 use App\Http\Controllers\ApiController;
 use App\Models\eval\BancoPreguntas;
-use App\Models\eval\EvaluacionRespuesta;
 use App\Models\eval\NivelLogroAlcanzadoEvaluacion;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Helpers\VerifyHash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EvaluacionEstudiantesController extends ApiController
 {
@@ -35,9 +33,11 @@ class EvaluacionEstudiantesController extends ApiController
                     $item->cEstado = 'REVISADO';
                 }
             }
+
             return $this->successResponse($data, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             $message = $this->handleAndLogError($e, 'Error al obtener los datos');
+
             return $this->errorResponse(null, $message);
         } finally {
             unset($item);
@@ -57,10 +57,12 @@ class EvaluacionEstudiantesController extends ApiController
                 ',
                 [$iEstudianteId, $iEvaluacionId]
             );
-            $preguntas = (new BancoPreguntas())->procesarPreguntas($data);
+            $preguntas = (new BancoPreguntas)->procesarPreguntas($data);
+
             return $this->successResponse($preguntas, 'Datos obtenidos correctamente');
         } catch (Exception $e) {
             $mensaje = $this->handleAndLogError($e, 'Error al obtener los datos');
+
             return $this->errorResponse(null, $mensaje);
         }
     }
@@ -69,7 +71,7 @@ class EvaluacionEstudiantesController extends ApiController
     {
         $request->validate([
             'iEvalRptaId' => 'required',
-            'logrosCalificacion' => 'required'
+            'logrosCalificacion' => 'required',
         ]);
 
         $esRubrica = $request->esRubrica ?? false;
@@ -77,7 +79,7 @@ class EvaluacionEstudiantesController extends ApiController
 
         DB::beginTransaction();
         try {
-            $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion();
+            $nivelLogroAlcanzado = new NivelLogroAlcanzadoEvaluacion;
             $resultado = $nivelLogroAlcanzado->calificarLogros(
                 $request->logrosCalificacion,
                 $iEvalRptaId,
@@ -85,10 +87,12 @@ class EvaluacionEstudiantesController extends ApiController
             );
 
             DB::commit();
+
             return $this->successResponse($resultado, 'Cambios realizados correctamente');
         } catch (Exception $e) {
             DB::rollBack();
             $mensaje = $this->handleAndLogError($e, 'Error en el proceso de calificación');
+
             return $this->errorResponse(null, $mensaje);
         }
     }
@@ -106,11 +110,10 @@ class EvaluacionEstudiantesController extends ApiController
 
         ]);
 
-
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -119,18 +122,18 @@ class EvaluacionEstudiantesController extends ApiController
                 'iEstudianteId',
                 'iEvalPregId',
                 'iEvaluacionId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEstudianteId        ??  NULL,
-                $request->iEvalPregId          ??  NULL,
-                $request->iEvaluacionId        ??  NULL,
-                $request->jEvalRptaEstudiante  ??  NULL,
-                $request->cEvalRptaPizarraUrl  ??  NULL,
-                $request->iCredId              ??  NULL
+                $request->iEstudianteId ?? null,
+                $request->iEvalPregId ?? null,
+                $request->iEvaluacionId ?? null,
+                $request->jEvalRptaEstudiante ?? null,
+                $request->cEvalRptaPizarraUrl ?? null,
+                $request->iCredId ?? null,
             ];
             $data = DB::select(
                 'exec eval.SP_INS_evaluacionRespuestasCalificacionxiEstudianteId
@@ -145,12 +148,14 @@ class EvaluacionEstudiantesController extends ApiController
 
             if ($data[0]->iEvalRptaId > 0) {
                 $message = 'Se ha guardado correctamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => $data],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar, recargue la página.';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK

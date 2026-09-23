@@ -3,7 +3,6 @@
 namespace App\Services\acad;
 
 use App\Models\acad\FechaImportante;
-use App\Models\acad\Matricula;
 
 class FechasImportantesService
 {
@@ -11,12 +10,14 @@ class FechasImportantesService
     {
         $params = [
             $iSedeId,
-            $iYAcadId
+            $iYAcadId,
         ];
+
         return FechaImportante::selFechasImportantesCalendario($params);
     }
 
-    public static function obtenerTiposFechasCalendario() {
+    public static function obtenerTiposFechasCalendario()
+    {
         return FechaImportante::selTiposFechasCalendario();
     }
 }

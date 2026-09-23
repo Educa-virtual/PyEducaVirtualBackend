@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\eval;
 
 use App\Http\Controllers\Controller;
+use Hashids\Hashids;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
-use Hashids\Hashids;
 
 class BancoAlternativasController extends Controller
 {
@@ -22,6 +22,7 @@ class BancoAlternativasController extends Controller
         if (is_null($value)) {
             return null;
         }
+
         return is_numeric($value) ? $value : ($this->hashids->decode($value)[0] ?? null);
     }
 
@@ -35,7 +36,7 @@ class BancoAlternativasController extends Controller
         $fieldsToDecode = [
             'valorBusqueda',
             'iBancoAltId',
-            'iBancoId'
+            'iBancoId',
         ];
 
         foreach ($fieldsToDecode as $field) {
@@ -46,14 +47,14 @@ class BancoAlternativasController extends Controller
             $request->opcion,
             $request->valorBusqueda ?? '-',
 
-            $request->iBancoAltId               ?? NULL,
-            $request->iBancoId                  ?? NULL,
-            $request->cBancoAltLetra            ?? NULL,
-            $request->cBancoAltDescripcion      ?? NULL,
-            $request->bBancoAltRptaCorrecta     ?? NULL,
-            $request->cBancoAltExplicacionRpta  ?? NULL,
+            $request->iBancoAltId ?? null,
+            $request->iBancoId ?? null,
+            $request->cBancoAltLetra ?? null,
+            $request->cBancoAltDescripcion ?? null,
+            $request->bBancoAltRptaCorrecta ?? null,
+            $request->cBancoAltExplicacionRpta ?? null,
 
-            $request->iCredId                   ?? NULL
+            $request->iCredId ?? null,
         ];
     }
 
@@ -62,7 +63,7 @@ class BancoAlternativasController extends Controller
         $fieldsToEncode = [
             'idEncabPregId',
             'iBancoAltId',
-            'iBancoId'
+            'iBancoId',
         ];
 
         foreach ($fieldsToEncode as $field) {
@@ -87,6 +88,7 @@ class BancoAlternativasController extends Controller
                 case 'CONSULTAR':
                     $data = DB::select('exec eval.Sp_SEL_bancoAlternativas ?,?,?,?,?,?,?,?,?', $parametros);
                     $data = $this->encodeId($data);
+
                     return new JsonResponse(
                         ['validated' => true, 'message' => 'Se obtuvo la información', 'data' => $data],
                         200
@@ -99,14 +101,14 @@ class BancoAlternativasController extends Controller
                             'GUARDARxBancoPreguntas',
                             '-',
 
-                            $value['iBancoAltId']               ?? NULL,
-                            $request->iBancoId             ?? NULL,
-                            $value['cBancoAltLetra']            ?? NULL,
-                            $value['cBancoAltDescripcion']      ?? NULL,
-                            $value['bBancoAltRptaCorrecta']     ?? NULL,
-                            $value['cBancoAltExplicacionRpta']  ?? NULL,
+                            $value['iBancoAltId'] ?? null,
+                            $request->iBancoId ?? null,
+                            $value['cBancoAltLetra'] ?? null,
+                            $value['cBancoAltDescripcion'] ?? null,
+                            $value['bBancoAltRptaCorrecta'] ?? null,
+                            $value['cBancoAltExplicacionRpta'] ?? null,
 
-                            $request->iCredId                   ?? NULL
+                            $request->iCredId ?? null,
                         ];
                         $data = DB::select('exec eval.Sp_INS_bancoAlternativas ?,?,?,?,?,?,?,?,?', $json_alternativas);
                     }
@@ -142,7 +144,7 @@ class BancoAlternativasController extends Controller
                     SET 
                     iEstado = 0
                     WHERE 
-                    iBancoId = '" . $request->iBancoId . "'
+                    iBancoId = '".$request->iBancoId."'
                     ");
 
                     foreach ($request->alternativas as $key => $value) {
@@ -151,28 +153,28 @@ class BancoAlternativasController extends Controller
                                 'ACTUALIZARxBancoPreguntas',
                                 '-',
 
-                                $value['iBancoAltId']               ?? NULL,
-                                $request->iBancoId             ?? NULL,
-                                $value['cBancoAltLetra']            ?? NULL,
-                                $value['cBancoAltDescripcion']      ?? NULL,
-                                $value['bBancoAltRptaCorrecta']     ?? NULL,
-                                $value['cBancoAltExplicacionRpta']  ?? NULL,
+                                $value['iBancoAltId'] ?? null,
+                                $request->iBancoId ?? null,
+                                $value['cBancoAltLetra'] ?? null,
+                                $value['cBancoAltDescripcion'] ?? null,
+                                $value['bBancoAltRptaCorrecta'] ?? null,
+                                $value['cBancoAltExplicacionRpta'] ?? null,
 
-                                $request->iCredId                   ?? NULL
+                                $request->iCredId ?? null,
                             ];
                             $data = DB::select('exec eval.Sp_UPD_bancoAlternativas ?,?,?,?,?,?,?,?,?', $json_alternativas);
                         } else {
                             $json_alternativas = [
                                 'GUARDARxBancoPreguntas',
                                 '-',
-                                $value['iBancoAltId']               ?? NULL,
-                                $request->iBancoId                  ?? NULL,
-                                $value['cBancoAltLetra']            ?? NULL,
-                                $value['cBancoAltDescripcion']      ?? NULL,
-                                $value['bBancoAltRptaCorrecta']     ?? NULL,
-                                $value['cBancoAltExplicacionRpta']  ?? NULL,
+                                $value['iBancoAltId'] ?? null,
+                                $request->iBancoId ?? null,
+                                $value['cBancoAltLetra'] ?? null,
+                                $value['cBancoAltDescripcion'] ?? null,
+                                $value['bBancoAltRptaCorrecta'] ?? null,
+                                $value['cBancoAltExplicacionRpta'] ?? null,
 
-                                $request->iCredId                   ?? NULL
+                                $request->iCredId ?? null,
                             ];
                             $data = DB::select('exec eval.Sp_INS_bancoAlternativas ?,?,?,?,?,?,?,?,?', $json_alternativas);
                         }

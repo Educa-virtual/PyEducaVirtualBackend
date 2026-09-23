@@ -1,11 +1,12 @@
 <?php
 
-use App\Helpers\JsonResponseStrategy;
 use App\Http\Controllers\ApiController;
-use App\Http\Controllers\eval\EvaluacionesController;
 use App\Http\Controllers\eval\BancoAlternativasController;
+use App\Http\Controllers\eval\BancoPreguntasController as EvaluacionesBancoPreguntasController;
 use App\Http\Controllers\eval\EncabezadoPreguntasController;
+use App\Http\Controllers\eval\EvaluacionesController;
 use App\Http\Controllers\eval\EvaluacionPreguntasController;
+use App\Http\Controllers\eval\EvaluacionPromediosController;
 use App\Http\Controllers\eval\EvaluacionRespuestasController;
 use App\Http\Controllers\eval\EscalaCalificacionesController;
 use App\Http\Controllers\evaluaciones\BancoPreguntasController;
@@ -114,7 +115,7 @@ Route::group(['prefix' => 'evaluaciones', 'middleware' => ['auth:api']], functio
         Route::delete('/banco/{idEncabPregId}', [EncabezadoPreguntasController::class, 'eliminarBancoEncabezadoPreguntasxidEncabPregId']); // Para eliminar x idEncabPregId
     });
     Route::group(['prefix' => 'evaluaciones'], function () {
-        Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']); //corregir 16/06/2025
+        Route::post('handleCrudOperation', [EvaluacionesController::class, 'handleCrudOperation']); // corregir 16/06/2025
         Route::post('/', [EvaluacionesController::class, 'guardarEvaluaciones']); // Para crear
         Route::get('/{iEvaluacionId}', [EvaluacionesController::class, 'obtenerEvaluacionesxiEvaluacionId']); // Para obtener
         Route::put('/{iEvaluacionId}', [EvaluacionesController::class, 'actualizarEvaluacionesxiEvaluacionId']); // Para actualizar

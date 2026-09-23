@@ -13,7 +13,8 @@ class FichaRecreacion
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaRecreacion ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichaRecreacion '.$placeholders, $parametros);
     }
 
     public static function updFichaRecreacion($request)
@@ -44,6 +45,7 @@ class FichaRecreacion
             $request->cTipoFamiliarOtro,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_UPD_fichaRecreacion ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_UPD_fichaRecreacion '.$placeholders, $parametros);
     }
 }

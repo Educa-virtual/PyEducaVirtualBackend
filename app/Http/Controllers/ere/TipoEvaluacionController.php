@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\ere;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
 use Exception;
 use Illuminate\Support\Facades\DB;
+
 class TipoEvaluacionController extends ApiController
 {
     //
@@ -15,13 +14,12 @@ class TipoEvaluacionController extends ApiController
 
         $campos = 'idTipoEvalId,cTipoEvalDescripcion';
         $where = '';
-       
 
         $params = [
             'ere',
             'tipo_evaluaciones',
             $campos,
-            $where
+            $where,
 
         ];
 
@@ -32,6 +30,7 @@ class TipoEvaluacionController extends ApiController
                 @campos = ?,        
                 @condicionWhere = ?
             ', $params);
+
             return $this->successResponse(
                 $preguntas,
                 'Datos obtenidos correctamente'

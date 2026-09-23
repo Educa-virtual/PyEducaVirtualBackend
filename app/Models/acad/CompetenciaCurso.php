@@ -8,7 +8,7 @@ class CompetenciaCurso
 {
     public static function selCursosPorIe($iSedeId, $iYAcadId, $iNivelGradoId)
     {
-        return DB::select("SELECT iesc.iIeCursoId,acunig.iCursosNivelGradId,acur.iCursoId, c.iNivelTipoId, acur.cCursoNombre,
+        return DB::select('SELECT iesc.iIeCursoId,acunig.iCursosNivelGradId,acur.iCursoId, c.iNivelTipoId, acur.cCursoNombre,
 (SELECT COUNT(compcur.iCompetenciaId)
 
 FROM acad.competencias_cursos AS compcur
@@ -24,15 +24,15 @@ INNER JOIN acad.cursos AS acur ON acur.iCursoId=acunig.iCursoId
 WHERE iesc.iEstado=1
 AND c.iSedeId=? AND c.iYAcadId=?
 AND acur.iTipoCursoId=1 AND nivgr.iNivelGradoId=?
-ORDER BY cCursoNombre", [$iSedeId, $iYAcadId, $iNivelGradoId]);
+ORDER BY cCursoNombre', [$iSedeId, $iYAcadId, $iNivelGradoId]);
     }
 
     public static function selCompetenciasPorCurso($iNivelTipoId, $iCursoId)
     {
-        return DB::select("SELECT DISTINCT compcur.iCompetenciaId, cCompetenciaNombre
+        return DB::select('SELECT DISTINCT compcur.iCompetenciaId, cCompetenciaNombre
 FROM acad.competencias_cursos AS compcur
 INNER JOIN acad.curriculo_competencias AS curcomp ON curcomp.iCompetenciaId=compcur.iCompetenciaId
-WHERE compcur.iEstado=1 AND compcur.iNivelTipoId=? AND compcur.iCursoId=?", [$iNivelTipoId, $iCursoId]);
-        //return DB::select("EXEC [acad].[Sp_SEL_competencias_cursos] @_iCursoId=?, @_iNivelTipoId=?", [$iCursoId, $iNivelTipoId]);
+WHERE compcur.iEstado=1 AND compcur.iNivelTipoId=? AND compcur.iCursoId=?', [$iNivelTipoId, $iCursoId]);
+        // return DB::select("EXEC [acad].[Sp_SEL_competencias_cursos] @_iCursoId=?, @_iNivelTipoId=?", [$iCursoId, $iNivelTipoId]);
     }
 }

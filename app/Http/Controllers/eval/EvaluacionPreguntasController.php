@@ -2,21 +2,16 @@
 
 namespace App\Http\Controllers\eval;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\VerifyHash;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Shared\Html;
-use PhpOffice\PhpWord\IOFactory;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpWord\SimpleType\Jc;
-
 
 class EvaluacionPreguntasController extends Controller
 {
@@ -26,7 +21,7 @@ class EvaluacionPreguntasController extends Controller
             'iEvaluacionId' => ['required'],
             'iDocenteId' => ['required'],
             'iTipoPregId' => ['required'],
-            'cEvalPregPregunta' => ['required']
+            'cEvalPregPregunta' => ['required'],
         ], [
             'iEvaluacionId.required' => 'No se encontró el identificador iEvaluacionId',
             'iDocenteId.required' => 'No se encontró el identificador iDocenteId',
@@ -37,7 +32,7 @@ class EvaluacionPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -51,20 +46,20 @@ class EvaluacionPreguntasController extends Controller
                 'idEncabPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId               ??  NULL,
-                $request->iDocenteId                  ??  NULL,
-                $request->iTipoPregId                 ??  NULL,
-                $request->iCursoId                    ??  NULL,
-                $request->iNivelCicloId               ??  NULL,
-                $request->idEncabPregId               ??  NULL,
-                $request->cEvalPregPregunta           ??  NULL,
-                $request->cEvalPregTextoAyuda         ??  NULL,
-                $request->bArgumentar                 ??  NULL,
-                $request->jsonAlternativas            ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iEvaluacionId ?? null,
+                $request->iDocenteId ?? null,
+                $request->iTipoPregId ?? null,
+                $request->iCursoId ?? null,
+                $request->iNivelCicloId ?? null,
+                $request->idEncabPregId ?? null,
+                $request->cEvalPregPregunta ?? null,
+                $request->cEvalPregTextoAyuda ?? null,
+                $request->bArgumentar ?? null,
+                $request->jsonAlternativas ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -85,12 +80,14 @@ class EvaluacionPreguntasController extends Controller
 
             if ($data[0]->iEvalPregId > 0) {
                 $message = 'Se ha guardado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido guardar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -113,11 +110,11 @@ class EvaluacionPreguntasController extends Controller
                 'iEvaluacionId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId    ??  NULL,
-                $request->iCredId          ??  NULL
+                $request->iEvaluacionId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -140,6 +137,7 @@ class EvaluacionPreguntasController extends Controller
             );
         }
     }
+
     public function actualizarEvaluacionPreguntasxiEvalPregId(Request $request, $iEvalPregId)
     {
         $request->merge(['iEvalPregId' => $iEvalPregId]);
@@ -147,7 +145,7 @@ class EvaluacionPreguntasController extends Controller
         $validator = Validator::make($request->all(), [
             'iEvalPregId' => ['required'],
             'iTipoPregId' => ['required'],
-            'cEvalPregPregunta' => ['required']
+            'cEvalPregPregunta' => ['required'],
         ], [
             'iEvalPregId.required' => 'No se encontró el identificador iEvalPregId',
             'iTipoPregId.required' => 'No se encontró el identificador iTipoPregId',
@@ -157,7 +155,7 @@ class EvaluacionPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -167,16 +165,16 @@ class EvaluacionPreguntasController extends Controller
                 'iTipoPregId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvalPregId                 ??  NULL,
-                $request->iTipoPregId                 ??  NULL,
-                $request->cEvalPregPregunta           ??  NULL,
-                $request->cEvalPregTextoAyuda         ??  NULL,
-                $request->bArgumentar                 ??  NULL,
-                $request->jsonAlternativas            ??  NULL,
-                $request->iCredId                     ??  NULL
+                $request->iEvalPregId ?? null,
+                $request->iTipoPregId ?? null,
+                $request->cEvalPregPregunta ?? null,
+                $request->cEvalPregTextoAyuda ?? null,
+                $request->bArgumentar ?? null,
+                $request->jsonAlternativas ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -193,12 +191,14 @@ class EvaluacionPreguntasController extends Controller
 
             if ($data[0]->iEvalPregId > 0) {
                 $message = 'Se ha actualizado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido actualizar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -225,21 +225,21 @@ class EvaluacionPreguntasController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'validated' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
             $fieldsToDecode = [
                 'iEvalPregId',
-                'iCredId'
+                'iCredId',
             ];
 
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvalPregId      ??  NULL,
-                $request->iCredId      ??  NULL
+                $request->iEvalPregId ?? null,
+                $request->iCredId ?? null,
             ];
             $data = DB::select(
                 'exec eval.SP_DEL_evaluacionPreguntasxiEvalPregId
@@ -250,12 +250,14 @@ class EvaluacionPreguntasController extends Controller
 
             if ($data[0]->iEvalPregId > 0) {
                 $message = 'Se ha eliminado exitosamente';
+
                 return new JsonResponse(
                     ['validated' => true, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
                 );
             } else {
                 $message = 'No se ha podido eliminar';
+
                 return new JsonResponse(
                     ['validated' => false, 'message' => $message, 'data' => []],
                     Response::HTTP_OK
@@ -280,12 +282,12 @@ class EvaluacionPreguntasController extends Controller
                 'iEstudianteId',
                 'iCredId',
             ];
-            $request =  VerifyHash::validateRequest($request, $fieldsToDecode);
+            $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
             $parametros = [
-                $request->iEvaluacionId    ??  NULL,
-                $request->iEstudianteId    ??  NULL,
-                $request->iCredId          ??  NULL
+                $request->iEvaluacionId ?? null,
+                $request->iEstudianteId ?? null,
+                $request->iCredId ?? null,
             ];
 
             $data = DB::select(
@@ -300,26 +302,26 @@ class EvaluacionPreguntasController extends Controller
 
             foreach ($data as &$item) {
                 // Caso de pregunta simple (raíz)
-                if (!empty($item->cEvalRptaPizarraUrl)) {
+                if (! empty($item->cEvalRptaPizarraUrl)) {
                     $path = public_path($item->cEvalRptaPizarraUrl);
                     if (file_exists($path)) {
                         $contenido = file_get_contents($path);
-                        $item->cEvalRptaPizarraBase64 = 'data:image/svg+xml;base64,' . base64_encode($contenido);
+                        $item->cEvalRptaPizarraBase64 = 'data:image/svg+xml;base64,'.base64_encode($contenido);
                     } else {
                         $item->cEvalRptaPizarraBase64 = null;
                     }
                 }
 
                 // Caso de preguntas múltiples con encabezado (jsonPreguntas)
-                if (!empty($item->jsonPreguntas)) {
+                if (! empty($item->jsonPreguntas)) {
                     $preguntas = json_decode($item->jsonPreguntas);
                     if (is_array($preguntas)) {
                         foreach ($preguntas as &$preg) {
-                            if (!empty($preg->cEvalRptaPizarraUrl)) {
+                            if (! empty($preg->cEvalRptaPizarraUrl)) {
                                 $path = public_path($preg->cEvalRptaPizarraUrl);
                                 if (file_exists($path)) {
                                     $contenido = file_get_contents($path);
-                                    $preg->cEvalRptaPizarraBase64 = 'data:image/svg+xml;base64,' . base64_encode($contenido);
+                                    $preg->cEvalRptaPizarraBase64 = 'data:image/svg+xml;base64,'.base64_encode($contenido);
                                 } else {
                                     $preg->cEvalRptaPizarraBase64 = null;
                                 }
@@ -330,7 +332,6 @@ class EvaluacionPreguntasController extends Controller
                     }
                 }
             }
-
 
             return new JsonResponse(
                 ['validated' => true, 'message' => 'Se ha obtenido exitosamente ', 'data' => $data],
@@ -355,7 +356,7 @@ class EvaluacionPreguntasController extends Controller
             $fieldsToDecode = ['iEvaluacionId', 'iCredId'];
             $request = VerifyHash::validateRequest($request, $fieldsToDecode);
 
-            $parametros = [$request->iEvaluacionId ?? NULL, $request->iCredId ?? NULL];
+            $parametros = [$request->iEvaluacionId ?? null, $request->iCredId ?? null];
 
             $data = DB::select(
                 'exec eval.SP_SEL_evaluacionPreguntasxiEvaluacionId @_iEvaluacionId=?, @_iCredId=?',
@@ -389,16 +390,16 @@ class EvaluacionPreguntasController extends Controller
 
         // 🔹 Instrucciones
         $instrucciones = [
-            "A continuación, te presentamos preguntas que debes responder correctamente. La respuesta correcta se encuentra en una de las alternativas planteadas (si es que hubiera). Para ello:",
-            "• LEE CADA PREGUNTA CON MUCHA ATENCIÓN.",
-            "• RECUERDA LEER TODO LO QUE OBSERVAS, SUBRAYA, MARCA O SUMILLA, TODO LO QUE CONSIDERES NECESARIO.",
-            "• SI ES NECESARIO, VUELVE A LEER LA PREGUNTA.",
-            "• PIENSA BIEN ANTES DE MARCAR UNA RESPUESTA.",
-            "• SOLAMENTE DEBES MARCAR UNA ALTERNATIVA POR CADA PREGUNTA.",
-            "• MARCA TUS RESPUESTAS EN LA HOJA DE RESPUESTAS."
+            'A continuación, te presentamos preguntas que debes responder correctamente. La respuesta correcta se encuentra en una de las alternativas planteadas (si es que hubiera). Para ello:',
+            '• LEE CADA PREGUNTA CON MUCHA ATENCIÓN.',
+            '• RECUERDA LEER TODO LO QUE OBSERVAS, SUBRAYA, MARCA O SUMILLA, TODO LO QUE CONSIDERES NECESARIO.',
+            '• SI ES NECESARIO, VUELVE A LEER LA PREGUNTA.',
+            '• PIENSA BIEN ANTES DE MARCAR UNA RESPUESTA.',
+            '• SOLAMENTE DEBES MARCAR UNA ALTERNATIVA POR CADA PREGUNTA.',
+            '• MARCA TUS RESPUESTAS EN LA HOJA DE RESPUESTAS.',
         ];
 
-        $phpWord = new PhpWord();
+        $phpWord = new PhpWord;
         $section = $phpWord->addSection([
             'marginTop' => 1000,
             'marginBottom' => 1000,
@@ -409,15 +410,15 @@ class EvaluacionPreguntasController extends Controller
         // 🔹 Carátula
         $section->addImage(public_path('images/logo-dremo.png'), [
             'width' => 150,
-            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
         ]);
         $section->addTextBreak(1);
 
         $section->addText('──────────────────────────────', ['color' => 'FF0000'], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-        $section->addText("Año: " . date('Y'), ['size' => 10], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addText('Año: '.date('Y'), ['size' => 10], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
         $section->addTextBreak(1);
 
-        $section->addText('PREGUNTAS DE EVALUACIÓN ' . $area, ['bold' => true, 'size' => 28, 'color' => 'FF0000'], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addText('PREGUNTAS DE EVALUACIÓN '.$area, ['bold' => true, 'size' => 28, 'color' => 'FF0000'], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
         $section->addTextBreak(1);
 
         $section->addText($nivel, ['size' => 16], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
@@ -437,9 +438,9 @@ class EvaluacionPreguntasController extends Controller
         $contadorPregunta = 1;
         foreach ($data as $index => $pregunta) {
             // 🔹 Si la pregunta pertenece a un encabezado
-            if (!empty($pregunta->idEncabPregId)) {
+            if (! empty($pregunta->idEncabPregId)) {
                 // Título del encabezado (opcional)
-                if (!empty($pregunta->cEncabPregTitulo)) {
+                if (! empty($pregunta->cEncabPregTitulo)) {
                     $section->addText("PREGUNTA MÚLTIPLE: {$pregunta->cEncabPregTitulo}", ['bold' => true, 'size' => 14]);
                 }
 
@@ -452,7 +453,7 @@ class EvaluacionPreguntasController extends Controller
 
                     Html::addHtml($section, "<strong>Pregunta $contadorPregunta:</strong> $contenido", false, false);
 
-                    if (!empty($p['cEvalPregTextoAyuda'])) {
+                    if (! empty($p['cEvalPregTextoAyuda'])) {
                         $section->addText(
                             $p['cEvalPregTextoAyuda'],
                             ['size' => 10, 'color' => '007BFF'],
@@ -469,7 +470,7 @@ class EvaluacionPreguntasController extends Controller
                     }
 
                     // Alternativas
-                    if (!empty($p['iTipoPregId']) && in_array($p['iTipoPregId'], [1, 2])) {
+                    if (! empty($p['iTipoPregId']) && in_array($p['iTipoPregId'], [1, 2])) {
                         $alternativas = $p['jsonAlternativas'] ?? [];
 
                         if (is_string($alternativas)) {
@@ -477,10 +478,10 @@ class EvaluacionPreguntasController extends Controller
                         }
                         foreach ($alternativas as $alt) {
                             $letra = $alt['cBancoAltLetra'] ?? '';
-                            $desc  = $alt['cBancoAltDescripcion'] ?? '';
+                            $desc = $alt['cBancoAltDescripcion'] ?? '';
                             $htmlAlt = "<span>$letra) $desc</span>";
                             Html::addHtml($section, $htmlAlt, false, false);
-                            if (!empty($alt['cAlternativaImagen'])) {
+                            if (! empty($alt['cAlternativaImagen'])) {
                                 // Construir ruta absoluta al archivo en storage/public o public/
                                 $rutaImagen = public_path($alt['cAlternativaImagen']);
 
@@ -488,7 +489,7 @@ class EvaluacionPreguntasController extends Controller
                                     $section->addImage($rutaImagen, [
                                         'width' => 50,
                                         'height' => 50,
-                                        'alignment' => 'left'
+                                        'alignment' => 'left',
                                     ]);
                                 } else {
                                     $section->addText("[Imagen no encontrada: {$alt['cAlternativaImagen']}]");
@@ -507,7 +508,7 @@ class EvaluacionPreguntasController extends Controller
 
                 Html::addHtml($section, "<strong>Pregunta $contadorPregunta:</strong> $contenido", false, false);
 
-                if (!empty($pregunta->cEvalPregTextoAyuda)) {
+                if (! empty($pregunta->cEvalPregTextoAyuda)) {
                     $section->addText(
                         $pregunta->cEvalPregTextoAyuda,
                         ['size' => 10, 'color' => '007BFF'],
@@ -524,14 +525,14 @@ class EvaluacionPreguntasController extends Controller
                 }
 
                 // Alternativas
-                if (!empty($pregunta->iTipoPregId) && in_array($pregunta->iTipoPregId, [1, 2])) {
+                if (! empty($pregunta->iTipoPregId) && in_array($pregunta->iTipoPregId, [1, 2])) {
                     $alternativas = json_decode($pregunta->jsonAlternativas ?? '[]', true);
                     foreach ($alternativas as $alt) {
                         $letra = $alt['cBancoAltLetra'] ?? '';
-                        $desc  = $alt['cBancoAltDescripcion'] ?? '';
+                        $desc = $alt['cBancoAltDescripcion'] ?? '';
                         $htmlAlt = "<span>$letra) $desc</span>";
                         Html::addHtml($section, $htmlAlt, false, false);
-                        if (!empty($alt['cAlternativaImagen'])) {
+                        if (! empty($alt['cAlternativaImagen'])) {
                             // Construir ruta absoluta al archivo en storage/public o public/
                             $rutaImagen = public_path($alt['cAlternativaImagen']);
 
@@ -539,7 +540,7 @@ class EvaluacionPreguntasController extends Controller
                                 $section->addImage($rutaImagen, [
                                     'width' => 50,
                                     'height' => 50,
-                                    'alignment' => 'left'
+                                    'alignment' => 'left',
                                 ]);
                             } else {
                                 $section->addText("[Imagen no encontrada: {$alt['cAlternativaImagen']}]");

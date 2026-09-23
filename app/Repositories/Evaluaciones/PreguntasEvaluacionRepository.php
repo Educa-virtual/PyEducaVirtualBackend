@@ -6,10 +6,9 @@ use Illuminate\Support\Facades\DB;
 
 class PreguntasEvaluacionRepository
 {
-
     public static function guardarActualizar() {}
 
-    public static function  guardarActualizarPreguntaEncabezado($params)
+    public static function guardarActualizarPreguntaEncabezado($params)
     {
 
         $data = json_encode([
@@ -24,14 +23,14 @@ class PreguntasEvaluacionRepository
         $paramsDB = [
             'eval',
             'encabezado_preguntas',
-            $data
+            $data,
         ];
 
         $condiciones = [
             [
-                'COLUMN_NAME' => "idEncabPregId",
-                'VALUE' => $params['idEncabPregId']
-            ]
+                'COLUMN_NAME' => 'idEncabPregId',
+                'VALUE' => $params['idEncabPregId'],
+            ],
         ];
         $condicionesJson = json_encode($condiciones);
 
@@ -41,6 +40,7 @@ class PreguntasEvaluacionRepository
                 ,@Tabla = ?
                 ,@DatosJSON = ?
             ', $paramsDB);
+
             return $resp[0];
         } else {
             array_push($paramsDB, $condicionesJson);
@@ -50,6 +50,7 @@ class PreguntasEvaluacionRepository
                 ,@DatosJSON = ?
                 ,@CondicionesJSON = ?
             ', $paramsDB);
+
             return ['id' => $params['idEncabPregId']];
         }
     }

@@ -31,6 +31,7 @@ class DocenteCurso
             $request->iDocenteId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.Sp_SEL_docenteCursos $placeholders", $parametros);
     }
 
@@ -41,6 +42,7 @@ class DocenteCurso
             $request->idDocCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::select("EXEC acad.Sp_SEL_docenteCursoHistorial $placeholders", $parametros);
     }
 
@@ -56,6 +58,7 @@ class DocenteCurso
             $request->cDocCursoObservaciones,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_INS_docenteCurso $placeholders", $parametros);
     }
 
@@ -69,6 +72,7 @@ class DocenteCurso
             $request->cDocCursoObservaciones,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_docenteCurso $placeholders", $parametros);
     }
 
@@ -80,6 +84,7 @@ class DocenteCurso
             $request->bActivo,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_UPD_docenteCursoEstado $placeholders", $parametros);
     }
 
@@ -90,6 +95,7 @@ class DocenteCurso
             $request->idDocCursoId,
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
+
         return DB::update("EXEC acad.Sp_DEL_docenteCurso $placeholders", $parametros);
     }
 }

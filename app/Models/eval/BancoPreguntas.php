@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class BancoPreguntas extends Model
 {
-
     public function procesarPreguntas($preguntasDB)
     {
         $preguntas = [];
@@ -20,6 +19,7 @@ class BancoPreguntas extends Model
                 array_push($preguntas, $item);
             }
         }
+
         return $preguntas;
     }
 }

@@ -3,15 +3,10 @@
 namespace App\Http\Controllers\ere;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\PreguntasRepository;
-use App\Services\ere\AreasService;
-use App\Services\ParseSqlErrorService;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\JsonResponse;
 use Hashids\Hashids;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class EspecialistasDremoController extends Controller
 {
@@ -28,6 +23,7 @@ class EspecialistasDremoController extends Controller
         foreach ($data as $fila) {
             $fila->iDocenteId = $this->hashids->encode($fila->iDocenteId);
         }
+
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $data], Response::HTTP_OK);
     }
 
@@ -38,6 +34,7 @@ class EspecialistasDremoController extends Controller
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
         $data = DB::select('EXEC acad.SP_SEL_cursoEspecialistaDremoXDocenteId @iDocenteId=?', [$docenteIdDescifrado[0]]);
+
         return response()->json(['status' => 'Success', 'message' => 'Datos obtenidos.', 'data' => $data], Response::HTTP_OK);
     }
 
@@ -47,7 +44,8 @@ class EspecialistasDremoController extends Controller
         if (empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        DB::statement("EXEC acad.SP_INS_cursoEspecialistaDremo ?,?", [$docenteIdDescifrado[0], $request->iCursosNivelGradId]);
+        DB::statement('EXEC acad.SP_INS_cursoEspecialistaDremo ?,?', [$docenteIdDescifrado[0], $request->iCursosNivelGradId]);
+
         return response()->json(['status' => 'Success', 'message' => 'Área asignada correctamente'], Response::HTTP_CREATED);
     }
 
@@ -57,7 +55,8 @@ class EspecialistasDremoController extends Controller
         if (empty($docenteIdDescifrado)) {
             return response()->json(['status' => 'Error', 'message' => 'El ID enviado no se pudo descifrar.'], Response::HTTP_BAD_REQUEST);
         }
-        DB::statement("EXEC acad.SP_DEL_cursoEspecialistaDremo ?,?", [$docenteIdDescifrado[0], $request->iCursosNivelGradId]);
+        DB::statement('EXEC acad.SP_DEL_cursoEspecialistaDremo ?,?', [$docenteIdDescifrado[0], $request->iCursosNivelGradId]);
+
         return response()->json(['status' => 'Success', 'message' => 'Se ha eliminado el área'], Response::HTTP_OK);
     }
 }

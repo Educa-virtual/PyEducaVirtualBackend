@@ -13,7 +13,8 @@ class FichaVivienda
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_SEL_fichaVivienda ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_SEL_fichaVivienda '.$placeholders, $parametros);
     }
 
     public static function updFichaVivienda($request)
@@ -47,6 +48,7 @@ class FichaVivienda
             $request->header('iCredEntPerfId'),
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
-        return DB::select('EXEC obe.Sp_UPD_fichaVivienda ' . $placeholders, $parametros);
+
+        return DB::select('EXEC obe.Sp_UPD_fichaVivienda '.$placeholders, $parametros);
     }
 }

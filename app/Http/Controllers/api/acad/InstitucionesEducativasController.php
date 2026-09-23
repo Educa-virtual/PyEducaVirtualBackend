@@ -32,14 +32,13 @@ class InstitucionesEducativasController extends Controller
         return new JsonResponse($response, $estado);
     }
 
-
     public function selReglamentoInterno(Request $request)
     {
-        $query = DB::select("EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?", [
+        $query = DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
             'acad',
             'institucion_educativas',
             'cIieeUrlReglamentoInterno',
-            'iIieeId=' . $request->iIieeId
+            'iIieeId='.$request->iIieeId,
         ])[0];
 
         $fileInfo = json_decode($query->cIieeUrlReglamentoInterno);
@@ -55,7 +54,7 @@ class InstitucionesEducativasController extends Controller
                 'size' => $fileInfo->size,
                 'lastModified' => $fileInfo->lastModified,
                 'mimeType' => $fileInfo->mimeType,
-                'value' => base64_encode($fileContent)
+                'value' => base64_encode($fileContent),
             ]);
         } else {
             // Si el archivo no existe, devolver un error
@@ -70,11 +69,11 @@ class InstitucionesEducativasController extends Controller
             // Obtener el archivo del FormData
             $file = $request->file('cIieeUrlReglamentoInterno');
 
-            $query = DB::select("EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?", [
+            $query = DB::select('EXEC grl.SP_SEL_DesdeTablaOVista ?,?,?,?', [
                 'acad',
                 'institucion_educativas',
                 'cIieeNombre',
-                'iIieeId=' . $request->input('iIieeId')
+                'iIieeId='.$request->input('iIieeId'),
             ])[0];
 
             // Obtener el año y mes actuales con Carbon
@@ -82,13 +81,12 @@ class InstitucionesEducativasController extends Controller
             $month = Carbon::now()->month; // Mes (MM)
 
             // Crear la ruta personalizada dentro de 'storage/app/public'
-            $path = 'DocumentosInstitucional/' . $query->cIieeNombre . '/' . $year . '/' . $month;
-
+            $path = 'DocumentosInstitucional/'.$query->cIieeNombre.'/'.$year.'/'.$month;
 
             // Guardar el archivo en el storage público
-            $filePath = $file->storeAs($path, $file->getClientOriginalName(),  ['disk' => 'file']);
+            $filePath = $file->storeAs($path, $file->getClientOriginalName(), ['disk' => 'file']);
 
-            $query = DB::select("EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?", [
+            $query = DB::select('EXEC grl.SP_UPD_EnTablaConJSON ?,?,?,?', [
                 'acad',
                 'institucion_educativas',
                 json_encode([
@@ -98,9 +96,9 @@ class InstitucionesEducativasController extends Controller
                         'lastModified' => Storage::disk('file')->lastModified($filePath),
                         'mimeType' => $file->getMimeType(),
                         'path' => $filePath,
-                    ])
+                    ]),
                 ]),
-                json_encode([['COLUMN_NAME' => 'iIieeId', 'VALUE' => $request->input('iIieeId')]])
+                json_encode([['COLUMN_NAME' => 'iIieeId', 'VALUE' => $request->input('iIieeId')]]),
 
             ]);
 

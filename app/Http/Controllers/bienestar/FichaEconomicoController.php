@@ -26,9 +26,9 @@ class FichaEconomicoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaEconomico::updFichaEconomico($request);
+
             return FormatearMensajeHelper::ok('Se actualizo la información', $data);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }
@@ -38,9 +38,9 @@ class FichaEconomicoController extends Controller
         try {
             Gate::authorize('tiene-perfil', [$this->registran]);
             $data = FichaEconomico::selFichaEconomico($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
         }
     }

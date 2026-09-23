@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\AbstractDatabaseOperation;
 use Illuminate\Http\Request;
 
 class SelectOperation extends AbstractDatabaseOperation
@@ -43,6 +42,7 @@ class SelectOperation extends AbstractDatabaseOperation
         // Lista de propiedades requeridas
         return array_keys($this->getValidationRules());
     }
+
     protected function getParamsProcedure(): array
     {
         return array_values(

@@ -5,22 +5,21 @@ namespace App\Http\Controllers\ere;
 use App\Enums\Perfil;
 use App\Helpers\FormatearMensajeHelper;
 use App\Http\Controllers\ApiController;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Ere\ActualizarEvaluacionRequest;
+use App\Models\acad\Curso;
 use App\Models\ere\Evaluacion;
 use App\Services\acad\EstudiantesService;
 use App\Services\ere\EvaluacionesService;
-use Hashids\Hashids;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Exception;
+use Hashids\Hashids;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\Ere\ActualizarEvaluacionRequest;
-use App\Models\acad\Curso;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class EvaluacionesController extends ApiController
 {
@@ -40,6 +39,7 @@ class EvaluacionesController extends ApiController
                     $value->iEvaluacionIdxHash = $this->hashids->encode($value->iEvaluacionId);
                 }
             }
+
             return FormatearMensajeHelper::ok('Datos obtenidos correctamente', $evaluaciones);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -49,13 +49,14 @@ class EvaluacionesController extends ApiController
     public function obtenerEvaluacion(Request $request, $iEvaluacionIdHasheado)
     {
         try {
-            if ( count($this->hashids->decode($iEvaluacionIdHasheado)) > 0 ) {
+            if (count($this->hashids->decode($iEvaluacionIdHasheado)) > 0) {
                 $iEvaluacionId = $this->hashids->decode($iEvaluacionIdHasheado)[0];
                 $request->merge(['iEvaluacionId' => $iEvaluacionId]);
             } else {
                 return FormatearMensajeHelper::error(new Exception('No se pudo validar el identificador de la evaluación.', 400));
             }
             $data = Evaluacion::selEvaluacion($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -67,6 +68,7 @@ class EvaluacionesController extends ApiController
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_UGEL]]);
             $data = Evaluacion::insEvaluaciones($request);
+
             return FormatearMensajeHelper::ok('Se guardó la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -90,6 +92,7 @@ class EvaluacionesController extends ApiController
                     ]
                 );
             }
+
             return response()->json(['status' => 'success', 'message' => 'Datos guardados correctamente']);
         } catch (Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Error al guardar los datos', 'error' => $e->getMessage()], 500);
@@ -116,6 +119,7 @@ class EvaluacionesController extends ApiController
         Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO, Perfil::ESPECIALISTA_UGEL]]);
         try {
             $data = Evaluacion::updEvaluaciones($request);
+
             return FormatearMensajeHelper::ok('Se actualizó la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -127,6 +131,7 @@ class EvaluacionesController extends ApiController
         try {
             $request->merge(['iEvaluacionId' => $iEvaluacionId]);
             $data = Evaluacion::selParticipaciones($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -137,6 +142,7 @@ class EvaluacionesController extends ApiController
     {
         try {
             $data = Curso::selCursos($request);
+
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (\Exception $e) {
             return FormatearMensajeHelper::error($e);
@@ -150,10 +156,9 @@ class EvaluacionesController extends ApiController
             $selectedCursos = $request->input('selectedCursos');
 
             // Valida que los datos existan
-            if (!$iEvaluacionId || empty($selectedCursos)) {
+            if (! $iEvaluacionId || empty($selectedCursos)) {
                 return response()->json(['message' => 'Datos incompletos.'], 400);
             }
-
 
             // Inserta los cursos
             foreach ($selectedCursos as $curso) {
@@ -185,7 +190,7 @@ class EvaluacionesController extends ApiController
             $selectedCursos = $request->input('selectedCursos');
 
             // Valida que los datos existan
-            if (!$iEvaluacionId || empty($selectedCursos)) {
+            if (! $iEvaluacionId || empty($selectedCursos)) {
                 return response()->json(['message' => 'Datos incompletos.'], 400);
             }
 
@@ -206,14 +211,14 @@ class EvaluacionesController extends ApiController
     public function obtenerCursosEvaluacion($iEvaluacionId)
     {
         // Llamar al procedimiento almacenado
-        //Se cambio el nombre SP_SEL_CursosEvaluacion
+        // Se cambio el nombre SP_SEL_CursosEvaluacion
         $cursos = DB::select('EXEC ere.SP_SEL_cursosEvaluacion ?', [$iEvaluacionId]);
 
         // Devolver la respuesta en formato JSON
         return response()->json([
             'cursos' => $cursos,
             'message' => 'Cursos registrado correctamente.',
-            'status' => true
+            'status' => true,
         ]);
     }
 
@@ -226,7 +231,7 @@ class EvaluacionesController extends ApiController
             'ere',
             'evaluacion',
             $campos,
-            $where
+            $where,
         ];
         try {
             $preguntas = DB::select('EXEC grl.sp_SEL_DesdeTabla_Where
@@ -244,6 +249,7 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Erro No!');
         }
     }
+
     // En EvaluacionController.php
     public function actualizarCursosExamen(Request $request)
     {
@@ -303,9 +309,10 @@ class EvaluacionesController extends ApiController
             ]);
         }
 
-        return response()->json(['message' => 'Cursos actualizados correctamente para la evaluación ' . $iEvaluacionId]);
+        return response()->json(['message' => 'Cursos actualizados correctamente para la evaluación '.$iEvaluacionId]);
     }
-    //Agregando CopiarEvaluacion
+
+    // Agregando CopiarEvaluacion
     public function copiarEvaluacion(Request $request)
     {
         // Validar que el parámetro iEvaluacionIdOriginal esté presente
@@ -332,7 +339,8 @@ class EvaluacionesController extends ApiController
             ], 500);
         }
     }
-    //AgregarMatrizCompetencia
+
+    // AgregarMatrizCompetencia
     public function obtenerMatrizCompetencias(Request $request)
     {
         $campos = 'iCompetenciaId,cCompetenciaNro,cCompetenciaNombre,cCompetenciaDescripcion,iCurrId'; // Campos específicos que necesitas
@@ -342,7 +350,7 @@ class EvaluacionesController extends ApiController
             'acad',
             'curriculo_competencias',
             $campos,
-            $where
+            $where,
         ];
 
         try {
@@ -358,10 +366,10 @@ class EvaluacionesController extends ApiController
                 'selectData' => collect($preguntas)->map(function ($pregunta) {
                     return [
                         'iCompetenciaId' => $pregunta->iCompetenciaId,
-                        'cCompetenciaNombre' => $pregunta->cCompetenciaNombre
+                        'cCompetenciaNombre' => $pregunta->cCompetenciaNombre,
                     ];
                 }),
-                'fullData' => $preguntas // Incluye todos los datos por si los necesitas después
+                'fullData' => $preguntas, // Incluye todos los datos por si los necesitas después
             ];
 
             return $this->successResponse(
@@ -372,7 +380,8 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    //AgregarMatrizCapacidad
+
+    // AgregarMatrizCapacidad
     public function obtenerMatrizCapacidades(Request $request)
     {
         $campos = 'iCapacidadId,iCompetenciaId,cCapacidadNombre,cCapacidadDescripcion'; // Campos específicos que necesitas
@@ -382,7 +391,7 @@ class EvaluacionesController extends ApiController
             'acad',
             'curriculo_capacidades',
             $campos,
-            $where
+            $where,
         ];
 
         try {
@@ -398,10 +407,10 @@ class EvaluacionesController extends ApiController
                 'selectData' => collect($preguntas)->map(function ($pregunta) {
                     return [
                         'iCapacidadId' => $pregunta->iCapacidadId,
-                        'cCapacidadNombre' => $pregunta->cCapacidadNombre
+                        'cCapacidadNombre' => $pregunta->cCapacidadNombre,
                     ];
                 }),
-                'fullData' => $preguntas // Incluye todos los datos por si los necesitas después
+                'fullData' => $preguntas, // Incluye todos los datos por si los necesitas después
             ];
 
             return $this->successResponse(
@@ -412,7 +421,8 @@ class EvaluacionesController extends ApiController
             return $this->errorResponse($e, 'Error al obtener los datos');
         }
     }
-    //AgregarMatrizDesempeno
+
+    // AgregarMatrizDesempeno
     public function insertarMatrizDesempeno(Request $request)
     {
         // Validar los datos recibidos en la solicitud
@@ -425,7 +435,6 @@ class EvaluacionesController extends ApiController
             'iEstado' => 'nullable|integer',
             'iSesionId' => 'nullable|integer',
         ]);
-
 
         // Llamar al procedimiento almacenado y capturar el ID retornado
         $result = DB::select('EXEC [ere].[SP_INS_desempenoEvaluacion] ?, ?, ?, ?, ?, ?, ?', [
@@ -442,12 +451,12 @@ class EvaluacionesController extends ApiController
 
         // Responder con éxito
         return response()->json([
-            'message' =>
-            'Datos insertados correctamente',
+            'message' => 'Datos insertados correctamente',
             'iDesempenoId' => $iDesempenoId,
         ], 201);
     }
-    //Obtener Especialista y Grado cursos
+
+    // Obtener Especialista y Grado cursos
     public function obtenerEspDrem(Request $request)
     {
         $campos = 'iEspecialistaId,dtEspecialistaInicio,dtEspecialistaRslDesignacion,iDocenteId,iCursosNivelGradId'; // Campos específicos que necesitas
@@ -457,7 +466,7 @@ class EvaluacionesController extends ApiController
             'acad',
             'especialistas_DRE',
             $campos,
-            $where
+            $where,
         ];
 
         try {
@@ -477,20 +486,18 @@ class EvaluacionesController extends ApiController
         }
     }
 
-
-
     public function obtenerEspDremCurso(Request $request)
     {
         // Validar los parámetros de entrada
         $iPersId = $request->input('iPersId');
         $iEvaluacionId = $request->input('iEvaluacionId');
-        //$iPersId = 1;
-        //$iEvaluacionId = 679; //724 no tiene esos dos cursos  - 679 Si tiene esos dos cursos
-        if (!$iPersId) {
+        // $iPersId = 1;
+        // $iEvaluacionId = 679; //724 no tiene esos dos cursos  - 679 Si tiene esos dos cursos
+        if (! $iPersId) {
             return $this->errorResponse(null, 'El parámetro iPersId es obligatorio.');
         }
 
-        if (!$iEvaluacionId) {
+        if (! $iEvaluacionId) {
             return $this->errorResponse(null, 'El parámetro iEvaluacionId es obligatorio.');
         }
 
@@ -500,7 +507,7 @@ class EvaluacionesController extends ApiController
                 ->where('iPersId', $iPersId)
                 ->value('iDocenteId');
 
-            if (!$iDocenteId) {
+            if (! $iDocenteId) {
                 return $this->errorResponse(null, 'No se encontró un docente relacionado con el iPersId proporcionado.');
             }
 
@@ -560,7 +567,7 @@ class EvaluacionesController extends ApiController
                 ->setOption('disable-smart-shrinking', true)
                 ->setOption('margin-top', '3cm')
                 ->setOption('margin-bottom', '2cm')
-                ->setOption('footer-left', "PAGINA [page] DE [toPage]")
+                ->setOption('footer-left', 'PAGINA [page] DE [toPage]')
                 ->setOption('footer-font-size', 10)
                 ->setOption('header-html', $headerHtml)
                 ->setOption('dpi', 300);
@@ -587,7 +594,7 @@ class EvaluacionesController extends ApiController
         $especialista = $request->input('especialista');
         // Aquí tomaremos los datos de la tabla "ere.preguntas"
         //        $preguntas = DB::select("EXEC ere.SP_SEL_preguntasXiEvaluacionId ?", [$iEvaluacionId]);
-        $preguntas = DB::select("EXEC ere.SP_SEl_evaluacionPreguntas ?", [$iEvaluacionId]);
+        $preguntas = DB::select('EXEC ere.SP_SEl_evaluacionPreguntas ?', [$iEvaluacionId]);
 
         // Verificar si se obtuvieron resultados
         if (empty($preguntas)) {
@@ -606,7 +613,7 @@ class EvaluacionesController extends ApiController
             }
 
             // Filtrar por ids (compara con iPreguntaId)
-            if ($ids && !in_array($pregunta->iPreguntaId, explode(',', $ids))) {
+            if ($ids && ! in_array($pregunta->iPreguntaId, explode(',', $ids))) {
 
                 continue; // Si no coincide, omitir esta pregunta
             }
@@ -620,9 +627,9 @@ class EvaluacionesController extends ApiController
                 'capacidad_nombre' => $pregunta->cCapacidadNombre,
                 'capacidad_descripcion' => $pregunta->cCapacidadDescripcion,
                 'desempeno_descripcion' => $pregunta->cDesempenoDescripcion,
-                //'curso_nombre' => $pregunta->cCursoNombre,
-                //'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
-                //'nivel_nombre' => $pregunta->cNivelNombre,
+                // 'curso_nombre' => $pregunta->cCursoNombre,
+                // 'nivel_tipo_nombre' => $pregunta->cNivelTipoNombre,
+                // 'nivel_nombre' => $pregunta->cNivelNombre,
                 'pregunta' => $pregunta->cPregunta,
                 'pregunta_clave' => $pregunta->cPreguntaClave,
                 'pregunta_texto_ayuda' => $pregunta->cPreguntaTextoAyuda,
@@ -647,15 +654,14 @@ class EvaluacionesController extends ApiController
         if (empty($datos['preguntas'])) {
             return response()->json(['error' => 'No se encontraron preguntas que coincidan con los filtros especificados'], 404);
         }
-        //CARGAR LOGOS
+        // CARGAR LOGOS
         $imagePath = public_path('images\logo_IE\Logo-buho.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $virtual = 'data:image/jpeg;base64,' . $imageData;
+        $virtual = 'data:image/jpeg;base64,'.$imageData;
 
         $imagePath = public_path('images\logo_IE\dremo.jpg');
         $imageData = base64_encode(file_get_contents($imagePath));
-        $region = 'data:image/jpeg;base64,' . $imageData;
-
+        $region = 'data:image/jpeg;base64,'.$imageData;
 
         // Preparar los datos para el PDF o la respuesta
         $respuesta = [
@@ -668,10 +674,10 @@ class EvaluacionesController extends ApiController
             'nivel' => $nivel,
             'nombreCurso' => $nombreCurso,
             'preguntas' => $datos['preguntas'],
-            "logoVirtual" => $virtual, // Ruta absoluta
-            "imageLogo" => $region, // Ruta absoluta
+            'logoVirtual' => $virtual, // Ruta absoluta
+            'imageLogo' => $region, // Ruta absoluta
             'dtCreado' => $dtCreado,
-            'especialista' => $especialista
+            'especialista' => $especialista,
         ];
         // Generar el PDF con los datos recibidos
         $pdf = PDF::loadView('pdfEre.matrizReporte', $respuesta)
@@ -708,7 +714,7 @@ class EvaluacionesController extends ApiController
 
         // Filtrar las preguntas a insertar, excluyendo las que ya existen
         $dataToInsert = array_filter($dataToInsert, function ($pregunta) use ($existingQuestions) {
-            return !in_array($pregunta['iPreguntaId'], $existingQuestions);
+            return ! in_array($pregunta['iPreguntaId'], $existingQuestions);
         });
 
         // Si hay preguntas para insertar, hacer la inserción
@@ -738,6 +744,7 @@ class EvaluacionesController extends ApiController
 
         return response()->json($preguntas, 200);
     }
+
     public function obtenerConteoPorCurso(Request $request)
     {
         // Validar los datos de entrada
@@ -768,13 +775,12 @@ class EvaluacionesController extends ApiController
             return response()->json($resultado);
         } catch (\Exception $e) {
             // Manejo de errores
-            return response()->json(['error' => 'Hubo un problema al obtener las preguntas: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Hubo un problema al obtener las preguntas: '.$e->getMessage()], 500);
         }
     }
     /**
      * Obtener preguntas por EvaluacionId y iPreguntaId
      *
-     * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
     // public function obtenerPreguntaInformacion(Request $request)
@@ -803,7 +809,8 @@ class EvaluacionesController extends ApiController
         // Retornar el resultado como JSON
         return response()->json($result);
     }
-    //guardar fecha inicio fin de cursos
+
+    // guardar fecha inicio fin de cursos
     public function guardarInicioFinalExmAreas(Request $request)
     {
         // Validar los datos enviados desde el frontend
@@ -860,6 +867,7 @@ class EvaluacionesController extends ApiController
             'iEvaluacionId' => $validatedData['iEvaluacionId'],
             'iPreguntaId' => $validatedData['iPreguntaId'],
         ]);
+
         return response()->json($result);
     }
 
@@ -869,8 +877,8 @@ class EvaluacionesController extends ApiController
             $request->iEvaluacionId,
             $request->iCursoNivelGradId,
             $request->dtExamenFechaInicio == null ? null : Carbon::parse($request->dtExamenFechaInicio)->format('Ymd H:i:s'),
-            //$request->dtExamenFechaInicio          ??  NULL,
-            $request->iExamenCantidadPreguntas     ??  NULL
+            // $request->dtExamenFechaInicio          ??  NULL,
+            $request->iExamenCantidadPreguntas ?? null,
         ];
 
         try {
@@ -900,23 +908,25 @@ class EvaluacionesController extends ApiController
 
             return response()->json([
                 'message' => 'JSON recibido correctamente',
-                'data' => $data
+                'data' => $data,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'validated' => false,
                 'message' => $e->getMessage(),
-                'data' => []
+                'data' => [],
             ], 500);
         }
     }
 
-    public function obtenerResultadosEstudiantePorEvaluacion($evaluacionId) {
+    public function obtenerResultadosEstudiantePorEvaluacion($evaluacionId)
+    {
         try {
             Gate::authorize('tiene-perfil', [[Perfil::ESTUDIANTE]]);
             $usuario = Auth::user();
             $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
             $data = EvaluacionesService::obtenerResultadosEstudiantePorEvaluacion($evaluacionId, $estudiante->iEstudianteId);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);
@@ -930,6 +940,7 @@ class EvaluacionesController extends ApiController
             $usuario = Auth::user();
             $estudiante = EstudiantesService::obtenerIdEstudiantePorIdPersona($usuario->iPersId);
             $data = EvaluacionesService::obtenerEvaluacionesEstudiantePorAnio($estudiante->iEstudianteId, $anio);
+
             return FormatearMensajeHelper::ok('Datos obtenidos', $data);
         } catch (Exception $ex) {
             return FormatearMensajeHelper::error($ex);

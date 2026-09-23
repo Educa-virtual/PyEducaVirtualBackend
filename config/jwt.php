@@ -232,7 +232,7 @@ return [
     |
     */
 
-    'blacklist_grace_period' =>(int) env('JWT_BLACKLIST_GRACE_PERIOD', 50),
+    'blacklist_grace_period' => (int) env('JWT_BLACKLIST_GRACE_PERIOD', 50),
 
     /*
     |--------------------------------------------------------------------------

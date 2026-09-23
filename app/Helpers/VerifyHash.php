@@ -13,10 +13,12 @@ class VerifyHash
     {
         self::$hashids = new Hashids(config('hashids.salt'), config('hashids.min_length'));
     }
+
     // codificar los id de los registros a enviar al frontend
     public static function encode($value)
     {
         VerifyHash::VerifyHashInitialize();
+
         return array_map([self::class, 'encodeFields'], $value);
     }
 
@@ -32,6 +34,7 @@ class VerifyHash
             return $hash;
         }
         $decoded = self::$hashids->decode($hash);
+
         return $decoded ? $decoded[0] : null;
     }
 
@@ -40,6 +43,7 @@ class VerifyHash
         VerifyHash::VerifyHashInitialize();
 
         $decoded = self::$hashids->encode($hash);
+
         return $decoded ? $decoded[0] : null;
     }
 
@@ -50,6 +54,7 @@ class VerifyHash
         foreach ($fieldsToDecode as $field) {
             $request[$field] = VerifyHash::decodes($request->$field);
         }
+
         return $request;
     }
 
@@ -62,6 +67,7 @@ class VerifyHash
                 $item->$field = self::$hashids->encode($item->$field);
             }
         }
+
         return $item;
     }
 
@@ -82,19 +88,23 @@ class VerifyHash
     }
 
     // codificar los id de los registros a enviar al frontend
-    public static function encodexId($valor){
-        //$hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+    public static function encodexId($valor)
+    {
+        // $hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
         self::VerifyHashInitialize();
         $hashing = self::$hashids->encode($valor);
+
         return $hashing;
         // return array_map([self::class, 'encodeFields'], $value);
     }
 
     // decodificar los id de los registros a enviar al backend
-    public static function decodesxId($hash){
+    public static function decodesxId($hash)
+    {
         self::VerifyHashInitialize();
-        //$hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
+        // $hashids = new Hashids('PROYECTO VIRTUAL - DREMO', 50);
         $decoded = self::$hashids->decode($hash);
+
         return $decoded ? $decoded[0] : null;
     }
 }
