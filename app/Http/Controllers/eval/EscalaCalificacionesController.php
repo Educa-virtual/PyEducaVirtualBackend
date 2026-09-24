@@ -15,7 +15,13 @@ class EscalaCalificacionesController extends Controller
     public function listarEscalaCalificaciones(Request $request)
     {
         try {
-            Gate::authorize('tiene-perfil', [[Perfil::ADMINISTRADOR_DREMO]]);
+            Gate::authorize('tiene-perfil', [[
+                Perfil::ADMINISTRADOR_DREMO,
+                Perfil::DIRECTOR_IE,
+                Perfil::DOCENTE,
+                Perfil::ESTUDIANTE,
+                Perfil::APODERADO,
+            ]]);
             $data = EscalaCalificaciones::selEscalaCalificaciones($request);
             return FormatearMensajeHelper::ok('Se obtuvo la información', $data);
         } catch (Exception $e) {

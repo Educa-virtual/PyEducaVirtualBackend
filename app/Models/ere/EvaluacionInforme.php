@@ -47,7 +47,7 @@ class EvaluacionInforme
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
 
-        return DB::selectOne("EXEC ere.SP_SEL_evaluacionInformeResumenOpt $placeholders", $parametros);
+        return DB::selectResultSets("EXEC ere.SP_SEL_evaluacionInformeResumenOpt $placeholders", $parametros);
     }
 
     public static function selEvaluacionInformeComparacion($request)
@@ -73,6 +73,6 @@ class EvaluacionInforme
         ];
         $placeholders = implode(',', array_fill(0, count($parametros), '?'));
 
-        return DB::selectOne("EXEC ere.SP_SEL_evaluacionInformeComparacion $placeholders", $parametros);
+        return DB::selectResultSets("EXEC ere.SP_SEL_evaluacionInformeComparacion $placeholders", $parametros);
     }
 }
